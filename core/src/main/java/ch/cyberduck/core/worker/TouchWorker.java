@@ -25,9 +25,6 @@ import ch.cyberduck.core.features.Touch;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class TouchWorker extends Worker<Boolean> {
 
     private Path file;

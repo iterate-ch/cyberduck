@@ -32,13 +32,16 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class DriveListServiceTest {
 
     @Test
@@ -60,7 +63,6 @@ public class DriveListServiceTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 

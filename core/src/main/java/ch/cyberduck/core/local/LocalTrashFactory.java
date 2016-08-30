@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.features.Trash;
 
-/**
- * @version $Id$
- */
 public class LocalTrashFactory extends Factory<Trash> {
 
     protected LocalTrashFactory() {

@@ -23,9 +23,6 @@ import ch.cyberduck.core.LocalFactory;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class DefaultWorkingDirectoryFinder implements WorkingDirectoryFinder {
     private static final Logger log = Logger.getLogger(DefaultWorkingDirectoryFinder.class);
 

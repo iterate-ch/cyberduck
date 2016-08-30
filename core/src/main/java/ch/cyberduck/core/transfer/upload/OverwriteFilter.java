@@ -21,9 +21,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-/**
- * @version $Id$
- */
 public class OverwriteFilter extends AbstractUploadFilter {
 
     public OverwriteFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {

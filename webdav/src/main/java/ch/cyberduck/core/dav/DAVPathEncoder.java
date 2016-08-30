@@ -20,9 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 
-/**
- * @version $Id$
- */
 public class DAVPathEncoder {
 
     public String encode(final Path file) {

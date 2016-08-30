@@ -31,9 +31,6 @@ import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class UnixFTPEntryParserTest {
 
     @Test

@@ -26,7 +26,7 @@ using org.apache.commons.io;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public sealed class WindowsTemporaryFileService : TemporaryFileService
+    public sealed class WindowsTemporaryFileService : DefaultTemporaryFileService
     {
         protected override String shorten(string path) {
             if (path.Length > 240)

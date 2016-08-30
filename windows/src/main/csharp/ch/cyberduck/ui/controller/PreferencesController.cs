@@ -23,11 +23,13 @@ using ch.cyberduck.core.editor;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.kms;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
-using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
@@ -35,7 +37,6 @@ using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
 using StructureMap;
-using Utils = Ch.Cyberduck.Core.Utils;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -229,9 +230,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultEncryptionChangedEvent()
         {
-            PreferencesFactory.get()
-                .setProperty("s3.encryption.algorithm",
-                    NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
+            PreferencesFactory.get().setProperty("s3.encryption.algorithm", View.DefaultEncryption);
         }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
@@ -282,7 +281,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            new WindowsPeriodicUpdateChecker().check(false);
+            new WinSparklePeriodicUpdateChecker().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -994,7 +993,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultStorageClass = PreferencesFactory.get().getProperty("s3.storage.class");
             PopulateDefaultEncryption();
             String algorithm = PreferencesFactory.get().getProperty("s3.encryption.algorithm");
-            View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : NullString;
+            View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : Encryption.Algorithm.NONE.ToString();
 
             #endregion
 
@@ -1013,7 +1012,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
-            View.UpdateEnabled = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
+            View.UpdateEnabled = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck
@@ -1057,8 +1056,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultEncryption()
         {
             IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
-            algorithms.Add(new KeyValuePair<string, string>(NullString, LocaleFactory.localizedString("None")));
-            algorithms.Add(new KeyValuePair<string, string>("AES256", LocaleFactory.localizedString("AES256", "S3")));
+            algorithms.Add(new KeyValuePair<string, string>(Encryption.Algorithm.NONE.ToString(),
+                LocaleFactory.localizedString("None")));
+            algorithms.Add(new KeyValuePair<string, string>(S3EncryptionFeature.SSE_AES256.ToString(),
+                LocaleFactory.localizedString(S3EncryptionFeature.SSE_AES256.getDescription(), "S3")));
+            algorithms.Add(new KeyValuePair<string, string>(KMSEncryptionFeature.SSE_KMS_DEFAULT.ToString(),
+                LocaleFactory.localizedString(KMSEncryptionFeature.SSE_KMS_DEFAULT.getDescription(), "S3")));
             View.PopulateDefaultEncryption(algorithms);
         }
 
@@ -1297,7 +1300,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             defaultEditor.getName()));
                 }
             }
-            editors.Add(new KeyValueIconTriple<Application, string>(new Application(null, null),
+            editors.Add(new KeyValueIconTriple<Application, string>(Application.notfound,
                 LocaleFactory.localizedString("Choose") + "…", String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)
@@ -1307,7 +1310,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 //dummy editor which leads to an empty selection
-                View.DefaultEditor = new Application(null, null);
+                View.DefaultEditor = Application.notfound;
             }
         }
     }

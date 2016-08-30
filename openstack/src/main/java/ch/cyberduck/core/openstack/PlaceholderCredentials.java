@@ -23,9 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 
-/**
- * @version $Id$
- */
 public final class PlaceholderCredentials extends Credentials {
 
     private final String placeholder;

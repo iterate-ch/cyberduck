@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class PreferencesUseragentProvider implements UseragentProvider {
 
     private static final Preferences preferences

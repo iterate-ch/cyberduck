@@ -32,10 +32,11 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class DriveSessionTest {
 
     @Test(expected = LoginCanceledException.class)
@@ -49,10 +50,7 @@ public class DriveSessionTest {
                     credentials.setPassword("t");
                     return;
                 }
-                if("Invalid_grant. Please contact your web hosting service provider for assistance.".equals(reason)) {
-                    throw new LoginCanceledException();
-                }
-                fail();
+                throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(),
@@ -64,7 +62,7 @@ public class DriveSessionTest {
 
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
+        final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials("u"));
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -81,7 +79,6 @@ public class DriveSessionTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 

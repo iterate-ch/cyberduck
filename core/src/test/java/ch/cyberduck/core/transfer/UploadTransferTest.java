@@ -33,9 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class UploadTransferTest {
 
     @Test
@@ -318,6 +315,7 @@ public class UploadTransferTest {
         final Host host = new Host(new TestProtocol());
         final Session session = new NullSession(host) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
@@ -445,5 +443,4 @@ public class UploadTransferTest {
         assertNull(status.getRename().local);
         assertNull(status.getRename().remote);
     }
-
 }

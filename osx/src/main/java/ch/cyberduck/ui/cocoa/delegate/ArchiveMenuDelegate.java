@@ -26,9 +26,6 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-/**
- * @version $Id$
- */
 public class ArchiveMenuDelegate extends AbstractMenuDelegate {
 
     @Override

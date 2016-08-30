@@ -28,9 +28,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 
-/**
- * @version $Id$
- */
 public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
     private BackgroundActionRegistry registry

@@ -30,9 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class TerminalTransferPrompt implements TransferPrompt {
 
     private Console console = new Console();

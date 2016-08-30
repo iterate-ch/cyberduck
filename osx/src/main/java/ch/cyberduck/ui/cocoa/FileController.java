@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
@@ -36,9 +37,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public abstract class FileController extends AlertController {
 
     @Outlet

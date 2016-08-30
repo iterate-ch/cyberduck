@@ -19,9 +19,6 @@ package ch.cyberduck.core.formatter;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public final class SizeFormatterFactory {
 
     private SizeFormatterFactory() {

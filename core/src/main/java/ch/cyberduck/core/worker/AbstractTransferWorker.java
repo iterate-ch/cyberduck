@@ -33,13 +33,9 @@ import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.threading.BackgroundActionPauser;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -96,9 +92,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      * Workload
      */
     private final Cache<TransferItem> cache;
-
-    private final FailureDiagnostics<Exception> diagnostics
-            = new DefaultFailureDiagnostics();
 
     private final ProgressListener progress;
 
@@ -225,7 +218,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         finally {
             if(transfer.isReset()) {
                 growl.notify(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", transfer.getName());
+                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
+                        "Transfer incomplete", transfer.getName());
             }
             sleep.release(lock);
         }
@@ -247,7 +241,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         }
         final TransferItem item = new TransferItem(file, local);
         if(prompt.isSelected(item)) {
-            this.submit(new RepeatableTransferCallable() {
+            this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     final Session<?> session = borrow();
@@ -302,16 +296,12 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
+                                if(this.retry(e, progress, parent)) {
+                                    // Retry immediately
+                                    return call();
+                                }
                                 if(table.size() == 0) {
                                     throw e;
-                                }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    if(!this.retry(e)) {
-                                        throw e;
-                                    }
-                                    // Retry immediately
-                                    submit(this);
-                                    return null;
                                 }
                                 // Prompt to continue or abort for application errors
                                 else if(error.prompt(e)) {
@@ -361,7 +351,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                this.submit(new RepeatableTransferCallable() {
+                this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
@@ -397,43 +387,17 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 segment.setFailure();
                                 throw e;
                             }
-                            catch(RetriableAccessDeniedException e) {
-                                segment.setFailure();
-                                if(AbstractTransferWorker.this.isCanceled()) {
-                                    throw new ConnectionCanceledException(e);
-                                }
-                                if(!this.retry(e)) {
-                                    throw e;
-                                }
-                                final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-                                    @Override
-                                    public boolean isCanceled() {
-                                        return AbstractTransferWorker.this.isCanceled();
-                                    }
-
-                                    @Override
-                                    public void progress(final Integer delay) {
-                                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
-                                    }
-                                }, (int) e.getRetry().getSeconds());
-                                pause.await(progress);
-                                // Retry after pause
-                                submit(this);
-                            }
                             catch(BackgroundException e) {
                                 segment.setFailure();
                                 if(AbstractTransferWorker.this.isCanceled()) {
                                     throw new ConnectionCanceledException(e);
                                 }
-                                if(table.size() == 0) {
-                                    throw e;
-                                }
-                                if(diagnostics.determine(e) == FailureDiagnostics.Type.network) {
-                                    if(!this.retry(e)) {
-                                        throw e;
-                                    }
+                                if(this.retry(e, progress, segment)) {
                                     // Retry immediately
-                                    submit(this);
+                                    return call();
+                                }
+                                if(table.size() == 1) {
+                                    throw e;
                                 }
                                 // Prompt to continue or abort for application errors
                                 else if(error.prompt(e)) {

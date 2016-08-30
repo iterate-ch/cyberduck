@@ -33,9 +33,6 @@ import org.apache.log4j.Logger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @version $Id$
- */
 public final class RendezvousResponder extends AbstractRendezvous implements BrowseListener, ResolveListener {
     private static final Logger log = Logger.getLogger(RendezvousResponder.class);
 

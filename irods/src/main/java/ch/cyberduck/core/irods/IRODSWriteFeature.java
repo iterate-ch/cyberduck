@@ -24,6 +24,7 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
@@ -31,9 +32,6 @@ import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class IRODSWriteFeature extends AppendWriteFeature {
 
     private IRODSSession session;
@@ -46,9 +44,17 @@ public class IRODSWriteFeature extends AppendWriteFeature {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
-            return new PackingIrodsOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                    file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
+            try {
+                final IRODSFileSystemAO fs = session.filesystem();
+                return new PackingIrodsOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
+                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
+            }
+            catch(JargonRuntimeException e) {
+                if(e.getCause() instanceof JargonException) {
+                    throw (JargonException) e.getCause();
+                }
+                throw new BackgroundException(e);
+            }
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);

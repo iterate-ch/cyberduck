@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -36,13 +37,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * The Status class is the model of a download's status.
- * The wrapper for any status informations of a transfer as the size and transferred
- * bytes.
- *
- * @version $Id$
- */
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
 
@@ -83,6 +77,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
     private long length = 0L;
+
     /**
      * The transfer has been canceled by the user.
      */
@@ -96,6 +91,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             = new CountDownLatch(1);
 
     private Checksum checksum;
+
     /**
      * MIME type
      */
@@ -105,14 +101,24 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
     private PathAttributes remote = new PathAttributes();
+
     /**
      * Target UNIX permissions to set when transfer is complete
      */
     private Permission permission = Permission.EMPTY;
+
     /**
      * Target ACL to set when transfer is complete
      */
     private Acl acl = Acl.EMPTY;
+
+    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
+
+    /**
+     * Storage class parameter
+     */
+    private String storageClass;
+
     /**
      * Target timestamp to set when transfer is complete
      */
@@ -191,18 +197,18 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @param offset The already transferred bytes
+     * @param bytes The already transferred bytes
      */
-    public void setOffset(final long offset) {
-        this.offset.set(offset);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Transferred bytes set to %d bytes", offset));
+    public void setOffset(final long bytes) {
+        offset.set(bytes);
+        if(log.isTraceEnabled()) {
+            log.trace(String.format("Offset set to %d bytes", bytes));
         }
     }
 
     @Override
     public void progress(final long bytes) {
-        offset.set(offset.get() + bytes);
+        this.setOffset(offset.addAndGet(bytes));
     }
 
     public TransferStatus skip(final long bytes) {
@@ -356,6 +362,22 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setAcl(Acl acl) {
         this.acl = acl;
+    }
+
+    public Encryption.Algorithm getEncryption() {
+        return encryption;
+    }
+
+    public void setEncryption(final Encryption.Algorithm encryption) {
+        this.encryption = encryption;
+    }
+
+    public String getStorageClass() {
+        return storageClass;
+    }
+
+    public void setStorageClass(final String storageClass) {
+        this.storageClass = storageClass;
     }
 
     public Long getTimestamp() {

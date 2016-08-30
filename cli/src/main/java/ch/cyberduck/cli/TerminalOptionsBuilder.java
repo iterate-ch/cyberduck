@@ -27,9 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public final class TerminalOptionsBuilder {
 
     private TerminalOptionsBuilder() {
@@ -66,6 +63,12 @@ public final class TerminalOptionsBuilder {
                 .withDescription("Upload file or folder recursively")
                 .withLongOpt(TerminalAction.upload.name())
                 .hasArgs(2).withArgName("url> <file").withValueSeparator(' ')
+                .isRequired(false)
+                .create());
+        options.addOption(OptionBuilder
+                .withDescription("Set explicit permission from octal mode value for uploaded file")
+                .withLongOpt(Params.chmod.name())
+                .hasArgs(1).withArgName("<mode>").withValueSeparator(' ')
                 .isRequired(false)
                 .create());
         options.addOption(OptionBuilder
@@ -220,6 +223,7 @@ public final class TerminalOptionsBuilder {
         username,
         password,
         identity,
-        application
+        application,
+        chmod
     }
 }

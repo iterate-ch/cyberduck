@@ -34,8 +34,6 @@ import com.jcraft.jsch.agentproxy.connector.PageantConnector;
 
 /**
  * SSH authentication agent for PuTTY
- *
- * @version $Id$
  */
 public class PageantAuthenticator extends AgentAuthenticator {
     private static final Logger log = Logger.getLogger(PageantAuthenticator.class);

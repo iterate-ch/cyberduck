@@ -27,9 +27,6 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
@@ -54,7 +51,7 @@ public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
             }
         }
         catch(BackgroundException e) {
-            throw new IOException(e);
+            throw new IOException(e.getDetail(), e);
         }
     }
 }

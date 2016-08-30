@@ -44,9 +44,6 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
-/**
- * @version $Id$
- */
 public class AzureUrlProvider implements UrlProvider {
 
     private PathContainerService containerService

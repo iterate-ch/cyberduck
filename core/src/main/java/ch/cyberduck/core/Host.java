@@ -25,11 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class Host implements Serializable, Comparable<Host> {
 
     /**
@@ -132,6 +128,11 @@ public class Host implements Serializable, Comparable<Host> {
      * Mount target
      */
     private Local volume;
+
+    /**
+     * Connect with readonly mode
+     */
+    private Boolean readonly;
 
     /**
      * @param protocol Scheme
@@ -293,6 +294,9 @@ public class Host implements Serializable, Comparable<Host> {
         if(null != volume) {
             dict.setStringForKey(String.valueOf(volume.getAbbreviatedPath()), "Volume");
         }
+        if(null != readonly) {
+            dict.setStringForKey(String.valueOf(readonly), "Readonly");
+        }
         return dict.getSerialized();
     }
 
@@ -385,7 +389,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     public String getUuid() {
         if(null == uuid) {
-            uuid = UUID.randomUUID().toString();
+            uuid = new UUIDRandomStringService().random();
         }
         return uuid;
     }
@@ -619,6 +623,14 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setVolume(final Local volume) {
         this.volume = volume;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(final Boolean readonly) {
+        this.readonly = readonly;
     }
 
     @Override

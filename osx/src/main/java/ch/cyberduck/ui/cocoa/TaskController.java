@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
@@ -31,9 +32,6 @@ import ch.cyberduck.core.threading.BackgroundActionListener;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
-/**
- * @version $Id$
- */
 public class TaskController extends BundleController {
 
     private BackgroundAction task;

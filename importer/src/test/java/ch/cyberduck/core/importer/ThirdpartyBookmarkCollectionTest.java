@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,7 +24,7 @@ public class ThirdpartyBookmarkCollectionTest {
     public void testLoad() throws Exception {
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(source);
-        IOUtils.write(RandomStringUtils.random(1000), source.getOutputStream(false));
+        IOUtils.write(RandomStringUtils.random(1000), source.getOutputStream(false), Charset.defaultCharset());
         final AtomicBoolean r = new AtomicBoolean();
         final ThirdpartyBookmarkCollection c = new ThirdpartyBookmarkCollection() {
             @Override

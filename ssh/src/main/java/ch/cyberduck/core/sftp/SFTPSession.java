@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
@@ -57,6 +58,7 @@ import java.security.PublicKey;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.schmizz.concurrent.Promise;
@@ -80,9 +82,6 @@ import net.schmizz.sshj.transport.compression.ZlibCompression;
 import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
-/**
- * @version $Id$
- */
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
@@ -140,7 +139,7 @@ public class SFTPSession extends Session<SSHClient> {
                         new NoneCompression.Factory()));
             }
             else {
-                configuration.setCompressionFactories(new NoneCompression.Factory());
+                configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
             }
             configuration.setVersion(new PreferencesUseragentProvider().get());
             final KeepAliveProvider heartbeat;
@@ -301,7 +300,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         final String banner = client.getUserAuth().getBanner();
         if(StringUtils.isNotBlank(banner)) {
-            this.log(false, banner);
+            this.log(Type.response, banner);
         }
         // Check if authentication is partial
         if(!client.isAuthenticated()) {
@@ -328,7 +327,7 @@ public class SFTPSession extends Session<SSHClient> {
             sftp = new SFTPEngine(client, String.valueOf(Path.DELIMITER)) {
                 @Override
                 public Promise<Response, SFTPException> request(final Request req) throws IOException {
-                    log(true, String.format("%d %s", req.getRequestID(), req.getType()));
+                    log(Type.request, String.format("%d %s", req.getRequestID(), req.getType()));
                     return super.request(req);
                 }
             }.init();
@@ -357,6 +356,9 @@ public class SFTPSession extends Session<SSHClient> {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
@@ -376,6 +378,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Attributes.class) {
             return (T) new SFTPAttributesFeature(this);
@@ -418,6 +421,9 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(type == Home.class) {
             return (T) new SFTPHomeDirectoryService(this);
+        }
+        if(type == Quota.class) {
+            return (T) new SFTPQuotaFeature(this);
         }
         return super.getFeature(type);
     }

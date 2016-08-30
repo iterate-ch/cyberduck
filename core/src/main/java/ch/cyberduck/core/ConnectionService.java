@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface ConnectionService {
 
     /**
@@ -43,5 +40,8 @@ public interface ConnectionService {
     void connect(Session session, Cache<Path> cache)
             throws BackgroundException;
 
+    /**
+     * Cancel blocking connect operation if any
+     */
     void cancel();
 }

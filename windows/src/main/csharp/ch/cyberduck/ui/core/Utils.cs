@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2015 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,62 +13,97 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
+using System;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Core
 {
     public class Utils
     {
-        public static DialogResult CommandBox(IWin32Window owner, string title, string mainInstruction, string content,
-            string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton,
-            SysIcons mainIcon, SysIcons footerIcon, DialogResponseHandler handler)
+        public static TaskDialogResult CommandBox(IWin32Window owner, string title, string mainInstruction,
+            string content, string expandedInfo, string help, string verificationText, string commandButtons,
+            bool showCancelButton, TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
-            DialogResult result = dialog.ShowCommandBox(owner, title, mainInstruction, content, expandedInfo,
-                FormatHelp(help), verificationText, commandButtons, showCancelButton, mainIcon, footerIcon);
-            handler(dialog.CommandButtonResult, dialog.VerificationChecked);
+            TaskDialogResult result = TaskDialog.Show(
+                owner: owner?.Handle ?? IntPtr.Zero,
+                title: title,
+                mainInstruction: mainInstruction,
+                content: content,
+                footerText: FormatHelp(help),
+                expandedInfo: expandedInfo,
+                verificationText: verificationText,
+                commandLinks: commandButtons.Split(new char[] {'|'}),
+                commonButtons: showCancelButton ? TaskDialogCommonButtons.Cancel : TaskDialogCommonButtons.None,
+                mainIcon: mainIcon,
+                footerIcon: footerIcon,
+                callback: (dialog, args, callbackData) =>
+                {
+                    switch (args.Notification)
+                    {
+                        case TaskDialogNotification.HyperlinkClicked:
+                            BrowserLauncherFactory.get().open(args.Hyperlink);
+                            return true;
+                    }
+                    return false;
+                });
+            handler(result.CommandButtonResult ?? -1, result.VerificationChecked ?? false);
             return result;
         }
 
-        public static DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-            string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
-            SysIcons footerIcon, DialogResponseHandler handler)
+        public static TaskDialogResult CommandBox(string title, string mainInstruction, string content,
+            string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton,
+            TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
             return CommandBox(null, title, mainInstruction, content, expandedInfo, help, verificationText,
                 commandButtons, showCancelButton, mainIcon, footerIcon, handler);
         }
 
-        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-            bool showCancelButton, string verificationText, SysIcons mainIcon, DialogResponseHandler handler)
+        public static TaskDialogResult CommandBox(string title, string message, string detail, string commandButtons,
+            bool showCancelButton, string verificationText, TaskDialogIcon mainIcon, DialogResponseHandler handler)
         {
             return CommandBox(title, message, detail, commandButtons, showCancelButton, verificationText, mainIcon, null,
                 handler);
         }
 
-        public static DialogResult CommandBox(string title, string message, string detail, string commandButtons,
-            bool showCancelButton, string verificationText, SysIcons mainIcon, string help,
+        public static TaskDialogResult CommandBox(string title, string message, string detail, string commandButtons,
+            bool showCancelButton, string verificationText, TaskDialogIcon mainIcon, string help,
             DialogResponseHandler handler)
         {
             return CommandBox(title, message, detail, null, help, verificationText, commandButtons, showCancelButton,
-                mainIcon, SysIcons.Information, handler);
+                mainIcon, TaskDialogIcon.Information, handler);
         }
 
-        public static DialogResult MessageBox(IWin32Window owner, string title, string message, string content,
+        public static TaskDialogResult MessageBox(IWin32Window owner, string title, string message, string content,
             string expandedInfo, string help, string verificationText, DialogResponseHandler handler)
         {
-            TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { BrowserLauncherFactory.get().open(url); };
-            DialogResult result = dialog.MessageBox(owner, title, message, content, expandedInfo, FormatHelp(help),
-                verificationText, TaskDialogButtons.OK, SysIcons.Information, SysIcons.Information);
-            handler(-1, dialog.VerificationChecked);
+            TaskDialogResult result = TaskDialog.Show(
+                owner: owner?.Handle ?? IntPtr.Zero,
+                title: title,
+                mainInstruction: message,
+                content: content,
+                footerText: FormatHelp(help),
+                expandedInfo: expandedInfo,
+                verificationText: verificationText,
+                commonButtons: TaskDialogCommonButtons.OK,
+                mainIcon: TaskDialogIcon.Information,
+                callback: (dialog, args, callbackData) =>
+                {
+                    switch (args.Notification)
+                    {
+                        case TaskDialogNotification.HyperlinkClicked:
+                            BrowserLauncherFactory.get().open(args.Hyperlink);
+                            return true;
+                    }
+                    return false;
+                });
+            handler(result.CommandButtonResult ?? -1, result.VerificationChecked ?? false);
             return result;
         }
 

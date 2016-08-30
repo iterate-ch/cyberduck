@@ -30,9 +30,6 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVMoveFeature implements Move {
 
     private DAVSession session;

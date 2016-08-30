@@ -38,9 +38,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * @version $Id$
- */
 public final class TransferQueue {
     private static final Logger log = Logger.getLogger(TransferQueue.class);
 
@@ -49,7 +46,7 @@ public final class TransferQueue {
 
     private BlockingQueue<Transfer> running;
 
-    private final NotificationService growl
+    private final NotificationService notification
             = NotificationServiceFactory.get();
 
     private final List<Transfer> temporary
@@ -81,7 +78,7 @@ public final class TransferQueue {
                 log.info(String.format("Queuing transfer %s", t));
             }
             listener.message(LocaleFactory.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
-            growl.notify("Transfer queued", t.getHost().getHostname());
+            notification.notify("Transfer queued", t.getName());
         }
         // The maximum number of transfers is already reached. Wait for transfer slot.
         try {

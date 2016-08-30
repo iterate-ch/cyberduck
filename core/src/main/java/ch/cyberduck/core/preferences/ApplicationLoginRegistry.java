@@ -19,9 +19,6 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.local.Application;
 
-/**
- * @version $Id$
- */
 public interface ApplicationLoginRegistry {
 
     /**

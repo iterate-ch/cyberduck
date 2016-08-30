@@ -33,9 +33,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 

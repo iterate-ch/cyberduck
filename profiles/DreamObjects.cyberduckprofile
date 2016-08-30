@@ -9,7 +9,7 @@
 	<key>Description</key>
 	<string>DreamObjects Cloud Storage (S3)</string>
 	<key>Default Hostname</key>
-	<string>objects.dreamhost.com</string>
+    <string>objects-us-west-1.dream.io</string>
 	<key>Default Port</key>
 	<string>443</string>
 	<key>Username Placeholder</key>

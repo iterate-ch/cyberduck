@@ -19,9 +19,6 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface License {
 
     /**

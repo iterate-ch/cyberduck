@@ -62,13 +62,12 @@ public class B2ObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> objects = new AttributedList<Path>();
-            String nextFileid = null;
-            String nextFilename;
+            Marker marker;
             if(containerService.isContainer(directory)) {
-                nextFilename = null;
+                marker = new Marker(null, null);
             }
             else {
-                nextFilename = String.format("%s%s", containerService.getKey(directory), Path.DELIMITER);
+                marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
@@ -77,13 +76,11 @@ public class B2ObjectListService implements ListService {
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
-                        nextFilename, nextFileid, chunksize);
-                this.parse(directory, objects, response, revisions);
-                nextFilename = response.getNextFileName();
-                nextFileid = response.getNextFileId();
+                        marker.nextFilename, marker.nextFileId, chunksize);
+                marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
-            while(nextFileid != null);
+            while(marker.hasNext());
             return objects;
         }
         catch(B2ApiException e) {
@@ -94,13 +91,15 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected AttributedList<Path> parse(final Path directory, final AttributedList<Path> objects,
-                                         final B2ListFilesResponse response, final Map<String, Integer> revisions) {
+    protected Marker parse(final Path directory, final AttributedList<Path> objects,
+                           final B2ListFilesResponse response, final Map<String, Integer> revisions) {
         for(B2FileInfoResponse file : response.getFiles()) {
             final PathAttributes attributes = this.parse(directory, file, revisions);
             if(attributes == null) {
+                // File is descendant but not directly from working directory
                 final Path virtual = this.virtual(directory, file.getFileName());
                 if(virtual.isChild(directory)) {
+                    // Found same root
                     if(revisions.containsKey(containerService.getKey(virtual))) {
                         continue;
                     }
@@ -120,13 +119,30 @@ public class B2ObjectListService implements ListService {
                 objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
             }
         }
-        return objects;
+        if(null == response.getNextFileName()) {
+            return new Marker(response.getNextFileName(), response.getNextFileId());
+        }
+        if(this.skip(PathNormalizer.parent(response.getNextFileName(), Path.DELIMITER), directory)) {
+            // Because the list of files is sorted in ASCII table order. The character after ‘/‘ in the ASCII table is ‘0’
+            log.warn(String.format("Advance marker to %s", String.format("%s0", response.getNextFileName())));
+            return new Marker(String.format("%s0", response.getNextFileName()), null);
+        }
+        return new Marker(response.getNextFileName(), response.getNextFileId());
     }
 
+    protected boolean skip(final String filename, final Path directory) {
+        return !StringUtils.equals(StringUtils.removeEnd(filename, PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)),
+                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory));
+    }
+
+    /**
+     * @param directory Working directory
+     * @param response  List filenames response from server
+     * @param revisions Counter for equal filenames
+     * @return Null when respone filename is not child of working directory directory
+     */
     protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
-        if(!StringUtils.equals(PathNormalizer.parent(
-                StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER),
-                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+        if(this.skip(PathNormalizer.parent(StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER), directory)) {
             log.warn(String.format("Skip file %s", response));
             return null;
         }
@@ -140,6 +156,7 @@ public class B2ObjectListService implements ListService {
             case hide:
             case start:
                 attributes.setDuplicate(true);
+                attributes.setSize(-1L);
                 break;
         }
         final Integer revision;
@@ -156,12 +173,18 @@ public class B2ObjectListService implements ListService {
         return attributes;
     }
 
+    /**
+     * Find placeholder name that is child of current working directory for the filename passed.
+     *
+     * @param directory Working directory
+     * @param filename  Filename
+     * @return Placeholder directory name
+     */
     protected Path virtual(final Path directory, final String filename) {
         // Look for same parent directory
         String name = null;
         String parent = StringUtils.removeEnd(filename, B2DirectoryFeature.PLACEHOLDER);
-        while(!StringUtils.equals(parent, containerService.isContainer(directory) ?
-                String.valueOf(Path.DELIMITER) : containerService.getKey(directory))) {
+        while(this.skip(parent, directory)) {
             name = PathNormalizer.name(parent);
             parent = PathNormalizer.parent(parent, Path.DELIMITER);
             if(null == parent) {
@@ -172,5 +195,19 @@ public class B2ObjectListService implements ListService {
             return directory;
         }
         return new Path(directory, name, EnumSet.of(Path.Type.directory));
+    }
+
+    private static final class Marker {
+        public String nextFilename;
+        public String nextFileId;
+
+        public Marker(final String nextFilename, final String nextFileId) {
+            this.nextFilename = nextFilename;
+            this.nextFileId = nextFileId;
+        }
+
+        public boolean hasNext() {
+            return nextFilename != null;
+        }
     }
 }

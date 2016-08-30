@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
@@ -33,9 +34,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractTableDelegate<E> extends ProxyController implements TableDelegate<E> {
 
     private NSTableColumn selectedColumn;

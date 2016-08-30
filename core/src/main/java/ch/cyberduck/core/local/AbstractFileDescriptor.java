@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractFileDescriptor implements FileDescriptor {
 
     @Override

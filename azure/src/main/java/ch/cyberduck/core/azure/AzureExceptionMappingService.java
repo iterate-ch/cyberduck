@@ -29,9 +29,6 @@ import java.net.UnknownHostException;
 
 import com.microsoft.azure.storage.StorageException;
 
-/**
- * @version $Id$
- */
 public class AzureExceptionMappingService extends AbstractExceptionMappingService<StorageException> {
 
     @Override

@@ -38,14 +38,11 @@ import java.net.SocketTimeoutException;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class SessionBackgroundActionTest {
 
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
-        SessionBackgroundAction a = new SessionBackgroundAction(null, PathCache.empty(), new DisabledAlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(null, PathCache.empty(), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -53,7 +50,7 @@ public class SessionBackgroundActionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
+            public void log(final Type request, final String message) {
                 //
             }
         }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
@@ -65,7 +62,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw new ConnectionCanceledException();
             }
         };
@@ -78,13 +75,13 @@ public class SessionBackgroundActionTest {
         }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(new BackgroundException()));
     }
 
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -97,7 +94,7 @@ public class SessionBackgroundActionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
+            public void log(final Type request, final String message) {
                 //
             }
         }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
@@ -109,7 +106,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
@@ -122,13 +119,13 @@ public class SessionBackgroundActionTest {
         }
         assertTrue(a.hasFailed());
         assertNotNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 
     @Test
     public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -141,7 +138,7 @@ public class SessionBackgroundActionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
+            public void log(final Type request, final String message) {
                 //
             }
         }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
@@ -153,7 +150,7 @@ public class SessionBackgroundActionTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
@@ -166,13 +163,13 @@ public class SessionBackgroundActionTest {
         }
         assertFalse(a.hasFailed());
         assertNull(a.getException());
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 
     @Test
     public void testRetrySocket() throws Exception {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
-        SessionBackgroundAction a = new SessionBackgroundAction(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -185,16 +182,16 @@ public class SessionBackgroundActionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
+            public void log(final Type request, final String message) {
                 //
             }
         }, new DisabledLoginCallback(), new DisabledHostKeyCallback()
         ) {
             @Override
-            public Object run() throws BackgroundException {
+            public Void run() throws BackgroundException {
                 throw failure;
             }
         };
-        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry());
+        assertEquals(PreferencesFactory.get().getInteger("connection.retry"), a.retry(failure));
     }
 }

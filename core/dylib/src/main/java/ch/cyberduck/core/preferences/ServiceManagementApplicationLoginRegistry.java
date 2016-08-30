@@ -25,9 +25,6 @@ import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class ServiceManagementApplicationLoginRegistry implements ApplicationLoginRegistry {
     private static Logger log = Logger.getLogger(ServiceManagementApplicationLoginRegistry.class);
 

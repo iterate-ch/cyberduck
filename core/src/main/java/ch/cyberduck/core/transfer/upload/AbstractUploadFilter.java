@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -31,13 +32,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.Preferences;
@@ -53,11 +57,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
@@ -159,83 +159,90 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), UUID.randomUUID().toString()), file.getType());
+                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 // File attributes should not change after calculate the hash code of the file reference
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Clear exist flag for file %s", file));
+                }
                 status.rename(renamed);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
+        if(local.isDirectory()) {
+            status.setLength(0L);
+        }
         if(options.permissions) {
-            final Permission permission;
-            if(status.isExists()) {
-                permission = status.getRemote().getPermission();
-            }
-            else {
-                if(preferences.getBoolean("queue.upload.permissions.default")) {
-                    if(local.isFile()) {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.file.default"));
-                    }
-                    else {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.folder.default"));
-                    }
+            final UnixPermission feature = session.getFeature(UnixPermission.class);
+            if(feature != null) {
+                if(status.isExists()) {
+                    // Already set when reading attributes of file
+                    status.setPermission(status.getRemote().getPermission());
                 }
                 else {
-                    // Read permissions from local file
-                    permission = local.attributes().getPermission();
+                    status.setPermission(feature.getDefault(local));
                 }
             }
-            // Setting target UNIX permissions in transfer status
-            status.setPermission(permission);
+            else {
+                // Setting target UNIX permissions in transfer status
+                status.setPermission(Permission.EMPTY);
+            }
         }
         if(options.acl) {
-            Acl acl = Acl.EMPTY;
-            if(status.isExists()) {
-                final AclPermission feature = session.getFeature(AclPermission.class);
-                if(feature != null) {
-                    acl = feature.getPermission(file);
-                }
-            }
-            else {
-                final Permission permission;
-                if(preferences.getBoolean("queue.upload.permissions.default")) {
-                    if(local.isFile()) {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.file.default"));
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(feature != null) {
+                if(status.isExists()) {
+                    try {
+                        status.setAcl(feature.getPermission(file));
                     }
-                    else {
-                        permission = new Permission(
-                                preferences.getInteger("queue.upload.permissions.folder.default"));
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        status.setAcl(feature.getDefault(local));
                     }
                 }
                 else {
-                    // Read permissions from local file
-                    permission = local.attributes().getPermission();
-                }
-                acl = new Acl();
-                if(permission.getOther().implies(Permission.Action.read)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));
-                }
-                if(permission.getGroup().implies(Permission.Action.read)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.READ));
-                }
-                if(permission.getGroup().implies(Permission.Action.write)) {
-                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.AUTHENTICATED), new Acl.Role(Acl.Role.WRITE));
+                    status.setAcl(feature.getDefault(local));
                 }
             }
-            // Setting target ACL in transfer status
-            status.setAcl(acl);
+            else {
+                // Setting target ACL in transfer status
+                status.setAcl(Acl.EMPTY);
+            }
         }
         if(options.timestamp) {
-            // Read timestamps from local file
-            status.setTimestamp(local.attributes().getModificationDate());
+            final Timestamp feature = session.getFeature(Timestamp.class);
+            if(feature != null) {
+                // Read timestamps from local file
+                status.setTimestamp(feature.getDefault(local));
+            }
         }
         if(options.metadata) {
-            if(status.isExists()) {
-                final Headers feature = session.getFeature(Headers.class);
+            final Headers feature = session.getFeature(Headers.class);
+            if(feature != null) {
+                if(status.isExists()) {
+                    try {
+                        status.setMetadata(feature.getMetadata(file));
+                    }
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        status.setMetadata(feature.getDefault(local));
+                    }
+                }
+                else {
+                    status.setMetadata(feature.getDefault(local));
+                }
+            }
+        }
+        if(options.encryption) {
+            if(local.isFile()) {
+                final Encryption feature = session.getFeature(Encryption.class);
                 if(feature != null) {
-                    status.setMetadata(feature.getMetadata(file));
+                    status.setEncryption(feature.getDefault(file));
+                }
+            }
+        }
+        if(options.redundancy) {
+            if(local.isFile()) {
+                final Redundancy feature = session.getFeature(Redundancy.class);
+                if(feature != null) {
+                    status.setStorageClass(feature.getDefault());
                 }
             }
         }
@@ -259,12 +266,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(status.getRename().remote, file, status.isExists(), new Delete.Callback() {
-                        @Override
-                        public void delete(final Path file) {
-                            //
-                        }
-                    });
+                    move.move(status.getRename().remote, file, status.isExists(), new Delete.DisabledCallback());
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

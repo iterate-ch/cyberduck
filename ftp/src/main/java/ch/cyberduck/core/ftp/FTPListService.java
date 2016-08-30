@@ -49,9 +49,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class FTPListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);
 

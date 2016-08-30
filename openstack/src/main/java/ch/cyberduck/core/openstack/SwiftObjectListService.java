@@ -43,9 +43,6 @@ import java.util.List;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-/**
- * @version $Id$
- */
 public class SwiftObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
 

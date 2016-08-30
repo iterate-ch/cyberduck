@@ -20,9 +20,6 @@ package ch.cyberduck.core.bonjour;
 
 import ch.cyberduck.core.Host;
 
-/**
- * @version $Id$
- */
 public interface RendezvousListener {
 
     /**

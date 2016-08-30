@@ -31,9 +31,6 @@ import ch.cyberduck.core.features.AclPermission;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class WriteAclWorker extends Worker<Boolean> {
 
     /**
@@ -49,16 +46,22 @@ public class WriteAclWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback<Acl> callback;
 
     private ProgressListener listener;
 
     public WriteAclWorker(final List<Path> files,
                           final Acl acl, final boolean recursive,
                           final ProgressListener listener) {
+        this(files, acl, new BooleanRecursiveCallback<Acl>(recursive), listener);
+    }
+
+    public WriteAclWorker(final List<Path> files,
+                          final Acl acl, final RecursiveCallback<Acl> callback,
+                          final ProgressListener listener) {
         this.files = files;
         this.acl = acl;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -78,12 +81,11 @@ public class WriteAclWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), acl));
         feature.setPermission(file, acl);
-        file.attributes().setAcl(acl);
-        if(recursive) {
-            if(file.isVolume()) {
-                // No recursion when changing container ACL
-            }
-            else if(file.isDirectory()) {
+        if(file.isVolume()) {
+            // No recursion when changing container ACL
+        }
+        else if(file.isDirectory()) {
+            if(callback.recurse(file, acl)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

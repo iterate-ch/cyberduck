@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class CachingComparisonServiceFilter implements ComparePathFilter {
     private static final Logger log = Logger.getLogger(CachingComparisonServiceFilter.class);
 

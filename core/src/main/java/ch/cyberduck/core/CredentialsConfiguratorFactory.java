@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 
-/**
- * @version $Id$
- */
 public final class CredentialsConfiguratorFactory {
 
     private CredentialsConfiguratorFactory() {

@@ -20,9 +20,6 @@ package ch.cyberduck.cli;
 
 import org.apache.commons.cli.CommandLine;
 
-/**
- * @version $Id$
- */
 public final class TerminalActionFinder {
 
     private TerminalActionFinder() {

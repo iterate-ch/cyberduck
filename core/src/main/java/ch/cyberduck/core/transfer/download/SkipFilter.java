@@ -26,9 +26,6 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class SkipFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(SkipFilter.class);
 

@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
@@ -44,9 +46,6 @@ import ch.cyberduck.core.threading.WindowMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
 
     @Outlet
@@ -145,7 +144,7 @@ public class CommandController extends SheetController implements TranscriptList
     }
 
     @Override
-    public void log(boolean request, final String message) {
+    public void log(final Type request, final String message) {
         invoke(new WindowMainAction(this) {
             @Override
             public void run() {

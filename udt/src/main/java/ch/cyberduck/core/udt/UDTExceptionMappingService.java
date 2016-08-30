@@ -27,9 +27,6 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 
 import com.barchart.udt.ExceptionUDT;
 
-/**
- * @version $Id$
- */
 public class UDTExceptionMappingService extends AbstractExceptionMappingService<ExceptionUDT> {
 
     @Override

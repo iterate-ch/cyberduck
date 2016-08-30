@@ -20,16 +20,12 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class WorkspaceTrashFeature implements Trash {
     private static final Logger log = Logger.getLogger(WorkspaceTrashFeature.class);
 
@@ -37,7 +33,7 @@ public class WorkspaceTrashFeature implements Trash {
      * Move file to trash on main interface thread using <code>NSWorkspace.RecycleOperation</code>.
      */
     @Override
-    public void trash(final Local file) throws AccessDeniedException {
+    public void trash(final Local file) throws LocalAccessDeniedException {
         if(file.exists()) {
             synchronized(NSWorkspace.class) {
                 if(log.isDebugEnabled()) {

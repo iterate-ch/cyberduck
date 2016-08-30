@@ -17,9 +17,6 @@ package ch.cyberduck.ui.browser;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
-* @version $Id$
-*/
 public enum Column {
     icon,
     filename,

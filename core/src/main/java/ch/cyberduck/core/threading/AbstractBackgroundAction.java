@@ -29,9 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 

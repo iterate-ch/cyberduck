@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-/**
- * @version $Id:$
- */
 public interface SidebarService {
 
     void add(Local file) throws LocalAccessDeniedException;
@@ -32,6 +29,7 @@ public interface SidebarService {
     enum List {
         volume,
         server,
-        favorite
+        favorite,
+        login
     }
 }

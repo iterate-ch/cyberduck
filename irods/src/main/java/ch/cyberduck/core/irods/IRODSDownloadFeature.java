@@ -41,9 +41,6 @@ import org.irods.jargon.core.transfer.TransferControlBlock;
 
 import java.io.File;
 
-/**
- * @version $Id$
- */
 public class IRODSDownloadFeature implements Download {
 
     private IRODSSession session;

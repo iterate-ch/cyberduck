@@ -21,54 +21,70 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
 public class S3DirectoryFeature implements Directory {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3WriteFeature write;
+    private final S3WriteFeature write;
 
     public S3DirectoryFeature(final S3Session session) {
         this.session = session;
         this.write = new S3WriteFeature(session);
     }
 
-    @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+    public S3DirectoryFeature(final S3Session session, final S3WriteFeature write) {
+        this.session = session;
+        this.write = write;
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
-        try {
-            if(containerService.isContainer(file)) {
-                final S3BucketCreateService service = new S3BucketCreateService(session);
-                if(StringUtils.isBlank(region)) {
-                    service.create(file, PreferencesFactory.get().getProperty("s3.location"));
+    public void mkdir(final Path file) throws BackgroundException {
+        this.mkdir(file, null, null);
+    }
+
+    @Override
+    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+        if(containerService.isContainer(file)) {
+            final S3BucketCreateService service = new S3BucketCreateService(session);
+            service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
+        }
+        else {
+            if(null == status) {
+                status = new TransferStatus();
+                final Encryption encryption = session.getFeature(Encryption.class);
+                if(encryption != null) {
+                    status.setEncryption(encryption.getDefault(file));
                 }
-                else {
-                    service.create(file, region);
+                final Redundancy redundancy = session.getFeature(Redundancy.class);
+                if(redundancy != null) {
+                    status.setStorageClass(redundancy.getDefault());
                 }
             }
-            else {
-                // Add placeholder object
-                final TransferStatus status = new TransferStatus();
-                status.setMime("application/x-directory");
-                final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new NullInputStream(0L)));
+            // Add placeholder object
+            status.setMime("application/x-directory");
+            final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+            try {
                 session.getClient().putObject(containerService.getContainer(file).getName(), key);
             }
-        }
-        catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, file);
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, file);
+            }
         }
     }
 }

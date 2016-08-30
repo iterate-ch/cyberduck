@@ -23,9 +23,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3FindFeatureTest {
 
@@ -38,7 +35,7 @@ public class S3FindFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3FindFeature f = new S3FindFeature(session);
         assertFalse(f.find(test));
@@ -65,7 +62,7 @@ public class S3FindFeatureTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session).find(container));
         session.close();
     }
@@ -117,7 +114,7 @@ public class S3FindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
         final PathCache cache = new PathCache(1);
-        final Path f = new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(Path.Type.file), attributes);
+        final Path f = new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(Path.Type.file), attributes);
         assertTrue(new S3FindFeature(session).withCache(cache).find(f));
         assertTrue(cache.get(f.getParent()).contains(f));
         attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");

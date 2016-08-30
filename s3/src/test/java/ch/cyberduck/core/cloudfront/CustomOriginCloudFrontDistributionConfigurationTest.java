@@ -26,9 +26,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- * @version $Id$
- */
 @Ignore
 @Category(IntegrationTest.class)
 public class CustomOriginCloudFrontDistributionConfigurationTest {
@@ -110,7 +107,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
     @Test
     public void testRead() throws Exception {
         final Host origin = new Host(new TestProtocol(), "myhost.localdomain");
-        origin.setWebURL("http://test.cyberduck.ch");
+        origin.setWebURL("http://test-us-east-1-cyberduck");
         origin.setDefaultPath("public_html");
         origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
         origin.getCdnCredentials().setPassword(System.getProperties().getProperty("s3.secret"));
@@ -123,13 +120,13 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Distribution distribution = configuration.read(new Path("/public_html", EnumSet.of(Path.Type.directory)), Distribution.CUSTOM, new DisabledLoginCallback());
         assertEquals("E230LC0UG2YLKV", distribution.getId());
-        assertEquals("http://test.cyberduck.ch/public_html", distribution.getOrigin().toString());
-        assertEquals("http://test.cyberduck.ch/f", configuration.toUrl(new Path("/public_html/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.origin).getUrl());
+        assertEquals("http://test-us-east-1-cyberduck/public_html", distribution.getOrigin().toString());
+        assertEquals("http://test-us-east-1-cyberduck/f", configuration.toUrl(new Path("/public_html/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.origin).getUrl());
         assertEquals(Distribution.CUSTOM, distribution.getMethod());
         assertEquals("http://d1f6cbdjcbzyiu.cloudfront.net", distribution.getUrl().toString());
         assertEquals(null, distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
-        assertEquals("log.test.cyberduck.ch", distribution.getLoggingContainer());
+        assertEquals("log.test-us-east-1-cyberduck", distribution.getLoggingContainer());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -138,7 +135,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final CustomOriginCloudFrontDistributionConfiguration configuration
                 = new CustomOriginCloudFrontDistributionConfiguration(bookmark, new DefaultX509TrustManager(), new DefaultX509KeyManager(),
                 new DisabledTranscriptListener());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
 }

@@ -96,6 +96,7 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_NOT_IMPLEMENTED:
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
+            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new ConnectionRefusedException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {

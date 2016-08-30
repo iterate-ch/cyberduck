@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.features.Symlink;
 
-/**
- * @version $Id$
- */
 public class LocalSymlinkFactory extends Factory<Symlink> {
 
     public LocalSymlinkFactory() {

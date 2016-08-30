@@ -40,6 +40,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
@@ -67,7 +68,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
@@ -146,8 +146,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 return super.getRedirect(request, response, context);
             }
 
-            private HttpUriRequest copyEntity(
-                    final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
+            private HttpUriRequest copyEntity(final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
                 if(original instanceof HttpEntityEnclosingRequest) {
                     redirect.setEntity(((HttpEntityEnclosingRequest) original).getEntity());
                 }
@@ -165,6 +164,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
+        finally {
+            super.logout();
+        }
     }
 
     @Override
@@ -176,7 +178,9 @@ public class DAVSession extends HttpSession<DAVClient> {
                 preferences.getProperty("webdav.ntlm.domain"));
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
-            client.enablePreemptiveAuthentication(this.getHost().getHostname());
+            client.enablePreemptiveAuthentication(host.getHostname(),
+                    host.getPort(),
+                    host.getPort());
         }
         else {
             client.disablePreemptiveAuthentication();
@@ -238,7 +242,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
                     @Override
-                    public Header handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                    public Header handleResponse(final HttpResponse response) throws IOException {
                         if(response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_PERMANENTLY) {
                             return response.getFirstHeader(HttpHeaders.LOCATION);
                         }
@@ -288,6 +292,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
@@ -318,6 +323,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Timestamp.class) {
             return (T) new DAVTimestampFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new DAVQuotaFeature(this);
         }
         return super.getFeature(type);
     }

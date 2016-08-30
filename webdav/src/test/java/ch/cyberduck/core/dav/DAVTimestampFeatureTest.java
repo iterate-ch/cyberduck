@@ -53,11 +53,7 @@ public class DAVTimestampFeatureTest {
         session.getFeature(Touch.class).touch(file);
         new DAVTimestampFeature(session).setTimestamp(file, 500L);
         // assertEquals(500L, new DAVAttributesFeature(session).find(file).getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -76,11 +72,7 @@ public class DAVTimestampFeatureTest {
         final long millis = LocalDateTime.of(2015, 1, 1, 1, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
         new DAVTimestampFeature(session).setTimestamp(file, millis);
         assertEquals(millis, new DAVAttributesFeature(session).find(file).getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

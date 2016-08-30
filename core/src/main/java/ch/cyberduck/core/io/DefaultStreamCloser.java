@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class DefaultStreamCloser implements StreamCloser {
 
     @Override
@@ -39,6 +36,9 @@ public class DefaultStreamCloser implements StreamCloser {
             in.close();
         }
         catch(IOException e) {
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
@@ -49,9 +49,13 @@ public class DefaultStreamCloser implements StreamCloser {
             return;
         }
         try {
+            out.flush();
             out.close();
         }
         catch(IOException e) {
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }

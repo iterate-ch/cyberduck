@@ -5,14 +5,12 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- * @version $Id$
- */
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class ResolverTest {
 
     @Test

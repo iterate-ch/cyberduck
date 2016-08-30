@@ -21,9 +21,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public enum FTPConnectMode {
     unknown {
         @Override

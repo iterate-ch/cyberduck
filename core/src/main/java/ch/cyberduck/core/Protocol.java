@@ -90,7 +90,6 @@ public interface Protocol extends Comparable<Protocol> {
             }
         },
         irods,
-        spectra,
         b2;
 
         /**
@@ -217,6 +216,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Authentication context path
      */
     String getContext();
+
+    /**
+     * @return Authentication header version
+     */
+    String getAuthorization();
 
     /**
      * @return Available regions

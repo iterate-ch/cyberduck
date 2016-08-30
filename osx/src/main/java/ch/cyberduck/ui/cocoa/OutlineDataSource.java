@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;
 import ch.cyberduck.binding.application.NSImage;
@@ -33,9 +34,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class OutlineDataSource extends ProxyController implements NSOutlineView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(OutlineDataSource.class);
 

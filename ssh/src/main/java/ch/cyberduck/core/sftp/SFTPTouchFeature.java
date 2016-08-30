@@ -18,21 +18,15 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
-import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-/**
- * @version $Id$
- */
 public class SFTPTouchFeature implements Touch {
 
     private SFTPSession session;
@@ -45,11 +39,7 @@ public class SFTPTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         if(file.isFile()) {
             try {
-                final Permission permission = new Permission(PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
-                final FileAttributes attr = new FileAttributes.Builder()
-                        .withPermissions(Integer.parseInt(permission.getMode(), 8))
-                        .build();
-                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC), attr);
+                final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC));
                 handle.close();
             }
             catch(IOException e) {

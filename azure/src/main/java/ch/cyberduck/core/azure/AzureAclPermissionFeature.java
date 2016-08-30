@@ -24,12 +24,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.jets3t.service.acl.Permission;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.microsoft.azure.storage.OperationContext;
@@ -51,10 +52,8 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
  * container data is not available. Clients cannot enumerate blobs within the container via anonymous request.
  * <p/>
  * No public read access: Container and blob data can be read by the account owner only.
- *
- * @version $Id$
  */
-public class AzureAclPermissionFeature implements AclPermission {
+public class AzureAclPermissionFeature extends DefaultAclFeature implements AclPermission {
 
     private AzureSession session;
 
@@ -70,13 +69,13 @@ public class AzureAclPermissionFeature implements AclPermission {
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(
+        return Collections.singletonList(
                 new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Arrays.asList(
+        return new ArrayList<Acl.User>(Collections.singletonList(
                 new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }
@@ -84,15 +83,18 @@ public class AzureAclPermissionFeature implements AclPermission {
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
-            final CloudBlobContainer container = session.getClient()
-                    .getContainerReference(containerService.getContainer(file).getName());
-            final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
-            final Acl acl = new Acl();
-            if(permissions.getPublicAccess().equals(BlobContainerPublicAccessType.BLOB)
-                    || permissions.getPublicAccess().equals(BlobContainerPublicAccessType.CONTAINER)) {
-                acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ));
+            if(containerService.isContainer(file)) {
+                final CloudBlobContainer container = session.getClient()
+                        .getContainerReference(containerService.getContainer(file).getName());
+                final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
+                final Acl acl = new Acl();
+                if(permissions.getPublicAccess().equals(BlobContainerPublicAccessType.BLOB)
+                        || permissions.getPublicAccess().equals(BlobContainerPublicAccessType.CONTAINER)) {
+                    acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ));
+                }
+                return acl;
             }
-            return acl;
+            return Acl.EMPTY;
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
@@ -105,17 +107,19 @@ public class AzureAclPermissionFeature implements AclPermission {
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
-            final CloudBlobContainer container = session.getClient()
-                    .getContainerReference(containerService.getContainer(file).getName());
-            final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
-            for(Acl.UserAndRole userAndRole : acl.asList()) {
-                if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                    if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                        permissions.setPublicAccess(BlobContainerPublicAccessType.BLOB);
+            if(containerService.isContainer(file)) {
+                final CloudBlobContainer container = session.getClient()
+                        .getContainerReference(containerService.getContainer(file).getName());
+                final BlobContainerPermissions permissions = container.downloadPermissions(null, null, context);
+                for(Acl.UserAndRole userAndRole : acl.asList()) {
+                    if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                        if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                            permissions.setPublicAccess(BlobContainerPublicAccessType.BLOB);
+                        }
                     }
                 }
+                container.uploadPermissions(permissions, null, null, context);
             }
-            container.uploadPermissions(permissions, null, null, context);
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);

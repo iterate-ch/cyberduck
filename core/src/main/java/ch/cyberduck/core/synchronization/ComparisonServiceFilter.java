@@ -35,9 +35,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import java.text.MessageFormat;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Find finder;

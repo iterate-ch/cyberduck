@@ -24,9 +24,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.security.KeyStore;
 
-/**
- * @version $Id$
- */
 public class PreferencesX509KeyManager extends KeychainX509KeyManager {
 
     private Preferences preferences

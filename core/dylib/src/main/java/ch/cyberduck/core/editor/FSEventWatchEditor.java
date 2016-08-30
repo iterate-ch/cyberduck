@@ -33,8 +33,7 @@ import java.io.IOException;
 
 /**
  * An editor listing for file system notifications on a particular folder
- *
- * @version $Id$
+
  */
 public class FSEventWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);

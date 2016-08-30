@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Application = ch.cyberduck.core.local.Application;
@@ -57,8 +58,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
             googleDocsButton.Image = IconCache.Instance.IconForName("googledrive", 32);
 
-            connectBookmarkCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
-            defaultProtocolCombobox.ICImageList = IconCache.Instance.GetProtocolIcons();
+            connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
+            defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
 
             showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
 
@@ -1487,7 +1488,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     else
                     {
                         //dummy editor which leads to an empty selection
-                        DefaultEditor = new Application(null, null);
+                        DefaultEditor = Application.notfound;
                     }
                 }
             }

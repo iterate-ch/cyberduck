@@ -29,9 +29,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class UploadTransferItemFinder implements TransferItemFinder {
 
     @Override

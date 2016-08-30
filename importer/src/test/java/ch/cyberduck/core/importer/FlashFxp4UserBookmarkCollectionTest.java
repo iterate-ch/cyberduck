@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class FlashFxp4UserBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)

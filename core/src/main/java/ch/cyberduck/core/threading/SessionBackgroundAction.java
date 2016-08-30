@@ -40,9 +40,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T>
         implements ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
@@ -134,7 +131,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Append to the transcript and notify listeners.
      */
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.append(message).append(LINE_SEPARATOR);
         transcriptListener.log(request, message);
     }
@@ -155,9 +152,10 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * The number of times a new connection attempt should be made. Takes into
      * account the number of times already tried.
      *
+     * @param failure Failure
      * @return Greater than zero if a failed action should be repeated again
      */
-    protected int retry() {
+    protected int retry(final BackgroundException failure) throws BackgroundException {
         // The initial connection attempt does not count
         return PreferencesFactory.get().getInteger("connection.retry") - repeat;
     }
@@ -195,12 +193,12 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             exception = failure;
             failed = true;
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(this.retry() > 0) {
+                if(this.retry(failure) > 0) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Retry failed background action %s", this));
                     }
                     // This is an automated retry. Wait some time first.
-                    this.pause();
+                    this.pause(failure);
                     if(!this.isCanceled()) {
                         repeat++;
                         // Re-run the action with the previous lock used
@@ -212,6 +210,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         catch(Exception e) {
             log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
+            exception = new BackgroundException(e);
             failed = true;
             throw e;
         }
@@ -233,6 +232,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public boolean alert() {
         if(this.hasFailed() && !this.isCanceled()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Display alert for failure %s", exception));
+            }
             // Display alert if the action was not canceled intentionally
             return alert.alert(session.getHost(), exception, transcript);
         }
@@ -246,9 +248,11 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     /**
      * Idle this action for some time. Blocks the caller.
+     *
+     * @param failure Failure
      */
-    public void pause() {
-        final int attempt = this.retry();
+    protected void pause(final BackgroundException failure) throws BackgroundException {
+        final int attempt = this.retry(failure);
         final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override
             public boolean isCanceled() {

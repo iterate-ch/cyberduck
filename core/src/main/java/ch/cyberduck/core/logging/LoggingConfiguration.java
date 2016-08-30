@@ -19,9 +19,6 @@ package ch.cyberduck.core.logging;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class LoggingConfiguration {
 
     public static LoggingConfiguration empty() {

@@ -30,9 +30,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 
-/**
- * @version $Id$
- */
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private static final Logger log = Logger.getLogger(QloudstatAnalyticsProvider.class);
 

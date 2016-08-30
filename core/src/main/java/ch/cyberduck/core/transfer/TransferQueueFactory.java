@@ -17,9 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public final class TransferQueueFactory {
 
     private static TransferQueue instance;

@@ -24,9 +24,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.Watchable;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class DisabledWatchService implements RegisterWatchService {
 
     @Override

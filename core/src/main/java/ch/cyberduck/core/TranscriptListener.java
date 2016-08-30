@@ -18,14 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface TranscriptListener {
+
+    enum Type {
+        request,
+        response
+    }
 
     /**
      * @param request Outgoing transcript
      * @param message Data
      */
-    void log(boolean request, String message);
+    void log(Type request, String message);
 }

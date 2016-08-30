@@ -40,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id: IRODSReadFeatureTest.java 17029 2015-02-27 13:09:19Z dkocher $
- */
 @Category(IntegrationTest.class)
 public class IRODSWriteFeatureTest {
 
@@ -118,11 +115,7 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(newcontent, buffer);
         }
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -198,11 +191,7 @@ public class IRODSWriteFeatureTest {
         System.arraycopy(content_append, 0, complete, content.length, content_append.length);
         assertArrayEquals(complete, buffer_complete);
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

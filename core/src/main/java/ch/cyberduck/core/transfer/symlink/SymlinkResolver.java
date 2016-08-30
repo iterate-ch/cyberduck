@@ -20,9 +20,6 @@ package ch.cyberduck.core.transfer.symlink;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-/**
- * @version $Id$
- */
 public interface SymlinkResolver<T> {
 
     /**

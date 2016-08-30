@@ -21,7 +21,6 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -40,9 +39,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
 
@@ -102,13 +98,13 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                             continue;
                         }
                         String value = scanner.next();
-                        if("HostName".equals(name)) {
+                        if("hostname".equals(name)) {
                             current.setHostname(value);
                         }
-                        else if("UserName".equals(name)) {
+                        else if("username".equals(name)) {
                             current.getCredentials().setUsername(value);
                         }
-                        else if("PortNumber".equals(name)) {
+                        else if("portnumber".equals(name)) {
                             try {
                                 current.setPort(Integer.parseInt(value));
                             }
@@ -116,7 +112,7 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                 log.warn("Invalid Port:" + e.getMessage());
                             }
                         }
-                        else if("FSProtocol".equals(name)) {
+                        else if("fsprotocol".equals(name)) {
                             try {
                                 switch(Integer.parseInt(value)) {
                                     case 0:
@@ -128,6 +124,8 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                         current.setProtocol(new FTPProtocol());
                                         break;
                                 }
+                                // Reset port to default
+                                current.setPort(-1);
                             }
                             catch(NumberFormatException e) {
                                 log.warn("Unknown Protocol:" + e.getMessage());

@@ -28,9 +28,6 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVCopyFeature implements Copy {
 
     private DAVSession session;

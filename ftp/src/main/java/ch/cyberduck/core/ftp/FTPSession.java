@@ -66,11 +66,6 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-/**
- * Opens a connection to the remote server via ftp protocol
- *
- * @version $Id$
- */
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
@@ -125,6 +120,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         catch(IOException e) {
             throw new FTPExceptionMappingService().map(e);
+        }
+        finally {
+            super.logout();
         }
     }
 
@@ -320,6 +318,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new FTPDirectoryFeature(this);

@@ -40,9 +40,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPDataFallbackTest {
 

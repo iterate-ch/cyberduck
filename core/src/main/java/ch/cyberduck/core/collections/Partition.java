@@ -20,9 +20,6 @@ package ch.cyberduck.core.collections;
 import java.util.AbstractList;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class Partition<T> extends AbstractList<List<T>> {
     final List<T> list;
     final int size;

@@ -47,17 +47,15 @@ import ch.iterate.openstack.swift.model.Region;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SwiftUrlProviderTest {
 
     @Test
     public void testGet() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
-        ));
+        );
+        final SwiftSession session = new SwiftSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -69,9 +67,10 @@ public class SwiftUrlProviderTest {
 
     @Test
     public void testSigned() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
-        ));
+        );
+        final SwiftSession session = new SwiftSession(host);
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -92,11 +91,7 @@ public class SwiftUrlProviderTest {
             assertNotNull(s);
             assertNotEquals(DescriptiveUrl.EMPTY, s);
         }
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -113,7 +108,7 @@ public class SwiftUrlProviderTest {
         final Path file2 = new Path(file, "key2", EnumSet.of(Path.Type.file));
         final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Iterator<DescriptiveUrl> iterator = provider.sign(region, file2, 1379500716).iterator();
-        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key%20f%2Fkey2?temp_url_sig=a079831228bfea78853f1951e4d10f2599782219&temp_url_expires=1379500716",
+        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key%20f/key2?temp_url_sig=a079831228bfea78853f1951e4d10f2599782219&temp_url_expires=1379500716",
                 iterator.next().getUrl());
     }
 }

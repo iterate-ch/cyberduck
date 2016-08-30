@@ -37,35 +37,34 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Container;
-import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private final ThreadPool pool = new DefaultThreadPool("cdn");
+    private final SwiftSession session;
 
-    private SwiftSession session;
-
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private boolean cdn;
+    /**
+     * Preload CDN configuration
+     */
+    private final boolean cdnPreload;
 
-    private boolean size;
+    /**
+     * Preload container size
+     */
+    private final boolean containerPreload;
 
-    private SwiftRegionService regionService;
-    private SwiftLocationFeature.SwiftRegion region;
+    private final SwiftLocationFeature.SwiftRegion region;
 
     public SwiftContainerListService(final SwiftSession session, final SwiftRegionService regionService, final SwiftLocationFeature.SwiftRegion region) {
         this(session, regionService, region,
@@ -76,21 +75,20 @@ public class SwiftContainerListService implements RootListService {
     public SwiftContainerListService(final SwiftSession session,
                                      final SwiftRegionService regionService,
                                      final SwiftLocationFeature.SwiftRegion region,
-                                     final boolean cdn, final boolean size) {
+                                     final boolean cdnPreload, final boolean containerPreload) {
         this.session = session;
-        this.regionService = regionService;
         this.region = region;
-        this.cdn = cdn;
-        this.size = size;
+        this.cdnPreload = cdnPreload;
+        this.containerPreload = containerPreload;
     }
 
     @Override
-    public List<Path> list(final ListProgressListener listener) throws BackgroundException {
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List containers for %s", session));
         }
         try {
-            final List<Path> containers = new ArrayList<Path>();
+            final AttributedList<Path> containers = new AttributedList<Path>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
             for(final Region r : client.getRegions()) {
@@ -112,60 +110,65 @@ public class SwiftContainerListService implements RootListService {
                                 EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                         marker = f.getName();
                     }
-                    listener.chunk(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new AttributedList<Path>(containers));
+                    listener.chunk(directory, containers);
                 }
                 while(!chunk.isEmpty());
-                if(cdn) {
-                    final DistributionConfiguration feature = new SwiftDistributionConfiguration(session, regionService);
-                    for(final Path container : containers) {
-                        pool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                for(Distribution.Method method : feature.getMethods(container)) {
-                                    try {
-                                        final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                                        if(log.isInfoEnabled()) {
-                                            log.info(String.format("Cached distribution %s", distribution));
+                if(cdnPreload) {
+                    final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+                    final ThreadPool<Void> pool = new DefaultThreadPool<Void>(2, "cdn");
+                    try {
+                        for(final Path container : containers) {
+                            pool.execute(new Callable<Void>() {
+                                @Override
+                                public Void call() {
+                                    for(Distribution.Method method : feature.getMethods(container)) {
+                                        try {
+                                            final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
+                                            if(log.isInfoEnabled()) {
+                                                log.info(String.format("Cached distribution %s", distribution));
+                                            }
+                                        }
+                                        catch(BackgroundException e) {
+                                            log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
                                         }
                                     }
-                                    catch(BackgroundException e) {
-                                        log.warn(String.format("Failure caching CDN configuration for container %s %s", container, e.getMessage()));
-                                    }
+                                    return null;
                                 }
-                            }
-                        });
+                            });
+                        }
+                    }
+                    finally {
+                        // Shutdown gracefully
+                        pool.shutdown(true);
                     }
                 }
-                if(size) {
-                    for(final Path container : containers) {
-                        pool.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    final ContainerInfo info = client.getContainerInfo(r, container.getName());
-                                    container.attributes().setSize(info.getTotalSize());
+                if(containerPreload) {
+                    final ThreadPool<Long> pool = new DefaultThreadPool<Long>(2, "container");
+                    try {
+                        for(final Path container : containers) {
+                            pool.execute(new Callable<Long>() {
+                                @Override
+                                public Long call() throws IOException {
+                                    final long size = client.getContainerInfo(r, container.getName()).getTotalSize();
+                                    container.attributes().setSize(size);
+                                    return size;
                                 }
-                                catch(IOException e) {
-                                    log.warn(String.format("Failure reading info for container %s %s", container, e.getMessage()));
-                                }
-                            }
-                        });
+                            });
+                        }
+                    }
+                    finally {
+                        // Shutdown gracefully
+                        pool.shutdown(true);
                     }
                 }
             }
             return containers;
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e,
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+            throw new SwiftExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            // Shutdown gracefully
-            pool.shutdown();
         }
     }
 }

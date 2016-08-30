@@ -39,9 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ProxySocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
 

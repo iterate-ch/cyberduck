@@ -20,9 +20,6 @@ package ch.cyberduck.core.date;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public class MDTMMillisecondsDateFormatter extends AbstractDateFormatter {
 
     /**

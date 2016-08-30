@@ -26,9 +26,6 @@ import org.apache.commons.cli.CommandLine;
 
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public interface TransferItemFinder {
     Set<TransferItem> find(final CommandLine input, TerminalAction action, Path remote) throws AccessDeniedException;
 }

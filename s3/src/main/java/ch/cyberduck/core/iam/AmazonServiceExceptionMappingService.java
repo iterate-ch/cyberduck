@@ -35,11 +35,17 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
     @Override
     public BackgroundException map(final AmazonClientException e) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, e.getMessage());
         if(e instanceof AmazonServiceException) {
             final AmazonServiceException failure = (AmazonServiceException) e;
+            this.append(buffer, failure.getErrorMessage());
             switch(failure.getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
+                    switch(failure.getErrorCode()) {
+                        case "AccessDeniedException":
+                            return new AccessDeniedException(buffer.toString(), e);
+                        case "UnrecognizedClientException":
+                            return new LoginFailureException(buffer.toString(), e);
+                    }
                     return new InteroperabilityException(buffer.toString(), e);
                 case HttpStatus.SC_METHOD_NOT_ALLOWED:
                     return new InteroperabilityException(buffer.toString(), e);
@@ -67,6 +73,7 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                     return new ConnectionRefusedException(buffer.toString(), e);
             }
         }
+        this.append(buffer, e.getMessage());
         return this.wrap(e, buffer);
     }
 }

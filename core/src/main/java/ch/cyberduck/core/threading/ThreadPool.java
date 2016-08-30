@@ -15,19 +15,27 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
 
-public interface ThreadPool {
+public interface ThreadPool<T> {
+
+    /**
+     * Execute task when slot becomes available
+     */
+    Future<T> execute(Callable<T> command);
+
+    /**
+     * Await completion of all previously submitted tasks
+     */
+    void await() throws BackgroundException;
+
+    /**
+     * Shutdown pool and reject any further executions
+     *
+     * @param gracefully Wait for tasks to complete
+     */
     void shutdown(boolean gracefully);
-
-    void await(long timeout, TimeUnit unit);
-
-    void shutdown();
-
-    void execute(Runnable command);
-
-    <T> Future<T> execute(Callable<T> command) throws RejectedExecutionException;
 }

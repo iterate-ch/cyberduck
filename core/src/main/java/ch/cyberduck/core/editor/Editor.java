@@ -24,9 +24,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.worker.Worker;
 
-/**
- * @version $Id$
- */
 public interface Editor {
 
     /**

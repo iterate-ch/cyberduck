@@ -17,9 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class DisabledPasswordStore extends HostPasswordStore {
 
     @Override

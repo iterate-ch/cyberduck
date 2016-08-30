@@ -40,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SFTPUnixPermissionFeatureTest {
 
@@ -100,22 +97,14 @@ public class SFTPUnixPermissionFeatureTest {
             new SFTPTouchFeature(session).touch(file);
             new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(file).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
             new SFTPDirectoryFeature(session).mkdir(directory);
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
-            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                }
-            });
+            new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         session.close();
     }
@@ -149,11 +138,7 @@ public class SFTPUnixPermissionFeatureTest {
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
                 false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
                 test).attributes().getPermission());
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

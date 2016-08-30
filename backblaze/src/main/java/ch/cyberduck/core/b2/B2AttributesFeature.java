@@ -24,12 +24,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2AttributesFeature implements Attributes {
 
@@ -52,6 +56,9 @@ public class B2AttributesFeature implements Attributes {
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
+            if(StringUtils.equals("file_state_none", e.getMessage())) {
+                return PathAttributes.EMPTY;
+            }
             throw new B2ExceptionMappingService(session).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
@@ -69,6 +76,9 @@ public class B2AttributesFeature implements Attributes {
         }
         attributes.setMetadata(metadata);
         attributes.setVersionId(info.getFileId());
+        if(info.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            attributes.setModificationDate(Long.valueOf(info.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        }
         return attributes;
     }
 

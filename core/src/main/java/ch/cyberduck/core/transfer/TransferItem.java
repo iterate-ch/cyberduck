@@ -23,9 +23,6 @@ import ch.cyberduck.core.Referenceable;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.serializer.Serializer;
 
-/**
- * @version $Id$
- */
 public class TransferItem implements Referenceable, Serializable {
 
     public Path remote;

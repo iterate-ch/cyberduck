@@ -18,9 +18,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface ActionOperationBatcher {
     void operate();
 }

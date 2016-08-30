@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.serializer.Reader;
 
-/**
- * @version $Id$
- */
 public class ProfileReaderFactory extends Factory<Reader<Profile>> {
 
     protected ProfileReaderFactory() {

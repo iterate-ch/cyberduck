@@ -24,9 +24,6 @@ import ch.cyberduck.core.StringAppender;
 import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
 
-/**
- * @version $Id$
- */
 public class TerminalProgressListener implements ProgressListener {
 
     private final Console console = new Console();

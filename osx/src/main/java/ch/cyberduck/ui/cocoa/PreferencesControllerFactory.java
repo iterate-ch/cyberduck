@@ -19,9 +19,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSApplication;
 
-/**
- * @version $Id$
- */
 public final class PreferencesControllerFactory {
 
     private static PreferencesController shared = null;

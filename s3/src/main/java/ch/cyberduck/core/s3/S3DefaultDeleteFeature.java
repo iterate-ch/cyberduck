@@ -23,43 +23,75 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.MultipartUpload;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class S3DefaultDeleteFeature implements Delete {
+public class S3DefaultDeleteFeature extends ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3MultipartService multipartService;
+
     public S3DefaultDeleteFeature(final S3Session session) {
+        this(session, new S3DefaultMultipartService(session));
+    }
+
+    public S3DefaultDeleteFeature(final S3Session session, final S3MultipartService multipartService) {
         this.session = session;
+        this.multipartService = multipartService;
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+        final List<Path> containers = new ArrayList<Path>();
         for(Path file : files) {
+            if(containerService.isContainer(file)) {
+                containers.add(file);
+                continue;
+            }
+            if(file.getType().contains(Path.Type.upload)) {
+                callback.delete(file);
+                // In-progress multipart upload
+                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                continue;
+            }
+            this.submit(file, new Implementation() {
+                @Override
+                public void delete(final Path file) throws BackgroundException {
+                    callback.delete(file);
+                    try {
+                        // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+                        session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
+                    }
+                    catch(ServiceException e) {
+                        try {
+                            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
+                        }
+                        catch(NotfoundException n) {
+                            log.warn(String.format("Ignore missing placeholder object %s", file));
+                        }
+                    }
+                }
+            });
+        }
+        this.await();
+        for(Path file : containers) {
             callback.delete(file);
             try {
-                if(containerService.isContainer(file)) {
-                    session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                }
-                else {
-                    // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                    session.getClient().deleteObject(containerService.getContainer(file).getName(), containerService.getKey(file));
-                }
+                session.getClient().deleteBucket(containerService.getContainer(file).getName());
             }
             catch(ServiceException e) {
-                try {
-                    throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
-                }
-                catch(NotfoundException n) {
-                    // Ignore
-                }
+                throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }

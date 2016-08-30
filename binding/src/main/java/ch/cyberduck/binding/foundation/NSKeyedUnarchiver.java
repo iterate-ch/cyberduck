@@ -22,9 +22,6 @@ package ch.cyberduck.binding.foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.ObjCObject;
 
-/**
- * @version $Id:$
- */
 public abstract class NSKeyedUnarchiver extends NSCoder {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSKeyedUnarchiver", _Class.class);
 

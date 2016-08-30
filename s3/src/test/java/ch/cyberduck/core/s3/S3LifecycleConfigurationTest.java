@@ -33,9 +33,6 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3LifecycleConfigurationTest {
 
@@ -47,11 +44,11 @@ public class S3LifecycleConfigurationTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        assertEquals(31, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("lifecycle-cyberduck-test", EnumSet.of(Path.Type.directory))
+        assertEquals(30, new S3LifecycleConfiguration(session).getConfiguration(
+                new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
         assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("lifecycle-cyberduck-test", EnumSet.of(Path.Type.directory))
+                new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getTransition(), 0L);
         session.close();
     }

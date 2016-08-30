@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -71,12 +71,7 @@ public class SpectraBulkServiceTest {
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         service.query(Transfer.Type.upload, file, status);
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -95,18 +90,16 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final Path directory = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        files.put(directory, new TransferStatus().length(0L));
-        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
-                new TransferStatus().length(1L)
-        );
-        final Set<UUID> set = new SpectraBulkService(session).pre(Transfer.Type.upload, files);
+        final TransferStatus directoryStatus = new TransferStatus().length(0L);
+        files.put(directory, directoryStatus);
+        final TransferStatus fileStatus = new TransferStatus().length(1L);
+        files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), fileStatus);
+        final SpectraBulkService service = new SpectraBulkService(session);
+        final Set<UUID> set = service.pre(Transfer.Type.upload, files);
         assertEquals(1, set.size());
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        assertEquals(1, service.query(Transfer.Type.upload, directory, directoryStatus).size());
+        assertEquals(1, service.query(Transfer.Type.upload, directory, fileStatus).size());
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -185,15 +178,10 @@ public class SpectraBulkServiceTest {
             service.pre(Transfer.Type.download, files);
             fail();
         }
-        catch(ConflictException e) {
+        catch(BackgroundException e) {
             //
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -234,12 +222,7 @@ public class SpectraBulkServiceTest {
             assertEquals(100000000000L, list.get(1).getOffset());
             assertEquals("100000000000", list.get(1).getParameters().get("offset"));
         }
-        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

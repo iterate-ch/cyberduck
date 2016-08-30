@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.PublicKey;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractHostKeyCallback implements HostKeyCallback {
 
     /**

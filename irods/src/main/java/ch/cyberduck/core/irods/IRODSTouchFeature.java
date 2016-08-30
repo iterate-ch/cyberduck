@@ -25,9 +25,6 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
-/**
- * @version $Id$
- */
 public class IRODSTouchFeature implements Touch {
 
     private IRODSSession session;

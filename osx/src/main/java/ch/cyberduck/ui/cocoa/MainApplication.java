@@ -30,6 +30,7 @@ import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
@@ -82,6 +83,8 @@ public final class MainApplication {
                     new B2Protocol(),
                     new DriveProtocol(),
                     new DropboxProtocol()
+                    new DriveProtocol(),
+                    new HubicProtocol()
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()

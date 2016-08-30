@@ -24,9 +24,6 @@ import ch.cyberduck.core.serializer.HostDictionary;
 
 import com.dd.plist.NSDictionary;
 
-/**
- * @version $Id$
- */
 public class HostPlistReader extends PlistReader<Host> {
 
     private DeserializerFactory deserializer;

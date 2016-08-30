@@ -86,6 +86,9 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 @Override
                 public void run() {
                     try {
+                        if(status.isCanceled()) {
+                            throw new ConnectionCanceledException();
+                        }
                         response = command.call(entity);
                     }
                     catch(BackgroundException e) {

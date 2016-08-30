@@ -28,6 +28,7 @@ import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +47,7 @@ public class S3SessionCredentialsRetrieverTest {
                         "  \"SecretAccessKey\" : \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n" +
                         "  \"Token\" : \"token\",\n" +
                         "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
-                        "}"));
+                        "}", Charset.defaultCharset()));
         assertEquals("AKIAIOSFODNN7EXAMPLE", c.getAccessKey());
         assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getSecretKey());
         assertEquals("token", ((AWSSessionCredentials) c).getSessionToken());

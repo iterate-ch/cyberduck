@@ -51,9 +51,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
-/**
- * @version $Id$
- */
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
 

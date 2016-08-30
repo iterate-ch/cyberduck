@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SendEvent += View_SendEvent;
         }
 
-        public override void log(bool request, string message)
+        public override void log(TranscriptListener.Type request, string message)
         {
             AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(message); };
             Invoke(mainAction);

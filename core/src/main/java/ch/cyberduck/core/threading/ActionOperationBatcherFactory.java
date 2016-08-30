@@ -20,9 +20,6 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
 
     public ActionOperationBatcherFactory() {

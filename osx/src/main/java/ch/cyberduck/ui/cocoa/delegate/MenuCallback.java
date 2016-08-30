@@ -19,9 +19,6 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.binding.application.NSMenuItem;
 
-/**
- * @version $Id$
- */
 public interface MenuCallback {
 
     void selected(NSMenuItem item);

@@ -18,9 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public interface ApplicationQuitCallback {
 
     void callback();

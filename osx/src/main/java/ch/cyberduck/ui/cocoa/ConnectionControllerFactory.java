@@ -17,14 +17,12 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSApplication;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class ConnectionControllerFactory {
 
     private static final Map<WindowController, ConnectionController> open

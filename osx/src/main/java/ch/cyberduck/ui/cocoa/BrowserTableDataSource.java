@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;
@@ -68,7 +69,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -86,9 +87,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
@@ -96,13 +94,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
 
-    private IconCache<NSImage> icons = IconCacheFactory.<NSImage>get();
+    private IconCache<NSImage> icons = IconCacheFactory.get();
 
     private FileDescriptor descriptor = FileDescriptorFactory.get();
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Map<Item, NSAttributedString> attributed = new LRUMap(
+    private final Map<Item, NSAttributedString> attributed = new LRUMap<Item, NSAttributedString>(
             preferences.getInteger("browser.model.cache.size")
     );
 
@@ -447,26 +445,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
+            final Touch feature = controller.getSession().getFeature(Touch.class);
+            if(!feature.isSupported(destination)) {
+                // Target file system does not support creating files. Creating files is not supported
+                // for example in root of cloud storage accounts.
+                return NSDraggingInfo.NSDragOperationNone;
+            }
             // Files dragged form other application
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
                 this.setDropRowAndDropOperation(view, destination, row);
-                final NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-                if(o != null) {
-                    if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
-                        final NSArray elements = Rococoa.cast(o, NSArray.class);
-                        for(int i = 0; i < elements.count().intValue(); i++) {
-                            final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
-                            if(local.isFile()) {
-                                final Touch feature = controller.getSession().getFeature(Touch.class);
-                                if(!feature.isSupported(destination)) {
-                                    // Target file system does not support creating files. Creating files is not supported
-                                    // for example in root of cloud storage accounts.
-                                    return NSDraggingInfo.NSDragOperationNone;
-                                }
-                            }
-                        }
-                    }
-                }
                 return NSDraggingInfo.NSDragOperationCopy;
             }
             // Files dragged from browser
@@ -657,7 +644,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             else {
                 final DownloadTransfer transfer = new DownloadTransfer(controller.getSession().getHost(), downloads);
-                controller.transfer(transfer, Collections.<Path>emptyList());
+                controller.transfer(transfer, Collections.emptyList());
             }
             pasteboard.clear();
         }

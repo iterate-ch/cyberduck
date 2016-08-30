@@ -11,9 +11,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Ignore
 public class QuartzQuickLookTest {
 

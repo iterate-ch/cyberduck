@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
@@ -45,14 +45,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     protected static final NSDictionary URL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
     );

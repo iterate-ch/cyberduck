@@ -17,9 +17,6 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public abstract class AbstractUserDateFormatter implements UserDateFormatter {
 
     public String getShortFormat(long milliseconds) {

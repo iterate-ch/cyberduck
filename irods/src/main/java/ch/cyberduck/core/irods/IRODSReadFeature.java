@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -26,16 +25,14 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
+import org.irods.jargon.core.exception.JargonRuntimeException;
+import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 import org.irods.jargon.core.pub.io.IRODSFileFactory;
 import org.irods.jargon.core.pub.io.PackingIrodsInputStream;
 
-import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @version $Id$
- */
 public class IRODSReadFeature implements Read {
 
     private IRODSSession session;
@@ -47,22 +44,26 @@ public class IRODSReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final IRODSFileFactory factory = session.filesystem().getIRODSFileFactory();
-            final IRODSFile f = factory.instanceIRODSFile(file.getAbsolute());
-            if(f.exists()) {
-                final InputStream in = new PackingIrodsInputStream(factory.instanceIRODSFileInputStream(f));
-                if(status.isAppend()) {
-                    try {
-                        StreamCopier.skip(in, status.getOffset());
+            try {
+                final IRODSFileSystemAO fs = session.filesystem();
+                final IRODSFileFactory factory = fs.getIRODSFileFactory();
+                final IRODSFile f = factory.instanceIRODSFile(file.getAbsolute());
+                if(f.exists()) {
+                    final InputStream in = new PackingIrodsInputStream(factory.instanceIRODSFileInputStream(f));
+                    if(status.isAppend()) {
+                        return StreamCopier.skip(in, status.getOffset());
                     }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e);
-                    }
+                    return in;
                 }
-                return in;
+                else {
+                    throw new NotfoundException(file.getAbsolute());
+                }
             }
-            else {
-                throw new NotfoundException(file.getAbsolute());
+            catch(JargonRuntimeException e) {
+                if(e.getCause() instanceof JargonException) {
+                    throw (JargonException) e.getCause();
+                }
+                throw new BackgroundException(e);
             }
         }
         catch(JargonException e) {

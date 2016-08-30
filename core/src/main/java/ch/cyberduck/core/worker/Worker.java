@@ -27,9 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public abstract class Worker<T> {
 
     private AtomicBoolean canceled
@@ -84,5 +81,12 @@ public abstract class Worker<T> {
 
     public void reset() throws BackgroundException {
         //
+    }
+
+    public interface RecursiveCallback<T> {
+        /**
+         * @return True to descend into directories
+         */
+        boolean recurse(Path directory, T value);
     }
 }

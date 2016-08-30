@@ -40,9 +40,6 @@ import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class IRODSSessionTest {
 
@@ -87,6 +84,28 @@ public class IRODSSessionTest {
 
         final AttributedList<Path> list = session.list(new IRODSHomeFinderService(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
+    @Test
+    public void testLoginWhitespaceHomeDirectory() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+        host.setDefaultPath("/cyber duck");
+
+        final IRODSSession session = new IRODSSession(host);
+
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         assertTrue(session.isConnected());
         session.close();

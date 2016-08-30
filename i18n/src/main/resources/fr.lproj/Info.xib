@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11185.3" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <development version="7000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11185.3"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="CDInfoController">
+        <customObject id="-2" userLabel="File's Owner" customClass="InfoController">
             <connections>
                 <outlet property="aclAddButton" destination="253" id="271"/>
                 <outlet property="aclProgress" destination="268" id="272"/>
@@ -36,7 +36,7 @@
                 <outlet property="distributionProgress" destination="104" id="297"/>
                 <outlet property="distributionStatusField" destination="105" id="298"/>
                 <outlet property="distributionUrlField" destination="80" id="299"/>
-                <outlet property="encryptionButton" destination="118" id="300"/>
+                <outlet property="encryptionPopup" destination="J76-U1-cuI" id="300"/>
                 <outlet property="filenameField" destination="221" id="301"/>
                 <outlet property="groupField" destination="185" id="302"/>
                 <outlet property="groupr" destination="42" id="303"/>
@@ -91,7 +91,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" utility="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="142" y="311" width="393" height="346"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1720" height="1287"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -104,7 +104,7 @@
                             <tabViewItem label="Général" identifier="info" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="346"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Permissions" identifier="permissions" id="8">
@@ -539,11 +539,11 @@
             </subviews>
         </customView>
         <customView id="111">
-            <rect key="frame" x="0.0" y="0.0" width="400" height="554"/>
+            <rect key="frame" x="0.0" y="0.0" width="400" height="552"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" id="112">
-                    <rect key="frame" x="139" y="248" width="244" height="28"/>
+                    <rect key="frame" x="139" y="246" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Ouvrir l'URL pour configurer l'analyse du journal par Qloudstat." id="113">
                         <font key="font" metaFont="smallSystem"/>
@@ -552,7 +552,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="114">
-                    <rect key="frame" x="139" y="284" width="244" height="14"/>
+                    <rect key="frame" x="139" y="282" width="243" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" alignment="left" id="115">
                         <font key="font" metaFont="smallSystem"/>
@@ -561,7 +561,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="116">
-                    <rect key="frame" x="17" y="306" width="120" height="14"/>
+                    <rect key="frame" x="17" y="304" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Analyse" id="117">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -569,25 +569,17 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button id="118">
-                    <rect key="frame" x="139" y="488" width="243" height="18"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                    <buttonCell key="cell" type="check" title="Cryptage côté serveur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="119">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="smallSystem"/>
-                    </buttonCell>
-                </button>
                 <textField verticalHuggingPriority="750" id="120">
-                    <rect key="frame" x="17" y="490" width="120" height="14"/>
+                    <rect key="frame" x="17" y="488" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Cryptage" id="121">
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Chiffrement" id="121">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="122">
-                    <rect key="frame" x="356" y="16" width="25" height="25"/>
+                    <rect key="frame" x="358" y="16" width="25" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                     <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="123">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -598,7 +590,7 @@
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" id="124">
-                    <rect key="frame" x="139" y="432" width="244" height="28"/>
+                    <rect key="frame" x="139" y="430" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="125">
                         <font key="font" metaFont="smallSystem"/>
@@ -607,7 +599,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="126">
-                    <rect key="frame" x="139" y="74" width="244" height="44"/>
+                    <rect key="frame" x="139" y="172" width="243" height="44"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="127">
                         <font key="font" metaFont="smallSystem"/>
@@ -617,7 +609,7 @@
                     </textFieldCell>
                 </textField>
                 <button id="128">
-                    <rect key="frame" x="139" y="50" width="241" height="18"/>
+                    <rect key="frame" x="139" y="148" width="243" height="19"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Effacer par authentification multifacteurs (MFA)" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="129">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -625,7 +617,7 @@
                     </buttonCell>
                 </button>
                 <button id="130">
-                    <rect key="frame" x="139" y="124" width="243" height="18"/>
+                    <rect key="frame" x="139" y="222" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Versionnage de bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="131">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -633,7 +625,7 @@
                     </buttonCell>
                 </button>
                 <popUpButton verticalHuggingPriority="750" id="132">
-                    <rect key="frame" x="139" y="148" width="244" height="22"/>
+                    <rect key="frame" x="139" y="48" width="244" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="133">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -642,7 +634,7 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" id="135">
-                    <rect key="frame" x="139" y="195" width="244" height="22"/>
+                    <rect key="frame" x="139" y="95" width="244" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="136">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -651,7 +643,7 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <popUpButton verticalHuggingPriority="750" id="138">
-                    <rect key="frame" x="139" y="324" width="244" height="22"/>
+                    <rect key="frame" x="139" y="322" width="244" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="139">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -660,7 +652,7 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" id="141">
-                    <rect key="frame" x="139" y="539" width="220" height="14"/>
+                    <rect key="frame" x="139" y="537" width="220" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" alignment="left" id="142">
                         <font key="font" metaFont="smallSystem"/>
@@ -669,7 +661,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="143">
-                    <rect key="frame" x="17" y="537" width="120" height="14"/>
+                    <rect key="frame" x="17" y="535" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Emplacement" id="144">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -678,7 +670,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="145">
-                    <rect key="frame" x="139" y="410" width="244" height="14"/>
+                    <rect key="frame" x="139" y="408" width="243" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" alignment="left" id="146">
                         <font key="font" metaFont="smallSystem"/>
@@ -687,7 +679,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="147">
-                    <rect key="frame" x="139" y="468" width="244" height="14"/>
+                    <rect key="frame" x="139" y="466" width="243" height="14"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" selectable="YES" sendsActionOnEndEditing="YES" alignment="left" id="148">
                         <font key="font" metaFont="smallSystem"/>
@@ -705,7 +697,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="151">
-                    <rect key="frame" x="17" y="226" width="120" height="14"/>
+                    <rect key="frame" x="17" y="224" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Versionnage" id="152">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -714,7 +706,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="153">
-                    <rect key="frame" x="17" y="387" width="120" height="14"/>
+                    <rect key="frame" x="17" y="385" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Enregistrement du journal" id="154">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -723,7 +715,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="155">
-                    <rect key="frame" x="17" y="408" width="120" height="14"/>
+                    <rect key="frame" x="17" y="406" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="URL du torrent" id="156">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -732,7 +724,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" id="157">
-                    <rect key="frame" x="17" y="466" width="120" height="14"/>
+                    <rect key="frame" x="17" y="464" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="URL signée" id="158">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -740,12 +732,12 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" id="159">
-                    <rect key="frame" x="364" y="535" width="16" height="16"/>
+                <progressIndicator horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" id="159">
+                    <rect key="frame" x="364" y="533" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
                 </progressIndicator>
                 <button id="160">
-                    <rect key="frame" x="139" y="175" width="243" height="18"/>
+                    <rect key="frame" x="139" y="75" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Effacer les fichiers" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="161">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -753,7 +745,7 @@
                     </buttonCell>
                 </button>
                 <button id="162">
-                    <rect key="frame" x="139" y="222" width="243" height="18"/>
+                    <rect key="frame" x="139" y="122" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Transition vers Glacier" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="163">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -761,7 +753,7 @@
                     </buttonCell>
                 </button>
                 <button id="164">
-                    <rect key="frame" x="139" y="304" width="243" height="18"/>
+                    <rect key="frame" x="139" y="302" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Accès en lecture pour Qloudstat" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="165">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -769,7 +761,7 @@
                     </buttonCell>
                 </button>
                 <button id="166">
-                    <rect key="frame" x="139" y="387" width="243" height="18"/>
+                    <rect key="frame" x="139" y="385" width="243" height="18"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <buttonCell key="cell" type="check" title="Journal d'accès au bucket" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" lineBreakMode="truncatingMiddle" inset="2" id="167">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -777,7 +769,7 @@
                     </buttonCell>
                 </button>
                 <textField verticalHuggingPriority="750" id="168">
-                    <rect key="frame" x="139" y="353" width="244" height="28"/>
+                    <rect key="frame" x="139" y="351" width="243" height="28"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Journaux d'accès en écriture des conteneurs sélectionnés." id="169">
                         <font key="font" metaFont="smallSystem"/>
@@ -786,7 +778,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" id="170">
-                    <rect key="frame" x="139" y="511" width="244" height="22"/>
+                    <rect key="frame" x="139" y="509" width="244" height="22"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="171">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -795,7 +787,7 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" id="173">
-                    <rect key="frame" x="17" y="515" width="120" height="14"/>
+                    <rect key="frame" x="17" y="513" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Classe d'enregistrement" id="174">
                         <font key="font" metaFont="smallSystemBold"/>
@@ -803,6 +795,15 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <popUpButton verticalHuggingPriority="750" id="J76-U1-cuI">
+                    <rect key="frame" x="139" y="484" width="244" height="22"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="rGT-5o-1kv">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="smallSystem"/>
+                        <menu key="menu" title="AutresVues" id="uYp-L3-jMv"/>
+                    </popUpButtonCell>
+                </popUpButton>
             </subviews>
         </customView>
         <customView id="175">
@@ -1043,23 +1044,6 @@
                         <action selector="helpButtonClicked:" target="-2" id="347"/>
                     </connections>
                 </button>
-                <popUpButton verticalHuggingPriority="750" id="228">
-                    <rect key="frame" x="20" y="20" width="33" height="22"/>
-                    <autoresizingMask key="autoresizingMask"/>
-                    <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" alternateImage="addPressed" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="229">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Métadonnées" id="230"/>
-                    </popUpButtonCell>
-                </popUpButton>
-                <button id="231">
-                    <rect key="frame" x="52" y="20" width="23" height="22"/>
-                    <autoresizingMask key="autoresizingMask"/>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="remove" imagePosition="above" alignment="center" alternateImage="removePressed" inset="2" id="232">
-                        <behavior key="behavior" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                </button>
                 <scrollView focusRingType="none" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="233">
                     <rect key="frame" x="20" y="50" width="360" height="136"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
@@ -1068,7 +1052,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="242" id="235">
-                                <rect key="frame" x="0.0" y="0.0" width="358" height="17"/>
+                                <rect key="frame" x="0.0" y="0.0" width="358" height="118"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1104,7 +1088,6 @@
                                 </tableColumns>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="240">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
@@ -1132,6 +1115,23 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <popUpButton verticalHuggingPriority="750" id="228">
+                    <rect key="frame" x="20" y="21" width="33" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="229">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" title="Métadonnées" id="230"/>
+                    </popUpButtonCell>
+                </popUpButton>
+                <button verticalHuggingPriority="750" id="231">
+                    <rect key="frame" x="52" y="21" width="23" height="22"/>
+                    <autoresizingMask key="autoresizingMask"/>
+                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" inset="2" id="232">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
             </subviews>
         </customView>
         <customView id="246">
@@ -1167,23 +1167,6 @@
                         <action selector="helpButtonClicked:" target="-2" id="350"/>
                     </connections>
                 </button>
-                <popUpButton verticalHuggingPriority="750" id="253">
-                    <rect key="frame" x="20" y="20" width="33" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" alternateImage="addPressed" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="254">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="menu"/>
-                        <menu key="menu" title="Métadonnées" id="255"/>
-                    </popUpButtonCell>
-                </popUpButton>
-                <button id="256">
-                    <rect key="frame" x="52" y="20" width="23" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="remove" imagePosition="above" alignment="center" alternateImage="removePressed" inset="2" id="257">
-                        <behavior key="behavior" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                </button>
                 <scrollView focusRingType="none" autohidesScrollers="YES" horizontalLineScroll="17" horizontalPageScroll="10" verticalLineScroll="17" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="258">
                     <rect key="frame" x="20" y="50" width="360" height="102"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
@@ -1192,7 +1175,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="267" id="260">
-                                <rect key="frame" x="0.0" y="0.0" width="358" height="17"/>
+                                <rect key="frame" x="0.0" y="0.0" width="358" height="84"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <size key="intercellSpacing" width="3" height="2"/>
                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1228,7 +1211,6 @@
                                 </tableColumns>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </clipView>
                     <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="265">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
@@ -1256,12 +1238,27 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <popUpButton verticalHuggingPriority="750" id="253">
+                    <rect key="frame" x="20" y="20" width="33" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                    <popUpButtonCell key="cell" type="smallSquare" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="254">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" title="Métadonnées" id="255"/>
+                    </popUpButtonCell>
+                </popUpButton>
+                <button verticalHuggingPriority="750" id="256">
+                    <rect key="frame" x="52" y="20" width="23" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
+                    <buttonCell key="cell" type="smallSquare" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="overlaps" alignment="center" borderStyle="border" inset="2" id="257">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
             </subviews>
         </customView>
     </objects>
     <resources>
-        <image name="addPressed" width="128" height="128"/>
-        <image name="remove" width="128" height="128"/>
-        <image name="removePressed" width="128" height="128"/>
+        <image name="NSRemoveTemplate" width="11" height="11"/>
     </resources>
 </document>

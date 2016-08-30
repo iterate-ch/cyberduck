@@ -30,9 +30,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class DefaultLocalTouchFeature implements Touch {
     private static final Logger log = Logger.getLogger(DefaultLocalTouchFeature.class);
 

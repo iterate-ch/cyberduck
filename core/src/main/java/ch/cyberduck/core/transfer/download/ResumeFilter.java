@@ -33,9 +33,6 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class ResumeFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 

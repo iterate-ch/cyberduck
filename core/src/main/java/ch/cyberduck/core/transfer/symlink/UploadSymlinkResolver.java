@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
     private static final Logger log = Logger.getLogger(UploadSymlinkResolver.class);
 

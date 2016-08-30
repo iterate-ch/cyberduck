@@ -31,9 +31,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 
-/**
- * @version $Id$
- */
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
 
@@ -53,7 +50,7 @@ public class S3LoggingFeature implements Logging {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read bucket logging status", e);
+                throw new S3ExceptionMappingService().map("Cannot read bucket logging status", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read logging configuration for %s %s", container, e.getMessage()));
@@ -79,7 +76,7 @@ public class S3LoggingFeature implements Logging {
             session.getClient().setBucketLoggingStatus(container.getName(), status, true);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 }

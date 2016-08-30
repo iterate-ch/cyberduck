@@ -27,7 +27,9 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -44,9 +46,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractCopyFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
 
@@ -93,18 +92,25 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             status.setLength(attributes.getSize());
         }
         status.setRemote(attributes);
-        if(this.options.permissions) {
+        if(options.permissions) {
             status.setPermission(attributes.getPermission());
         }
-        if(this.options.timestamp) {
+        if(options.timestamp) {
             status.setTimestamp(attributes.getModificationDate());
         }
-        if(this.options.acl) {
+        if(options.acl) {
             final AclPermission feature = sourceSession.getFeature(AclPermission.class);
             if(feature != null) {
-                status.setAcl(feature.getPermission(source));
+                try {
+                    status.setAcl(feature.getPermission(source));
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    status.setAcl(feature.getDefault(local));
+                }
             }
         }
+        // Save checksum and pass to transfer status when copying from file
+        status.setChecksum(source.attributes().getChecksum());
         if(parent.isExists()) {
             // Do not attempt to create a directory that already exists
             final Path target = files.get(source);

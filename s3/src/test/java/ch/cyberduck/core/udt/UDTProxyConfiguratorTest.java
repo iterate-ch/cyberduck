@@ -58,6 +58,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class UDTProxyConfiguratorTest {
                     @Override
                     public Host find(final Location.Name region, final boolean tls) {
                         // No server here
-                        return new Host(new UDTProtocol(), "test.cyberduck.ch", Scheme.udt.getPort());
+                        return new Host(new UDTProtocol(), "test-us-east-1-cyberduck", Scheme.udt.getPort());
                     }
                 }, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
@@ -233,11 +234,11 @@ public class UDTProxyConfiguratorTest {
 
         final String random = RandomStringUtils.random(1000);
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(random, out);
+        IOUtils.write(random, out, Charset.defaultCharset());
         out.close();
         status.setLength(random.getBytes().length);
 
-        final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final Path test = new Path(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Upload upload = new S3SingleUploadService(tunneled);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -260,11 +261,7 @@ public class UDTProxyConfiguratorTest {
             System.arraycopy(random.getBytes(), 1, reference, 0, random.getBytes().length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new S3DefaultDeleteFeature(tunneled).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         tunneled.close();
         assertFalse(tunneled.isConnected());
     }
@@ -288,7 +285,7 @@ public class UDTProxyConfiguratorTest {
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
 
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(tunneled).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
@@ -308,11 +305,7 @@ public class UDTProxyConfiguratorTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new S3DefaultDeleteFeature(tunneled).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new S3DefaultDeleteFeature(tunneled).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         tunneled.close();
     }
 }

@@ -12,6 +12,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -24,14 +25,11 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3AttributesFeatureTest {
 
     @Test
-    public void testFindFile() throws Exception {
+    public void testFindFileUsEast() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
@@ -41,10 +39,17 @@ public class S3AttributesFeatureTest {
             public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
             }
+
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Versioning.class) {
+                    return null;
+                }
+                return super.getFeature(type);
+            }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);
         final S3AttributesFeature f = new S3AttributesFeature(session);
@@ -60,11 +65,35 @@ public class S3AttributesFeatureTest {
         catch(NotfoundException e) {
             // Expected
         }
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testFindFileEuCentral() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        ))) {
             @Override
-            public void delete(final Path file) {
+            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
             }
-        });
+
+            @Override
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Versioning.class) {
+                    return null;
+                }
+                return super.getFeature(type);
+            }
+        };
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final S3AttributesFeature f = new S3AttributesFeature(session);
+        final PathAttributes attributes = f.find(test);
         session.close();
     }
 
@@ -77,7 +106,7 @@ public class S3AttributesFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFeature(session).find(container);
         assertEquals(-1L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
@@ -98,8 +127,7 @@ public class S3AttributesFeatureTest {
 
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFeature f = new S3AttributesFeature(session);
         f.find(test);
@@ -113,10 +141,11 @@ public class S3AttributesFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, "test", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        new S3DirectoryFeature(session).mkdir(test);
         final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
         assertNotNull(attributes.getModificationDate());
@@ -131,12 +160,49 @@ public class S3AttributesFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final PathAttributes attributes = new PathAttributes();
         // Retrieve latest object version
-        attributes.setVersionId("xtgd1iPdpb1L0c87oe.3KVul2rcxRyqh");
-        assertEquals("PqdhUBWLxRHb.rtPQNpdc3PgRJ05ZVte", new S3AttributesFeature(session).find(
-                new Path("/versioning.test.cyberduck.ch/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
+        attributes.setVersionId("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK");
+        assertEquals("a.wvRLBNdY1MncqxF5Jt.hPn3NejhheK", new S3AttributesFeature(session).find(
+                new Path("/versioning-test-us-east-1-cyberduck/test", EnumSet.of(AbstractPath.Type.file))).getVersionId());
+        session.close();
+    }
+
+    @Test
+    public void testReadTildeInKey() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path file = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(file);
+        new S3AttributesFeature(session).find(file);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testReadAtSignInKey() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path file = new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(file);
+        new S3AttributesFeature(session).find(file);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

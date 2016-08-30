@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public enum Scheme {
     ftp {
         @Override

@@ -22,7 +22,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -39,9 +38,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class GlobTransferItemFinder implements TransferItemFinder {
     private static final Logger log = Logger.getLogger(GlobTransferItemFinder.class);
 

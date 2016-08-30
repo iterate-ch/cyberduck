@@ -22,9 +22,6 @@ import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.Controller;
 
-/**
- * @version $Id$
- */
 public class KeychainX509TrustManager extends CertificateStoreX509TrustManager implements X509TrustManager {
 
     public KeychainX509TrustManager(final TrustManagerHostnameCallback callback) {

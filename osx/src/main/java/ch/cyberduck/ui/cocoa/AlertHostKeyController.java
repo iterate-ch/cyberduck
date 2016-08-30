@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -41,8 +44,6 @@ import net.schmizz.sshj.common.KeyType;
 
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
- *
- * @version $Id$
  */
 public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);

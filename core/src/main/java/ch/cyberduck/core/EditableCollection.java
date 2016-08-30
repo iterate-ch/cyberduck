@@ -19,9 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface EditableCollection {
     boolean allowsAdd();
 

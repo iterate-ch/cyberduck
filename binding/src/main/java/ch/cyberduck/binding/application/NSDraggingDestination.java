@@ -21,9 +21,6 @@ package ch.cyberduck.binding.application;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public interface NSDraggingDestination {
 
     /**

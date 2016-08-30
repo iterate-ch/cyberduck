@@ -19,9 +19,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSApplication;
 
-/**
- * @version $Id$
- */
 public final class ActivityControllerFactory {
 
     private static ActivityController shared = null;

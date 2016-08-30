@@ -227,7 +227,7 @@ public class TransferBackgroundActionTest {
             }
         };
         assertEquals(false, options.resumeRequested);
-        action.pause();
+        action.pause(new BackgroundException());
         assertEquals(true, options.resumeRequested);
     }
 
@@ -260,13 +260,13 @@ public class TransferBackgroundActionTest {
             }
 
             @Override
-            public void pause() {
-                super.pause();
+            public void pause(final BackgroundException failure) throws BackgroundException {
+                super.pause(failure);
                 paused.set(true);
             }
 
             @Override
-            protected int retry() {
+            protected int retry(final BackgroundException failure) {
                 if(retry.get()) {
                     return 0;
                 }

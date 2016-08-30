@@ -21,15 +21,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
 import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-/**
- * @version $Id$
- */
-public class SFTPUnixPermissionFeature implements UnixPermission {
+public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature implements UnixPermission {
 
     private SFTPSession session;
 

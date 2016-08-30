@@ -10,9 +10,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class DistributionUrlProviderTest {
 
     @Test

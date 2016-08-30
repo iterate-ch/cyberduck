@@ -22,20 +22,19 @@ import ch.cyberduck.core.TranscriptListener;
 
 import org.fusesource.jansi.Ansi;
 
-/**
- * @version $Id$
- */
 public class TerminalTranscriptListener implements TranscriptListener {
 
     private final Console console = new Console();
 
     @Override
-    public void log(final boolean request, final String message) {
-        if(request) {
-            console.printf("%n%s> %s%s", Ansi.ansi().fg(Ansi.Color.GREEN), message, Ansi.ansi().reset());
-        }
-        else {
-            console.printf("%n%s< %s%s", Ansi.ansi().fg(Ansi.Color.RED), message, Ansi.ansi().reset());
+    public void log(final Type request, final String message) {
+        switch(request) {
+            case request:
+                console.printf("%n%s> %s%s", Ansi.ansi().fg(Ansi.Color.GREEN), message, Ansi.ansi().reset());
+                break;
+            case response:
+                console.printf("%n%s< %s%s", Ansi.ansi().fg(Ansi.Color.RED), message, Ansi.ansi().reset());
+                break;
         }
     }
 }

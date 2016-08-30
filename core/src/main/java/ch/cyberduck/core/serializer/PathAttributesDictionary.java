@@ -23,9 +23,6 @@ import ch.cyberduck.core.PathAttributes;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class PathAttributesDictionary {
 
     private DeserializerFactory deserializer;
@@ -41,20 +38,20 @@ public class PathAttributesDictionary {
     public <T> PathAttributes deserialize(T serialized) {
         final Deserializer dict = deserializer.create(serialized);
         final PathAttributes attributes = new PathAttributes();
-        String sizeObj = dict.stringForKey("Size");
+        final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));
         }
-        String modifiedObj = dict.stringForKey("Modified");
+        final String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));
         }
-        Object permissionObj = dict.objectForKey("Permission");
+        final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
         }
         attributes.setVersionId(dict.stringForKey("Version"));
-        String duplicateObj = dict.stringForKey("Duplicate");
+        final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));
         }

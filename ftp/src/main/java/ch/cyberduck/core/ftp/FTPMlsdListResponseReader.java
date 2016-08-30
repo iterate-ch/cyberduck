@@ -136,6 +136,24 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                 if(facts.containsKey("unix.mode")) {
                     parsed.attributes().setPermission(new Permission(facts.get("unix.mode")));
                 }
+                else if(facts.containsKey("perm")) {
+                    Permission.Action user = Permission.Action.none;
+                    final String flags = facts.get("perm");
+                    if(StringUtils.contains(flags, 'r') || StringUtils.contains(flags, 'l')) {
+                        // RETR command may be applied to that object
+                        // Listing commands, LIST, NLST, and MLSD may be applied
+                        user.or(Permission.Action.read);
+                    }
+                    if(StringUtils.contains(flags, 'w') || StringUtils.contains(flags, 'm') || StringUtils.contains(flags, 'c')) {
+                        user.or(Permission.Action.write);
+                    }
+                    if(StringUtils.contains(flags, 'e')) {
+                        // CWD command naming the object should succeed
+                        user.or(Permission.Action.execute);
+                    }
+                    final Permission permission = new Permission(user, Permission.Action.none, Permission.Action.none);
+                    parsed.attributes().setPermission(permission);
+                }
                 if(facts.containsKey("modify")) {
                     // Time values are always represented in UTC
                     parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));

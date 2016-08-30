@@ -23,9 +23,6 @@ import org.jets3t.service.io.RepeatableFileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-/**
- * @version $Id$
- */
 public class LocalRepeatableFileInputStream extends RepeatableFileInputStream {
 
     /**

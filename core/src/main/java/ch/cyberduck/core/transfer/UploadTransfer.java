@@ -36,7 +36,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
@@ -71,6 +71,8 @@ public class UploadTransfer extends Transfer {
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
+    private UploadFilterOptions options = new UploadFilterOptions();
+
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
                 PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<Local>());
@@ -99,6 +101,11 @@ public class UploadTransfer extends Transfer {
     @Override
     public Transfer withCache(final PathCache cache) {
         this.cache = cache;
+        return this;
+    }
+
+    public Transfer withOptions(final UploadFilterOptions options) {
+        this.options = options;
         return this;
     }
 
@@ -139,8 +146,9 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = session.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        final UploadFilterOptions options = new UploadFilterOptions();
-        options.withTemporary(options.temporary && session.getFeature(Write.class).temporary());
+        if(options.temporary) {
+            options.withTemporary(session.getFeature(Write.class).temporary());
+        }
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, session, options).withCache(cache);
         }
@@ -239,11 +247,10 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = session.getFeature(Upload.class);
-            upload.upload(file, local, bandwidth, new DisabledStreamListener() {
+            upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
                 @Override
-                public void sent(long bytes) {
+                public void sent(final long bytes) {
                     addTransferred(bytes);
-                    streamListener.sent(bytes);
                     super.sent(bytes);
                 }
             }, status, callback);
@@ -253,7 +260,7 @@ public class UploadTransfer extends Transfer {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         file.getName()));
                 final Directory feature = session.getFeature(Directory.class);
-                feature.mkdir(file);
+                feature.mkdir(file, null, status);
                 status.setComplete();
             }
         }

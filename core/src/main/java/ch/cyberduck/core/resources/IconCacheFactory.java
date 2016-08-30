@@ -19,9 +19,6 @@ package ch.cyberduck.core.resources;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class IconCacheFactory extends Factory<IconCache> {
 
     protected IconCacheFactory() {

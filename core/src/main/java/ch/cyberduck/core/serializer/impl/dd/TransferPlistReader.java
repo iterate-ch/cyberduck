@@ -25,9 +25,6 @@ import ch.cyberduck.core.transfer.Transfer;
 
 import com.dd.plist.NSDictionary;
 
-/**
- * @version $Id$
- */
 public class TransferPlistReader extends PlistReader<Transfer> {
 
     private final DeserializerFactory deserializer;

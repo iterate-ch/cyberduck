@@ -19,9 +19,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public interface DataConnectionAction<T> {
     T execute() throws BackgroundException;
 }

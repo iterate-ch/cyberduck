@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -38,16 +39,16 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
+import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
+
+    private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
 
     /**
      * Encapsulating all the information of the remote host
@@ -145,8 +146,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * Logout and close client connection
-     *
-     * @throws BackgroundException
      */
     public void close() throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -184,11 +183,14 @@ public abstract class Session<C> implements TranscriptListener {
         }
     }
 
+    protected void logout() throws BackgroundException {
+        // Nullify password on disconnect. Some implementations that do not swap credentials with a token require the password while connected.
+        host.getCredentials().setPassword(null);
+    }
+
     /**
      * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
      */
-    protected abstract void logout() throws BackgroundException;
-
     protected void disconnect() {
         state = State.closed;
     }
@@ -273,10 +275,8 @@ public abstract class Session<C> implements TranscriptListener {
      * @see TranscriptListener
      */
     @Override
-    public void log(final boolean request, final String message) {
-        if(log.isInfoEnabled()) {
-            log.info(message);
-        }
+    public void log(final Type request, final String message) {
+        transcript.log(request, message);
         switch(state) {
             case opening:
             case open:
@@ -292,6 +292,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
@@ -322,6 +323,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == IdProvider.class) {
             return (T) new NullFileidProvider();
+        }
+        if(type == Quota.class) {
+            return (T) new DisabledQuotaFeature();
         }
         return null;
     }

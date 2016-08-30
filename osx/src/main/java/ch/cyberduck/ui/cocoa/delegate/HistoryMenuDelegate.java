@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
@@ -37,7 +38,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.MainController;
-import ch.cyberduck.ui.cocoa.TableCellAttributes;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -46,15 +46,12 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Date;
 
-/**
- * @version $Id$
- */
 public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
             NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
     );

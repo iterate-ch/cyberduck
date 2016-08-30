@@ -21,9 +21,6 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class LimitedListProgressListener implements ListProgressListener {
 
     private Preferences preferences

@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class FTPReadFeature implements Read {
     private static final Logger log = Logger.getLogger(FTPReadFeature.class);
 
@@ -106,10 +103,13 @@ public class FTPReadFeature implements Read {
                     final String text = session.getClient().getReplyString();
                     if(status.isSegment()) {
                         // Ignore 451 and 426 response because stream was prematurely closed
-                        log.warn(String.format("Ignore unexpected reply %s when completing file segment", text));
+                        log.warn(String.format("Ignore unexpected reply %s when completing file segment %s", text, status));
+                    }
+                    else if(!status.isComplete()) {
+                        log.warn(String.format("Ignore unexpected reply %s with incomplete transfer status %s", text, status));
                     }
                     else {
-                        log.warn(String.format("Unexpected reply %s when completing file download", text));
+                        log.warn(String.format("Unexpected reply %s when completing file download with status %s", text, status));
                         throw new FTPException(session.getClient().getReplyCode(), text);
                     }
                 }

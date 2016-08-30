@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.TimeZone;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -34,7 +35,7 @@ public class SynchronizationPathFilterTest {
     public void testPrepare() throws Exception {
         final Path test = new Path("/t/a", EnumSet.of(Path.Type.file));
         Session session = new NullSession(new Host(new TestProtocol()));
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
+        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()) {
             @Override
             public boolean isSymbolicLink() {
                 return false;

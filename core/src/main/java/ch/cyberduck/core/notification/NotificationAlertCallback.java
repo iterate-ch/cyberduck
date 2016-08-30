@@ -22,16 +22,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 
-/**
- * @version $Id$
- */
 public class NotificationAlertCallback implements AlertCallback {
 
-    private NotificationService growl = NotificationServiceFactory.get();
+    private NotificationService notification = NotificationServiceFactory.get();
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        growl.notify(failure.getMessage(), host.getHostname());
+        notification.notify(failure.getMessage(), host.getHostname());
         return false;
     }
 }

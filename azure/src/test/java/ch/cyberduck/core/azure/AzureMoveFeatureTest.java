@@ -23,9 +23,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureMoveFeatureTest {
 
@@ -42,18 +39,10 @@ public class AzureMoveFeatureTest {
         new AzureTouchFeature(session, null).touch(test);
         assertTrue(new AzureFindFeature(session, null).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureMoveFeature(session, null).move(test, target, false, new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureMoveFeature(session, null).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(target));
-        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

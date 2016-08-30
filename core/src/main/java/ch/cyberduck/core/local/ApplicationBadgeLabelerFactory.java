@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class ApplicationBadgeLabelerFactory extends Factory<ApplicationBadgeLabeler> {
 
     public ApplicationBadgeLabelerFactory() {

@@ -17,14 +17,13 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.TimeZone;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractDateFormatter implements DateFormatter {
 
     private final DateFormat format;
@@ -51,6 +50,9 @@ public abstract class AbstractDateFormatter implements DateFormatter {
 
     @Override
     public Date parse(final String input) throws InvalidDateException {
+        if(StringUtils.isBlank(input)) {
+            throw new InvalidDateException();
+        }
         synchronized(format) {
             try {
                 return format.parse(input);

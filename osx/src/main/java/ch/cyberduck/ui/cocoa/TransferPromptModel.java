@@ -49,9 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public abstract class TransferPromptModel extends OutlineDataSource {
     private static Logger log = Logger.getLogger(TransferPromptModel.class);
 

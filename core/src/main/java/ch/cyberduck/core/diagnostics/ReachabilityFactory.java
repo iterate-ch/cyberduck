@@ -21,9 +21,6 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id$
- */
 public class ReachabilityFactory extends Factory<Reachability> {
 
     protected ReachabilityFactory() {

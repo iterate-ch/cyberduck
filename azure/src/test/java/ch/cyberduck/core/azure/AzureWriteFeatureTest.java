@@ -32,9 +32,6 @@ import com.microsoft.azure.storage.OperationContext;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureWriteFeatureTest {
 
@@ -58,7 +55,6 @@ public class AzureWriteFeatureTest {
         final OutputStream out = new AzureWriteFeature(session, context).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertTrue(new AzureFindFeature(session, context).find(test));
         final PathAttributes attributes = new AzureAttributesFeature(session, context).find(test);
         assertEquals(content.length, attributes.getSize());
@@ -75,13 +71,11 @@ public class AzureWriteFeatureTest {
                 .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")));
         new StreamCopier(new TransferStatus(), new TransferStatus())
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
-        IOUtils.closeQuietly(overwrite);
+        overwrite.close();
+        // Test double close
+        overwrite.close();
         assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, context).find(test).getSize());
-        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -29,9 +29,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public abstract class CalculateSizeWorker extends Worker<Long> {
 
     /**

@@ -30,9 +30,6 @@ import org.apache.commons.cli.CommandLine;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class CommandLinePathParser {
 
     private final PathKindDetector detector

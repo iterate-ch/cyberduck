@@ -21,20 +21,25 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.util.Collections;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2GetUploadUrlResponse;
+
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2TouchFeature implements Touch {
 
+    private final B2Session session;
     private PathContainerService containerService
             = new B2PathContainerService();
-
-    private final B2Session session;
 
     public B2TouchFeature(final B2Session session) {
         this.session = session;
@@ -43,14 +48,21 @@ public class B2TouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
+            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(
+                    new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
             session.getClient().uploadFile(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                    uploadUrl,
                     containerService.getKey(file),
-                    new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                    new MappingMimeTypeService().getMime(file.getName()), Collections.emptyMap());
+                    new ByteArrayEntity(new byte[0]),
+                    ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L)).hash,
+                    new MappingMimeTypeService().getMime(file.getName()),
+                    Collections.singletonMap(
+                            X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())
+                    )
+            );
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, file);
+            throw new B2ExceptionMappingService(session).map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

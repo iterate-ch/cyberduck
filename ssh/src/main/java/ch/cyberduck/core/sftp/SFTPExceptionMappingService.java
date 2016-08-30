@@ -42,9 +42,6 @@ import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
-/**
- * @version $Id$
- */
 public class SFTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
     private static final Logger log = Logger.getLogger(SFTPExceptionMappingService.class);
 

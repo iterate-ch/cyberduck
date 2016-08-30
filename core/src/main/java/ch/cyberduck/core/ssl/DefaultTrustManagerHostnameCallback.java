@@ -20,9 +20,6 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
-/**
- * @version $Id$
- */
 public class DefaultTrustManagerHostnameCallback implements TrustManagerHostnameCallback {
 
     private Host host;
@@ -34,5 +31,13 @@ public class DefaultTrustManagerHostnameCallback implements TrustManagerHostname
     @Override
     public String getTarget() {
         return new PunycodeConverter().convert(host.getHostname());
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultTrustManagerHostnameCallback{");
+        sb.append("host=").append(host);
+        sb.append('}');
+        return sb.toString();
     }
 }

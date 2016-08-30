@@ -21,10 +21,8 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class SwiftProtocol extends AbstractProtocol {
     @Override
     public String getName() {
@@ -71,4 +69,8 @@ public class SwiftProtocol extends AbstractProtocol {
         return "Secret Key";
     }
 
+    @Override
+    public String getContext() {
+        return PreferencesFactory.get().getProperty("openstack.authentication.context");
+    }
 }

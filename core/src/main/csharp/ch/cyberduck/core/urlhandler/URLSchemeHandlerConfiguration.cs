@@ -17,24 +17,21 @@
 // 
 
 using System;
-using System.Windows.Forms;
+using ch.cyberduck.core;
 using Microsoft.Win32;
 using org.apache.log4j;
+using ch.cyberduck.core.urlhandler;
+using java.util;
+using Application = System.Windows.Forms.Application;
 
 namespace Ch.Cyberduck.Core.Urlhandler
 {
-    public class URLSchemeHandlerConfiguration
+    public class URLSchemeHandlerConfiguration : AbstractSchemeHandler
     {
         private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
-        private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
 
-        private URLSchemeHandlerConfiguration()
+        public URLSchemeHandlerConfiguration()
         {
-        }
-
-        public static URLSchemeHandlerConfiguration Instance
-        {
-            get { return instance; }
         }
 
         /// <summary>
@@ -50,7 +47,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// <summary>
         /// Register Cyberduck as default application for the FTP URLs in the current user domain.
         /// </summary>
-        public void RegisterFtpProtocol()
+        private void RegisterFtpProtocol()
         {
             RegisterFtpProtocol(Registry.CurrentUser);
         }
@@ -60,7 +57,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// some more tweaking (e.g. remove the ShellFolder from the ftp entry in the registry).
         /// </summary>
         /// <param name="registry"></param>
-        public void RegisterFtpProtocol(RegistryKey registry)
+        private void RegisterFtpProtocol(RegistryKey registry)
         {
             RegisterCyberduckUrlHandler(registry);
             RegistryKey r =
@@ -73,7 +70,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// Check if Cyberduck is the default application for FTP URLs in the current user domain.
         /// </summary>
         /// <returns></returns>
-        public bool IsDefaultApplicationForFtp()
+        private bool IsDefaultApplicationForFtp()
         {
             RegistryKey ftpUserChoice =
                 Registry.CurrentUser.OpenSubKey(
@@ -85,7 +82,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// Check if Cyberduck is the default application for SFTP URLs in the current user domain.
         /// </summary>
         /// <returns></returns>
-        public bool IsDefaultApplicationForSftp()
+        private bool IsDefaultApplicationForSftp()
         {
             RegistryKey sftpClass = Registry.CurrentUser.OpenSubKey(@"Software\Classes\sftp");
             if (null != sftpClass)
@@ -104,7 +101,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// Register Cyberduck as default application for the SFTP URLs in the current user domain.
         /// </summary>
         /// <param name="registry"></param>
-        public void RegisterSftpProtocol()
+        private void RegisterSftpProtocol()
         {
             RegisterSftpProtocol(Registry.CurrentUser);
         }
@@ -113,7 +110,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
         /// Register Cyberduck as default application for the SFTP URLs.
         /// </summary>
         /// <param name="registry"></param>
-        public void RegisterSftpProtocol(RegistryKey registry)
+        private void RegisterSftpProtocol(RegistryKey registry)
         {
             CreateCustomUrlHandler(registry, "sftp", "sftp protocol", Application.ExecutablePath,
                 Application.ExecutablePath + ",0");
@@ -159,6 +156,36 @@ namespace Ch.Cyberduck.Core.Urlhandler
                 if (null != r32) r32.Close();
                 if (null != r64) r64.Close();
             }
+        }
+
+        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, Scheme scheme)
+        {
+            if(Scheme.ftp.@equals(scheme))
+            {
+                this.RegisterFtpProtocol();
+            }
+            if (Scheme.sftp.@equals(scheme))
+            {
+                this.RegisterSftpProtocol();
+            }
+        }
+
+        public override ch.cyberduck.core.local.Application getDefaultHandler(Scheme scheme)
+        {
+            if (Scheme.ftp.@equals(scheme))
+            {
+                if(this.IsDefaultApplicationForFtp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
+            }
+            if (Scheme.sftp.@equals(scheme))
+            {
+                if(this.IsDefaultApplicationForSftp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
+            }
+            return ch.cyberduck.core.local.Application.notfound;
+        }
+
+        public override List getAllHandlers(Scheme value)
+        {
+            return Arrays.asList(new ch.cyberduck.core.local.Application(Application.ExecutablePath));
         }
     }
 }

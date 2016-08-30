@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -78,16 +79,14 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
  * Amazon CloudFront CDN configuration.
- *
- * @version $Id$
  */
 public class CloudFrontDistributionConfiguration
         implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
@@ -142,10 +141,6 @@ public class CloudFrontDistributionConfiguration
     @Override
     public String getHostname() {
         return "cloudfront.amazonaws.com";
-    }
-
-    private static interface Authenticated<T> extends Callable<T> {
-        T call() throws BackgroundException;
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
@@ -297,6 +292,7 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Purge.class || type == Index.class) {
             if(method.equals(Distribution.DOWNLOAD)
@@ -425,7 +421,7 @@ public class CloudFrontDistributionConfiguration
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final String originId = UUID.randomUUID().toString();
+        final String originId = String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random());
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
@@ -481,7 +477,7 @@ public class CloudFrontDistributionConfiguration
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final String originId = UUID.randomUUID().toString();
+        final String originId = String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random());
         final CacheBehavior cacheBehavior = new CacheBehavior(
                 originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
         );
@@ -567,7 +563,9 @@ public class CloudFrontDistributionConfiguration
             distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
         }
         if(this.getFeature(DistributionLogging.class, method) != null) {
-            distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
+            distribution.setContainers(new S3BucketListService(session).list(
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                    new DisabledListProgressListener()));
         }
         return distribution;
     }
@@ -587,5 +585,9 @@ public class CloudFrontDistributionConfiguration
         catch(CloudFrontServiceException e) {
             throw new CloudFrontServiceExceptionMappingService().map("Cannot read CDN configuration", e);
         }
+    }
+
+    private interface Authenticated<T> extends Callable<T> {
+        T call() throws BackgroundException;
     }
 }

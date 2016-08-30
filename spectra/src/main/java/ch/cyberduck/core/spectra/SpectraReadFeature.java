@@ -18,8 +18,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -41,13 +41,19 @@ public class SpectraReadFeature implements Read {
 
     private final SpectraSession session;
 
+    private final SpectraBulkService bulk;
+
     public SpectraReadFeature(final SpectraSession session) {
+        this(session, new SpectraBulkService(session));
+    }
+
+    public SpectraReadFeature(final SpectraSession session, final SpectraBulkService bulk) {
         this.session = session;
+        this.bulk = bulk;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
         final List<InputStream> streams = new ArrayList<InputStream>();
@@ -73,7 +79,7 @@ public class SpectraReadFeature implements Read {
             return new SequenceInputStream(Collections.enumeration(streams));
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Download {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

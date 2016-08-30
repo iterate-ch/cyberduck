@@ -3,9 +3,6 @@ package ch.cyberduck.core.resources;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 
-/**
- * @version $Id$
- */
 public class DisabledIconCache<I> extends AbstractIconCache {
 
     @Override

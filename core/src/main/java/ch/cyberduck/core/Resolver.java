@@ -30,9 +30,6 @@ import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-/**
- * @version $Id$
- */
 public class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 

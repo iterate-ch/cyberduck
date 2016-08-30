@@ -44,9 +44,6 @@ import ch.iterate.openstack.swift.exception.AuthorizationException;
 import ch.iterate.openstack.swift.exception.ContainerNotFoundException;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftLocationFeature implements Location {
     private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 
@@ -104,7 +101,7 @@ public class SwiftLocationFeature implements Location {
                         );
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
-                        log.warn(String.format("Failure finding container %s in region %s", container, r));
+                        log.warn(String.format("Failure finding container %s in region %s", container, r.getRegionId()));
                     }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);

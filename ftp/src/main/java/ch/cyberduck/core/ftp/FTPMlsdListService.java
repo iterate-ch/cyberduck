@@ -30,9 +30,6 @@ import org.apache.commons.net.ftp.FTPCmd;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPMlsdListService implements ListService {
 
     private final FTPSession session;

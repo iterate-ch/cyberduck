@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -30,9 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class DownloadTransferTest {
 
     @Test
@@ -47,7 +44,7 @@ public class DownloadTransferTest {
                 return children;
             }
         };
-        assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
+        assertEquals(Collections.singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
                 t.list(session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
@@ -179,7 +176,7 @@ public class DownloadTransferTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(local);
         final OutputStream out = local.getOutputStream(false);
-        IOUtils.write("test", out);
+        IOUtils.write("test", out, Charset.defaultCharset());
         out.close();
         final Transfer transfer = new DownloadTransfer(host, test, local) {
             @Override
@@ -228,7 +225,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -253,7 +250,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -278,7 +275,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -303,7 +300,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() throws LocalAccessDeniedException {
-                return new AttributedList<Local>(Arrays.<Local>asList(new NullLocal("p", "a")));
+                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();

@@ -34,9 +34,6 @@ import net.schmizz.sshj.transport.TransportException;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class SFTPExceptionMappingServiceTest {
 
     @Test

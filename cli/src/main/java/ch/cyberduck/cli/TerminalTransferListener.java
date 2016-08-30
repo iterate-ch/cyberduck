@@ -22,9 +22,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferProgress;
 
-/**
- * @version $Id$
- */
 public class TerminalTransferListener implements TransferListener {
 
     @Override

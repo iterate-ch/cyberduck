@@ -37,9 +37,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class FolderController extends FileController {
 
     @Outlet
@@ -110,12 +107,10 @@ public class FolderController extends FileController {
                 new CreateDirectoryWorker(folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
                     public void cleanup(final Boolean done) {
-                        if(done) {
-                            if(filename.charAt(0) == '.') {
-                                parent.setShowHiddenFiles(true);
-                            }
-                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                        if(filename.charAt(0) == '.') {
+                            parent.setShowHiddenFiles(true);
                         }
+                        parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                     }
                 }));
     }

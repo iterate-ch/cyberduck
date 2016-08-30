@@ -29,9 +29,6 @@ import ch.cyberduck.core.features.Redundancy;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class WriteRedundancyWorker extends Worker<Boolean> {
 
     /**
@@ -47,15 +44,24 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback<String> callback;
 
     private ProgressListener listener;
 
     public WriteRedundancyWorker(final List<Path> files,
-                                 final String level, final boolean recursive, final ProgressListener listener) {
+                                 final String level,
+                                 final boolean recursive,
+                                 final ProgressListener listener) {
+        this(files, level, new BooleanRecursiveCallback<String>(recursive), listener);
+    }
+
+    public WriteRedundancyWorker(final List<Path> files,
+                                 final String level,
+                                 final RecursiveCallback<String> callback,
+                                 final ProgressListener listener) {
         this.files = files;
         this.level = level;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -76,10 +82,9 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setClass(file, level);
-            file.attributes().setStorageClass(level);
         }
-        if(recursive) {
-            if(file.isDirectory()) {
+        if(file.isDirectory()) {
+            if(callback.recurse(file, level)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

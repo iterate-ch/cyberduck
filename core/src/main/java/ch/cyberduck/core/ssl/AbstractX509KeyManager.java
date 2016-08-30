@@ -22,9 +22,6 @@ import javax.net.ssl.X509ExtendedKeyManager;
 import java.net.Socket;
 import java.security.Principal;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager implements X509KeyManager {
 
     @Override

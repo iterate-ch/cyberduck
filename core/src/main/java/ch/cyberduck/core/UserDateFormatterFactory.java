@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
-/**
- * @version $Id$
- */
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
 
     protected UserDateFormatterFactory() {

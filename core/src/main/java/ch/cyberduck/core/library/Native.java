@@ -22,9 +22,6 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 
-/**
- * @version $Id$
- */
 public final class Native {
     private static final Logger log = Logger.getLogger(Native.class);
 

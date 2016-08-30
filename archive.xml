@@ -21,25 +21,12 @@
  -->
 <project name="Archiver" basedir=".">
 
-    <target name="source-tar" if="platform.mac">
-        <antcall target="tar">
-            <param name="directory" value="${home}"/>
-            <param name="source" value="."/>
-            <param name="target" value="duck-src-${version}.${revision}.tar.gz"/>
-        </antcall>
-        <foreach target="sha256" param="source">
-            <fileset dir="${build.deploy}">
-                <include name="*.tar.gz"/>
-            </fileset>
-        </foreach>
-    </target>
-
     <target name="tar" if="platform.mac">
         <mkdir dir="${build.deploy}"/>
         <exec dir="${directory}" executable="tar" spawn="false" failonerror="true">
             <arg line="--exclude .svn --exclude .git --exclude target -czf ${build.deploy}/${target} ${source}"/>
         </exec>
-        <echo message="Calculating MD5 sum..."/>
+        <echo message="Calculating MD5..."/>
         <checksum file="${build.deploy}/${target}" algorithm="md5"/>
     </target>
 
@@ -53,14 +40,17 @@
     </target>
 
     <target name="md5">
-        <checksum file="${source}" algorithm="md5"/>
+        <echo message="Calculating MD5..."/>
+        <checksum file="${source}" algorithm="md5" property="source.md5"/>
     </target>
 
     <target name="sha1">
-        <checksum file="${source}" algorithm="sha1"/>
+        <echo message="Calculating SHA1..."/>
+        <checksum file="${source}" algorithm="sha1" property="source.sha1"/>
     </target>
 
     <target name="sha256">
-        <checksum file="${source}" algorithm="sha-256"/>
+        <echo message="Calculating SHA256..."/>
+        <checksum file="${source}" algorithm="sha-256" property="source.sha256"/>
     </target>
 </project>

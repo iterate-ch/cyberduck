@@ -40,10 +40,10 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
+import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -60,9 +60,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class BookmarkTableDataSource extends ListDataSource {
     private static Logger log = Logger.getLogger(BookmarkTableDataSource.class);
 

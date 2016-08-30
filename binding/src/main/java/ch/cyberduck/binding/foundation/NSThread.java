@@ -21,9 +21,6 @@ package ch.cyberduck.binding.foundation;
 
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id$
- */
 public abstract class NSThread extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSThread", _Class.class);
 

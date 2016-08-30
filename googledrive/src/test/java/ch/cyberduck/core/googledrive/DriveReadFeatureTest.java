@@ -43,6 +43,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class DriveReadFeatureTest {
 
     @Test
@@ -80,7 +81,6 @@ public class DriveReadFeatureTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 
@@ -113,7 +113,6 @@ public class DriveReadFeatureTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 
@@ -124,8 +123,9 @@ public class DriveReadFeatureTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
 
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final String name = "ä-" + UUID.randomUUID().toString();
+        final Path test = new Path(new DriveHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
@@ -147,11 +147,7 @@ public class DriveReadFeatureTest {
         System.arraycopy(content, 100, reference, 0, content.length - 100);
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
-        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

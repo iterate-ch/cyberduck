@@ -30,9 +30,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class DefaultX509TrustManager extends AbstractX509TrustManager {
     private static final Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 
@@ -49,6 +46,7 @@ public class DefaultX509TrustManager extends AbstractX509TrustManager {
             system = (javax.net.ssl.X509TrustManager) trustmanagers[0];
         }
         catch(NoSuchAlgorithmException | KeyStoreException e) {
+            log.error(String.format("Initialization of trust store failed. %s", e.getMessage()));
             throw new IOException(e);
         }
         return this;
@@ -69,10 +67,10 @@ public class DefaultX509TrustManager extends AbstractX509TrustManager {
     @Override
     public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
         if((certs != null)) {
-            if(log.isInfoEnabled()) {
-                log.info("Server certificate chain:");
+            if(log.isDebugEnabled()) {
+                log.debug("Server certificate chain:");
                 for(int i = 0; i < certs.length; i++) {
-                    log.info(String.format("X509Certificate[%d]=%s", i, certs[i]));
+                    log.debug(String.format("X509Certificate[%d]=%s", i, certs[i]));
                 }
             }
         }

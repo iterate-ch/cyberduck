@@ -32,9 +32,6 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
     private static final Logger log = Logger.getLogger(ExtendedHttpRequestRetryHandler.class);
 

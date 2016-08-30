@@ -39,9 +39,6 @@ import java.util.Map;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.io.ContentLengthInputStream;
 
-/**
- * @version $Id$
- */
 public class DAVReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DAVReadFeature.class);
 

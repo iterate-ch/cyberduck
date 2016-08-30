@@ -21,9 +21,6 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
-/**
- * @version $Id$
- */
 public class AzurePathContainerService extends PathContainerService {
 
     @Override

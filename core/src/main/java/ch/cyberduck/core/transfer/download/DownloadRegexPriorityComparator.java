@@ -21,9 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class DownloadRegexPriorityComparator extends PathPriorityComparator {
 
     private String pattern;

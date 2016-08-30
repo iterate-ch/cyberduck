@@ -30,9 +30,6 @@ import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHCredentialsConfigurator.class);
 

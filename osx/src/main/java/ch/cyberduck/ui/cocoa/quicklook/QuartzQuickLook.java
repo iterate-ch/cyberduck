@@ -28,9 +28,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public final class QuartzQuickLook implements QuickLook {
 
     private List<QLPreviewItem> previews
@@ -84,7 +81,7 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void willBeginQuickLook() {
-        panel.setDataSource(this.model.id());
+        panel.setDataSource(model.id());
     }
 
     @Override

@@ -28,9 +28,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * @version $Id$
- */
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private static Logger log = Logger.getLogger(DelayedHttpEntity.class);
 

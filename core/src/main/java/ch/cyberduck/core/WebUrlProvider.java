@@ -21,9 +21,6 @@ package ch.cyberduck.core;
 import java.net.URI;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class WebUrlProvider implements UrlProvider {
 
     private Host host;

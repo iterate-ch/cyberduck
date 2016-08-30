@@ -25,9 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
 
-/**
- * @version $Id$
- */
 public class UserDefaultsDateFormatter extends AbstractUserDateFormatter implements UserDateFormatter {
 
     private static final NSLocale locale = NSLocale.currentLocale();

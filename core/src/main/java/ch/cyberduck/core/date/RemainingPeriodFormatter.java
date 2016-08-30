@@ -22,9 +22,6 @@ import ch.cyberduck.core.LocaleFactory;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class RemainingPeriodFormatter implements PeriodFormatter {
 
     /**

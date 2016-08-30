@@ -9,9 +9,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
-/**
- * @version $Id:$
- */
 public class Proxy {
     private static final Logger log = Logger.getLogger(Proxy.class);
 

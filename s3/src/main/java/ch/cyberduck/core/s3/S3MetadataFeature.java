@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -34,10 +36,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/**
- * @version $Id$
- */
 public class S3MetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(S3MetadataFeature.class);
 
@@ -55,6 +53,11 @@ public class S3MetadataFeature implements Headers {
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+    }
+
+    @Override
+    public Map<String, String> getDefault(final Local local) {
+        return PreferencesFactory.get().getMap("s3.metadata.default");
     }
 
     @Override
@@ -85,12 +88,15 @@ public class S3MetadataFeature implements Headers {
                 }
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    target.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(file));
+                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
+                    target.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                    // Set custom key id stored in KMS
+                    target.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+                throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
             }
         }
     }

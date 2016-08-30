@@ -20,9 +20,6 @@ package ch.cyberduck.core.threading;
 
 import org.rococoa.internal.AutoreleaseBatcher;
 
-/**
- * @version $Id$
- */
 public final class AutoreleaseActionOperationBatcher implements ActionOperationBatcher {
 
     /**

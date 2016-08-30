@@ -18,8 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSComboBox;
 import ch.cyberduck.binding.application.NSImage;
@@ -40,9 +42,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class GotoController extends AlertController {
 
     @Outlet

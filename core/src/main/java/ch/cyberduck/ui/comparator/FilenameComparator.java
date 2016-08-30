@@ -24,9 +24,6 @@ import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class FilenameComparator extends BrowserComparator {
     private static final long serialVersionUID = -6726865487297853350L;
 

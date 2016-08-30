@@ -28,9 +28,6 @@ import com.github.sardine.impl.SardineException;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class DAVExceptionMappingServiceTest {
 
     @Test

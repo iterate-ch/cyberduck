@@ -19,11 +19,33 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /// <i>native declaration : :26</i>
 public abstract class NSSegmentedControl extends NSControl {
+    private static final NSSegmentedControl._Class CLASS = Rococoa.createClass("NSSegmentedControl", NSSegmentedControl._Class.class);
+
+    public static final NSInteger NSSegmentStyleAutomatic = new NSInteger(0);
+    public static final NSInteger NSSegmentStyleRounded = new NSInteger(1);
+    public static final NSInteger NSSegmentStyleTexturedRounded = new NSInteger(2);
+    public static final NSInteger NSSegmentStyleRoundRect = new NSInteger(3);
+    public static final NSInteger NSSegmentStyleTexturedSquare = new NSInteger(4);
+    public static final NSInteger NSSegmentStyleCapsule = new NSInteger(5);
+    public static final NSInteger NSSegmentStyleSmallSquare = new NSInteger(6);
+    public static final NSInteger NSSegmentStyleSeparated = new NSInteger(8);
+
+    public interface _Class extends ObjCClass {
+        NSSegmentedControl alloc();
+    }
+
+    public static NSSegmentedControl segmentedControl() {
+        return CLASS.alloc().init();
+    }
+
+    public abstract NSSegmentedControl init();
 
     /**
      * Original signature : <code>void setSegmentCount(NSInteger)</code><br>

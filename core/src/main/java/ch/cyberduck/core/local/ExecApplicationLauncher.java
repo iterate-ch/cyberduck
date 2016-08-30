@@ -27,16 +27,13 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public class ExecApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(ExecApplicationLauncher.class);
 
     private final Runtime runtime = Runtime.getRuntime();
 
-    private ThreadPool pool
-            = new DefaultThreadPool(1, "process");
+    private ThreadPool<Boolean> pool
+            = new DefaultThreadPool<Boolean>(1, "process");
 
     @Override
     public boolean open(final Local file) {

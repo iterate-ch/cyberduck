@@ -26,9 +26,6 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class PathTooltipService {
 
     private SizeFormatter sizeFormatter;

@@ -26,9 +26,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @version $Id:$
- */
 public class FinderSidebarService implements SidebarService {
     private static final Logger log = Logger.getLogger(FinderSidebarService.class);
 
@@ -39,6 +36,7 @@ public class FinderSidebarService implements SidebarService {
     private static final String kLSSharedFileListFavoriteVolumes = "com.apple.LSSharedFileList.FavoriteVolumes";
     private static final String kLSSharedFileListRecentServerItems = "com.apple.LSSharedFileList.RecentServers";
     private static final String kLSSharedFileListFavoriteItems = "com.apple.LSSharedFileList.FavoriteItems";
+    private static final String kLSSharedFileListSessionLoginItems = "com.apple.LSSharedFileList.SessionLoginItems";
 
     private final List list;
 
@@ -86,6 +84,8 @@ public class FinderSidebarService implements SidebarService {
                 return kLSSharedFileListFavoriteVolumes;
             case server:
                 return kLSSharedFileListRecentServerItems;
+            case login:
+                return kLSSharedFileListSessionLoginItems;
         }
         return kLSSharedFileListFavoriteItems;
     }

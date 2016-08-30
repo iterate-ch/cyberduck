@@ -38,9 +38,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class FTPDataFallback {
     private static final Logger log = Logger.getLogger(FTPDataFallback.class);
 
@@ -71,11 +68,14 @@ public class FTPDataFallback {
             throws IOException, BackgroundException {
         try {
             // Make sure to always configure data mode because connect event sets defaults.
-            if(session.getConnectMode().equals(FTPConnectMode.passive)) {
-                session.getClient().enterLocalPassiveMode();
-            }
-            else if(session.getConnectMode().equals(FTPConnectMode.active)) {
-                session.getClient().enterLocalActiveMode();
+            final FTPConnectMode mode = session.getConnectMode();
+            switch(mode) {
+                case active:
+                    session.getClient().enterLocalActiveMode();
+                    break;
+                case passive:
+                    session.getClient().enterLocalPassiveMode();
+                    break;
             }
             return action.execute();
         }

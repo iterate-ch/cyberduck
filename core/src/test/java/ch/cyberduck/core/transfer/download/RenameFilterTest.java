@@ -14,9 +14,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertNotSame;
 
-/**
- * @version $Id$
- */
 public class RenameFilterTest {
 
     @Test

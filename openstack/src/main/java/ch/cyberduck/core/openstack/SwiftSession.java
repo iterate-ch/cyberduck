@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
@@ -90,6 +91,21 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
+
+    /**
+     * Preload account info
+     */
+    private boolean accountPreload = preferences.getBoolean("openstack.account.preload");
+
+    /**
+     * Preload CDN configuration
+     */
+    private boolean cdnPreload = preferences.getBoolean("openstack.cdn.preload");
+
+    /**
+     * Preload container size
+     */
+    private boolean containerPreload = preferences.getBoolean("openstack.container.size.preload");
 
     public SwiftSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -122,6 +138,9 @@ public class SwiftSession extends HttpSession<Client> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            super.logout();
         }
     }
 
@@ -158,30 +177,26 @@ public class SwiftSession extends HttpSession<Client> {
                 log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
                 return;
             }
-            if(preferences.getBoolean("openstack.account.preload")) {
-                final ThreadPool pool = new DefaultThreadPool("accounts");
+            if(accountPreload) {
+                final ThreadPool<AccountInfo> pool = new DefaultThreadPool<AccountInfo>("accounts");
                 try {
-                    pool.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            for(Region region : client.getRegions()) {
-                                try {
-                                    final AccountInfo info = client.getAccountInfo(region);
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Signing key is %s", info.getTempUrlKey()));
-                                    }
-                                    accounts.put(region, info);
+                    for(Region region : client.getRegions()) {
+                        pool.execute(new Callable<AccountInfo>() {
+                            @Override
+                            public AccountInfo call() throws IOException {
+                                final AccountInfo info = client.getAccountInfo(region);
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Signing key is %s", info.getTempUrlKey()));
                                 }
-                                catch(IOException e) {
-                                    log.warn(String.format("Failure loading account info for region %s", region));
-                                }
+                                accounts.put(region, info);
+                                return info;
                             }
-                        }
-                    });
+                        });
+                    }
                 }
                 finally {
                     // Shutdown gracefully
-                    pool.shutdown();
+                    pool.shutdown(true);
                 }
             }
         }
@@ -196,24 +211,37 @@ public class SwiftSession extends HttpSession<Client> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AttributedList<Path>(new SwiftContainerListService(this, regionService,
-                    new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(listener));
+            return new SwiftContainerListService(this, regionService,
+                    new SwiftLocationFeature.SwiftRegion(host.getRegion()), cdnPreload, containerPreload).list(directory, listener);
         }
         else {
             return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
     }
 
+    public SwiftSession withAccountPreload(final boolean preload) {
+        this.accountPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withCdnPreload(final boolean preload) {
+        this.cdnPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withContainerPreload(final boolean preload) {
+        this.containerPreload = preload;
+        return this;
+    }
+
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }
         if(type == Write.class) {
-            if(preferences.getBoolean("openstack.write.largeupload")) {
-                return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
-            }
-            return (T) new SwiftWriteFeature(this, regionService);
+            return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
         if(type == Upload.class) {
             return (T) new SwiftThresholdUploadService(this, regionService);
@@ -252,7 +280,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this, accounts);
+            return (T) new SwiftUrlProvider(this, accounts, regionService);
         }
         if(type == Attributes.class) {
             return (T) new SwiftAttributesFeature(this, regionService);

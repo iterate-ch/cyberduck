@@ -20,8 +20,6 @@ package ch.cyberduck.core.exception;
 
 /**
  * To be used if a connection attempt is interrupted by the user
- *
- * @version $Id$
  */
 public class ConnectionCanceledException extends BackgroundException {
     private static final long serialVersionUID = 1731598032382782206L;

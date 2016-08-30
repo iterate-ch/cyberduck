@@ -23,9 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-/**
- * @version $Id$
- */
 public class DefaultUserDateFormatter extends AbstractUserDateFormatter {
     @Override
     public String getShortFormat(final long milliseconds, final boolean natural) {

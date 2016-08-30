@@ -21,9 +21,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureObjectListServiceTest {
 

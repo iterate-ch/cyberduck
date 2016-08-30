@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class Navigation {
 
     /**

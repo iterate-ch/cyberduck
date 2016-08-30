@@ -23,9 +23,6 @@ import ch.cyberduck.core.Scheme;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public final class DAVProtocol extends AbstractProtocol {
     @Override
     public String getName() {

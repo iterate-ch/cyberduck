@@ -30,9 +30,6 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class CompareFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 

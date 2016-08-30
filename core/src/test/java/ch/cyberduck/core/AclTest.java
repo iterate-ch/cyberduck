@@ -22,9 +22,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-/**
- * @version $Id:$
- */
 public class AclTest {
 
     @Test

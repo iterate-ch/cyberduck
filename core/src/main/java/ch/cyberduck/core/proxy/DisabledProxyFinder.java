@@ -20,9 +20,6 @@ package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Host;
 
-/**
- * @version $Id$
- */
 public class DisabledProxyFinder implements ProxyFinder {
     @Override
     public Proxy find(final Host target) {

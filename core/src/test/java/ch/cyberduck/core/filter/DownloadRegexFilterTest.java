@@ -10,9 +10,6 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class DownloadRegexFilterTest {
 
     @Test

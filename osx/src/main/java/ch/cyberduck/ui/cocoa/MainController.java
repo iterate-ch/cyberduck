@@ -19,8 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
 import ch.cyberduck.binding.foundation.NSAppleEventManager;
@@ -40,16 +45,20 @@ import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive5BookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
 import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
-import ch.cyberduck.core.importer.TransmitBookmarkCollection;
+import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -1100,8 +1109,9 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
-                return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+                return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
+                        new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
             }
         });
         if(updater.hasUpdatePrivileges()) {
@@ -1321,6 +1331,9 @@ public class MainController extends BundleController implements NSApplication.De
             log.debug(String.format("Application will quit with notification %s", notification));
         }
         this.invalidate();
+
+        // Clear temporary files
+        TemporaryFileServiceFactory.get().shutdown();
 
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();

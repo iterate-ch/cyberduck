@@ -30,9 +30,6 @@ import java.util.Calendar;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class OpensolarisFTPEntryParserTest {
 
     private FTPFileEntryParser parser;

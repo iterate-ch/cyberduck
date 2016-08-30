@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.s3.S3Protocol;
 
 public class SpectraProtocol extends AbstractProtocol {
     @Override
@@ -45,6 +46,16 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Type getType() {
+        return Type.s3;
+    }
+
+    @Override
+    public String getPrefix() {
+        return String.format("%s.%s", SpectraProtocol.class.getPackage().getName(), "Spectra");
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }
@@ -67,5 +78,10 @@ public class SpectraProtocol extends AbstractProtocol {
     @Override
     public boolean isEnabled() {
         return false;
+    }
+
+    @Override
+    public String getAuthorization() {
+        return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
     }
 }

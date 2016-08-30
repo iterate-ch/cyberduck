@@ -22,7 +22,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
@@ -41,20 +40,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3MultipleDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3MultipartService multipartService;
+    private final S3MultipartService multipartService;
 
-    private Versioning versioningService;
+    private final Versioning versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session));
@@ -67,58 +63,45 @@ public class S3MultipleDeleteFeature implements Delete {
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
-        if(files.size() == 1) {
-            new S3DefaultDeleteFeature(session).delete(files, prompt, callback);
-        }
-        else {
-            final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    continue;
-                }
-                callback.delete(file);
-                final Path container = containerService.getContainer(file);
-                final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
-                // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
-                keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-                if(map.containsKey(container)) {
-                    map.get(container).addAll(keys);
-                }
-                else {
-                    map.put(container, keys);
-                }
-            }
-            // Iterate over all containers and delete list of keys
-            for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
-                final Path container = entry.getKey();
-                final List<ObjectKeyAndVersion> keys = entry.getValue();
-                this.delete(container, keys, prompt);
-            }
-            for(Path file : files) {
-                if(containerService.isContainer(file)) {
-                    callback.delete(file);
-                    // Finally delete bucket itself
-                    try {
-                        session.getClient().deleteBucket(containerService.getContainer(file).getName());
-                    }
-                    catch(ServiceException e) {
-                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
-                }
-            }
-        }
+        final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
+        final List<Path> containers = new ArrayList<Path>();
         for(Path file : files) {
-            if(file.isFile()) {
-                try {
-                    // Delete interrupted multipart uploads
-                    for(MultipartUpload upload : multipartService.find(file)) {
-                        multipartService.delete(upload);
-                    }
-                }
-                catch(AccessDeniedException e) {
-                    // Workaround for #9000
-                    log.warn(String.format("Failure looking for multipart uploads. %s", e.getMessage()));
-                }
+            if(containerService.isContainer(file)) {
+                containers.add(file);
+                continue;
+            }
+            callback.delete(file);
+            if(file.getType().contains(Path.Type.upload)) {
+                // In-progress multipart upload
+                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                continue;
+            }
+            final Path container = containerService.getContainer(file);
+            final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+            // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
+            keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
+            if(map.containsKey(container)) {
+                map.get(container).addAll(keys);
+            }
+            else {
+                map.put(container, keys);
+            }
+        }
+        // Iterate over all containers and delete list of keys
+        for(Map.Entry<Path, List<ObjectKeyAndVersion>> entry : map.entrySet()) {
+            final Path container = entry.getKey();
+            final List<ObjectKeyAndVersion> keys = entry.getValue();
+            this.delete(container, keys, prompt);
+        }
+        for(Path file : containers) {
+            callback.delete(file);
+            // Finally delete bucket itself
+            try {
+                session.getClient().deleteBucket(containerService.getContainer(file).getName());
+            }
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }
@@ -149,7 +132,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         final ServiceException failure = new ServiceException();
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
-                        throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                        throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
                                 new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                     }
                 }
@@ -170,7 +153,7 @@ public class S3MultipleDeleteFeature implements Delete {
                             final ServiceException failure = new ServiceException();
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
-                            throw new ServiceExceptionMappingService().map("Cannot delete {0}", failure,
+                            throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
                                     new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
                         }
                     }
@@ -178,7 +161,7 @@ public class S3MultipleDeleteFeature implements Delete {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e, container);
+            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, container);
         }
     }
 }

@@ -17,9 +17,6 @@ package ch.cyberduck.core.transfer.normalizer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface RootPathsNormalizer<T> {
     public T normalize(T roots);
 }

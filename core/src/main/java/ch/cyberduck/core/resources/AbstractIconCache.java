@@ -3,9 +3,6 @@ package ch.cyberduck.core.resources;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractIconCache<I> implements IconCache<I> {
 
     /**

@@ -36,9 +36,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * @version $Id$
- */
 public abstract class EditMenuDelegate extends AbstractMenuDelegate {
 
     /**

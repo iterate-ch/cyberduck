@@ -25,9 +25,6 @@ import ch.cyberduck.core.CollectionListener;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 
-/**
- * @version $Id$
- */
 public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
 
     private Collection<T> collection;

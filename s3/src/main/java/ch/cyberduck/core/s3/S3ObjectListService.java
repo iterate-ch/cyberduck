@@ -49,9 +49,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3ObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
 
@@ -118,7 +115,7 @@ public class S3ObjectListService implements ListService {
             return objects;
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Listing directory {0} failed", e, directory);
+            throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, directory);

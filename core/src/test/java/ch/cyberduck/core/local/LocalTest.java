@@ -5,7 +5,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-import org.junit.Ignore;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -70,6 +70,64 @@ public class LocalTest {
         assertEquals("C:\\path\\Sessions", l.getAbsolute());
     }
 
+    @Test
+    public void testIsChild() throws Exception {
+        TestLocal l1 = new TestLocal("/");
+        TestLocal l2 = new TestLocal("/");
+        assertFalse(l1.isChild(l2));
+        assertFalse(l2.isChild(l1));
+
+        l1 = new TestLocal("/p/1");
+        l2 = new TestLocal("/p/1");
+        assertFalse(l1.isChild(l2));
+        assertFalse(l2.isChild(l1));
+
+        l1 = new TestLocal("/p/1");
+        l2 = new TestLocal("/p/2");
+        assertFalse(l1.isChild(l2));
+        assertFalse(l2.isChild(l1));
+
+        l1 = new TestLocal("/");
+        l2 = new TestLocal("/p");
+        assertFalse(l1.isChild(l2));
+        assertTrue(l2.isChild(l1));
+
+        l1 = new TestLocal("/");
+        l2 = new TestLocal("/p/1");
+        assertFalse(l1.isChild(l2));
+        assertTrue(l2.isChild(l1));
+
+        l1 = new TestLocal("/p/1");
+        l2 = new TestLocal("/p/1/2");
+        assertFalse(l1.isChild(l2));
+        assertTrue(l2.isChild(l1));
+
+        WindowsLocal wl1 = new WindowsLocal("G:\\");
+        WindowsLocal wl2 = new WindowsLocal("G:\\");
+        assertFalse(wl1.isChild(wl2));
+        assertFalse(wl2.isChild(wl1));
+
+        wl1 = new WindowsLocal("G:\\");
+        wl2 = new WindowsLocal("G:\\p");
+        assertFalse(wl1.isChild(wl2));
+        assertTrue(wl2.isChild(wl1));
+
+        wl1 = new WindowsLocal("G:\\");
+        wl2 = new WindowsLocal("H:\\p");
+        assertFalse(wl1.isChild(wl2));
+        assertFalse(wl2.isChild(wl1));
+
+        wl1 = new WindowsLocal("G:\\");
+        wl2 = new WindowsLocal("G:\\p\\1");
+        assertFalse(wl1.isChild(wl2));
+        assertTrue(wl2.isChild(wl1));
+
+        wl1 = new WindowsLocal("G:\\p");
+        wl2 = new WindowsLocal("G:\\p\\1\\2");
+        assertFalse(wl1.isChild(wl2));
+        assertTrue(wl2.isChild(wl1));
+    }
+
     @Test(expected = LocalAccessDeniedException.class)
     public void testRenameExistingDirectory() throws Exception {
         final TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -102,6 +160,10 @@ public class LocalTest {
         n.delete();
     }
 
+    @Test
+    public void testNormalize() throws Exception {
+        assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), "/"), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
+    }
 
     private static class WindowsLocal extends Local {
 

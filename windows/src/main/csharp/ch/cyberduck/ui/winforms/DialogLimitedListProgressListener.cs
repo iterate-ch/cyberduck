@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,14 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using java.lang;
+using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -30,8 +29,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private readonly WindowController _controller;
         private bool _supressed;
 
-        public DialogLimitedListProgressListener(WindowController controller)
-            : base(controller)
+        public DialogLimitedListProgressListener(WindowController controller) : base(controller)
         {
             _controller = controller;
         }
@@ -52,38 +50,32 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     AtomicBoolean c = new AtomicBoolean(true);
                     AsyncController.AsyncDelegate d = delegate
-                        {
-                            _controller.CommandBox(
-                                string.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                                              string.Empty),
-                                string.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"),
-                                              string.Empty),
-                                string.Format(
-                                    LocaleFactory.localizedString(
-                                        "Continue listing directory with more than {0} files.", "Alert"),
-                                    e.getChunk().size()),
-                                string.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
-                                              LocaleFactory.localizedString("Cancel")),
-                                false,
-                                LocaleFactory.localizedString("Always"),
-                                SysIcons.Warning,
-                                delegate(int option, bool verificationChecked)
-                                    {
-                                        if (option == 0)
-                                        {
-                                            _supressed = true;
-                                        }
-                                        if (option == 1)
-                                        {
-                                            c.SetValue(false);
-                                        }
-                                        if (verificationChecked)
-                                        {
-                                            _supressed = true;
-                                            disable();
-                                        }
-                                    });
-                        };
+                    {
+                        _controller.CommandBox(
+                            string.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), string.Empty),
+                            string.Format(LocaleFactory.localizedString("Listing directory {0}", "Status"), string.Empty),
+                            string.Format(
+                                LocaleFactory.localizedString("Continue listing directory with more than {0} files.",
+                                    "Alert"), e.getChunk().size()),
+                            string.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Cancel")), false, LocaleFactory.localizedString("Always"),
+                            TaskDialogIcon.Warning, delegate(int option, bool verificationChecked)
+                            {
+                                if (option == 0)
+                                {
+                                    _supressed = true;
+                                }
+                                if (option == 1)
+                                {
+                                    c.SetValue(false);
+                                }
+                                if (verificationChecked)
+                                {
+                                    _supressed = true;
+                                    disable();
+                                }
+                            });
+                    };
                     _controller.Invoke(d, true);
                     if (!c.Value)
                     {

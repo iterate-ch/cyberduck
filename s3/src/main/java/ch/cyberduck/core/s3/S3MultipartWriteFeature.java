@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -11,12 +12,14 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,9 +43,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id:$
- */
 public class S3MultipartWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
@@ -58,24 +58,6 @@ public class S3MultipartWriteFeature implements Write {
     private Preferences preferences
             = PreferencesFactory.get();
 
-    /**
-     * Storage class
-     */
-    private String storage
-            = preferences.getProperty("s3.storage.class");
-
-    /**
-     * Encryption algorithm
-     */
-    private String encryption
-            = preferences.getProperty("s3.encryption.algorithm");
-
-    /**
-     * Default metadata for new files
-     */
-    private Map<String, String> metadata
-            = preferences.getMap("s3.metadata.default");
-
     public S3MultipartWriteFeature(final S3Session session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
     }
@@ -87,27 +69,9 @@ public class S3MultipartWriteFeature implements Write {
         this.attributes = attributes;
     }
 
-    public S3MultipartWriteFeature withStorage(final String storage) {
-        this.storage = storage;
-        return this;
-    }
-
-    public S3MultipartWriteFeature withEncryption(final String encryption) {
-        this.encryption = encryption;
-        return this;
-    }
-
-    public S3MultipartWriteFeature withMetadata(final Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
     @Override
     public ResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session)
-                .withStorage(storage)
-                .withEncryption(encryption)
-                .withMetadata(metadata)
                 .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
@@ -120,9 +84,9 @@ public class S3MultipartWriteFeature implements Write {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
-        final MultipartOutputStream stream = new MultipartOutputStream(multipart, file);
+        final MultipartOutputStream stream = new MultipartOutputStream(multipart, file, status);
         return new ResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
@@ -130,6 +94,25 @@ public class S3MultipartWriteFeature implements Write {
                 return stream.getCompleted();
             }
         };
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
+    }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -141,14 +124,14 @@ public class S3MultipartWriteFeature implements Write {
 
         private final MultipartUpload multipart;
         private final Path file;
-
+        private final TransferStatus status;
+        private final AtomicBoolean close = new AtomicBoolean();
         private int partNumber;
 
-        private final AtomicBoolean close = new AtomicBoolean();
-
-        public MultipartOutputStream(final MultipartUpload multipart, final Path file) {
+        public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
             this.multipart = multipart;
             this.file = file;
+            this.status = status;
         }
 
         public List<MultipartPart> getCompleted() {
@@ -163,31 +146,48 @@ public class S3MultipartWriteFeature implements Write {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                final Map<String, String> parameters = new HashMap<String, String>();
-                parameters.put("uploadId", multipart.getUploadId());
-                parameters.put("partNumber", String.valueOf(++partNumber));
-                final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
-                switch(session.getSignatureVersion()) {
-                    case AWS4HMACSHA256:
-                        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(b, off, len)));
-                        break;
-                }
-                final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
-                session.getClient().putObjectWithRequestEntityImpl(
-                        containerService.getContainer(file).getName(), part,
-                        new ByteArrayEntity(b, off, len), parameters);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
-                }
-                completed.add(new MultipartPart(partNumber,
-                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                        part.getContentLength()));
+                completed.add(new RetryCallable<MultipartPart>() {
+                    @Override
+                    public MultipartPart call() throws BackgroundException {
+                        try {
+                            final Map<String, String> parameters = new HashMap<String, String>();
+                            parameters.put("uploadId", multipart.getUploadId());
+                            parameters.put("partNumber", String.valueOf(++partNumber));
+                            final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
+                            switch(session.getSignatureVersion()) {
+                                case AWS4HMACSHA256:
+                                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ByteArrayInputStream(b, off, len)));
+                                    break;
+                            }
+                            final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
+                            try {
+                                session.getClient().putObjectWithRequestEntityImpl(
+                                        containerService.getContainer(file).getName(), part,
+                                        new ByteArrayEntity(b, off, len), parameters);
+                            }
+                            catch(ServiceException e) {
+                                throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+                            }
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
+                            }
+                            return new MultipartPart(partNumber,
+                                    null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                                    null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                                    part.getContentLength());
+                        }
+                        catch(BackgroundException e) {
+                            if(this.retry(e, new DisabledProgressListener(), status)) {
+                                return this.call();
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
+                    }
+                }.call());
             }
-            catch(ServiceException e) {
-                throw new IOException(e.getErrorMessage(), e);
-            }
-            catch(BackgroundException e) {
+            catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
@@ -238,24 +238,5 @@ public class S3MultipartWriteFeature implements Write {
                 close.set(true);
             }
         }
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
-        }
-        return Write.notfound;
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
-    public boolean random() {
-        return false;
     }
 }

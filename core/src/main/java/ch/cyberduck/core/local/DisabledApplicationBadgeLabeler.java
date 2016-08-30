@@ -18,9 +18,6 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.io
  */
 
-/**
-* @version $Id$
-*/
 public final class DisabledApplicationBadgeLabeler implements ApplicationBadgeLabeler {
     @Override
     public void badge(String label) {

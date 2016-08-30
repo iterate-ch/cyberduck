@@ -19,9 +19,6 @@ package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public class DisabledUploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
 
     @Override

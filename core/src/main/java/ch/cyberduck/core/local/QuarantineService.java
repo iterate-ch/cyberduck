@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
-/**
- * @version $Id$
- */
 public interface QuarantineService {
     /**
      * @param originUrl Page that linked to the downloaded file

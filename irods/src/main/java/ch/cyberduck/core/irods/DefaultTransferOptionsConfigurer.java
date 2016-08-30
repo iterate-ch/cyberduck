@@ -22,9 +22,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.irods.jargon.core.packinstr.TransferOptions;
 
-/**
- * @version $Id$
- */
 public class DefaultTransferOptionsConfigurer {
 
     private final Preferences preferences = PreferencesFactory.get();

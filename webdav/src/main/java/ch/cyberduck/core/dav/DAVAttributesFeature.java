@@ -43,9 +43,6 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
-/**
- * @version $Id$
- */
 public class DAVAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 
@@ -89,6 +86,8 @@ public class DAVAttributesFeature implements Attributes {
                     }
                     if(StringUtils.isNotBlank(resource.getEtag())) {
                         attributes.setETag(resource.getEtag());
+                        // Setting checksum is disabled. See #8798
+                        // attributes.setChecksum(Checksum.parse(resource.getEtag()));
                     }
                     return attributes;
                 }
@@ -116,6 +115,8 @@ public class DAVAttributesFeature implements Attributes {
                     }
                     if(headers.containsKey(HttpHeaders.ETAG)) {
                         attributes.setETag(headers.get(HttpHeaders.ETAG));
+                        // Setting checksum is disabled. See #8798
+                        // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
                     }
                     if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
                         attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));

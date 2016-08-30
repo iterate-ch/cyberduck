@@ -30,9 +30,6 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class IRODSMoveFeature implements Move {
 
     private IRODSSession session;

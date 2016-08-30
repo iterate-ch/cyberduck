@@ -24,9 +24,6 @@ import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class SSHFingerprintGeneratorTest {
 
 

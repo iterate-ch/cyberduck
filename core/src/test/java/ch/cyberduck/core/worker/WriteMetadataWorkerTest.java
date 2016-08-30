@@ -2,6 +2,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -33,9 +34,15 @@ public class WriteMetadataWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             fail();
@@ -71,9 +78,15 @@ public class WriteMetadataWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -110,9 +123,15 @@ public class WriteMetadataWorkerTest {
         };
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();

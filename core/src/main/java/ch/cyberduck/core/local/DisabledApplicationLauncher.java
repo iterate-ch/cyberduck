@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public class DisabledApplicationLauncher implements ApplicationLauncher {
 
     @Override

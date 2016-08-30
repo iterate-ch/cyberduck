@@ -35,6 +35,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -42,7 +43,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class DriveDeleteFeatureTest {
 
     @Test(expected = NotfoundException.class)
@@ -64,7 +65,6 @@ public class DriveDeleteFeatureTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 
@@ -76,11 +76,6 @@ public class DriveDeleteFeatureTest {
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setVersionId("n");
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -38,9 +38,6 @@ import net.schmizz.sshj.transport.mac.MAC;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SFTPSessionTest {
 

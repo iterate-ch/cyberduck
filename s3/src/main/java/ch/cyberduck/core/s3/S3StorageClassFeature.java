@@ -18,34 +18,36 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
 
-    private final S3AccessControlListFeature accessControlListFeature;
+    private final Preferences preferences = PreferencesFactory.get();
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     public S3StorageClassFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
+        this.session = session;
     }
 
-    public S3StorageClassFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
-        this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+    @Override
+    public String getDefault() {
+        return PreferencesFactory.get().getProperty("s3.storage.class");
     }
 
     @Override
@@ -59,29 +61,40 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public String getClass(final Path file) throws BackgroundException {
-        if(file.isFile()) {
-            // HEAD request does not include storage class header
-            final Path list = new S3ObjectListService(session).list(
-                    file.getParent(), new DisabledListProgressListener()).get(file);
-            if(null == list) {
-                throw new NotfoundException(file.getAbsolute());
+        if(file.isFile() || file.isPlaceholder()) {
+            // HEAD request provides storage class information of the object.
+            // S3 returns this header for all objects except for Standard storage class objects.
+            final String redundancy = new S3AttributesFeature(session).find(file).getStorageClass();
+            if(StringUtils.isBlank(redundancy)) {
+                return S3Object.STORAGE_CLASS_STANDARD;
             }
-            return list.attributes().getStorageClass();
+            return redundancy;
         }
-        return null;
+        if(containerService.isContainer(file)) {
+            final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
+            if(StringUtils.isNotBlank(preferences.getProperty(key))) {
+                return preferences.getProperty(key);
+            }
+        }
+        return S3Object.STORAGE_CLASS_STANDARD;
     }
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
-        if(file.isFile()) {
+        if(containerService.isContainer(file)) {
+            final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
+            preferences.setProperty(key, redundancy);
+        }
+        if(file.isFile() || file.isPlaceholder()) {
             final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            if(null == accessControlListFeature) {
+            final AclPermission feature = session.getFeature(AclPermission.class);
+            if(null == feature) {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
                         Acl.EMPTY);
             }
             else {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),
-                        accessControlListFeature.getPermission(file));
+                        feature.getPermission(file));
             }
         }
     }

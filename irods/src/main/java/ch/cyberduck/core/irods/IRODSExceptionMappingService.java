@@ -31,9 +31,6 @@ import org.irods.jargon.core.exception.InvalidGroupException;
 import org.irods.jargon.core.exception.InvalidUserException;
 import org.irods.jargon.core.exception.JargonException;
 
-/**
- * @version $Id$
- */
 public class IRODSExceptionMappingService extends AbstractExceptionMappingService<JargonException> {
 
     @Override

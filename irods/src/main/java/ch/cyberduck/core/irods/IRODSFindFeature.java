@@ -27,9 +27,6 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
-/**
- * @version $Id$
- */
 public class IRODSFindFeature implements Find {
 
     private IRODSSession session;

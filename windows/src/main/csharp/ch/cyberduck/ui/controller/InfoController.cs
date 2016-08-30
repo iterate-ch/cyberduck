@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,13 +13,14 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using ch.cyberduck.core;
@@ -37,14 +38,15 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.commons.lang3;
 using org.apache.log4j;
 using StructureMap;
-using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -189,14 +191,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32).Images[session.getHost().getProtocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = new S3Protocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -214,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             else
             {
@@ -223,12 +225,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (distribution)
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32).Images[session.getHost().getProtocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
                 }
                 else
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32).Images[new S3Protocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
                 }
             }
             if (anonymous)
@@ -811,7 +813,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void StorageClassChanged()
         {
-            if (ToggleS3Settings(false))
+            if (!"Multiple".Equals(View.StorageClass) && ToggleS3Settings(false))
             {
                 _controller.Background(new SetStorageClassBackgroundAction(_controller, this, _files, View.StorageClass));
             }
@@ -819,11 +821,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void EncryptionChanged()
         {
-            if (ToggleS3Settings(false))
+            if (!"Multiple".Equals(View.Encryption) && ToggleS3Settings(false))
             {
-                Encryption feature = (Encryption)_controller.Session.getFeature(typeof(Encryption));
-                String encryption = View.Encryption ? (string) feature.getAlgorithms().iterator().next() : null;
-                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, encryption));
+                Encryption.Algorithm algorithm = Encryption.Algorithm.fromString(View.Encryption);
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this, _files, algorithm));
             }
         }
 
@@ -1196,6 +1197,12 @@ namespace Ch.Cyberduck.Ui.Controller
             classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
             View.StorageClass = "Unknown";
+
+            IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
+            algorithms.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Unknown"), "Unknown"));
+            View.PopulateEncryption(algorithms);
+            View.Encryption = "Unknown";
+
             PopulateLifecycleTransitionPeriod();
             PopulateLifecycleDeletePeriod();
 
@@ -1203,18 +1210,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (ToggleS3Settings(false))
             {
-                if (session.getFeature(typeof (Redundancy)) != null)
-                {
-                    List list = ((Redundancy) session.getFeature(typeof (Redundancy))).getClasses();
-                    for (int i = 0; i < list.size(); i++)
-                    {
-                        string redundancy = (string) list.get(i);
-                        classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"),
-                            redundancy));
-                    }
-                    View.PopulateStorageClass(classes);
-                }
-
                 if (NumberOfFiles > 1)
                 {
                     View.S3PublicUrl = _multipleFilesString;
@@ -1225,12 +1220,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     Path file = SelectedPath;
-                    String redundancy = file.attributes().getStorageClass();
-                    if (Utils.IsNotBlank(redundancy))
-                    {
-                        View.PopulateStorageClass(classes);
-                        View.StorageClass = redundancy;
-                    }
                     if (file.isFile())
                     {
                         if (session.getHost().getProtocol().getType() == Protocol.Type.s3)
@@ -1708,15 +1697,27 @@ namespace Ch.Cyberduck.Ui.Controller
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
             private readonly Path _container;
-            private readonly IList<string> _containers = new List<string>();
+            private readonly HashSet<string> _containers = new HashSet<string>();
+
+            private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
+                new HashSet<KeyValuePair<string, string>>();
+
             private readonly InfoController _infoController;
             private readonly Path _selected;
+
+            private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
+                new HashSet<KeyValuePair<string, string>>();
+
             private readonly IInfoView _view;
             private Credentials _credentials;
+
             private String _encryption;
+
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
+
+            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1753,18 +1754,67 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _lifecycle = ((Lifecycle) s.getFeature(typeof (Lifecycle))).getConfiguration(_container);
                 }
-                if (s.getFeature(typeof (AnalyticsProvider)) != null)
+                if (s.getFeature(typeof (AnalyticsProvider)) != null &&
+                    s.getFeature(typeof (IdentityConfiguration)) != null)
                 {
-                    if (s.getFeature(typeof (IdentityConfiguration)) != null)
+                    _credentials =
+                        ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
+                            ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
+                }
+                Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof (Redundancy));
+                if (redundancyFeature != null)
+                {
+                    List list = redundancyFeature.getClasses();
+                    for (int i = 0; i < list.size(); i++)
                     {
-                        _credentials =
-                            ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
-                                ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
+                        string redundancy = (string) list.get(i);
+                        _storageClasses.Add(
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"), redundancy));
+                    }
+                    HashSet<String> selectedClasses = new HashSet<string>();
+                    foreach (Path file in _infoController.Files)
+                    {
+                        string storageClass = redundancyFeature.getClass(file);
+                        selectedClasses.Add(storageClass);
+                        _storageClass = storageClass;
+                    }
+                    if (selectedClasses.Count > 1)
+                    {
+                        _storageClasses.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"),
+                            "Multiple"));
+                        _storageClass = "Multiple";
                     }
                 }
-                if (_infoController.NumberOfFiles == 1)
+                Encryption encryptionFeature = (Encryption) s.getFeature(typeof (Encryption));
+                if (encryptionFeature != null)
                 {
-                    _encryption = _selected.attributes().getEncryption();
+                    HashSet<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
+                    foreach (Path file in _infoController.Files)
+                    {
+                        Encryption.Algorithm algorithm = encryptionFeature.getEncryption(file);
+                        selectedEncryptionKeys.Add(algorithm);
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"), algorithm.ToString()));
+                        _encryption = algorithm.ToString();
+                    }
+                    // Add additional keys stored in KMS
+                    Set keys = encryptionFeature.getKeys(_container, _infoController._prompt);
+                    Iterator iterator = keys.iterator();
+                    while (iterator.hasNext())
+                    {
+                        Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
+                                algorithm.ToString()));
+                    }
+                    if (selectedEncryptionKeys.Count > 1)
+                    {
+                        _encryptionKeys.Add(
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
+                        _encryption = "Multiple";
+                    }
                 }
                 return true;
             }
@@ -1779,7 +1829,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.BucketLoggingCheckbox = _logging.isEnabled();
                         if (_containers.Count > 0)
                         {
-                            _view.PopulateBucketLogging(_containers);
+                            _view.PopulateBucketLogging(_containers.ToList());
                         }
                         if (_logging.isEnabled())
                         {
@@ -1791,20 +1841,26 @@ namespace Ch.Cyberduck.Ui.Controller
                             _view.BucketLoggingPopup = _selected.getName();
                         }
                     }
-
                     if (_location != null)
                     {
                         _view.BucketLocation = LocaleFactory.localizedString(_location.toString(), "S3");
                     }
-
                     if (_versioning != null)
                     {
                         _view.BucketVersioning = _versioning.isEnabled();
                         _view.BucketMfa = _versioning.isMultifactor();
                     }
-
-                    _view.Encryption = Utils.IsNotBlank(_encryption);
-                    if (null != _credentials)
+                    if (_encryption != null)
+                    {
+                        _view.PopulateEncryption(_encryptionKeys.ToList());
+                        _view.Encryption = _encryption;
+                    }
+                    if (_storageClass != null)
+                    {
+                        _view.PopulateStorageClass(_storageClasses.ToList());
+                        _view.StorageClass = _storageClass;
+                    }
+                    if (_credentials != null)
                     {
                         Session s = BrowserController.Session;
                         _view.BucketAnalyticsSetupUrl =
@@ -1853,6 +1909,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.ToggleS3Settings(true);
                     _infoController.AttachS3Handlers();
                 }
+            }
+
+            public override string getActivity()
+            {
+                return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+                    toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -2410,8 +2472,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetEncryptionBackgroundAction : WorkerBackgroundAction
         {
-            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController, IList<Path> files, String algorithm)
-                : base(controller, controller.Session, controller.Cache, new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), algorithm))
+            public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController,
+                IList<Path> files, Encryption.Algorithm algorithm)
+                : base(
+                    controller, controller.Session, controller.Cache,
+                    new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), algorithm)
+                    )
             {
             }
 
@@ -2419,8 +2485,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController, List files, String algorithm)
-                    : base(files, algorithm, true, controller)
+                public InnerWriteEncryptionWorker(BrowserController controller, InfoController infoController,
+                    List files, Encryption.Algorithm algorithm)
+                    : base(files, algorithm, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2435,8 +2502,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetStorageClassBackgroundAction : WorkerBackgroundAction
         {
-            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,  IList<Path> files, String redundancy)
-                : base(controller, controller.Session, controller.Cache, new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files), redundancy))
+            public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,
+                IList<Path> files, String redundancy)
+                : base(
+                    controller, controller.Session, controller.Cache,
+                    new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files),
+                        redundancy))
             {
             }
 
@@ -2444,8 +2515,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController, List files, String redundancy)
-                    : base(files, redundancy, true, controller)
+                public InnerWriteRedundancyWorker(BrowserController controller, InfoController infoController,
+                    List files, String redundancy)
+                    : base(files, redundancy, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2466,20 +2538,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public string User
             {
-                get { return base.getUser().getDisplayName(); }
+                get { return getUser().getDisplayName(); }
                 set
                 {
-                    base.getUser().setIdentifier(value ?? string.Empty);
+                    getUser().setIdentifier(value ?? string.Empty);
                     NotifyPropertyChanged("User");
                 }
             }
 
             public string Role
             {
-                get { return base.getRole().getName(); }
+                get { return getRole().getName(); }
                 set
                 {
-                    base.getRole().setName(value);
+                    getRole().setName(value);
                     NotifyPropertyChanged("Role");
                 }
             }
@@ -2522,7 +2594,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteAclWorker(BrowserController controller, InfoController infoController, List files,
-                    Acl acl) : base(files, acl, true, controller)
+                    Acl acl) : base(files, acl, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2606,7 +2678,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, true, infoController._controller)
+                    : base(files, metadata, new DialogRecursiveCallback(infoController), infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2625,7 +2697,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        permission, recursive))
+                        permission,
+                        recursive
+                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
+                            : new BooleanRecursiveCallback(false)))
             {
             }
 
@@ -2634,8 +2709,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                    bool recursive)
-                    : base(files, permission, recursive, infoController._controller)
+                    RecursiveCallback callback)
+                    : base(files, permission, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }

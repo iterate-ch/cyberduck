@@ -29,9 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class HistoryCollectionTest {
 
     @Test

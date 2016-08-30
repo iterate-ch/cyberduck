@@ -21,9 +21,6 @@ package ch.cyberduck.ui.browser;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public interface DirectoryFinder {
 
     Local find(Host bookmark);

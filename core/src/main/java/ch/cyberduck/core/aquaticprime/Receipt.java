@@ -22,9 +22,6 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class Receipt extends AbstractLicense {
 
     private String guid;

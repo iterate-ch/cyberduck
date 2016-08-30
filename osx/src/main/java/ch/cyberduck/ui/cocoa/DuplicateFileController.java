@@ -29,9 +29,6 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 
@@ -43,9 +40,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class DuplicateFileController extends FileController {
 
     public DuplicateFileController(final BrowserController parent, final Cache<Path> cache) {

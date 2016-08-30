@@ -23,9 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public interface UDTTransferOption {
 
     /**

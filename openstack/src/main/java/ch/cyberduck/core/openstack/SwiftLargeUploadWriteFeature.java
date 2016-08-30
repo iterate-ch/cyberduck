@@ -14,6 +14,8 @@
 
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -26,6 +28,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -40,11 +43,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
+import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-/**
- * @version $Id:$
- */
 public class SwiftLargeUploadWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
@@ -118,10 +119,10 @@ public class SwiftLargeUploadWriteFeature implements Write {
     }
 
     private final class LargeUploadOutputStream extends OutputStream {
+        final List<StorageObject> completed = new ArrayList<StorageObject>();
         private final Path file;
         private final TransferStatus status;
         private int segmentNumber;
-        final List<StorageObject> completed = new ArrayList<StorageObject>();
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
@@ -136,25 +137,49 @@ public class SwiftLargeUploadWriteFeature implements Write {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                final TransferStatus status = new TransferStatus().length(len);
-                // Segment name with left padded segment number
-                final Path segment = new Path(containerService.getContainer(file),
-                        segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
-                final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
-                final HashMap<String, String> headers = new HashMap<>();
-                final String checksum = session.getClient().storeObject(
-                        regionService.lookup(file),
-                        containerService.getContainer(segment).getName(), containerService.getKey(segment),
-                        entity, headers, null);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
-                }
-                final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                stored.setMd5sum(checksum);
-                stored.setSize(status.getLength());
-                completed.add(stored);
+                completed.add(new RetryCallable<StorageObject>() {
+                    @Override
+                    public StorageObject call() throws BackgroundException {
+                        try {
+                            final TransferStatus status = new TransferStatus().length(len);
+                            // Segment name with left padded segment number
+                            final Path segment = new Path(containerService.getContainer(file),
+                                    segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
+                            final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
+                            final HashMap<String, String> headers = new HashMap<>();
+                            final String checksum;
+                            try {
+                                checksum = session.getClient().storeObject(
+                                        regionService.lookup(file),
+                                        containerService.getContainer(segment).getName(), containerService.getKey(segment),
+                                        entity, headers, null);
+                            }
+                            catch(GenericException e) {
+                                throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
+                            }
+                            catch(IOException e) {
+                                throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                            }
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
+                            }
+                            final StorageObject stored = new StorageObject(containerService.getKey(segment));
+                            stored.setMd5sum(checksum);
+                            stored.setSize(status.getLength());
+                            return stored;
+                        }
+                        catch(BackgroundException e) {
+                            if(this.retry(e, new DisabledProgressListener(), status)) {
+                                return this.call();
+                            }
+                            else {
+                                throw e;
+                            }
+                        }
+                    }
+                }.call());
             }
-            catch(BackgroundException e) {
+            catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
             }
         }
@@ -173,7 +198,7 @@ public class SwiftLargeUploadWriteFeature implements Write {
                         containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
                         status.getMime(),
-                        containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
+                        containerService.getKey(file), manifest, Collections.emptyMap());
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);

@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-/**
- * @version $Id:$
- */
 public class TestProtocol extends AbstractProtocol {
 
     private final Scheme scheme;

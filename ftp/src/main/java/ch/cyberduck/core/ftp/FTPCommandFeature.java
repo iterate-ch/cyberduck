@@ -27,9 +27,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class FTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(FTPCommandFeature.class);
 

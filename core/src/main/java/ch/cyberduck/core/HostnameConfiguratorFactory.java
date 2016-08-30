@@ -20,9 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 
-/**
- * @version $Id$
- */
 public final class HostnameConfiguratorFactory {
 
     private HostnameConfiguratorFactory() {

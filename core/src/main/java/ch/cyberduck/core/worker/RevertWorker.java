@@ -28,9 +28,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class RevertWorker extends Worker<List<Path>> {
 
     private List<Path> files;

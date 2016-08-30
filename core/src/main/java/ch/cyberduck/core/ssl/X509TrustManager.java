@@ -22,9 +22,6 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-/**
- * @version $Id$
- */
 public interface X509TrustManager extends javax.net.ssl.X509TrustManager {
 
     X509TrustManager init() throws IOException;

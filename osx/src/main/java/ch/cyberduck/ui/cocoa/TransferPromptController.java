@@ -21,6 +21,8 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSIndexSet;
@@ -59,9 +61,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public abstract class TransferPromptController extends SheetController
         implements TransferPrompt, ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(TransferPromptController.class);
@@ -477,7 +476,7 @@ public abstract class TransferPromptController extends SheetController
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         //
     }
 

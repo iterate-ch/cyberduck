@@ -32,9 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class FTPStatListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);
 

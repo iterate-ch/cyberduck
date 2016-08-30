@@ -22,9 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 
-/**
- * @version $Id$
- */
 public class DescriptiveUrl {
 
     public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null);

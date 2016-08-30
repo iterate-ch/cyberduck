@@ -8,9 +8,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 public class FTPParserSelectorTest {
 
     @Test

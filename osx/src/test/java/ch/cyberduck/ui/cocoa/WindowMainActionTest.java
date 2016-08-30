@@ -1,14 +1,12 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-/**
- * @version $Id$
- */
 public class WindowMainActionTest {
 
     @Test

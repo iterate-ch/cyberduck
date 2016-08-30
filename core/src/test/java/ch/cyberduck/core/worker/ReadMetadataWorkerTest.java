@@ -1,6 +1,7 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -18,9 +19,6 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class ReadMetadataWorkerTest {
 
     @Test
@@ -34,9 +32,15 @@ public class ReadMetadataWorkerTest {
         };
         assertTrue(worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();
@@ -67,9 +71,15 @@ public class ReadMetadataWorkerTest {
         };
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             if(file.getName().equals("a")) {
@@ -114,9 +124,15 @@ public class ReadMetadataWorkerTest {
         };
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
+                        @Override
+                        public Map<String, String> getDefault(final Local local) {
+                            return Collections.emptyMap();
+                        }
+
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
                             final HashMap<String, String> map = new HashMap<String, String>();

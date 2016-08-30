@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-/**
- * @version $Id:$
- */
 public interface UseragentProvider {
 
     /**

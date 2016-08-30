@@ -40,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class FTPMFMTTimestampFeatureTest {
 
@@ -62,10 +59,6 @@ public class FTPMFMTTimestampFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

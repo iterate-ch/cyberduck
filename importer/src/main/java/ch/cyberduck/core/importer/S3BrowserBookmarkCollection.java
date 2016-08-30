@@ -21,7 +21,6 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -37,9 +36,6 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.Scanner;
 
-/**
- * @version $Id$
- */
 public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(S3BrowserBookmarkCollection.class);
 

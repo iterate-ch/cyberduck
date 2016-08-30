@@ -40,9 +40,6 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-/**
- * @version $Id$
- */
 public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 

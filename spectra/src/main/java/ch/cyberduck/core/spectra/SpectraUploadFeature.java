@@ -20,11 +20,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.CRC32ChecksumCompute;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -38,11 +39,17 @@ import java.util.List;
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SpectraUploadFeature.class);
 
-    private final SpectraSession session;
+    private final Preferences preferences = PreferencesFactory.get();
 
-    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature write) {
-        super(write);
-        this.session = session;
+    private final SpectraBulkService bulk;
+
+    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
+        this(writer, new SpectraBulkService(session));
+    }
+
+    public SpectraUploadFeature(final SpectraWriteFeature writer, final SpectraBulkService bulk) {
+        super(writer);
+        this.bulk = bulk;
     }
 
     @Override
@@ -54,13 +61,12 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
-        if(PreferencesFactory.get().getBoolean("spectra.upload.crc32")) {
-            status.setChecksum(new CRC32ChecksumCompute().compute(local.getInputStream()));
+        if(preferences.getBoolean("spectra.upload.crc32")) {
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.crc32).compute(local.getInputStream()));
         }
-        if(PreferencesFactory.get().getBoolean("spectra.upload.md5")) {
-            status.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream()));
+        if(preferences.getBoolean("spectra.upload.md5")) {
+            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream()));
         }
-        final SpectraBulkService bulk = new SpectraBulkService(session);
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;

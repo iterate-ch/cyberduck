@@ -22,9 +22,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
 
-/**
- * @version $Id$
- */
 public interface SFTPAuthentication {
 
     /**

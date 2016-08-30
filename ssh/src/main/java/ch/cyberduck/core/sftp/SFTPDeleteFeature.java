@@ -22,14 +22,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import java.io.IOException;
 import java.util.List;
 
-/**
- * @version $Id$
- */
-public class SFTPDeleteFeature implements Delete {
+public class SFTPDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
     private SFTPSession session;
 
@@ -40,17 +38,32 @@ public class SFTPDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            callback.delete(file);
-            try {
-                if(file.isFile() || file.isSymbolicLink()) {
-                    session.sftp().remove(file.getAbsolute());
-                }
-                else if(file.isDirectory()) {
+            if(file.isFile() || file.isSymbolicLink()) {
+                this.submit(file, new Implementation() {
+                    @Override
+                    public void delete(final Path file) throws BackgroundException {
+                        callback.delete(file);
+                        try {
+                            session.sftp().remove(file.getAbsolute());
+                        }
+                        catch(IOException e) {
+                            throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
+                        }
+                    }
+                });
+            }
+        }
+        // Await and shutdown
+        this.await();
+        for(Path file : files) {
+            if(file.isDirectory()) {
+                callback.delete(file);
+                try {
                     session.sftp().removeDir(file.getAbsolute());
                 }
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
+                catch(IOException e) {
+                    throw new SFTPExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
             }
         }
     }

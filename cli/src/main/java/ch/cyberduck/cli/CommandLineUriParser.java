@@ -25,9 +25,6 @@ import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
 
-/**
- * @version $Id$
- */
 public class CommandLineUriParser {
 
     private final CommandLine input;

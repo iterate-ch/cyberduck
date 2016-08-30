@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -32,9 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * @version $Id$
- */
 public class PromptLimitedListProgressListener extends LimitedListProgressListener {
 
     private WindowController controller;

@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -28,8 +29,7 @@ import java.util.Map;
 
 /**
  * Attributes of a remote directory or file.
- *
- * @version $Id$
+
  */
 public class PathAttributes extends Attributes implements Serializable {
 
@@ -71,27 +71,27 @@ public class PathAttributes extends Attributes implements Serializable {
     private String etag;
 
     /**
-     * Redundany level if available
+     * Redundancy level if available
      */
     private String storageClass;
 
     /**
-     * Encryption algorithm if set
+     * Server side encryption (SSE) algorithm and key or null
      */
-    private String encryption;
+    private Encryption.Algorithm encryption = Encryption.Algorithm.NONE;
 
     /**
-     * Unique identifier for a given version of a file.
+     * Unique identifier for a given version of a file
      */
     private String versionId;
 
     /**
-     * Should be hidden in the browser by default.
+     * Should be hidden in the browser by default
      */
     private boolean duplicate;
 
     /**
-     * Revision number.
+     * Revision number
      */
     private long revision;
 
@@ -101,7 +101,7 @@ public class PathAttributes extends Attributes implements Serializable {
     private String region;
 
     /**
-     * HTTP headers.
+     * HTTP headers
      */
     private Map<String, String> metadata;
 
@@ -172,9 +172,6 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     public void setAccessedDate(final long millis) {
-        if(millis < 0) {
-            return;
-        }
         this.accessed = millis;
     }
 
@@ -250,11 +247,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.storageClass = storageClass;
     }
 
-    public String getEncryption() {
+    public Encryption.Algorithm getEncryption() {
         return encryption;
     }
 
-    public void setEncryption(final String encryption) {
+    public void setEncryption(final Encryption.Algorithm encryption) {
         this.encryption = encryption;
     }
 

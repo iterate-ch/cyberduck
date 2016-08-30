@@ -36,9 +36,6 @@ import java.nio.charset.Charset;
 
 import net.schmizz.sshj.connection.channel.direct.Session;
 
-/**
- * @version $Id$
- */
 public class SFTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(SFTPCommandFeature.class);
 
@@ -76,7 +73,7 @@ public class SFTPCommandFeature implements Command {
                     if(null == line) {
                         break;
                     }
-                    transcript.log(false, line);
+                    transcript.log(TranscriptListener.Type.response, line);
                 }
                 // Here is the output from stderr
                 final StringBuilder error = new StringBuilder();
@@ -85,7 +82,7 @@ public class SFTPCommandFeature implements Command {
                     if(null == line) {
                         break;
                     }
-                    transcript.log(false, line);
+                    transcript.log(TranscriptListener.Type.response, line);
                     // Standard error output contains all status messages, not only errors.
                     if(StringUtils.isNotBlank(error.toString())) {
                         error.append(" ");

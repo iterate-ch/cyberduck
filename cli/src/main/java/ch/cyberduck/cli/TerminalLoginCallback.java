@@ -32,9 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 
-/**
- * @version $Id$
- */
 public class TerminalLoginCallback implements LoginCallback {
 
     private final Console console = new Console();

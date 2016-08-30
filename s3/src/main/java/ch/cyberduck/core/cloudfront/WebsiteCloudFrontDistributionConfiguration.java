@@ -30,8 +30,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.s3.ServiceExceptionMappingService;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -46,11 +46,9 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
     private Preferences preferences
@@ -113,7 +111,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
-                distribution.setContainers(new S3BucketListService(session).list(new DisabledListProgressListener()));
+                distribution.setContainers(new S3BucketListService(session).list(
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
                 return distribution;
             }
             catch(ServiceException e) {
@@ -147,7 +146,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 }
             }
             catch(S3ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot write website configuration", e);
+                throw new S3ExceptionMappingService().map("Cannot write website configuration", e);
             }
         }
         else {
@@ -164,6 +163,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final Distribution.Method method) {
         if(type == Index.class) {
             if(method.equals(Distribution.WEBSITE)) {

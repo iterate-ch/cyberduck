@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
@@ -28,9 +29,6 @@ import ch.cyberduck.core.threading.MainAction;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class OverwriteController extends ProxyController {
 
     private final BrowserController parent;

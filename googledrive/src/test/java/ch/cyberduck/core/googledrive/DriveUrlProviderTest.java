@@ -34,6 +34,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class DriveUrlProviderTest {
 
     @Test
@@ -63,7 +64,6 @@ public class DriveUrlProviderTest {
                         if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
-                        fail();
                         return null;
                     }
 
@@ -79,12 +79,7 @@ public class DriveUrlProviderTest {
         assertTrue(provider.toUrl(test).isEmpty());
         new DriveTouchFeature(session).touch(test);
 //        assertFalse(provider.toUrl(test).isEmpty());
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-                //
-            }
-        });
+        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

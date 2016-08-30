@@ -3,7 +3,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -38,9 +37,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3SessionTest {
 
@@ -98,7 +94,7 @@ public class S3SessionTest {
         final PathCache cache = new PathCache(1);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -114,13 +110,13 @@ public class S3SessionTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        host.setDefaultPath("/test.cyberduck.ch");
+        host.setDefaultPath("/test-us-east-1-cyberduck");
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         final PathCache cache = new PathCache(1);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(cache.containsKey(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(cache.containsKey(new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         session.close();
     }
 
@@ -171,9 +167,9 @@ public class S3SessionTest {
         }
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = BackgroundException.class)
     public void testCustomHostname() throws Exception {
-        final Host host = new Host(new S3Protocol(), "test.cyberduck.ch", new Credentials(
+        final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
                 System.getProperties().getProperty("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
@@ -182,17 +178,18 @@ public class S3SessionTest {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
                     throws ConnectionCanceledException {
-                assertEquals("test.cyberduck.ch", hostname);
+                assertEquals("cyberduck.io", hostname);
                 return true;
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Host:")) {
-                        assertEquals("Host: test.cyberduck.ch:443", message);
-                        set.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Host:")) {
+                            assertEquals("Host: cyberduck.io", message);
+                            set.set(true);
+                        }
                 }
             }
         });
@@ -204,20 +201,6 @@ public class S3SessionTest {
             throw e;
         }
         fail();
-    }
-
-    @Test
-    public void testConnectInteroperabilityEvault() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.lts2.evault.com", new Credentials(
-                System.getProperties().getProperty("evault.s3.key"), System.getProperties().getProperty("evault.s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(session.isConnected());
-        final PathCache cache = new PathCache(1);
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
-        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        session.close();
     }
 
     @Test
@@ -253,7 +236,7 @@ public class S3SessionTest {
 
     @Test
     public void testBucketVirtualHostStyleCustomHost() throws Exception {
-        final Host host = new Host(new S3Protocol(), "test.cyberduck.ch");
+        final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
@@ -322,6 +305,17 @@ public class S3SessionTest {
                 new DisabledTranscriptListener());
         c.connect(session, PathCache.empty());
         assertTrue(verified.get());
+        session.close();
+    }
+
+    @Test
+    public void testAuthenticationV4Thirdparty() throws Exception {
+        final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
+                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

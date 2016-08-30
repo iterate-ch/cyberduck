@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Ignore
 public class ReceiptVerifierTest {
 

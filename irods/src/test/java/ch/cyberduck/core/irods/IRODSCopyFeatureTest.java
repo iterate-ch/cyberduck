@@ -67,11 +67,7 @@ public class IRODSCopyFeatureTest {
         new IRODSCopyFeature(session).copy(test, copy);
         assertTrue(new IRODSFindFeature(session).find(test));
         assertTrue(new IRODSFindFeature(session).find(copy));
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

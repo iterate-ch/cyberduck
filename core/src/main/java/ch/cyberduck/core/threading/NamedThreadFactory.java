@@ -23,9 +23,6 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * @version $Id$
- */
 public class NamedThreadFactory implements ThreadFactory {
     private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
 

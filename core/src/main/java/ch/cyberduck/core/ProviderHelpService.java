@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface ProviderHelpService {
     void help(Protocol provider);
 

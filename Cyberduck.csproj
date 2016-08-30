@@ -100,9 +100,6 @@
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>windows\target\CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
-    <Reference Include="ExceptionReporter.WinForms">
-      <HintPath>windows\target\ExceptionReporter.WinForms.dll</HintPath>
-    </Reference>
     <Reference Include="IKVM.OpenJDK.Beans">
       <HintPath>windows\target\ikvm-8.1.5717.0\bin\IKVM.OpenJDK.Beans.dll</HintPath>
     </Reference>
@@ -184,8 +181,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\WindowsPeriodicUpdateChecker.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\sparkle\WinSparkle.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\CommandController.cs" />
@@ -248,14 +244,9 @@
       <DependentUpon>GotoPromptForm.cs</DependentUpon>
     </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogAlertCallback.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogRecursiveCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\threading\DialogTransferErrorCallback.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\UserDefaultsDateFormatter.cs" />
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ResourcesBundle.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-      <LogicalName>Ch.Cyberduck.ResourcesBundle.resources</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -323,10 +314,6 @@
       <DependentUpon>PromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.resx">
-      <DependentUpon>TaskDialogForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\TransferForm.resx">
       <DependentUpon>TransferForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -339,17 +326,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ResourcesBundle.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ResourcesBundle.resx</DependentUpon>
-    </Compile>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\ActivityController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\AsyncController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BookmarkController.cs" />
@@ -372,7 +348,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBookmarkManagerView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBookmarkView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IBrowserView.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IconCache.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IConnectionView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\ICreateFilePromptView.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationView.cs" />
@@ -394,9 +369,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\SyncPromptModel.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\growl\ToolstripNotificationService.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\SettingsDictionaryPreferences.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\SystemCertificateStore.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\CrashReporter.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\TaskbarApplicationBadgeLabeler.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\ReadOnlyRichTextBox.cs">
       <SubType>Component</SubType>
@@ -534,26 +506,6 @@
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\PromptForm.Designer.cs">
       <DependentUpon>PromptForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\CommandButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\CommandButton.Designer.cs">
-      <DependentUpon>CommandButton.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\TaskDialogForm.designer.cs">
-      <DependentUpon>TaskDialogForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaActiveTaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialog.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialogCommonDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaTaskDialogNotificationArgs.cs" />
-    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\taskdialog\VistaUnsafeNativeMethods.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\ToolbarBaseForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -573,12 +525,6 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
     <None Include="windows\src\main\csharp\ch\cyberduck\properties\app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="windows\src\main\csharp\ch\cyberduck\properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -661,7 +607,23 @@
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Target Name="AfterBuild">
+  <Target Name="UsesFrameworkSdk">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
+    </GetFrameworkSdkPath>
+    <PropertyGroup>
+      <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
+      <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
+    </PropertyGroup>
+  </Target>
+  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
+    <PropertyGroup>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
+    </PropertyGroup>
+  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="UsesSignTool">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputPath)$(AssemblyName).exe&quot;" Condition="'$(OutputType)' == 'WinExe'"/>
   </Target>
   <PropertyGroup>
     <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"

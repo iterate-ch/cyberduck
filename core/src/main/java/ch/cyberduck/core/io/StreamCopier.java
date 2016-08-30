@@ -17,6 +17,9 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -26,9 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
@@ -36,8 +36,8 @@ public final class StreamCopier {
 
     private StreamProgress progress;
 
-    private StreamListener listener
-            = new DisabledStreamListener();
+    private BytecountStreamListener listener
+            = new BytecountStreamListener(new DisabledStreamListener());
 
     /**
      * Buffer size
@@ -49,17 +49,9 @@ public final class StreamCopier {
 
     private Long limit = -1L;
 
-    private boolean keepFlushing
-            = PreferencesFactory.get().getBoolean("connection.flush");
-
     public StreamCopier(final StreamCancelation cancel, final StreamProgress progress) {
         this.cancel = cancel;
         this.progress = progress;
-    }
-
-    public StreamCopier withFlushing(boolean keepFlushing) {
-        this.keepFlushing = keepFlushing;
-        return this;
     }
 
     public StreamCopier withChunksize(final Integer chunksize) {
@@ -68,7 +60,7 @@ public final class StreamCopier {
     }
 
     public StreamCopier withListener(final StreamListener listener) {
-        this.listener = listener;
+        this.listener = new BytecountStreamListener(listener);
         return this;
     }
 
@@ -92,68 +84,84 @@ public final class StreamCopier {
      * @param in  The stream to read from
      * @param out The stream to write to
      */
-    public void transfer(final InputStream in, final OutputStream out)
-            throws IOException, ConnectionCanceledException {
-        if(offset > 0) {
-            skip(in, offset);
-        }
+    public void transfer(final InputStream in, final OutputStream out) throws BackgroundException {
         try {
-            final byte[] buffer = new byte[chunksize];
-            long total = 0;
-            int len = chunksize;
-            if(limit > 0 && limit < chunksize) {
-                // Cast will work because chunk size is int
-                len = limit.intValue();
+            try {
+                if(offset > 0) {
+                    skip(in, offset);
+                }
+                final byte[] buffer = new byte[chunksize];
+                long total = 0;
+                int len = chunksize;
+                if(limit > 0 && limit < chunksize) {
+                    // Cast will work because chunk size is int
+                    len = limit.intValue();
+                }
+                while(len > 0 && !cancel.isCanceled()) {
+                    final int read = in.read(buffer, 0, len);
+                    if(-1 == read) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("End of file reached with %d bytes read from stream", total));
+                        }
+                        progress.setComplete();
+                        break;
+                    }
+                    else {
+                        listener.recv(read);
+                        out.write(buffer, 0, read);
+                        progress.progress(read);
+                        listener.sent(read);
+                        total += read;
+                    }
+                    if(limit > 0) {
+                        // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
+                        len = (int) Math.min(limit - total, chunksize);
+                    }
+                    if(limit == total) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Limit %d reached reading from stream", limit));
+                        }
+                        progress.setComplete();
+                    }
+                }
             }
-            while(len > 0 && !cancel.isCanceled()) {
-                final int read = in.read(buffer, 0, len);
-                if(-1 == read) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("End of file reached with %d bytes read from stream", total));
-                    }
-                    progress.setComplete();
-                    break;
-                }
-                else {
-                    listener.recv(read);
-                    out.write(buffer, 0, read);
-                    if(keepFlushing) {
-                        out.flush();
-                    }
-                    progress.progress(read);
-                    listener.sent(read);
-                    total += read;
-                }
-                if(limit > 0) {
-                    // Only adjust if not reading to the end of the stream. Cast will work because chunk size is int
-                    len = (int) Math.min(limit - total, chunksize);
-                }
-                if(limit == total) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Limit %d reached reading from stream", limit));
-                    }
-                    progress.setComplete();
-                }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
+            finally {
+                final StreamCloser c = new DefaultStreamCloser();
+                c.close(in);
+                c.close(out);
             }
         }
-        finally {
-            if(!keepFlushing) {
-                out.flush();
-            }
+        catch(BackgroundException e) {
+            // Discard sent bytes if there is an error reply.
+            final long sent = listener.getSent();
+            progress.progress(-sent);
+            listener.sent(-sent);
+            final long recv = listener.getRecv();
+            listener.recv(-recv);
+            throw e;
         }
         if(cancel.isCanceled()) {
             throw new ConnectionCanceledException();
         }
     }
 
-    public static void skip(final InputStream bi, final long offset) throws IOException {
-        long skipped = bi.skip(offset);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Skipping %d bytes", skipped));
+    public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {
+        try {
+            long skipped = in.skip(offset);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
+            if(skipped < offset) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, offset));
+            }
+            return in;
         }
-        if(skipped < offset) {
-            throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                    skipped, offset));
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 }

@@ -24,9 +24,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
-/**
- * @version $Id$
- */
 public final class URIEncoder {
 
     private URIEncoder() {

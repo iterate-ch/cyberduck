@@ -21,6 +21,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -31,8 +32,9 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -54,33 +55,28 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    /**
-     * At any point, at most <tt>nThreads</tt> threads will be active processing tasks. Possibility of
-     * parallel uploads of the segments.
-     */
-    private ThreadPool pool;
-
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Long segmentSize;
+    private final Long segmentSize;
 
-    private SwiftSegmentService segmentService;
+    private final SwiftSegmentService segmentService;
 
-    private SwiftObjectListService listService;
+    private final SwiftObjectListService listService;
+    private final Integer concurrency;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize) {
-        this(session, new SwiftRegionService(session), segmentSize);
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize, final Integer concurrency) {
+        this(session, new SwiftRegionService(session), segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
-                                         final Long segmentSize) {
+                                         final Long segmentSize, final Integer concurrency) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new SwiftWriteFeature(session, regionService),
-                segmentSize, PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
+                segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
@@ -92,10 +88,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         super(writer);
         this.session = session;
         this.regionService = regionService;
-        this.pool = new DefaultThreadPool(concurrency, "multipart");
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
+        this.concurrency = concurrency;
     }
 
     @Override
@@ -104,6 +100,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final StreamListener listener,
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
+        final DefaultThreadPool<StorageObject> pool = new DefaultThreadPool<>(concurrency, "multipart");
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
@@ -120,10 +117,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         long remaining = status.getLength();
         long offset = 0;
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+            final Long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
             final Path segment = new Path(containerService.getContainer(file),
-                    segmentService.name(file, status.getLength(), segmentNumber), EnumSet.of(Path.Type.file));
-            final Long length = Math.min(segmentSize, remaining);
+                    segmentService.name(file, length, segmentNumber), EnumSet.of(Path.Type.file));
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {
@@ -136,18 +133,19 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     }
                 }
                 stored.setSize(existingSegment.attributes().getSize());
+                offset += existingSegment.attributes().getSize();
                 completed.add(stored);
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(segment, local, throttle, listener, status, offset, length));
+                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
                 }
+                remaining -= length;
+                offset += length;
             }
-            offset += length;
-            remaining -= length;
         }
         try {
             for(Future<StorageObject> futureSegment : segments) {
@@ -156,17 +154,24 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(InterruptedException e) {
             log.error("Part upload failed with interrupt failure");
+            status.setCanceled();
             throw new ConnectionCanceledException(e);
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
+            status.setCanceled();
             if(e.getCause() instanceof BackgroundException) {
                 throw (BackgroundException) e.getCause();
             }
             throw new BackgroundException(e);
         }
         finally {
-            pool.shutdown();
+            pool.shutdown(false);
+        }
+        // Mark parent status as complete
+        status.setComplete();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
         }
         // Create and upload the large object manifest. It is best to upload all the segments first and
         // then create or update the manifest.
@@ -181,7 +186,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                     containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
                     status.getMime(),
-                    containerService.getKey(file), manifest, Collections.<String, String>emptyMap());
+                    containerService.getKey(file), manifest, Collections.emptyMap());
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
@@ -195,20 +200,42 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
     }
 
-    private Future<StorageObject> submit(final Path segment, final Local local,
+    private Future<StorageObject> submit(final ThreadPool<StorageObject> pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length) {
-        return pool.execute(new Callable<StorageObject>() {
+        return pool.execute(new RetryCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    return null;
-                }
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset);
-                return SwiftLargeObjectUploadFeature.super.upload(
-                        segment, local, throttle, listener, status, overall, overall);
+                try {
+                    if(overall.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    return SwiftLargeObjectUploadFeature.super.upload(
+                            segment, local, throttle, listener, status, overall, new StreamProgress() {
+                                @Override
+                                public void progress(final long bytes) {
+                                    status.progress(bytes);
+                                    // Discard sent bytes in overall progress if there is an error reply for segment.
+                                    overall.progress(bytes);
+                                }
+
+                                @Override
+                                public void setComplete() {
+                                    status.setComplete();
+                                }
+                            });
+                }
+                catch(BackgroundException e) {
+                    if(this.retry(e, new DisabledProgressListener(), overall)) {
+                        return this.call();
+                    }
+                    else {
+                        throw e;
+                    }
+                }
             }
         });
     }

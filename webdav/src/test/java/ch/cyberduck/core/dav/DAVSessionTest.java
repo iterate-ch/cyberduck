@@ -49,9 +49,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class DAVSessionTest {
 
@@ -134,8 +131,9 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
                     if(message.contains("CONNECT")) {
                         proxied.set(true);
                     }
@@ -168,11 +166,12 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("CONNECT")) {
-                        proxied.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("CONNECT")) {
+                            proxied.set(true);
+                        }
                 }
             }
         });
@@ -193,7 +192,7 @@ public class DAVSessionTest {
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
-            assertEquals("Method Not Allowed. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
@@ -275,11 +274,7 @@ public class DAVSessionTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -330,11 +325,12 @@ public class DAVSessionTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Authorization: Digest")) {
-                        fail(message);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Authorization: Digest")) {
+                            fail(message);
+                        }
                 }
             }
         });
@@ -352,11 +348,12 @@ public class DAVSessionTest {
         PreferencesFactory.get().setProperty("webdav.basic.preemptive", false);
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Authorization: Basic")) {
-                        fail(message);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Authorization: Basic")) {
+                            fail(message);
+                        }
                 }
             }
         });

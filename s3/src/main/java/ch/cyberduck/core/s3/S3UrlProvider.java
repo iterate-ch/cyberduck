@@ -148,7 +148,7 @@ public class S3UrlProvider implements UrlProvider {
      */
     protected DescriptiveUrl sign(final Path file, final int seconds) {
         // Determine expiry time for URL
-        final Calendar expiry = Calendar.getInstance(TimeZone.getDefault());
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
         final String secret = store.find(session.getHost());
         if(StringUtils.isBlank(secret)) {
@@ -161,6 +161,7 @@ public class S3UrlProvider implements UrlProvider {
                     .getRegionForBucketName(containerService.getContainer(file).getName());
         }
         return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider().create(
+                session.getHost(),
                 session.getHost().getCredentials().getUsername(), secret,
                 containerService.getContainer(file).getName(), region, containerService.getKey(file),
                 expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,

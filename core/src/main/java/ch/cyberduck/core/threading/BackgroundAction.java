@@ -23,9 +23,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 public interface BackgroundAction<T> extends Callable<T> {
 
     /**

@@ -26,9 +26,6 @@ import org.apache.log4j.Logger;
 
 import java.text.ParseException;
 
-/**
- * @version $Id$
- */
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
     private static final Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 

@@ -22,9 +22,6 @@ import ch.cyberduck.binding.application.NSCell;
 
 import org.rococoa.ObjCClass;
 
-/**
- * @version $Id$
- */
 public abstract class BookmarkCell extends NSCell {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("CDBookmarkCell", _Class.class);
 

@@ -22,9 +22,6 @@ import ch.cyberduck.core.PathNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractSymlinkResolver<T> implements SymlinkResolver<T> {
 
     @Override

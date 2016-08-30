@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSText;
@@ -26,9 +27,6 @@ import ch.cyberduck.core.transfer.SyncTransfer;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class SyncPromptController extends TransferPromptController {
 
     private final TableColumnFactory tableColumnsFactory

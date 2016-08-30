@@ -18,9 +18,6 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class DisabledStreamListener implements StreamListener {
 
     @Override

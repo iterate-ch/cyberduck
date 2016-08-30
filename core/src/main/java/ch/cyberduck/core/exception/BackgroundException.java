@@ -22,9 +22,6 @@ import ch.cyberduck.core.StringAppender;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
 

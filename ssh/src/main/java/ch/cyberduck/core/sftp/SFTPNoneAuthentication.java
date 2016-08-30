@@ -28,9 +28,6 @@ import java.io.IOException;
 
 import net.schmizz.sshj.userauth.method.AuthNone;
 
-/**
- * @version $Id$
- */
 public class SFTPNoneAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 

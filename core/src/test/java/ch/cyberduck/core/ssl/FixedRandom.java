@@ -20,9 +20,6 @@ package ch.cyberduck.core.ssl;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-/**
- * @version $Id$
- */
 public class FixedRandom extends SecureRandom {
     private static final long serialVersionUID = -1443745618979920886L;
 

@@ -6,9 +6,6 @@ import java.net.URI;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class DescriptiveUrlTest {
 
     @Test

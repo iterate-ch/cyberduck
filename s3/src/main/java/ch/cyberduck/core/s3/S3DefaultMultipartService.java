@@ -37,9 +37,6 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class S3DefaultMultipartService implements S3MultipartService {
     /**
      * The maximum allowed parts in a multipart upload.
@@ -53,7 +50,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
     private PathContainerService containerService
             = new S3PathContainerService();
 
-    public S3DefaultMultipartService(S3Session session) {
+    public S3DefaultMultipartService(final S3Session session) {
         this.session = session;
     }
 
@@ -76,7 +73,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
                         null, nextKeyMarker, nextUploadIdMarker, null, true);
             }
             catch(S3ServiceException e) {
-                final BackgroundException failure = new ServiceExceptionMappingService().map("Upload {0} failed", e, file);
+                final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                 if(failure instanceof NotfoundException) {
                     return Collections.emptyList();
                 }
@@ -118,7 +115,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
             return session.getClient().multipartListParts(multipart);
         }
         catch(S3ServiceException e) {
-            throw new ServiceExceptionMappingService().map(MessageFormat.format("Upload {0} failed", multipart.getObjectKey()), e);
+            throw new S3ExceptionMappingService().map(MessageFormat.format("Upload {0} failed", multipart.getObjectKey()), e);
         }
     }
 
@@ -131,7 +128,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
             session.getClient().multipartAbortUpload(upload);
         }
         catch(S3ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot delete {0}", e,
+            throw new S3ExceptionMappingService().map("Cannot delete {0}", e,
                     new Path(new Path(upload.getBucketName(), EnumSet.of(Path.Type.directory)),
                             upload.getObjectKey(), EnumSet.of(Path.Type.file)));
         }

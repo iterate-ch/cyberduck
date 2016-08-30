@@ -235,8 +235,6 @@
 			<string>Upload file with Cyberduck</string>
 		</dict>
 	</array>
-	<key>NoneAllowsAutomaticUpdates</key>
-	<false/>
 	<key>NoneCheckAtStartup</key>
 	<false/>
 	<key>NoneEnableAutomaticChecks</key>

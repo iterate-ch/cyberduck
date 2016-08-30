@@ -15,9 +15,12 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Timestamp {
     void setTimestamp(Path file, Long modified) throws BackgroundException;
+
+    Long getDefault(Local file);
 }

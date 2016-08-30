@@ -1,17 +1,17 @@
 ﻿// 
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-//
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -24,9 +24,10 @@ using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -149,15 +150,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
-        public virtual DialogResult MessageBox(string title, string message, string content, string expandedInfo, string help,
-            string verificationText, DialogResponseHandler handler)
+        public virtual TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
+            string help, string verificationText, DialogResponseHandler handler)
         {
             return Utils.MessageBox(this, title, message, content, expandedInfo, help, verificationText, handler);
         }
 
-        public virtual DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
-            string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon,
-            SysIcons footerIcon, DialogResponseHandler handler)
+        public virtual TaskDialogResult CommandBox(string title, string mainInstruction, string content,
+            string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton,
+            TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
         {
             return Utils.CommandBox(this, title, mainInstruction, content, expandedInfo, help, verificationText,
                 commandButtons, showCancelButton, mainIcon, footerIcon, handler);
@@ -276,12 +277,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             return ShowDialog();
         }
 
-        public virtual DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
-            SysIcons icons)
+        public virtual TaskDialogResult MessageBox(string title, string message, string content,
+            TaskDialogCommonButtons buttons, TaskDialogIcon icon)
         {
-            //BringToFront();
-            TaskDialog dialog = new TaskDialog();
-            return dialog.MessageBox(this, title, message, content, buttons, icons);
+            return TaskDialog.Show(title: title, mainInstruction: message, content: content, commonButtons: buttons,
+                mainIcon: icon);
         }
 
         private void OnApplicationIdle(object sender, EventArgs e)
@@ -484,8 +484,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         protected static Bitmap GetIcon(string iconIdentifier)
         {
-            object obj = ResourcesBundle.ResourceManager.GetObject(iconIdentifier, ResourcesBundle.Culture);
+            object obj = IconCache.Instance.IconForName(iconIdentifier);
             return (Bitmap) obj;
+        }
+
+        public ImageList ProtocolIconsImageList()
+        {
+            ImageList images = new ImageList();
+            images.ImageSize = new Size(16, 16);
+            images.ColorDepth = ColorDepth.Depth32Bit;
+            foreach (var icon in IconCache.Instance.GetProtocolIcons())
+            {
+                images.Images.Add(icon.Key, icon.Value);
+            }
+            return images;
         }
     }
 }

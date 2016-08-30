@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -43,9 +45,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-/**
- * @version $Id$
- */
 public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
 
@@ -54,8 +53,8 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final ThreadPool pool
-            = new DefaultThreadPool(PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"), "multipart");
+    private final ThreadPool<MultipartPart> pool
+            = new DefaultThreadPool<MultipartPart>(PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"), "multipart");
 
     /**
      * A split smaller than 5M is not allowed
@@ -76,14 +75,18 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     }
 
     protected void copy(final Path source, final Path copy, final String storageClass,
-                        final String encryptionAlgorithm,
+                        final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
-        if(source.isFile()) {
+        if(source.isFile() || source.isPlaceholder()) {
             final S3Object destination = new S3Object(containerService.getKey(copy));
             // Copying object applying the metadata of the original
             destination.setStorageClass(storageClass);
-            destination.setServerSideEncryptionAlgorithm(encryptionAlgorithm);
-            destination.setAcl(accessControlListFeature.convert(acl));
+            destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+            // Set custom key id stored in KMS
+            destination.setServerSideEncryptionKmsKeyId(encryption.key);
+            if(null != accessControlListFeature) {
+                destination.setAcl(accessControlListFeature.convert(acl));
+            }
             try {
                 final List<MultipartPart> completed = new ArrayList<MultipartPart>();
                 // ID for the initiated multipart upload.
@@ -97,11 +100,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 long remaining = size;
                 long offset = 0;
                 final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-                if(0 == remaining) {
-                    parts.add(this.submit(source, multipart, 1, offset, 0L));
-                }
                 for(int partNumber = 1; remaining > 0; partNumber++) {
-                    boolean skip = false;
                     // Last part can be less than 5 MB. Adjust part size.
                     final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                     // Submit to queue
@@ -135,10 +134,10 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 }
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+                throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
             }
             finally {
-                pool.shutdown();
+                pool.shutdown(false);
             }
         }
     }
@@ -153,8 +152,10 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             @Override
             public MultipartPart call() throws BackgroundException {
                 try {
+                    final HttpRange range = HttpRange.byLength(offset, length);
                     final MultipartPart part = session.getClient().multipartUploadPartCopy(multipart, partNumber,
-                            containerService.getContainer(source).getName(), containerService.getKey(source));
+                            containerService.getContainer(source).getName(), containerService.getKey(source),
+                            null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }
@@ -165,7 +166,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                             part.getSize());
                 }
                 catch(S3ServiceException e) {
-                    throw new ServiceExceptionMappingService().map("Cannot copy {0}", e, source);
+                    throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);
                 }
             }
         });

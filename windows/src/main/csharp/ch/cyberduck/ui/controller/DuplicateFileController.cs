@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Winforms;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -34,8 +35,8 @@ namespace Ch.Cyberduck.Ui.Controller
             StringBuilder proposal = new StringBuilder();
             proposal.Append(System.IO.Path.GetFileNameWithoutExtension(selected.getName()));
             string shortDate = UserDefaultsDateFormatter.GetShortFormat(DateTime.Now)
-                                                        .Replace('/', '.')
-                                                        .Replace(':', '.');
+                .Replace('/', '.')
+                .Replace(':', '.');
             proposal.Append(" (").Append(shortDate).Append(")");
             if (!string.IsNullOrEmpty(selected.getExtension()))
             {

@@ -24,9 +24,6 @@ import ch.cyberduck.core.threading.MainAction;
 
 import java.util.concurrent.Future;
 
-/**
- * @version $Id$
- */
 public interface Controller extends ProgressListener, TranscriptListener, BackgroundActionListener {
 
     /**

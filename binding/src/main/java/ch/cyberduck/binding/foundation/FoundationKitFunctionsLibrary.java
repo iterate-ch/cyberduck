@@ -27,9 +27,6 @@ import java.util.Collections;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
-/**
- * @version $Id$
- */
 public final class FoundationKitFunctionsLibrary {
 
     private FoundationKitFunctionsLibrary() {

@@ -23,9 +23,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
 
-/**
- * @version $Id$
- */
 public class TerminalAlertCallback implements AlertCallback {
 
     private final Console console = new Console();

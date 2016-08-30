@@ -29,10 +29,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
@@ -41,9 +42,6 @@ import org.jets3t.service.model.S3Object;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
 
@@ -54,8 +52,9 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3AccessControlListFeature accessControlListFeature;
 
+    @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
-            = Collections.synchronizedMap(new LRUMap(10));
+            = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
 
     public S3VersioningFeature(final S3Session session) {
         this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
@@ -129,7 +128,7 @@ public class S3VersioningFeature implements Versioning {
             cache.remove(container);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
         }
     }
 
@@ -148,7 +147,7 @@ public class S3VersioningFeature implements Versioning {
         }
         catch(ServiceException e) {
             try {
-                throw new ServiceExceptionMappingService().map("Cannot read bucket versioning status", e);
+                throw new S3ExceptionMappingService().map("Cannot read bucket versioning status", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
@@ -172,8 +171,10 @@ public class S3VersioningFeature implements Versioning {
                 final S3Object destination = new S3Object(containerService.getKey(file));
                 // Keep same storage class
                 destination.setStorageClass(file.attributes().getStorageClass());
-                // Keep encryption setting
-                destination.setServerSideEncryptionAlgorithm(file.attributes().getEncryption());
+                final Encryption.Algorithm encryption = file.attributes().getEncryption();
+                destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                // Set custom key id stored in KMS
+                destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 // Apply non standard ACL
                 if(null == accessControlListFeature) {
                     destination.setAcl(null);
@@ -185,7 +186,7 @@ public class S3VersioningFeature implements Versioning {
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
             }
             catch(ServiceException e) {
-                throw new ServiceExceptionMappingService().map("Cannot revert file", e, file);
+                throw new S3ExceptionMappingService().map("Cannot revert file", e, file);
             }
         }
     }

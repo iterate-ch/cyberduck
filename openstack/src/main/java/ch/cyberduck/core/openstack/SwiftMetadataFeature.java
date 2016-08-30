@@ -19,10 +19,12 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,9 +36,6 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
 
-/**
- * @version $Id$
- */
 public class SwiftMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
 
@@ -54,6 +53,11 @@ public class SwiftMetadataFeature implements Headers {
     public SwiftMetadataFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
+    }
+
+    @Override
+    public Map<String, String> getDefault(final Local local) {
+        return PreferencesFactory.get().getMap("openstack.metadata.default");
     }
 
     @Override

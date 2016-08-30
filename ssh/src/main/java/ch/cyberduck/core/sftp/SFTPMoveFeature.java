@@ -26,9 +26,6 @@ import ch.cyberduck.core.features.Move;
 import java.io.IOException;
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class SFTPMoveFeature implements Move {
 
     private SFTPSession session;

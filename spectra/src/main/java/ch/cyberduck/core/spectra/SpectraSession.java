@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
@@ -31,16 +32,15 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.jets3t.service.Jets3tProperties;
-
 public class SpectraSession extends S3Session {
+
+    private final SpectraBulkService bulk = new SpectraBulkService(this);
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -51,18 +51,16 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
-    protected Jets3tProperties configure() {
-        this.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        return super.configure();
-    }
-
-    @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Bulk.class) {
-            return (T) new SpectraBulkService(this);
+            return (T) bulk;
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new SpectraDirectoryFeature(this);
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
@@ -87,13 +85,13 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraWriteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new SpectraReadFeature(this);
+            return (T) new SpectraReadFeature(this, bulk);
         }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(this, new SpectraWriteFeature(this));
+            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this), bulk);
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this));
+            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, bulk));
         }
         if(type == Headers.class) {
             return null;

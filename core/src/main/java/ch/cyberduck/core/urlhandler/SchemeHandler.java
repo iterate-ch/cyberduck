@@ -22,9 +22,6 @@ import ch.cyberduck.core.local.Application;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface SchemeHandler {
 
     /**

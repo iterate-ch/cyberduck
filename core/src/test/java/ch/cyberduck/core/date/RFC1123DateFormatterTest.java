@@ -6,10 +6,12 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class RFC1123DateFormatterTest {
+
+    @Test(expected = InvalidDateException.class)
+    public void testNull() throws Exception {
+        assertEquals(null, new RFC1123DateFormatter().parse(null));
+    }
 
     @Test
     public void testParse() throws Exception {

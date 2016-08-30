@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class PathPasteboardFactory {
 
     private static Map<Session, PathPasteboard> pasteboards

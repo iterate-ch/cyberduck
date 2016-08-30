@@ -21,9 +21,6 @@ import ch.cyberduck.core.Path;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public class PathPriorityComparator implements Comparator<Path> {
 
     @Override

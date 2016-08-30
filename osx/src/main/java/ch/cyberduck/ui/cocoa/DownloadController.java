@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
@@ -39,9 +41,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class DownloadController extends AlertController {
 
     protected NSTextField urlField

@@ -19,9 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class PasswordStoreFactory extends Factory<HostPasswordStore> {
 
     protected PasswordStoreFactory() {

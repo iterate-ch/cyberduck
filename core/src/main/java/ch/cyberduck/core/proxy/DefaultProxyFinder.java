@@ -26,9 +26,6 @@ import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
 
-/**
- * @version $Id$
- */
 public class DefaultProxyFinder implements ProxyFinder {
 
     private final ProxySelector selector

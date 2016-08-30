@@ -20,9 +20,6 @@ package ch.cyberduck.core.local.features;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-/**
- * @version $Id:$
- */
 public interface Trash {
     void trash(Local file) throws AccessDeniedException;
 }

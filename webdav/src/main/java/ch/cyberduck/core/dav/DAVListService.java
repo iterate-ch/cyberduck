@@ -35,9 +35,6 @@ import java.util.List;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVListService implements ListService {
 
     private DAVSession session;
@@ -69,6 +66,8 @@ public class DAVListService implements ListService {
                 }
                 if(StringUtils.isNotBlank(resource.getEtag())) {
                     attributes.setETag(resource.getEtag());
+                    // Setting checksum is disabled. See #8798
+                    // attributes.setChecksum(Checksum.parse(resource.getEtag()));
                 }
                 children.add(new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),

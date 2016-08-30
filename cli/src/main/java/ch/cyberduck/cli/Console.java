@@ -33,9 +33,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 
-/**
- * @version $Id$
- */
 public class Console {
 
     private final java.io.Console console

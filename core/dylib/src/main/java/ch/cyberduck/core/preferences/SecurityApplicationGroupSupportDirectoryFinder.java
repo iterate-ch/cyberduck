@@ -23,7 +23,11 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
+import ch.cyberduck.core.local.features.Symlink;
+import ch.cyberduck.core.local.features.Trash;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -32,9 +36,6 @@ import org.rococoa.Foundation;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @version $Id$
- */
 public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDirectoryFinder {
     private static final Logger log = Logger.getLogger(SecurityApplicationGroupSupportDirectoryFinder.class);
 
@@ -76,7 +77,15 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
                         try {
                             FileUtils.copyDirectory(new File(previous.getAbsolute()), new File(folder.getAbsolute()));
                             log.warn(String.format("Move application support folder %s to Trash", previous));
-                            LocalTrashFactory.get().trash(previous);
+                            try {
+                                final Trash trash = LocalTrashFactory.get();
+                                trash.trash(previous);
+                                final Symlink symlink = LocalSymlinkFactory.get();
+                                symlink.symlink(previous, folder.getAbsolute());
+                            }
+                            catch(LocalAccessDeniedException e) {
+                                log.warn(String.format("Failure cleaning up previous application support directory. %s", e.getMessage()));
+                            }
                         }
                         catch(IOException e) {
                             log.warn(String.format("Failure migrating %s to security application group directory %s. %s", previous, folder, e.getMessage()));

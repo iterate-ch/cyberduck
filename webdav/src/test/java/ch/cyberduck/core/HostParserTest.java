@@ -11,9 +11,6 @@ import java.util.HashSet;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class HostParserTest {
 
     @Test

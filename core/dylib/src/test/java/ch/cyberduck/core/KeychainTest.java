@@ -11,9 +11,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Ignore
 public class KeychainTest {
 

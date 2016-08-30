@@ -20,9 +20,6 @@ package ch.cyberduck.core.exception;
 
 import ch.cyberduck.core.LocaleFactory;
 
-/**
- * @version $Id$
- */
 public class NotfoundException extends BackgroundException {
     private static final long serialVersionUID = -5634899621865307418L;
 

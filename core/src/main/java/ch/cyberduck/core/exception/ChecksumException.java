@@ -17,9 +17,6 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class ChecksumException extends BackgroundException {
     private static final long serialVersionUID = 3459390972588992492L;
 

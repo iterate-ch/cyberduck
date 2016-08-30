@@ -29,9 +29,6 @@ import ch.cyberduck.core.features.Encryption;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class WriteEncryptionWorker extends Worker<Boolean> {
 
     /**
@@ -40,22 +37,27 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     private List<Path> files;
 
     /**
-     * Redundancy class
+     * Algorithm
      */
-    private String algorithm;
+    private Encryption.Algorithm algorithm;
 
     /**
      * Descend into directories
      */
-    private boolean recursive;
+    private RecursiveCallback<Encryption.Algorithm> callback;
 
     private ProgressListener listener;
 
-    public WriteEncryptionWorker(final List<Path> files,
-                                 final String algorithm, final boolean recursive, final ProgressListener listener) {
+    public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
+                                 final boolean recursive, final ProgressListener listener) {
+        this(files, algorithm, new BooleanRecursiveCallback<Encryption.Algorithm>(recursive), listener);
+    }
+
+    public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
+                                 final RecursiveCallback<Encryption.Algorithm> callback, final ProgressListener listener) {
         this.files = files;
         this.algorithm = algorithm;
-        this.recursive = recursive;
+        this.callback = callback;
         this.listener = listener;
     }
 
@@ -72,17 +74,11 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(!algorithm.equals(file.attributes().getStorageClass())) {
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    file.getName()));
-            feature.setEncryption(file, algorithm);
-            file.attributes().setEncryption(algorithm);
-        }
-        if(recursive) {
-            if(file.isVolume()) {
-                // No recursion when changing container ACL
-            }
-            else if(file.isDirectory()) {
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                file.getName()));
+        feature.setEncryption(file, algorithm);
+        if(file.isDirectory()) {
+            if(callback.recurse(file, algorithm)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }

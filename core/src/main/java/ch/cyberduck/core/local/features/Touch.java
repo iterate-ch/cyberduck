@@ -20,9 +20,6 @@ package ch.cyberduck.core.local.features;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-/**
- * @version $Id:$
- */
 public interface Touch {
     void touch(Local file) throws AccessDeniedException;
 }

@@ -28,9 +28,6 @@ import ch.cyberduck.core.threading.BackgroundActionRegistry;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public final class TransferControllerFactory {
 
     private static TransferController shared = null;

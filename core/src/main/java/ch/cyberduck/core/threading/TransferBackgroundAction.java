@@ -193,9 +193,10 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     /**
      * @return Return zero. Retry is handled in transfer worker.
+     * @param failure
      */
     @Override
-    protected int retry() {
+    protected int retry(final BackgroundException failure) {
         return 0;
     }
 
@@ -235,14 +236,14 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     }
 
     @Override
-    public void pause() {
+    public void pause(final BackgroundException failure) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Pause background action for transfer %s", transfer));
         }
         // Upon retry do not suggest to overwrite already completed items from the transfer
         options.reloadRequested = false;
         options.resumeRequested = true;
-        super.pause();
+        super.pause(failure);
     }
 
     @Override

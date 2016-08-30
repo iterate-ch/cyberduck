@@ -32,10 +32,6 @@ import ch.cyberduck.core.serializer.Reader;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-/**
- * @param <S>
- * @version $Id$
- */
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 

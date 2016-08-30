@@ -18,9 +18,6 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface TransferListener {
 
     /**

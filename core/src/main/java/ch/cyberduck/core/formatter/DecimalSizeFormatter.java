@@ -17,9 +17,6 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class DecimalSizeFormatter extends AbstractSizeFormatter {
 
     public static final Unit KILO = new Unit(1000L) {

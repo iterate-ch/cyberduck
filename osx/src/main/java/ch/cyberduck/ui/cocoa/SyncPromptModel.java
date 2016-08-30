@@ -28,9 +28,6 @@ import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public class SyncPromptModel extends TransferPromptModel {
 
     private SyncTransfer transfer;

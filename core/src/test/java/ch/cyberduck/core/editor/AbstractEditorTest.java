@@ -39,14 +39,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class AbstractEditorTest {
 
     @Test
@@ -71,13 +69,14 @@ public class AbstractEditorTest {
         final AtomicBoolean t = new AtomicBoolean();
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Read.class)) {
                     return (T) new Read() {
                         @Override
                         public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
                             t.set(true);
-                            return IOUtils.toInputStream("content");
+                            return IOUtils.toInputStream("content", Charset.defaultCharset());
                         }
 
                         @Override

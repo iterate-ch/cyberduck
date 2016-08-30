@@ -8,9 +8,6 @@ import java.net.SocketException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-/**
- * @version $Id$
- */
 public class BackgroundExceptionTest {
 
     @Test

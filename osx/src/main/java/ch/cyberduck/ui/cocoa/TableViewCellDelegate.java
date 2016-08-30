@@ -23,9 +23,6 @@ import ch.cyberduck.binding.application.NSView;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 
-/**
- * @version $Id$
- */
 public interface TableViewCellDelegate {
     NSView tableView_viewForTableColumn_row(NSTableView view, NSTableColumn column, NSInteger row);
 }

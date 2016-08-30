@@ -44,9 +44,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class IRODSFindFeatureTest {
 
@@ -71,12 +68,7 @@ public class IRODSFindFeatureTest {
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(new IRODSFindFeature(session).find(test));
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-                    @Override
-                    public void delete(final Path file) {
-                    }
-                }
-        );
+        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }

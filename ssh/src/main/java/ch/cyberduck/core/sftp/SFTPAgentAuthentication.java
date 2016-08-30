@@ -32,9 +32,6 @@ import net.schmizz.sshj.common.Buffer;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
-/**
- * @version $Id$
- */
 public class SFTPAgentAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 

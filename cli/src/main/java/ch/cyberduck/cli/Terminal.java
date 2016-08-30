@@ -34,6 +34,7 @@ import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
+import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.irods.IRODSProtocol;
 import ch.cyberduck.core.local.Application;
@@ -107,12 +108,8 @@ public class Terminal {
 
     private Options options;
 
-    public Terminal(final Options options, final CommandLine input) {
-        this(new TerminalPreferences(), options, input);
-    }
-
-    public Terminal(final Preferences defaults, final Options options, final CommandLine input) {
-        this.preferences = defaults;
+    public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
+        this.preferences = defaults.withDefaults(input);
         ProtocolFactory.register(
                 new FTPProtocol(),
                 new FTPTLSProtocol(),
@@ -126,6 +123,8 @@ public class Terminal {
                 new IRODSProtocol(),
                 new SpectraProtocol(),
                 new B2Protocol(),
+                new DriveProtocol(),
+                new HubicProtocol(),
                 new DriveProtocol(),
                 new DropboxProtocol());
         );
@@ -150,12 +149,12 @@ public class Terminal {
      * @param args Command line arguments
      */
     public static void main(final String... args) throws IOException {
-        final TerminalPreferences defaults = new TerminalPreferences();
-        PreferencesFactory.set(defaults);
-        open(args, defaults);
+        open(args, new TerminalPreferences());
     }
 
-    protected static void open(final String[] args, final Preferences defaults) {
+    protected static void open(final String[] args, final TerminalPreferences defaults) {
+        // Register preferences
+        PreferencesFactory.set(defaults);
         final Options options = TerminalOptionsBuilder.options();
         final Console console = new Console();
         try {
@@ -398,12 +397,12 @@ public class Terminal {
         }
         final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, new DownloadGlobFilter(remote.getName()), progress);
         }
         else {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);

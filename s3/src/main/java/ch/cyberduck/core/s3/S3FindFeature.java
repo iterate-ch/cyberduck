@@ -26,13 +26,12 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.S3Object;
 
-/**
- * @version $Id$
- */
 public class S3FindFeature implements Find {
     private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 
@@ -83,19 +82,20 @@ public class S3FindFeature implements Find {
         catch(ServiceException e) {
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
-                    if(new ServiceExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                    if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
                         log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
                                 "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
                                 "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
-                            session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, 0L, 0L);
+                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
+                                    containerService.getKey(file), null, null, null, null, null, null);
+                            IOUtils.closeQuietly(object.getDataInputStream());
                             list.add(file);
                             return true;
                         }
                         catch(ServiceException f) {
-                            if(new ServiceExceptionMappingService().map(f) instanceof NotfoundException) {
+                            if(new S3ExceptionMappingService().map(f) instanceof NotfoundException) {
                                 list.attributes().addHidden(file);
                                 return false;
                             }
@@ -106,7 +106,7 @@ public class S3FindFeature implements Find {
                         }
                     }
             }
-            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 

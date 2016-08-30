@@ -23,12 +23,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.jets3t.service.acl.Permission;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ import java.util.Set;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2BucketTypeFeature implements AclPermission, Location {
+public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermission, Location {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -49,42 +50,47 @@ public class B2BucketTypeFeature implements AclPermission, Location {
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        return containerService.getContainer(file).attributes().getAcl();
+        if(containerService.isContainer(file)) {
+            return containerService.getContainer(file).attributes().getAcl();
+        }
+        return Acl.EMPTY;
     }
 
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-        try {
-            for(Acl.UserAndRole userAndRole : acl.asList()) {
-                if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                    if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                        session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                                BucketType.allPublic);
-                        return;
+        if(containerService.isContainer(file)) {
+            try {
+                for(Acl.UserAndRole userAndRole : acl.asList()) {
+                    if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                        if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                            session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                                    BucketType.allPublic);
+                            return;
+                        }
                     }
                 }
+                session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        BucketType.allPrivate);
             }
-            session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                    BucketType.allPrivate);
-        }
-        catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            catch(B2ApiException e) {
+                throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Arrays.asList(
+        return new ArrayList<Acl.User>(Collections.singletonList(
                 new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(
+        return Collections.singletonList(
                 new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
 
@@ -108,7 +114,6 @@ public class B2BucketTypeFeature implements AclPermission, Location {
         }
         return new B2BucketTypeName(BucketType.allPrivate);
     }
-
 
     public static final class B2BucketTypeName extends Name {
 

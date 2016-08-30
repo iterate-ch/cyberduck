@@ -85,7 +85,7 @@ public class S3ReadFeature implements Read {
             return object.getDataInputStream();
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Download {0} failed", e, file);
+            throw new S3ExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

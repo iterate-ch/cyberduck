@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.features.Symlink;
 
-/**
- * @version $Id:$
- */
 public class NullLocalSymlinkFeature implements Symlink {
 
     @Override

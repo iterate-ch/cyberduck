@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
@@ -33,9 +34,6 @@ import ch.cyberduck.core.threading.ControllerMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class TranscriptController extends BundleController implements TranscriptListener {
 
     protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
@@ -87,12 +85,19 @@ public abstract class TranscriptController extends BundleController implements T
     public abstract boolean isOpen();
 
     @Override
-    public void log(final boolean request, final String transcript) {
+    public void log(final Type request, final String transcript) {
         if(this.isOpen()) {
             this.invoke(new ControllerMainAction(this) {
                 @Override
                 public void run() {
-                    write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+                    switch(request) {
+                        case request:
+                            write(FIXED_WITH_FONT_REQUEST_ATTRIBUTES, transcript);
+                            break;
+                        case response:
+                            write(FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+                            break;
+                    }
                 }
             });
         }

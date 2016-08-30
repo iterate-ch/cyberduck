@@ -33,9 +33,6 @@ import ch.cyberduck.core.udt.UDTTransferOption;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class QloudsonicTransferOption implements UDTTransferOption {
 
     private Preferences preferences

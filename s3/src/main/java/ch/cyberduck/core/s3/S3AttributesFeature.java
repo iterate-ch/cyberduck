@@ -24,10 +24,13 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -38,9 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3AttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 
@@ -84,13 +84,31 @@ public class S3AttributesFeature implements Attributes {
             }
         }
         catch(ServiceException e) {
-            if(new ServiceExceptionMappingService().map(e) instanceof AccessDeniedException) {
+            switch(session.getSignatureVersion()) {
+                case AWS4HMACSHA256:
+                    if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                        log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
+                                "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
+                                "in the authentication header.");
+                        // Fallback to GET if HEAD fails with 400 response
+                        try {
+                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
+                                    containerService.getKey(file), null, null, null, null, null, null);
+                            IOUtils.closeQuietly(object.getDataInputStream());
+                            return object;
+                        }
+                        catch(ServiceException f) {
+                            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", f, file);
+                        }
+                    }
+            }
+            if(new S3ExceptionMappingService().map(e) instanceof AccessDeniedException) {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
                 return object;
             }
-            throw new ServiceExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
@@ -101,7 +119,12 @@ public class S3AttributesFeature implements Attributes {
         if(lastmodified != null) {
             attributes.setModificationDate(lastmodified.getTime());
         }
-        attributes.setStorageClass(object.getStorageClass());
+        if(StringUtils.isNotBlank(object.getStorageClass())) {
+            attributes.setStorageClass(object.getStorageClass());
+        }
+        else if(object.containsMetadata("storage-class")) {
+            attributes.setStorageClass(object.getMetadataMap().get("storage-class").toString());
+        }
         if(StringUtils.isNotBlank(object.getETag())) {
             attributes.setChecksum(Checksum.parse(object.getETag()));
             attributes.setETag(object.getETag());
@@ -109,7 +132,26 @@ public class S3AttributesFeature implements Attributes {
         if(object instanceof S3Object) {
             attributes.setVersionId(((S3Object) object).getVersionId());
         }
-        attributes.setEncryption(object.getServerSideEncryptionAlgorithm());
+        if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
+            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
+                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
+                @Override
+                public String getDescription() {
+                    return String.format("SSE-KMS (%s)", key);
+                }
+            });
+        }
+        else {
+            if(null != object.getServerSideEncryptionAlgorithm()) {
+                // AES256
+                attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null) {
+                    @Override
+                    public String getDescription() {
+                        return "SSE-S3 (AES-256)";
+                    }
+                });
+            }
+        }
         final HashMap<String, String> metadata = new HashMap<String, String>();
         final Map<String, Object> source = object.getModifiableMetadata();
         for(Map.Entry<String, Object> entry : source.entrySet()) {

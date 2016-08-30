@@ -37,9 +37,6 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class CreateSymlinkController extends FileController {
 
     public CreateSymlinkController(final BrowserController parent, final Cache<Path> cache) {

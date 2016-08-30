@@ -34,9 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-/**
- * @version $Id$
- */
 public class SFTPReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SFTPReadFeature.class);
 
@@ -52,10 +49,8 @@ public class SFTPReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final RemoteFile handle = session.sftp().open(file.getAbsolute(),
-                    EnumSet.of(OpenMode.READ));
-            final int maxUnconfirmedReads
-                    = (int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1;
+            final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.READ));
+            final int maxUnconfirmedReads = this.getMaxUnconfirmedReads(status);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
@@ -81,6 +76,14 @@ public class SFTPReadFeature implements Read {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    protected int getMaxUnconfirmedReads(final TransferStatus status) {
+        if(-1 == status.getLength()) {
+            return preferences.getInteger("sftp.read.maxunconfirmed");
+        }
+        return Integer.min(((int) (status.getLength() / preferences.getInteger("connection.chunksize")) + 1),
+                preferences.getInteger("sftp.read.maxunconfirmed"));
     }
 
     @Override

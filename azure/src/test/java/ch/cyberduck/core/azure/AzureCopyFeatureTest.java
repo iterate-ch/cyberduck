@@ -22,9 +22,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureCopyFeatureTest {
 
@@ -43,11 +40,7 @@ public class AzureCopyFeatureTest {
         new AzureCopyFeature(session, null).copy(test, copy);
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
-        new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

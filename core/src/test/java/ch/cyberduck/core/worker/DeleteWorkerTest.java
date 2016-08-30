@@ -9,6 +9,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -21,17 +22,16 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 public class DeleteWorkerTest {
 
     @Test
     public void testCompile() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
@@ -63,14 +63,15 @@ public class DeleteWorkerTest {
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
-                new DisabledProgressListener());
-        assertTrue(worker.run(session));
+                PathCache.empty(), new DisabledProgressListener());
+        assertEquals(4, worker.run(session).size());
     }
 
     @Test
     public void testSymlink() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
@@ -88,7 +89,7 @@ public class DeleteWorkerTest {
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
                 Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
-                new DisabledProgressListener());
+                PathCache.empty(), new DisabledProgressListener());
         worker.run(session);
     }
 }

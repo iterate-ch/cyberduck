@@ -34,11 +34,13 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Core.Sparkle;
+using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.log4j;
@@ -74,14 +76,17 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.System;
 
-            BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this);
+            BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
+                ProtocolIconsImageList().Images);
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
-                LocaleFactory.localizedString("No recently connected servers available"));
+                LocaleFactory.localizedString("No recently connected servers available"),
+                ProtocolIconsImageList().Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
-                RendezvousCollection.defaultCollection(), LocaleFactory.localizedString("No Bonjour services available"));
+                RendezvousCollection.defaultCollection(), LocaleFactory.localizedString("No Bonjour services available"),
+                ProtocolIconsImageList().Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
@@ -462,7 +467,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogButtons.OK, SysIcons.Error);
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                    TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }
             string[] paths = dialog.SelectedPaths;
@@ -699,16 +705,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.ActiveGetterPath = value; }
         }
 
-        public void AddTranscriptEntry(bool request, string entry)
+        public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request)
+            if (request == TranscriptListener.Type.request)
             {
                 transcriptBox.SelectionColor = Color.Black;
             }
-            else
+            else if (request == TranscriptListener.Type.response)
             {
-                transcriptBox.SelectionColor = Color.DarkGray;
                 transcriptBox.SelectionColor = Color.DarkGray;
             }
             if (transcriptBox.TextLength > 0)
@@ -1027,7 +1032,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             IActiveMenu menu = ActiveMenu.GetInstance(this);
             ActiveButton button = new ActiveButton();
-            button.Font = new Font(base.Font.FontFamily, 7.5F, FontStyle.Bold);
+            button.Font = new Font(Font.FontFamily, 7.5F, FontStyle.Bold);
             button.ForeColor = Color.White;
             button.BackColor = Color.Firebrick;
             button.FlatAppearance.BorderSize = 0;
@@ -1571,7 +1576,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem, newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem1,
                     newBookmarkToolStripButton
                 },
                 new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
@@ -1584,7 +1590,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1, deleteBookmarkToolStripButton
+                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1,
+                    deleteBookmarkToolStripButton
                 }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem}, (sender, args) => DeleteBookmark(),
                 () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[] {duplicateBookmarkToolStripMenuItem1, duplicateBookmarkToolStripMenuItem},
@@ -1695,9 +1702,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = new WindowsPeriodicUpdateChecker().hasUpdatePrivileges();
+            bool HasUpdatePrivilges = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => new WindowsPeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
+                (sender, args) => new WinSparklePeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()
@@ -2231,7 +2238,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkToolStripMenuItem.DropDownItems.Clear();
             bookmarkToolStripMenuItem.DropDownItems.AddRange(fix.ToArray());
 
-            ImageList.ImageCollection icons = IconCache.Instance.GetProtocolIcons().Images;
+            ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
 
             List<ToolStripItem> items = new List<ToolStripItem>();
             foreach (Host bookmark in bookmarks)
@@ -2252,7 +2259,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Clear();
             if (history.Count > 0)
             {
-                ImageList.ImageCollection icons = IconCache.Instance.GetProtocolIcons().Images;
+                ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
 
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)
@@ -2367,12 +2374,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         private class BookmarkMenuCollectionListener : CollectionListener
         {
             private readonly BrowserForm _form;
-            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
+            private readonly ImageList.ImageCollection _icons;
             private int _bookmarkStartPosition;
 
-            public BookmarkMenuCollectionListener(BrowserForm f)
+            public BookmarkMenuCollectionListener(BrowserForm f, ImageList.ImageCollection icons)
             {
                 _form = f;
+                _icons = icons;
                 if (BookmarkCollection.defaultCollection().size() > 0)
                 {
                     BuildMenuItems();
@@ -2520,7 +2528,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (null != _currentDropTarget)
                     {
-                        form.browser.OnExpanding(_currentDropTarget);
+                        form.browser.OnExpanding(new TreeBranchExpandingEventArgs(_currentDropTarget, null));
                         ((TreeListView) ListView).Expand(_currentDropTarget);
                     }
                     _timer.Stop();
@@ -2825,15 +2833,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             private readonly AbstractHostCollection _collection;
             private readonly String _empty;
             private readonly BrowserForm _form;
-            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
+            private readonly ImageList.ImageCollection _icons;
             private readonly MenuItem _menu;
 
-            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty)
+            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty,
+                ImageList.ImageCollection icons)
             {
                 _form = f;
                 _menu = menu;
                 _collection = collection;
                 _empty = empty;
+                _icons = icons;
                 if (_collection.size() > 0)
                 {
                     BuildMenuItems();

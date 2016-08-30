@@ -28,9 +28,6 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class CopyRootPathsNormalizerTest {
 
     @Test

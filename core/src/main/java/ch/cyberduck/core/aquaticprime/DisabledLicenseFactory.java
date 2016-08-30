@@ -20,9 +20,6 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 
-/**
- * @version $Id$
- */
 public class DisabledLicenseFactory extends LicenseFactory {
 
     @Override

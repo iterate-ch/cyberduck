@@ -17,9 +17,6 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class BinarySizeFormatter extends AbstractSizeFormatter {
 
     private static final Unit KILO = new Unit(1024L) {

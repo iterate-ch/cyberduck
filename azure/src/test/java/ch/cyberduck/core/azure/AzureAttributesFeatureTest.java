@@ -22,11 +22,9 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class AzureAttributesFeatureTest {
 
@@ -57,13 +55,9 @@ public class AzureAttributesFeatureTest {
         final AzureAttributesFeature f = new AzureAttributesFeature(session, null);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNull(attributes.getChecksum());
+        assertNotNull(attributes.getChecksum());
         assertNotNull(attributes.getETag());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

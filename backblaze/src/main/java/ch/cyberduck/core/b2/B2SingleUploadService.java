@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -34,7 +35,7 @@ import synapticloop.b2.response.B2FileResponse;
 public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, MessageDigest> {
 
     private final ChecksumCompute checksum
-            = new SHA1ChecksumCompute();
+            = ChecksumComputeFactory.get(HashAlgorithm.sha1);
 
     public B2SingleUploadService(final B2Session session) {
         this(session, new B2WriteFeature(session));

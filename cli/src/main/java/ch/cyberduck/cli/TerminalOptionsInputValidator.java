@@ -34,9 +34,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @version $Id$
- */
 public class TerminalOptionsInputValidator {
 
     private Console console = new Console();

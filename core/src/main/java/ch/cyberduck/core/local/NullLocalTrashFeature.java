@@ -18,16 +18,12 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
 
-/**
- * @version $Id:$
- */
 public class NullLocalTrashFeature implements Trash {
 
     @Override
-    public void trash(Local file) throws AccessDeniedException {
+    public void trash(Local file) {
         //
     }
 }

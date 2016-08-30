@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,9 +31,6 @@ import java.util.Collections;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-/**
- * @version $Id$
- */
 public class SwiftDirectoryFeature implements Directory {
 
     private SwiftSession session;
@@ -53,11 +51,11 @@ public class SwiftDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null);
+        this.mkdir(file, null, null);
     }
 
     @Override
-    public void mkdir(final Path file, final String region) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level

@@ -5,7 +5,7 @@
     <groupId>ch.cyberduck</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -22,10 +22,12 @@
         <module>importer</module>
         <module>importer/dll</module>
         <!-- Protocols -->
+        <module>oauth</module>
         <module>udt</module>
         <module>irods</module>
         <module>spectra</module>
         <module>s3</module>
+        <module>googlestorage</module>
         <module>openstack</module>
         <module>webdav</module>
         <module>azure</module>
@@ -46,6 +48,7 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
+        <module>hubic</module>
     </modules>
 
     <scm>
@@ -76,14 +79,14 @@
                 <version>2.2.2</version>
             </dependency>
             <dependency>
-                <groupId>net.java.dev.jets3t</groupId>
+                <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.4.5</version>
+                <version>0.9.12</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>4.4.4</version>
+                <version>4.4.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -98,12 +101,12 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.53</version>
+                <version>1.52</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.53</version>
+                <version>1.52</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -113,7 +116,7 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>3.4</version>
+                <version>3.5</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -129,6 +132,11 @@
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>3.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -148,47 +156,64 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.21</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.21</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.19</version>
+                <version>1.7.21</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.7.3</version>
+                <version>2.7.6</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.7.3</version>
+                <version>2.7.6</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.7.3</version>
+                <version>2.7.6</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.7.3</version>
+                <version>2.7.6</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.7.3</version>
+                <version>2.7.6</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>2.9.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.oauth-client</groupId>
+                <artifactId>google-oauth-client</artifactId>
+                <version>1.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-gson</artifactId>
+                <version>1.22.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk-bom</artifactId>
+                <version>1.10.77</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -209,9 +234,10 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.5.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
+                        <compilerArgument>-Xlint:unchecked</compilerArgument>
                         <compilerArguments>
                             <profile>compact3</profile>
                         </compilerArguments>
@@ -240,7 +266,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -249,7 +275,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>3.0.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -296,7 +322,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19</version>
+                    <version>2.19.1</version>
                     <configuration>
                         <argLine>-Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
@@ -309,7 +335,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.19</version>
+                    <version>2.19.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <argLine>-Djava.library.path=${project.build.directory}</argLine>
@@ -565,6 +591,33 @@
                                 <configuration>
                                     <property>main.basedir</property>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

@@ -21,9 +21,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 
-/**
- * @version $Id$
- */
 public class S3PathContainerService extends PathContainerService {
 
     @Override

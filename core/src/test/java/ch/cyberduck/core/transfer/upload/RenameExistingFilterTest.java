@@ -29,9 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class RenameExistingFilterTest {
 
     @Test
@@ -53,6 +50,7 @@ public class RenameExistingFilterTest {
         final AtomicBoolean c = new AtomicBoolean();
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Move.class) {
                     return (T) new Move() {
@@ -123,16 +121,19 @@ public class RenameExistingFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public void move(final Path f, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+                        public void move(final Path source, final Path target, boolean exists, final Delete.Callback callback) throws BackgroundException {
                             if(moved.incrementAndGet() == 1) {
-                                assertEquals(file, f);
+                                // Rename existing target file
+                                assertEquals(file, source);
                             }
                             else if(moved.get() == 2) {
-                                assertEquals(file, renamed);
+                                // Move temporary renamed file in place
+                                assertEquals(file, target);
                             }
                             else {
                                 fail();
@@ -225,6 +226,7 @@ public class RenameExistingFilterTest {
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
+            @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {

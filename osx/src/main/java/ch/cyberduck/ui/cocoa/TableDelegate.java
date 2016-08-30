@@ -22,9 +22,6 @@ import org.rococoa.ID;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public interface TableDelegate<E> {
     void enterKeyPressed(final ID sender);
 

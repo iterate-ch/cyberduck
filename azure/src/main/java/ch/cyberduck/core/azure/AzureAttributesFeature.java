@@ -27,6 +27,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
@@ -78,7 +81,7 @@ public class AzureAttributesFeature implements Attributes {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(properties.getLength());
                 attributes.setModificationDate(properties.getLastModified().getTime());
-                attributes.setChecksum(Checksum.parse(properties.getContentMD5()));
+                attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
                 attributes.setETag(properties.getEtag());
                 return attributes;
             }

@@ -18,6 +18,9 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
+import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
@@ -26,9 +29,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class PromptRedirectCallback implements RedirectCallback {
     private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
 
@@ -47,7 +47,7 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        NSAlert alert = NSAlert.alert("Redirect", //title
+        final NSAlert alert = NSAlert.alert("Redirect", //title
                 LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Cancel", "Alert"), //alternative button

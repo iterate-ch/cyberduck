@@ -39,9 +39,6 @@ import net.schmizz.sshj.userauth.method.AuthKeyboardInteractive;
 import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
-/**
- * @version $Id$
- */
 public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 

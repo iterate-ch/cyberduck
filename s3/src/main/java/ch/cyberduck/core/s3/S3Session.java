@@ -28,6 +28,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -48,11 +50,13 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -64,8 +68,11 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
+
+import java.util.EnumSet;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
@@ -78,21 +85,24 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-            = host.getHostname().endsWith(preferences.getProperty("s3.hostname.default")) ?
-            // Only for AWS
-            S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version")) :
-            S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
-        super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     @Override
@@ -101,7 +111,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             client.shutdown();
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map(e);
+            throw new S3ExceptionMappingService().map(e);
+        }
+        finally {
+            super.logout();
         }
     }
 
@@ -141,10 +154,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
      */
     protected String getRestMetadataPrefix() {
         return "x-amz-meta-";
-    }
-
-    protected String getProjectId() {
-        return null;
     }
 
     protected Jets3tProperties configure() {
@@ -234,25 +243,34 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             // List all buckets
-            return new AttributedList<Path>(new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(listener));
+            return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
         }
         else {
-            return new S3ObjectListService(this).list(directory, listener);
+            final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
+            try {
+                for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
+                    final PathAttributes attributes = new PathAttributes();
+                    attributes.setDuplicate(true);
+                    attributes.setVersionId(upload.getUploadId());
+                    attributes.setModificationDate(upload.getInitiatedDate().getTime());
+                    objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+                }
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+            }
+            return objects;
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
         if(type == Write.class) {
-            if(preferences.getBoolean("s3.write.multipart")) {
-                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                    return (T) new S3MultipartWriteFeature(this);
-                }
-            }
-            return (T) new S3WriteFeature(this);
+            return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Download.class) {
             return (T) new S3ThresholdDownloadService(this, trust, key, new QloudsonicTransferOption());
@@ -306,7 +324,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 // Only for AWS
                 if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                     if(null == versioning) {
-                        versioning = new S3VersioningFeature(this);
+                        versioning = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
                     }
                     return (T) versioning;
                 }
@@ -330,7 +348,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Encryption.class) {
             // Only for AWS
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3EncryptionFeature(this);
+                return (T) new KMSEncryptionFeature(this);
             }
             return null;
         }

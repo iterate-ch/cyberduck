@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -36,9 +37,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class MoveController extends ProxyController {
 
     private final Preferences preferences
@@ -74,7 +72,7 @@ public class MoveController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
                         new MoveWorker(selected, parent, cache) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {
@@ -98,7 +96,7 @@ public class MoveController extends ProxyController {
     private void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.move.confirm")) {
             StringBuilder alertText = new StringBuilder(
-                    LocaleFactory.localizedString("Do you want to move the selected files?"));
+                    LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
             int i = 0;
             boolean rename = false;
             Iterator<Map.Entry<Path, Path>> iter;

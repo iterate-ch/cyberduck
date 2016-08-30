@@ -19,9 +19,6 @@ package ch.cyberduck.core.transfer;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class TransferAdapter implements TransferListener {
     private static final Logger log = Logger.getLogger(TransferAdapter.class);
 

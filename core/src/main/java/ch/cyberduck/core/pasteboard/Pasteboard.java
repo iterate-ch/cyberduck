@@ -19,9 +19,6 @@ package ch.cyberduck.core.pasteboard;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface Pasteboard<T> {
 
     boolean add(T item);

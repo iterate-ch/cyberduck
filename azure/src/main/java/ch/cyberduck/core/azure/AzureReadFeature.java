@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,6 +25,10 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.input.ProxyInputStream;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +41,10 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobInputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.core.SR;
 
-/**
- * @version $Id$
- */
 public class AzureReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(AzureReadFeature.class);
 
     private AzureSession session;
 
@@ -72,17 +74,23 @@ public class AzureReadFeature implements Read {
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             if(status.isAppend()) {
                 try {
-                    StreamCopier.skip(in, status.getOffset());
+                    return StreamCopier.skip(in, status.getOffset());
                 }
                 catch(IndexOutOfBoundsException e) {
                     // If offset is invalid
                     throw new BackgroundException(e);
                 }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
             }
-            return in;
+            return new ProxyInputStream(in) {
+                @Override
+                protected void handleIOException(final IOException e) throws IOException {
+                    if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
+                        log.warn(String.format("Ignore failure %s", e));
+                        return;
+                    }
+                    throw e;
+                }
+            };
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Download {0} failed", e, file);

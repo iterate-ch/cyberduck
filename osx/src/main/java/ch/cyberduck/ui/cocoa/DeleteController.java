@@ -18,8 +18,10 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -31,9 +33,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DeleteController extends ProxyController {
 
     private BrowserController parent;
@@ -90,13 +89,13 @@ public class DeleteController extends ProxyController {
     }
 
     private void run(final List<Path> files) {
-        this.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
-                        new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
+        final Cache<Path> cache = parent.getCache();
+        parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                new DeleteWorker(LoginCallbackFactory.get(parent), files, cache, parent) {
                             @Override
-                            public void cleanup(final Boolean done) {
-                                if(done) {
-                                    parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
-                                }
+                            public void cleanup(final List<Path> deleted) {
+                                super.cleanup(deleted);
+                                parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
                             }
                         }
                 )

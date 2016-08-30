@@ -20,9 +20,6 @@ package ch.cyberduck.core.urlhandler;
 import ch.cyberduck.core.Factory;
 
 
-/**
- * @version $Id$
- */
 public class SchemeHandlerFactory extends Factory<SchemeHandler> {
 
     protected SchemeHandlerFactory() {

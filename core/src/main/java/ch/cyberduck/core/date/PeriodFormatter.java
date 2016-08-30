@@ -17,9 +17,6 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface PeriodFormatter {
 
     String format(long time);

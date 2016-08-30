@@ -33,9 +33,6 @@ import ch.cyberduck.ui.browser.UploadTargetFinder;
 import java.util.Collections;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class CreateFileController extends FileController {
 
     public CreateFileController(final BrowserController parent, final Cache<Path> cache) {
@@ -66,15 +63,13 @@ public class CreateFileController extends FileController {
                 new TouchWorker(file) {
                     @Override
                     public void cleanup(final Boolean done) {
-                        if(done) {
-                            if(filename.charAt(0) == '.') {
-                                parent.setShowHiddenFiles(true);
-                            }
-                            parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
-                            if(edit) {
-                                file.attributes().setSize(0L);
-                                parent.edit(file);
-                            }
+                        if(filename.charAt(0) == '.') {
+                            parent.setShowHiddenFiles(true);
+                        }
+                        parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                        if(edit) {
+                            file.attributes().setSize(0L);
+                            parent.edit(file);
                         }
                     }
                 }));

@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ReceiptFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(ReceiptFactory.class);
 

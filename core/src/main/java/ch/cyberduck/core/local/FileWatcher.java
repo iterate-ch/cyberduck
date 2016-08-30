@@ -39,15 +39,12 @@ import java.util.concurrent.CountDownLatch;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-/**
- * @version $Id$
- */
 public final class FileWatcher {
     private static Logger log = Logger.getLogger(FileWatcher.class);
 
     private RegisterWatchService monitor;
 
-    private ThreadPool pool;
+    private ThreadPool<Boolean> pool;
 
     public FileWatcher() {
         this(WatchServiceFactory.get());
@@ -55,7 +52,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new DefaultThreadPool(1, "watcher");
+        this.pool = new DefaultThreadPool<Boolean>(1, "watcher");
     }
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {

@@ -20,9 +20,6 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractIdentityConfiguration implements IdentityConfiguration {
 
     @Override

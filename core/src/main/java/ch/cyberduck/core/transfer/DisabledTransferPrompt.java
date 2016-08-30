@@ -18,9 +18,6 @@ package ch.cyberduck.core.transfer;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public class DisabledTransferPrompt implements TransferPrompt {
 
     @Override

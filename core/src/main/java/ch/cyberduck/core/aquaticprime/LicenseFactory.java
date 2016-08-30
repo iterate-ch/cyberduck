@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public abstract class LicenseFactory extends Factory<License> {
     private static final Logger log = Logger.getLogger(LicenseFactory.class);
 

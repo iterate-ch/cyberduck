@@ -20,9 +20,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
 
-/**
- * @version $Id$
- */
 public interface ToolbarFactory {
     NSToolbarItem create(String itemIdentifier);
 

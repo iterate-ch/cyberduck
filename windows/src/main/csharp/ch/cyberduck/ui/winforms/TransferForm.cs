@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -22,9 +22,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
+using ch.cyberduck.core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -211,14 +213,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             control.Dispose();
         }
 
-        public void AddTranscriptEntry(bool request, string entry)
+        public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request)
+            if (request == TranscriptListener.Type.request)
             {
                 transcriptBox.SelectionColor = Color.Black;
             }
-            else
+            else if (request == TranscriptListener.Type.response)
             {
                 transcriptBox.SelectionColor = Color.DarkGray;
             }

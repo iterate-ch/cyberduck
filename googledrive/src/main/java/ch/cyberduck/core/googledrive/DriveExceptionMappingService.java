@@ -18,38 +18,55 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
+
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
-import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
 
 public class DriveExceptionMappingService extends DefaultIOExceptionMappingService {
 
     @Override
     public BackgroundException map(final IOException failure) {
-        if(failure instanceof TokenResponseException) {
-            final TokenErrorResponse details = ((TokenResponseException) failure).getDetails();
-            final StringBuilder buffer = new StringBuilder();
-            this.append(buffer, details.getError());
-            return new LoginFailureException(buffer.toString(), failure);
+        final StringBuilder buffer = new StringBuilder();
+        if(failure instanceof GoogleJsonResponseException) {
+            final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
+            this.append(buffer, error.getDetails().getMessage());
         }
         if(failure instanceof HttpResponseException) {
             final HttpResponseException response = (HttpResponseException) failure;
-            final StringBuilder buffer = new StringBuilder();
             this.append(buffer, response.getStatusMessage());
-            if(response.getStatusCode() == 401) {
-                // Invalid Credentials. Refresh the access token using the long-lived refresh token
-                return new LoginFailureException(buffer.toString(), failure);
-            }
-            if(response.getStatusCode() == 403) {
-                return new AccessDeniedException(buffer.toString(), failure);
-            }
-            if(response.getStatusCode() == 404) {
-                return new NotfoundException(buffer.toString(), failure);
+            switch(response.getStatusCode()) {
+                case HttpStatus.SC_UNAUTHORIZED:
+                    // Invalid Credentials. Refresh the access token using the long-lived refresh token
+                    return new LoginFailureException(buffer.toString(), failure);
+                case HttpStatus.SC_FORBIDDEN:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case HttpStatus.SC_NOT_FOUND:
+                    return new NotfoundException(buffer.toString(), failure);
+                case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_INSUFFICIENT_STORAGE:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_PAYMENT_REQUIRED:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_BAD_REQUEST:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_NOT_IMPLEMENTED:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                    return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
         return super.map(failure);

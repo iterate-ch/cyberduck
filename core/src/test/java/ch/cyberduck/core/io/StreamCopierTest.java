@@ -11,16 +11,13 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class StreamCopierTest {
 
     @Test
@@ -29,7 +26,7 @@ public class StreamCopierTest {
         final byte[] bytes = random.getBytes();
         final TransferStatus status = new TransferStatus();
         final ByteArrayOutputStream out = new ByteArrayOutputStream(bytes.length);
-        new StreamCopier(status, status).withLimit((long) bytes.length).transfer(IOUtils.toInputStream(random), out);
+        new StreamCopier(status, status).withLimit((long) bytes.length).transfer(IOUtils.toInputStream(random, Charset.defaultCharset()), out);
         assertEquals(bytes.length, status.getOffset(), 0L);
         assertArrayEquals(bytes, out.toByteArray());
         assertTrue(status.isComplete());
@@ -158,9 +155,6 @@ public class StreamCopierTest {
 
                         }
                     }).transfer(new NullInputStream(status.getLength()), new NullOutputStream());
-                }
-                catch(IOException e) {
-                    fail();
                 }
                 catch(BackgroundException e) {
                     assertTrue(e instanceof ConnectionCanceledException);

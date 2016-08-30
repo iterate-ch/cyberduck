@@ -18,9 +18,6 @@ package ch.cyberduck.core.exception;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public class StreamCloseTimeoutException extends ConnectionTimeoutException {
     private static final long serialVersionUID = -7408164299912691588L;
 

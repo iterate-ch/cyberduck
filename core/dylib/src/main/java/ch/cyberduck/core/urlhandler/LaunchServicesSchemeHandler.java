@@ -28,8 +28,7 @@ import java.util.List;
 
 /**
  * A wrapper for the handler functions in ApplicationServices.h
- *
- * @version $Id$
+
  */
 public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
 

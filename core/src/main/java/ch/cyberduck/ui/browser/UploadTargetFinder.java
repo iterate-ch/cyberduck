@@ -20,9 +20,6 @@ package ch.cyberduck.ui.browser;
 
 import ch.cyberduck.core.Path;
 
-/**
- * @version $Id$
- */
 public class UploadTargetFinder {
 
     private Path workdir;

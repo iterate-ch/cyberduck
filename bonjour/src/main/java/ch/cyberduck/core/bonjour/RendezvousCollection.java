@@ -25,9 +25,6 @@ import ch.cyberduck.core.LocaleFactory;
 
 import java.util.Iterator;
 
-/**
- * @version $Id$
- */
 public final class RendezvousCollection extends AbstractHostCollection implements RendezvousListener {
     private static final long serialVersionUID = 6468881403370416829L;
 

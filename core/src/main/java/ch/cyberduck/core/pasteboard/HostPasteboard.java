@@ -22,9 +22,6 @@ package ch.cyberduck.core.pasteboard;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Host;
 
-/**
- * @version $Id$
- */
 public final class HostPasteboard extends Collection<Host> implements Pasteboard<Host> {
     private static final long serialVersionUID = 545497803218477371L;
 

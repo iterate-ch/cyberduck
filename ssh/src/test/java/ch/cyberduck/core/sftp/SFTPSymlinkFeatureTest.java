@@ -22,9 +22,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class SFTPSymlinkFeatureTest {
 
@@ -44,18 +41,10 @@ public class SFTPSymlinkFeatureTest {
         assertTrue(new SFTPFindFeature(session).find(link));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
                 session.list(workdir.find(), new DisabledListProgressListener()).get(link).getType());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SFTPFindFeature(session).find(link));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

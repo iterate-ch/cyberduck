@@ -64,13 +64,14 @@ public class SwiftThresholdUploadService implements Upload {
         this.session = session;
         this.regionService = regionService;
         this.threshold = threshold;
-        this.largeObjectUploadFeature = new SwiftLargeObjectUploadFeature(session, regionService, segment);
+        this.largeObjectUploadFeature = new SwiftLargeObjectUploadFeature(session, regionService, segment,
+                PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
         this.smallObjectUploadFeature = new SwiftSmallObjectUploadFeature(session, regionService);
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class).append(file, length, cache);
+        return new SwiftWriteFeature(session, regionService).append(file, length, cache);
     }
 
     @Override
@@ -101,12 +102,7 @@ public class SwiftThresholdUploadService implements Upload {
         final Object checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
-            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    //
-                }
-            });
+            new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         return checksum;
     }

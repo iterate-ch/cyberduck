@@ -43,7 +43,6 @@ import java.util.List;
 /**
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
  *
- * @version $Id$
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends Preferences {
@@ -189,6 +188,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
         defaults.put("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
         defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
+        defaults.put("bookmark.import.transmit4.location", "~/Library/Application Support/Transmit/Favorites/Favorites.xml");
         defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
         defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
         defaults.put("bookmark.import.expandrive3.location", "~/Library/Application Support/ExpanDrive/favorites.js");

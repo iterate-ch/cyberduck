@@ -19,9 +19,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-/**
- * @version $Id$
- */
 public class DisabledLoginCallback implements LoginCallback {
 
     public DisabledLoginCallback() {

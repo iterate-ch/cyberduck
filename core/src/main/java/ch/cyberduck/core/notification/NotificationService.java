@@ -18,9 +18,6 @@ package ch.cyberduck.core.notification;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface NotificationService {
 
     /**

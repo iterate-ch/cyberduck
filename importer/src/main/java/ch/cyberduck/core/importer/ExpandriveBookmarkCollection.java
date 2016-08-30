@@ -34,9 +34,6 @@ import java.io.InputStreamReader;
 
 import com.google.gson.stream.JsonReader;
 
-/**
- * @version $Id$
- */
 public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(ExpandriveBookmarkCollection.class);
 
@@ -73,6 +70,8 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
                             final Protocol protocol = ProtocolFactory.forName(reader.nextString());
                             if(null != protocol) {
                                 current.setProtocol(protocol);
+                                // Reset port to default
+                                current.setPort(-1);
                             }
                             break;
                         case "name":

@@ -14,9 +14,6 @@ import org.apache.commons.io.output.NullOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * @version $Id$
- */
 public class NullSession extends Session<Void> {
 
     public NullSession(Host h) {
@@ -73,6 +70,7 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(Class<T> type) {
         if(type == Write.class) {
             return (T) new AppendWriteFeature(this) {

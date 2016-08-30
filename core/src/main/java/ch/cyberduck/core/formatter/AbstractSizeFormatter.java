@@ -23,9 +23,6 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractSizeFormatter implements SizeFormatter {
 
     private final Unit kilo;

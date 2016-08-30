@@ -34,8 +34,6 @@ import net.schmizz.sshj.common.KeyType;
 
 /**
  * Saving accepted host keys in preferences as Base64 encoded strings.
- *
- * @version $Id$
  */
 public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback {
     private static final Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);

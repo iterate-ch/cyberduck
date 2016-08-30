@@ -24,7 +24,9 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -45,11 +47,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     private S3Session session;
 
-    private SHA256ChecksumCompute checksum
-            = new SHA256ChecksumCompute();
+    private ChecksumCompute checksum
+            = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
     public S3SingleUploadService(final S3Session session) {
-        this(session, new S3WriteFeature(session));
+        this(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
     }
 
     public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {
@@ -107,6 +109,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(part.getETag()));
+        if(null == part.getServerSideEncryptionAlgorithm()) {
+            this.verify(file, digest, Checksum.parse(part.getETag()));
+        }
+        else {
+            log.warn(String.format("Skip checksum verification for %s with server side encryption enabled", file));
+        }
     }
 }

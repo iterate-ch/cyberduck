@@ -27,9 +27,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
     @Override

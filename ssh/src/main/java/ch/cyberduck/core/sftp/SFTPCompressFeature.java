@@ -26,9 +26,6 @@ import ch.cyberduck.core.features.Compress;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class SFTPCompressFeature implements Compress {
 
     private SFTPCommandFeature command;

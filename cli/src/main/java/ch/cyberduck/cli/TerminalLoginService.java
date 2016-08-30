@@ -31,9 +31,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @version $Id$
- */
 public class TerminalLoginService extends KeychainLoginService {
 
     private CommandLine input;

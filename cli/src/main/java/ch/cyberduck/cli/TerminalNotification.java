@@ -20,9 +20,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.notification.NotificationService;
 
-/**
- * @version $Id$
- */
 public class TerminalNotification implements NotificationService {
 
     private TerminalProgressListener console

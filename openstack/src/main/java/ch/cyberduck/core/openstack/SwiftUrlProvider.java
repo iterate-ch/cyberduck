@@ -54,26 +54,30 @@ import java.util.concurrent.TimeUnit;
 import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
-/**
- * @version $Id$
- */
 public class SwiftUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private Map<Region, AccountInfo> accounts;
+    private final SwiftRegionService regionService;
+
+    private final Map<Region, AccountInfo> accounts;
 
     public SwiftUrlProvider(final SwiftSession session) {
-        this(session, Collections.<Region, AccountInfo>emptyMap());
+        this(session, Collections.emptyMap());
     }
 
     public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts) {
+        this(session, accounts, new SwiftRegionService(session));
+    }
+
+    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final SwiftRegionService regionService) {
         this.session = session;
         this.accounts = accounts;
+        this.regionService = regionService;
     }
 
     @Override
@@ -82,7 +86,7 @@ public class SwiftUrlProvider implements UrlProvider {
         if(file.isFile()) {
             Region region = null;
             try {
-                region = new SwiftRegionService(session).lookup(file);
+                region = regionService.lookup(file);
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure looking up region for %s %s", file, e.getMessage()));

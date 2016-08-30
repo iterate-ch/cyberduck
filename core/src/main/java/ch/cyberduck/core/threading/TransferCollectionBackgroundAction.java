@@ -34,9 +34,6 @@ import ch.cyberduck.core.transfer.TransferQueueFactory;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class TransferCollectionBackgroundAction extends TransferBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferCollectionBackgroundAction.class);
 

@@ -38,9 +38,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class BrowserListViewModel extends BrowserTableDataSource implements NSTableView.DataSource {
     private static final Logger log = Logger.getLogger(BrowserListViewModel.class);
 

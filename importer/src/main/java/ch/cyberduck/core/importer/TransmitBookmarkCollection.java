@@ -28,7 +28,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -44,9 +43,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-/**
- * @version $Id$
- */
 public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(TransmitBookmarkCollection.class);
 

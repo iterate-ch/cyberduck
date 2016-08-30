@@ -17,9 +17,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public abstract class DefaultMainAction extends MainAction {
 
     @Override

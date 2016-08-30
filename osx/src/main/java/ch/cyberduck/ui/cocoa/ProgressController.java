@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSCell;
@@ -36,6 +37,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -52,15 +54,14 @@ import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
+import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
@@ -195,7 +196,7 @@ public class ProgressController extends BundleController implements TransferList
     private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
@@ -205,7 +206,7 @@ public class ProgressController extends BundleController implements TransferList
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
                     NSColor.whiteColor(),
-                    TableCellAttributes.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName,
@@ -295,6 +296,11 @@ public class ProgressController extends BundleController implements TransferList
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
         this.progressField.setTextColor(NSColor.darkGrayColor());
+        final ObjCClass nsFont = Rococoa.createClass("NSFont", ObjCClass.class);
+        if(Rococoa.cast(Rococoa.createClass("NSFont", ObjCClass.class), NSObject.class).respondsToSelector(
+                Foundation.selector("monospacedDigitSystemFontOfSize:weight:"))) {
+            this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
+        }
     }
 
     @Outlet

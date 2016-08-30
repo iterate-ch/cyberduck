@@ -21,28 +21,26 @@ import org.apache.commons.net.ftp.FTPFile;
 
 /**
  * Parser expecting no hard link count in the directory listing
- *
- * @version $Id$
  */
 public class TrellixFTPEntryParser extends CommonUnixFTPEntryParser {
 
     private static final String REGEX =
-        "([bcdlfmpSs-])"
-        +"(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
-        + "(\\S+)\\s+"
-        + "(?:(\\S+(?:\\s\\S+)*)\\s+)?"
-        + "(\\d+)\\s+"
+            "([bcdlfmpSs-])"
+                    + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
+                    + "(\\S+)\\s+"
+                    + "(?:(\\S+(?:\\s\\S+)*)\\s+)?"
+                    + "(\\d+)\\s+"
         /*
           numeric or standard format date
         */
-        + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
+                    + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
 
         /*
            year (for non-recent standard format)
 		   or time (for numeric or recent standard format
 		*/
-		+ "(\\d+(?::\\d+)?)\\s+"
-		+ "(\\S*)(\\s*.*)";
+                    + "(\\d+(?::\\d+)?)\\s+"
+                    + "(\\S*)(\\s*.*)";
 
 
     public TrellixFTPEntryParser() {
@@ -51,8 +49,7 @@ public class TrellixFTPEntryParser extends CommonUnixFTPEntryParser {
 
     @Override
     public FTPFile parseFTPEntry(String entry) {
-        if (matches(entry))
-        {
+        if(matches(entry)) {
             String typeStr = group(1);
             String usr = group(15);
             String grp = group(16);
@@ -63,5 +60,5 @@ public class TrellixFTPEntryParser extends CommonUnixFTPEntryParser {
             return super.parseFTPEntry(typeStr, usr, grp, filesize, datestr, name, endtoken);
         }
         return null;
-     }
+    }
 }

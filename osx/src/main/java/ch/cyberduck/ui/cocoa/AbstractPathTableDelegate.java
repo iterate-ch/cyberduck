@@ -38,9 +38,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 
-/**
- * @version $Id$
- */
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
     private static Logger log = Logger.getLogger(AbstractTableDelegate.class);
 

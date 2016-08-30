@@ -19,9 +19,6 @@ package ch.cyberduck.core.lifecycle;
 
 import org.jets3t.service.model.S3Object;
 
-/**
- * @version $Id$
- */
 public class LifecycleConfiguration {
 
     public static LifecycleConfiguration empty() {

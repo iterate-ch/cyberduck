@@ -41,9 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Ignore
 public class CloudFrontDistributionConfigurationTest {
 
@@ -82,12 +79,12 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertEquals("E2N9XG26504TZI", distribution.getId());
         assertEquals(Distribution.DOWNLOAD, distribution.getMethod());
         assertEquals("Deployed", distribution.getStatus());
-        assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin().getHost());
+        assertEquals("test-us-east-1-cyberduck.s3.amazonaws.com", distribution.getOrigin().getHost());
         assertEquals(URI.create("http://d8s2h7wj83mnt.cloudfront.net"), distribution.getUrl());
         assertEquals("1a0764da-1790-4ca9-a977-e40752ae04cd", distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
@@ -102,10 +99,10 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.STREAMING, new DisabledLoginCallback());
         assertEquals("EB86EC8N0TBBE", distribution.getId());
-        assertEquals("test.cyberduck.ch.s3.amazonaws.com", distribution.getOrigin().getHost());
+        assertEquals("test-us-east-1-cyberduck.s3.amazonaws.com", distribution.getOrigin().getHost());
         assertEquals(URI.create("rtmp://s2o9ssk5sk7hj5.cloudfront.net/cfx/st"), distribution.getUrl());
         assertEquals(null, distribution.getIndexDocument());
         assertEquals(null, distribution.getErrorDocument());
@@ -117,7 +114,7 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
     }
 
@@ -137,7 +134,7 @@ public class CloudFrontDistributionConfigurationTest {
         assertNull(host.getCredentials().getPassword());
         final DistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
             @Override
@@ -170,7 +167,7 @@ public class CloudFrontDistributionConfigurationTest {
                 return null;
             }
         };
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(set.get());
     }
@@ -236,8 +233,8 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CloudFrontDistributionConfiguration configuration
                 = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new Path("/test.cyberduck.ch/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path container = new Path("/test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new Path("/test-us-east-1-cyberduck/directory", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Distribution distribution = configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback());
         assertEquals("E2N9XG26504TZI", distribution.getId());
         configuration.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginCallback());

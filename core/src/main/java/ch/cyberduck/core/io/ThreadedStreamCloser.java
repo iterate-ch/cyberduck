@@ -31,9 +31,6 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class ThreadedStreamCloser implements StreamCloser {
 
     private final Preferences preferences

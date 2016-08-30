@@ -28,9 +28,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
-/**
- * @version $Id$
- */
 public class S3BucketCreateService {
 
     private S3Session session;
@@ -65,7 +62,7 @@ public class S3BucketCreateService {
             session.getClient().createBucket(containerService.getContainer(bucket).getName(), region, acl);
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot create folder {0}", e, bucket);
+            throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);
         }
     }
 }

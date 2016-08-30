@@ -21,7 +21,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSIndexSet;
@@ -51,6 +53,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -91,6 +94,8 @@ public final class TransferController extends WindowController implements NSTool
 
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
+
+    public final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
 
     private NSToolbar toolbar;
 
@@ -704,13 +709,23 @@ public final class TransferController extends WindowController implements NSTool
                     @Override
                     public void start(final Transfer transfer) {
                         progress.start(transfer);
-                        toolbar.validateVisibleItems();
+                        invoke(new DefaultMainAction() {
+                            @Override
+                            public void run() {
+                                toolbar.validateVisibleItems();
+                            }
+                        });
                     }
 
                     @Override
                     public void stop(final Transfer transfer) {
                         progress.stop(transfer);
-                        toolbar.validateVisibleItems();
+                        invoke(new DefaultMainAction() {
+                            @Override
+                            public void run() {
+                                toolbar.validateVisibleItems();
+                            }
+                        });
                     }
 
                     @Override
@@ -755,7 +770,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 
@@ -976,7 +991,7 @@ public final class TransferController extends WindowController implements NSTool
                 item.setTitle(LocaleFactory.localizedString("Paste"));
             }
         }
-        return new TransferToolbarValidator(this).validate(action);
+        return toolbarValidator.validate(action);
     }
 
     /**
@@ -985,6 +1000,6 @@ public final class TransferController extends WindowController implements NSTool
     @Override
     @Action
     public boolean validateToolbarItem(final NSToolbarItem item) {
-        return new TransferToolbarValidator(this).validate(item);
+        return toolbarValidator.validate(item);
     }
 }

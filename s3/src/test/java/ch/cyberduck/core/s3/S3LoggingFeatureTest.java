@@ -37,9 +37,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class S3LoggingFeatureTest {
 
@@ -53,10 +50,10 @@ public class S3LoggingFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final LoggingConfiguration configuration = new S3LoggingFeature(session).getConfiguration(
-                new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))
+                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         );
         assertNotNull(configuration);
-        assertEquals("log.cyberduck.ch", configuration.getLoggingTarget());
+        assertEquals("test-logging-us-east-1-cyberduck", configuration.getLoggingTarget());
         assertTrue(configuration.isEnabled());
         session.close();
     }

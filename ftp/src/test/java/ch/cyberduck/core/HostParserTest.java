@@ -8,9 +8,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class HostParserTest {
 
     @Test

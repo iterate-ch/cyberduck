@@ -32,9 +32,6 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-/**
- * @version $Id$
- */
 public class DAVFindFeature implements Find {
 
     private DAVSession session;

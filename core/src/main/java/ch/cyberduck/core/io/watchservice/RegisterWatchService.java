@@ -24,9 +24,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.Watchable;
 
-/**
- * @version $Id$
- */
 public interface RegisterWatchService extends WatchService {
     WatchKey register(Watchable folder,
                       WatchEvent.Kind<?>[] events,

@@ -31,9 +31,6 @@ import java.util.List;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-/**
- * @version $Id$
- */
 public class SwiftDistributionPurgeFeature implements Purge {
 
     private SwiftSession session;

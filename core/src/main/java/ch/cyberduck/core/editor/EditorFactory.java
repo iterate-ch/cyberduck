@@ -34,9 +34,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public abstract class EditorFactory extends Factory<EditorFactory> {
     private static final Logger log = Logger.getLogger(EditorFactory.class);
 

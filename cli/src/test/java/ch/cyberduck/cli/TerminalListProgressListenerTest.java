@@ -25,9 +25,6 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.EnumSet;
 
-/**
- * @version $Id$
- */
 public class TerminalListProgressListenerTest  {
 
     @Test

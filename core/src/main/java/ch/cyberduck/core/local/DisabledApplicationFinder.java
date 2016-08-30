@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class DisabledApplicationFinder implements ApplicationFinder {
 
     @Override

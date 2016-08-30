@@ -1,6 +1,6 @@
 // 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -30,7 +30,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.log4j;
 using StructureMap;
@@ -106,7 +106,9 @@ namespace Ch.Cyberduck.Ui.Controller
             List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
             Host.TransferType unknown = Host.TransferType.unknown;
             modes.Add(new KeyValuePair<string, Host.TransferType>(unknown.toString(), unknown));
-            foreach (String name in Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+            foreach (
+                String name in
+                    Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
             {
                 Host.TransferType t = Host.TransferType.valueOf(name);
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
@@ -240,13 +242,17 @@ namespace Ch.Cyberduck.Ui.Controller
         internal void View_ChangedServerEvent()
         {
             String input = View.Hostname;
-            Host parsed = HostParser.parse(input);
-            _host.setHostname(parsed.getHostname());
             if (Scheme.isURL(input))
             {
+                Host parsed = HostParser.parse(input);
+                _host.setHostname(parsed.getHostname());
                 _host.setProtocol(parsed.getProtocol());
                 _host.setPort(parsed.getPort());
                 _host.setDefaultPath(parsed.getDefaultPath());
+            }
+            else
+            {
+                _host.setHostname(input);
             }
             ItemChanged();
             Update();

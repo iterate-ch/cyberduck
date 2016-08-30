@@ -46,9 +46,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 @Category(IntegrationTest.class)
 public class IRODSDeleteFeatureTest {
 
@@ -73,11 +70,7 @@ public class IRODSDeleteFeatureTest {
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
 
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -98,10 +91,6 @@ public class IRODSDeleteFeatureTest {
 
         assertFalse(session.getFeature(Find.class).find(test));
 
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.Callback() {
-            @Override
-            public void delete(final Path file) {
-            }
-        });
+        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

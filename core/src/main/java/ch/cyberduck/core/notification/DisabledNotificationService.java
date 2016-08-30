@@ -20,9 +20,6 @@ package ch.cyberduck.core.notification;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public final class DisabledNotificationService implements NotificationService {
     private static final Logger log = Logger.getLogger(DisabledNotificationService.class);
 

@@ -34,16 +34,13 @@ import org.jets3t.service.model.StorageObject;
 
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public class S3MoveFeature implements Move {
     private static final Logger log = Logger.getLogger(S3MoveFeature.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private S3Session session;
+    private final S3Session session;
 
     public S3MoveFeature(final S3Session session) {
         this.session = session;
@@ -62,7 +59,10 @@ public class S3MoveFeature implements Move {
                 // Keep encryption setting
                 final Encryption encryptionFeature = session.getFeature(Encryption.class);
                 if(encryptionFeature != null) {
-                    destination.setServerSideEncryptionAlgorithm(encryptionFeature.getEncryption(source));
+                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(source);
+                    destination.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                    // Set custom key id stored in KMS
+                    destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
                 // Apply non standard ACL
                 final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
@@ -89,7 +89,7 @@ public class S3MoveFeature implements Move {
             }
         }
         catch(ServiceException e) {
-            throw new ServiceExceptionMappingService().map("Cannot rename {0}", e, source);
+            throw new S3ExceptionMappingService().map("Cannot rename {0}", e, source);
         }
     }
 

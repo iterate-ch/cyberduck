@@ -22,9 +22,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class BookmarkNameProviderTest {
 
     @Test

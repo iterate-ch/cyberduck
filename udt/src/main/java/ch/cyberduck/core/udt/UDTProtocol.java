@@ -20,9 +20,6 @@ package ch.cyberduck.core.udt;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
 
-/**
- * @version $Id$
- */
 public class UDTProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {

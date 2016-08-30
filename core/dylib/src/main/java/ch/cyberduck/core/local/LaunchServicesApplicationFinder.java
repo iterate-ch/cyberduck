@@ -26,7 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.library.Native;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,9 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
 
@@ -77,21 +74,24 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * Caching map between application bundle identifier and
      * display name of application
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Application> applicationNameCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap(20));
+            = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
      *
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, Application> defaultApplicationCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap(20));
+            = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
      * Caching map between application bundle identifiers and
      * file type extensions.
      */
+    @SuppressWarnings("unchecked")
     private static Map<String, List<Application>> defaultApplicationListCache
-            = Collections.<String, List<Application>>synchronizedMap(new LRUMap(20));
+            = Collections.<String, List<Application>>synchronizedMap(new LRUMap<String, List<Application>>(20));
 
     @Override
     public List<Application> findAll(final String filename) {

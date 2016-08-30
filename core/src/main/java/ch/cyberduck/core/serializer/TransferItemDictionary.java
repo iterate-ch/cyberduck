@@ -22,9 +22,6 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
-/**
- * @version $Id$
- */
 public class TransferItemDictionary {
 
     private DeserializerFactory deserializer;
