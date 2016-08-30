@@ -1,11 +1,5 @@
 package ch.cyberduck.core.dropbox;
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Move;
-import com.dropbox.core.DbxException;
-
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -20,6 +14,14 @@ import com.dropbox.core.DbxException;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
+
+import com.dropbox.core.DbxException;
+
 public class DropboxMoveFeature implements Move {
 
 
