@@ -29,7 +29,13 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -164,9 +170,6 @@ public class DropboxSession extends SSLSession<DbxClientV2> {
         }
         if(type == Copy.class) {
             return (T) new DropboxCopyFeature(this);
-        }
-        if(type == Touch.class) {
-            return (T) new DropboxTouchFeature(this);
         }
         if(type == UrlProvider.class) {
             //return (T) new DropboxUrlProvider(this);
