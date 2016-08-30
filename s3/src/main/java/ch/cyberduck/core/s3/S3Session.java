@@ -331,11 +331,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Logging.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3LoggingFeature(this);
-            }
-            return null;
+            return (T) new S3LoggingFeature(this);
         }
         if(type == Lifecycle.class) {
             return (T) new S3LifecycleConfiguration(this);
