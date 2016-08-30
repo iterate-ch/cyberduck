@@ -16,7 +16,7 @@
         <true/>
         <key>Port Configurable</key>
         <true/>
-        <key>Context</key>
+        <key>Authorization</key>
         <string>AWS2</string>
     </dict>
 </plist>
