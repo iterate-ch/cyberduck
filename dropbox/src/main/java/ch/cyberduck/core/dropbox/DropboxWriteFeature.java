@@ -28,11 +28,9 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.UploadUploader;
@@ -71,7 +69,7 @@ public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
     @Override
     public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final UploadUploader uploader = session.getClient().files().upload(file.getName());
+            final UploadUploader uploader = session.getClient().files().upload(file.getAbsolute());
             return new UploadProxyOutputStream(uploader);
         }
         catch(DbxException ex) {
