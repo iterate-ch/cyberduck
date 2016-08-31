@@ -38,7 +38,7 @@ public class DropboxReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final DbxDownloader<FileMetadata> downloader =
-                    session.getClient().download(file.getName());
+                    session.getClient().download(file.getAbsolute());
             return downloader.getInputStream();
         }
         catch(DbxException ex) {
