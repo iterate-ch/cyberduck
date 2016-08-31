@@ -15,11 +15,13 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import com.dropbox.core.DbxDownloader;
@@ -39,10 +41,17 @@ public class DropboxReadFeature implements Read {
         try {
             final DbxDownloader<FileMetadata> downloader =
                     session.getClient().download(file.getAbsolute());
-            return downloader.getInputStream();
+            final InputStream in = downloader.getInputStream();
+            if(status.isAppend()) {
+                in.skip(status.getOffset());
+            }
+            return in;
         }
-        catch(DbxException ex) {
-            throw new DropboxExceptionMappingService().map("Download failed.", ex);
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map("Download {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
