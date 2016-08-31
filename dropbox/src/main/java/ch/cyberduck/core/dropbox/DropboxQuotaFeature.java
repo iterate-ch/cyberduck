@@ -17,32 +17,31 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.features.Quota;
+
+import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
+import com.dropbox.core.v2.users.SpaceUsage;
 
-public class DropboxDirectoryFeature implements Directory {
+public class DropboxQuotaFeature implements Quota {
 
-    private DropboxSession session;
+    private final DropboxSession session;
 
-    public DropboxDirectoryFeature(final DropboxSession session) {
+    public DropboxQuotaFeature(final DropboxSession session) {
         this.session = session;
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Space get() throws BackgroundException {
         try {
-            new DbxUserFilesRequests(session.getClient()).createFolder(file.getAbsolute());
+            final SpaceUsage usage = new DbxUserUsersRequests(session.getClient()).getSpaceUsage();
+            return new Space(usage.getUsed(), usage.getAllocation().getIndividualValue().getAllocated());
         }
         catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map(e);
+            throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e,
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         }
     }
 }

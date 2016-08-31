@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -52,7 +53,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -63,12 +63,10 @@ import com.dropbox.core.DbxRequestUtil;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.http.StandardHttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
-import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-
-public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
+public class DropboxSession extends SSLSession<DbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private Preferences preferences
@@ -86,7 +84,7 @@ public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
             "https://www.dropbox.com/1/oauth2/authorize",
             PreferencesFactory.get().getProperty("dropbox.client.id"),
             PreferencesFactory.get().getProperty("dropbox.client.secret"),
-            Collections.emptyList()).withRedirectUri("https://cyberduck.io/oauth");
+            null).withRedirectUri("https://cyberduck.io/oauth");
 
     private Credential tokens;
 
@@ -109,13 +107,13 @@ public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
     }
 
     @Override
-    protected DbxUserFilesRequests connect(final HostKeyCallback callback) throws BackgroundException {
-        return new DbxUserFilesRequests(new DbxRawClientV2(config, DbxHost.DEFAULT) {
+    protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
+        return new DbxRawClientV2(config, DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 DbxRequestUtil.addAuthHeader(headers, tokens.getAccessToken());
             }
-        });
+        };
     }
 
     @Override
@@ -162,6 +160,9 @@ public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
         }
         if(type == Attributes.class) {
             return (T) new DropboxAttributesFeature(this);
+        }
+        if(type == Quota.class) {
+            return (T) new DropboxQuotaFeature(this);
         }
         return super.getFeature(type);
     }

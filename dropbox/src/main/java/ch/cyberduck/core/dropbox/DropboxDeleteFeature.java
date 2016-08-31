@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Delete;
 import java.util.List;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxDeleteFeature implements Delete {
 
@@ -37,7 +38,7 @@ public class DropboxDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 callback.delete(file);
-                session.getClient().delete(file.getAbsolute());
+                new DbxUserFilesRequests(session.getClient()).delete(file.getAbsolute());
             }
             catch(DbxException e) {
                 throw new DropboxExceptionMappingService().map("Cannot delete {0}", e, file);

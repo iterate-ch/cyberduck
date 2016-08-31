@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
@@ -48,7 +49,7 @@ public class DropBoxListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
-            final ListFolderResult result = session.getClient().listFolder(path);
+            final ListFolderResult result = new DbxUserFilesRequests(session.getClient()).listFolder(path);
             for(Metadata md : result.getEntries()) {
                 final Path child = new Path(directory, PathNormalizer.name(md.getName()), EnumSet.of(Path.Type.file), attributes.convert(md));
                 listener.chunk(directory, children);

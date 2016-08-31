@@ -21,6 +21,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxMoveFeature implements Move {
 
@@ -34,7 +35,7 @@ public class DropboxMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            this.session.getClient().move(file.getName(), renamed.getName());
+            new DbxUserFilesRequests(session.getClient()).move(file.getName(), renamed.getName());
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);

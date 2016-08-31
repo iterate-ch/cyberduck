@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.UploadUploader;
 
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
@@ -69,7 +70,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     @Override
     public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final UploadUploader uploader = session.getClient().upload(file.getAbsolute());
+            final UploadUploader uploader = new DbxUserFilesRequests(session.getClient()).upload(file.getAbsolute());
             return new UploadProxyOutputStream(uploader);
         }
         catch(DbxException ex) {

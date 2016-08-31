@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
@@ -37,7 +38,7 @@ public class DropboxAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Metadata metadata = session.getClient().getMetadata(file.getAbsolute());
+            final Metadata metadata = new DbxUserFilesRequests(session.getClient()).getMetadata(file.getAbsolute());
             return this.convert(metadata);
         }
         catch(DbxException e) {

@@ -26,6 +26,7 @@ import java.io.InputStream;
 
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 
 public class DropboxReadFeature implements Read {
@@ -40,7 +41,7 @@ public class DropboxReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final DbxDownloader<FileMetadata> downloader =
-                    session.getClient().download(file.getAbsolute());
+                    new DbxUserFilesRequests(session.getClient()).download(file.getAbsolute());
             final InputStream in = downloader.getInputStream();
             if(status.isAppend()) {
                 in.skip(status.getOffset());
