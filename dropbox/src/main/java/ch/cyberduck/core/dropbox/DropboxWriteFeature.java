@@ -107,6 +107,9 @@ public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
                 uploader.finish();
                 uploader.close();
             }
+            catch(IllegalStateException e) {
+                // Already closed
+            }
             catch(DbxException ex) {
                 throw new IOException("Upload failed.", ex);
             }
