@@ -84,6 +84,7 @@ public class DropboxWriteFeatureTest {
         final OutputStream out = new DropboxWriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        test.attributes().setVersionId(new DropboxIdProvider(session).getFileid(test));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, new DropboxWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
