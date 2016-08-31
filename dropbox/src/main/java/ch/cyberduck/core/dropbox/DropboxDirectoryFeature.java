@@ -38,7 +38,7 @@ public class DropboxDirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().files().createFolder(file.getAbsolute());
+            session.getClient().createFolder(file.getAbsolute());
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);

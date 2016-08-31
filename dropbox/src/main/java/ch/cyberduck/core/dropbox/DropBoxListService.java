@@ -47,7 +47,7 @@ public class DropBoxListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
-            ListFolderResult result = session.getClient().files().listFolder(path);
+            ListFolderResult result = session.getClient().listFolder(path);
             for(Metadata md : result.getEntries()) {
                 final PathAttributes attributes = new PathAttributes();
                 if(md instanceof FileMetadata) {

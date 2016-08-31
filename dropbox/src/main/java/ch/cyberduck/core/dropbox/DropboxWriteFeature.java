@@ -69,7 +69,7 @@ public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
     @Override
     public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final UploadUploader uploader = session.getClient().files().upload(file.getAbsolute());
+            final UploadUploader uploader = session.getClient().upload(file.getAbsolute());
             return new UploadProxyOutputStream(uploader);
         }
         catch(DbxException ex) {
@@ -87,7 +87,7 @@ public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
         return false;
     }
 
-    private static final class UploadProxyOutputStream extends ResponseOutputStream {
+    private static final class UploadProxyOutputStream extends ResponseOutputStream<Void> {
 
         private final UploadUploader uploader;
 
@@ -97,7 +97,7 @@ public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
         }
 
         @Override
-        public Object getResponse() throws BackgroundException {
+        public Void getResponse() throws BackgroundException {
             return null;
         }
 

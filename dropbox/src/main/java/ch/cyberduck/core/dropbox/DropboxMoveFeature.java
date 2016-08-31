@@ -27,14 +27,14 @@ public class DropboxMoveFeature implements Move {
 
     private DropboxSession session;
 
-    public DropboxMoveFeature(final DropboxSession dropboxSession) {
-        this.session = dropboxSession;
+    public DropboxMoveFeature(final DropboxSession session) {
+        this.session = session;
     }
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            this.session.getClient().files().move(file.getName(), renamed.getName());
+            this.session.getClient().move(file.getName(), renamed.getName());
         } catch (DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);
         }

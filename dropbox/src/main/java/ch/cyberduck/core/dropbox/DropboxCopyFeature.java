@@ -18,6 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+
 import com.dropbox.core.DbxException;
 
 public class DropboxCopyFeature implements Copy {
@@ -31,7 +32,7 @@ public class DropboxCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            session.getClient().files().copy(source.getName(), copy.getName());
+            session.getClient().copy(source.getName(), copy.getName());
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);

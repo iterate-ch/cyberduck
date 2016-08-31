@@ -37,7 +37,7 @@ public class DropboxDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 callback.delete(file);
-                session.getClient().files().delete(file.getAbsolute());
+                session.getClient().delete(file.getAbsolute());
             }
             catch(DbxException e) {
                 throw new DropboxExceptionMappingService().map("Cannot delete {0}", e, file);
