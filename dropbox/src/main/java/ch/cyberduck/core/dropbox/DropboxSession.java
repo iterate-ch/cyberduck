@@ -136,7 +136,7 @@ public class DropboxSession extends SSLSession<DbxRawClientV2> {
             return (T) new DropboxWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DropBoxUploadFeature(this);
+            return (T) new DropboxUploadFeature(this);
         }
         if(type == Directory.class) {
             return (T) new DropboxDirectoryFeature(this);

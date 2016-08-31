@@ -20,9 +20,9 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
 
-public class DropBoxUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class DropboxUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
-    public DropBoxUploadFeature(final DropboxSession session) {
+    public DropboxUploadFeature(final DropboxSession session) {
         super(new DropboxWriteFeature(session));
     }
 }
