@@ -27,9 +27,11 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -154,6 +156,12 @@ public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
         }
         if(type == IdProvider.class) {
             return (T) new DropboxIdProvider(this);
+        }
+        if(type == Find.class) {
+            return (T) new DropboxFindFeature(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new DropboxAttributesFeature(this);
         }
         return super.getFeature(type);
     }
