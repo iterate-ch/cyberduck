@@ -16,9 +16,15 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.GetMetadataError;
+import com.dropbox.core.v2.files.GetMetadataErrorException;
+import com.dropbox.core.v2.files.LookupError;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
 
@@ -26,6 +32,22 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     public BackgroundException map(final DbxException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getLocalizedMessage());
+        if(failure instanceof GetMetadataErrorException) {
+            final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
+            final LookupError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case MALFORMED_PATH:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NOT_FOUND:
+                    return new NotfoundException(buffer.toString(), failure);
+                case NOT_FILE:
+                    return new NotfoundException(buffer.toString(), failure);
+                case NOT_FOLDER:
+                    return new NotfoundException(buffer.toString(), failure);
+                case RESTRICTED_CONTENT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+            }
+        }
         return new BackgroundException(buffer.toString(), failure);
     }
 }
