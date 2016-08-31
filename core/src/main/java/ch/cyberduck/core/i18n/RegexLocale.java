@@ -44,10 +44,14 @@ public class RegexLocale implements Locale {
     private Local resources;
 
     private String locale
-            = java.util.Locale.US.getLanguage();
+            = java.util.Locale.getDefault().getLanguage();
 
     private Pattern pattern
             = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
+
+    public RegexLocale() {
+        this(ApplicationResourcesFinderFactory.get().find());
+    }
 
     public RegexLocale(final Local resources) {
         this.resources = resources;
