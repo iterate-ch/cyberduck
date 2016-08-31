@@ -53,6 +53,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,7 @@ public class DropboxSession extends SSLSession<DbxRawClientV2> {
             "https://www.dropbox.com/1/oauth2/authorize",
             PreferencesFactory.get().getProperty("dropbox.client.id"),
             PreferencesFactory.get().getProperty("dropbox.client.secret"),
-            null).withRedirectUri("https://cyberduck.io/oauth");
+            Collections.emptyList()).withRedirectUri("https://cyberduck.io/oauth");
 
     private Credential tokens;
 
