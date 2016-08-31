@@ -126,7 +126,7 @@ public class Terminal {
                 new DriveProtocol(),
                 new HubicProtocol(),
                 new DriveProtocol(),
-                new DropboxProtocol());
+                new DropboxProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
