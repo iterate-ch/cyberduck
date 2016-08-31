@@ -31,6 +31,9 @@ public class DropboxFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            return true;
+        }
         try {
             return null != new DropboxIdProvider(session).getFileid(file);
         }
