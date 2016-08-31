@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
@@ -150,6 +151,9 @@ public class DropboxSession extends SSLSession<DbxUserFilesRequests> {
         }
         if(type == UrlProvider.class) {
             return (T) new DropboxUrlProvider(this);
+        }
+        if(type == IdProvider.class) {
+            return (T) new DropboxIdProvider(this);
         }
         return super.getFeature(type);
     }
