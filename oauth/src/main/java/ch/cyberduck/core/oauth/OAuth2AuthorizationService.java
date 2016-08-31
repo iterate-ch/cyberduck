@@ -147,7 +147,7 @@ public class OAuth2AuthorizationService {
             try {
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(bookmark.getCredentials().getPassword())
-                        .setRedirectUri(redirectUri).execute();
+                        .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
