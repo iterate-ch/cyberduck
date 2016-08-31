@@ -217,7 +217,9 @@ public class OAuth2AuthorizationService {
                     String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
         }
         // Save expiry
-        preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
+        if(tokens.expiry != null) {
+            preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
+        }
     }
 
     private String getPrefix(final Host host) {
