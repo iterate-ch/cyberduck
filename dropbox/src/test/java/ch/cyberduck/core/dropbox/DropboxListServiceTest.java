@@ -67,7 +67,7 @@ public class DropboxListServiceTest {
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
                 .connect(session, PathCache.empty());
 
-        final AttributedList<Path> list = new DropBoxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }

@@ -125,7 +125,7 @@ public class DropboxSession extends SSLSession<DbxRawClientV2> {
 
     @Override
     public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        return new DropBoxListService(this).list(directory, listener);
+        return new DropboxListService(this).list(directory, listener);
     }
 
     public <T> T getFeature(Class<T> type) {

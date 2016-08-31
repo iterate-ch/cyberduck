@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -29,17 +30,19 @@ import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
-public class DropBoxListService implements ListService {
-    private static final Logger log = Logger.getLogger(DropBoxListService.class);
+public class DropboxListService implements ListService {
+    private static final Logger log = Logger.getLogger(DropboxListService.class);
 
     private final DropboxSession session;
 
     private final DropboxAttributesFeature attributes;
 
-    public DropBoxListService(final DropboxSession session) {
+    public DropboxListService(final DropboxSession session) {
         this.session = session;
         this.attributes = new DropboxAttributesFeature(session);
     }
@@ -51,7 +54,18 @@ public class DropBoxListService implements ListService {
             final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
             final ListFolderResult result = new DbxUserFilesRequests(session.getClient()).listFolder(path);
             for(Metadata md : result.getEntries()) {
-                final Path child = new Path(directory, PathNormalizer.name(md.getName()), EnumSet.of(Path.Type.file), attributes.convert(md));
+                final EnumSet<AbstractPath.Type> type;
+                if(md instanceof FileMetadata) {
+                    type = EnumSet.of(Path.Type.file);
+                }
+                else if(md instanceof FolderMetadata) {
+                    type = EnumSet.of(Path.Type.directory);
+                }
+                else {
+                    log.warn(String.format("Skip file %s", md));
+                    continue;
+                }
+                final Path child = new Path(directory, PathNormalizer.name(md.getName()), type, attributes.convert(md));
                 listener.chunk(directory, children);
                 children.add(child);
             }
