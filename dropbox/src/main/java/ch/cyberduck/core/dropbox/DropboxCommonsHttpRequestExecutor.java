@@ -31,11 +31,11 @@ import java.util.Map;
 
 import com.dropbox.core.http.HttpRequestor;
 
-public class CommonsHttpRequestExecutor extends HttpRequestor {
+public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
 
     private final CloseableHttpClient client;
 
-    public CommonsHttpRequestExecutor(final CloseableHttpClient client) {
+    public DropboxCommonsHttpRequestExecutor(final CloseableHttpClient client) {
         this.client = client;
     }
 
