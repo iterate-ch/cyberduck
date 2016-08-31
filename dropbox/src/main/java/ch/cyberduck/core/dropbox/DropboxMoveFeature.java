@@ -35,7 +35,8 @@ public class DropboxMoveFeature implements Move {
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             this.session.getClient().move(file.getName(), renamed.getName());
-        } catch (DbxException e) {
+        }
+        catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot move {0}", e, file);
         }
     }

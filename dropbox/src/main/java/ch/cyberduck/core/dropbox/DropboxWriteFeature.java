@@ -35,7 +35,7 @@ import java.io.IOException;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.UploadUploader;
 
-public class DropboxWriteFeature  extends AbstractHttpWriteFeature<Void> {
+public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
 
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 

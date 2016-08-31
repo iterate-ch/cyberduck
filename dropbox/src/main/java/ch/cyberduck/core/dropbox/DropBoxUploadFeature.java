@@ -16,14 +16,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.security.MessageDigest;
 
