@@ -38,12 +38,11 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -51,23 +50,18 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxRequestUtil;
 import com.dropbox.core.http.HttpRequestor;
-import com.dropbox.core.http.StandardHttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-public class DropboxSession extends SSLSession<DbxRawClientV2> {
+public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private Preferences preferences
@@ -89,27 +83,15 @@ public class DropboxSession extends SSLSession<DbxRawClientV2> {
 
     private Credential tokens;
 
-    private final DbxRequestConfig config = new DbxRequestConfig(
-            useragent.get(), Locale.getDefault().toString(), new StandardHttpRequestor(
-            StandardHttpRequestor.Config.builder()
-                    //.withProxy()
-                    .withConnectTimeout(this.timeout(), TimeUnit.MILLISECONDS)
-                    .build()) {
-        @Override
-        protected void configureConnection(final HttpsURLConnection conn) throws IOException {
-            conn.setHostnameVerifier(new DisabledX509HostnameVerifier());
-            conn.setSSLSocketFactory(sslSocketFactory);
-            super.configureConnection(conn);
-        }
-    });
-
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
     protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
-        return new DbxRawClientV2(config, DbxHost.DEFAULT) {
+        return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
+                .withAutoRetryDisabled()
+                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(this, this.getBuilder().build(this).build())).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 DbxRequestUtil.addAuthHeader(headers, tokens.getAccessToken());
