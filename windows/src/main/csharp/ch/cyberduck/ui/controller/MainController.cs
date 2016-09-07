@@ -31,12 +31,14 @@ using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
+using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.preferences;
@@ -46,7 +48,6 @@ using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.urlhandler;
-using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -100,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new HubicProtocol());
+                new DropboxProtocol(), new HubicProtocol());
 
             if (!Debugger.IsAttached)
             {
