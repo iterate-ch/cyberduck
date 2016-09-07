@@ -1040,6 +1040,9 @@ public abstract class Preferences {
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
 
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
+
+        defaults.put("dropbox.client.id", "rjqgs45ntjp1va9");
+        defaults.put("dropbox.client.secret", "yg1uopbf5c1h1rk");
     }
 
     protected void setLogging() {

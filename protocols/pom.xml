@@ -97,5 +97,10 @@
             <artifactId>hubic</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>dropbox</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
