@@ -105,8 +105,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
         @Override
         public void close() throws IOException {
             try {
-                uploader.finish();
                 uploader.close();
+                uploader.finish();
             }
             catch(IllegalStateException e) {
                 // Already closed
