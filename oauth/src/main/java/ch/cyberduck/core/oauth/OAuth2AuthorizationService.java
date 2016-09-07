@@ -259,7 +259,7 @@ public class OAuth2AuthorizationService {
         }
 
         public boolean validate() {
-            return StringUtils.isNotEmpty(accesstoken) && StringUtils.isNotEmpty(refreshtoken);
+            return StringUtils.isNotEmpty(accesstoken);
         }
     }
 
