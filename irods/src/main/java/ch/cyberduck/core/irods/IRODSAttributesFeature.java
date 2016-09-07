@@ -24,6 +24,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.domain.ObjStat;
@@ -51,7 +53,7 @@ public class IRODSAttributesFeature implements Attributes {
             attributes.setModificationDate(stats.getModifiedAt().getTime());
             attributes.setCreationDate(stats.getCreatedAt().getTime());
             attributes.setSize(stats.getObjSize());
-            attributes.setChecksum(Checksum.parse(stats.getChecksum()));
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
             attributes.setOwner(stats.getOwnerName());
             attributes.setGroup(stats.getOwnerZone());
             return attributes;
