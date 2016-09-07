@@ -71,12 +71,6 @@ public class IRODSListServiceTest {
             assertEquals(new IRODSHomeFinderService(session).find(), p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getSize());
-//            if(p.isFile()) {
-//                assertNotNull(p.attributes().getChecksum());
-//            }
-//            else {
-//                assertNull(p.attributes().getChecksum());
-//            }
         }
         session.close();
     }
