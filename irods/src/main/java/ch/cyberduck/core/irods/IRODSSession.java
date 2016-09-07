@@ -86,7 +86,6 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
-        properties.setComputeAndVerifyChecksumAfterTransfer(false);
         properties.setEncoding(this.getEncoding());
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
