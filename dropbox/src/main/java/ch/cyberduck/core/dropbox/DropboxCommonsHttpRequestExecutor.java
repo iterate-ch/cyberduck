@@ -155,6 +155,9 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
                 catch(ExecutionException e) {
                     throw new IOException(e.getCause());
                 }
+                finally {
+                    executor.shutdown(false);
+                }
                 final Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
                 for(org.apache.http.Header header : response.getAllHeaders()) {
                     // Ignore multiple headers with the same name
