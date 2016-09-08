@@ -36,7 +36,7 @@ public class Expandrive5BookmarkCollectionTest {
         Expandrive5BookmarkCollection c = new Expandrive5BookmarkCollection();
         assertEquals(0, c.size());
         c.parse(new Local("src/test/resources/expandrive5.favorites.js"));
-        assertEquals(2, c.size());
+        assertEquals(3, c.size());
         assertEquals("Imported from ExpanDrive 5", c.get(0).getComment());
         assertEquals("c", c.get(0).getCredentials().getUsername());
         assertEquals("IAD", c.get(1).getRegion());
