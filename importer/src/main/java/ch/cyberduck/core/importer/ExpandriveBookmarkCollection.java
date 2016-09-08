@@ -27,12 +27,14 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(ExpandriveBookmarkCollection.class);
@@ -45,17 +47,29 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
             while(reader.hasNext()) {
                 reader.beginObject();
                 final Host current = new Host(new FTPProtocol(), PreferencesFactory.get().getProperty("connection.hostname.default"));
+                boolean skip = false;
                 while(reader.hasNext()) {
                     final String name = reader.nextName();
                     switch(name) {
                         case "server":
-                            current.setHostname(reader.nextString());
+                            final String hostname = reader.nextString();
+                            if(StringUtils.isNotEmpty(hostname)) {
+                                current.setHostname(hostname);
+                            }
+                            else {
+                                skip = true;
+                            }
                             break;
                         case "username":
                             current.getCredentials().setUsername(reader.nextString());
                             break;
                         case "private_key_file":
-                            current.getCredentials().setIdentity(LocalFactory.get(reader.nextString()));
+                            if(reader.peek() != JsonToken.NULL) {
+                                current.getCredentials().setIdentity(LocalFactory.get(reader.nextString()));
+                            }
+                            else {
+                                reader.skipValue();
+                            }
                             break;
                         case "remotePath":
                             current.setDefaultPath(reader.nextString());
@@ -87,7 +101,9 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
                     }
                 }
                 reader.endObject();
-                this.add(current);
+                if(!skip) {
+                    this.add(current);
+                }
             }
             reader.endArray();
         }
