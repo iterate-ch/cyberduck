@@ -52,36 +52,34 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
                     final String name = reader.nextName();
                     switch(name) {
                         case "server":
-                            final String hostname = reader.nextString();
-                            if(StringUtils.isNotEmpty(hostname)) {
-                                current.setHostname(hostname);
+                            final String hostname = this.readNext(name, reader);
+                            if(StringUtils.isBlank(hostname)) {
+                                skip = true;
                             }
                             else {
-                                skip = true;
+                                current.setHostname(hostname);
                             }
                             break;
                         case "username":
-                            current.getCredentials().setUsername(reader.nextString());
+                            current.getCredentials().setUsername(this.readNext(name, reader));
                             break;
                         case "private_key_file":
-                            if(reader.peek() != JsonToken.NULL) {
-                                current.getCredentials().setIdentity(LocalFactory.get(reader.nextString()));
-                            }
-                            else {
-                                reader.skipValue();
+                            final String key = this.readNext(name, reader);
+                            if(StringUtils.isNotBlank(key)) {
+                                current.getCredentials().setIdentity(LocalFactory.get(key));
                             }
                             break;
                         case "remotePath":
-                            current.setDefaultPath(reader.nextString());
+                            current.setDefaultPath(this.readNext(name, reader));
                             break;
                         case "type":
-                            final Protocol type = ProtocolFactory.forName(reader.nextString());
+                            final Protocol type = ProtocolFactory.forName(this.readNext(name, reader));
                             if(null != type) {
                                 current.setProtocol(type);
                             }
                             break;
                         case "protocol":
-                            final Protocol protocol = ProtocolFactory.forName(reader.nextString());
+                            final Protocol protocol = ProtocolFactory.forName(this.readNext(name, reader));
                             if(null != protocol) {
                                 current.setProtocol(protocol);
                                 // Reset port to default
@@ -89,10 +87,10 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
                             }
                             break;
                         case "name":
-                            current.setNickname(reader.nextString());
+                            current.setNickname(this.readNext(name, reader));
                             break;
                         case "region":
-                            current.setRegion(reader.nextString());
+                            current.setRegion(this.readNext(name, reader));
                             break;
                         default:
                             log.warn(String.format("Ignore property %s", name));
@@ -109,6 +107,17 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
         }
         catch(IllegalStateException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
+        }
+    }
+
+    private String readNext(final String name, final JsonReader reader) throws IOException {
+        if(reader.peek() != JsonToken.NULL) {
+            return reader.nextString();
+        }
+        else {
+            reader.skipValue();
+            log.warn(String.format("No value for key %s", name));
+            return null;
         }
     }
 }
