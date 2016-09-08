@@ -25,5 +25,31 @@
         "position": -1,
         "id": "f39hoi8",
         "save_password": true
+    },
+    {
+        "server": "",
+        "remotePath": "",
+        "type": "sftp",
+        "protocol": "sftp",
+        "name": "toSkip",
+        "port": "",
+        "reconnectAtLogon": true,
+        "authentication": null,
+        "private_key_file": null,
+        "position": 2,
+        "id": "ch6164o"
+    },
+    {
+        "server": "cyberduck.io",
+        "remotePath": "",
+        "type": "sftp",
+        "protocol": "sftp",
+        "name": "doNotSkip",
+        "port": "",
+        "reconnectAtLogon": true,
+        "authentication": null,
+        "private_key_file": null,
+        "position": 2,
+        "id": "ch6164o"
     }
 ]
