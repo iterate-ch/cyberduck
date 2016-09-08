@@ -4,6 +4,9 @@ https://cyberduck.io/
 5.2 [https://trac.cyberduck.io/milestone/5.2]
 - [Feature] Support connecting to Dropbox (Dropbox) (#6427)
 
+5.1.2 [https://trac.cyberduck.io/milestone/5.1.2]
+- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
+
 5.1.1 [https://trac.cyberduck.io/milestone/5.1.1]
 - [Feature] Allow connections with AWS2 signature version using connection profile (S3) (#9667)
 - [Bugfix] Cleanup temporary files on application exit
