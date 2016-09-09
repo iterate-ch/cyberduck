@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
@@ -49,7 +48,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest {
 
     @Test
     public void testGetMethodsNonAWS() throws Exception {
-        final S3Session session = new S3Session(new Host(new TestProtocol()));
+        final S3Session session = new S3Session(new Host(new S3Protocol(), "s3.cyberduck.io"));
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session,
                 new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(configuration.getMethods(
