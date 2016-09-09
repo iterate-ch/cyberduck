@@ -224,11 +224,11 @@ public class S3SessionTest {
         assertNotNull(o.getFeature(AclPermission.class));
         assertNull(o.getFeature(Versioning.class));
         assertNull(o.getFeature(AnalyticsProvider.class));
-        assertNull(o.getFeature(Lifecycle.class));
+        assertNotNull(o.getFeature(Lifecycle.class));
         assertNotNull(o.getFeature(Location.class));
         assertNull(o.getFeature(Encryption.class));
-        assertNull(o.getFeature(Redundancy.class));
-        assertNull(o.getFeature(Logging.class));
+        assertNotNull(o.getFeature(Redundancy.class));
+        assertNotNull(o.getFeature(Logging.class));
         assertNotNull(o.getFeature(DistributionConfiguration.class));
         assertNull(o.getFeature(IdentityConfiguration.class));
         assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class).getClass());
