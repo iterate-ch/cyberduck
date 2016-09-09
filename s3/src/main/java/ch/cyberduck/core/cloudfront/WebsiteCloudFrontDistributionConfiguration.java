@@ -78,7 +78,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         }
         else {
-            // Only allow website confiugration for non AWS endpoints.
+            // Only allow website configuration for non AWS endpoints.
             methods.add(Distribution.WEBSITE);
         }
         return methods;
