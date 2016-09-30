@@ -119,15 +119,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             return false;
         }
         final Object[] encoded = new DEREncoder().encode(certificates);
-        final AtomicBoolean trusted = new AtomicBoolean(false);
-        final DefaultMainAction action = new DefaultMainAction() {
-            @Override
-            public void run() {
-                trusted.set(isTrustedNative(hostname, encoded));
-            }
-        };
-        proxy.invoke(action, action.lock(), true);
-        return trusted.get();
+        return isTrustedNative(hostname, encoded);
     }
 
     /**
@@ -135,7 +127,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @param certificates An array containing ASN.1 DER encoded certificates
      * @return True if chain is trusted
      */
-    private native boolean isTrustedNative(String hostname, Object[] certificates);
+    private synchronized native boolean isTrustedNative(String hostname, Object[] certificates);
 
     /**
      * @param certificates Chain of certificates
