@@ -119,7 +119,15 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             return false;
         }
         final Object[] encoded = new DEREncoder().encode(certificates);
-        return isTrustedNative(hostname, encoded);
+        final AtomicBoolean trusted = new AtomicBoolean(false);
+        final DefaultMainAction action = new DefaultMainAction() {
+            @Override
+            public void run() {
+                trusted.set(isTrustedNative(hostname, encoded));
+            }
+        };
+        proxy.invoke(action, action.lock(), true);
+        return trusted.get();
     }
 
     /**
