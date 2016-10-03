@@ -135,7 +135,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @param certificates An array containing ASN.1 DER encoded certificates
      * @return True if chain is trusted
      */
-    private native boolean isTrustedNative(String hostname, Object[] certificates);
+    private synchronized native boolean isTrustedNative(String hostname, Object[] certificates);
 
     /**
      * @param certificates Chain of certificates
