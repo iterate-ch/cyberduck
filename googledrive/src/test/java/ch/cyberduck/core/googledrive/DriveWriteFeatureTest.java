@@ -32,7 +32,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -41,6 +40,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -84,27 +84,40 @@ public class DriveWriteFeatureTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
-        status.setLength(content.length);
-        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new DriveWriteFeature(session).write(test, status);
-        assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
-        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
-        assertTrue(new DefaultFindFeature(session).find(test));
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
-        assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new DriveWriteFeature(session).append(test, status.getLength(), PathCache.empty());
-        assertTrue(append.override);
-        assertEquals(content.length, append.size, 0L);
-        final byte[] buffer = new byte[content.length];
-        final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus());
-        IOUtils.readFully(in, buffer);
-        in.close();
-        assertArrayEquals(content, buffer);
+        {
+            final TransferStatus status = new TransferStatus();
+            final byte[] content = RandomUtils.nextBytes(2048);
+            status.setLength(content.length);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+            test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
+            assertTrue(new DefaultFindFeature(session).find(test));
+            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            assertEquals(content.length, attributes.getSize());
+            final Write.Append append = new DriveWriteFeature(session).append(test, status.getLength(), PathCache.empty());
+            assertTrue(append.override);
+            assertEquals(content.length, append.size, 0L);
+            final byte[] buffer = new byte[content.length];
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus());
+            IOUtils.readFully(in, buffer);
+            in.close();
+            assertArrayEquals(content, buffer);
+        }
+        {
+            final TransferStatus status = new TransferStatus();
+            status.setExists(true);
+            final byte[] content = RandomUtils.nextBytes(1024);
+            status.setLength(content.length);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            assertNotNull(out);
+            new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+            out.close();
+            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            assertEquals(content.length, attributes.getSize());
+        }
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
