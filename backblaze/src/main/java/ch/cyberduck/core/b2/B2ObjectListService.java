@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -147,7 +148,7 @@ public class B2ObjectListService implements ListService {
             return null;
         }
         final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(Checksum.parse(response.getContentSha1()));
+        attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT)));
         final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
         attributes.setModificationDate(timestamp);
