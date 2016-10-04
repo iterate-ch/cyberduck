@@ -61,7 +61,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class BookmarkTableDataSource extends ListDataSource {
-    private static Logger log = Logger.getLogger(BookmarkTableDataSource.class);
+    private static final Logger log = Logger.getLogger(BookmarkTableDataSource.class);
 
     public enum Column {
         icon,

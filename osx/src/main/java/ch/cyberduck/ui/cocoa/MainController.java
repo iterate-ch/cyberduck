@@ -105,7 +105,7 @@ import java.util.concurrent.CountDownLatch;
  * Setting the main menu and implements application delegate methods
  */
 public class MainController extends BundleController implements NSApplication.Delegate {
-    private static Logger log = Logger.getLogger(MainController.class);
+    private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
      * Apple event constants<br>

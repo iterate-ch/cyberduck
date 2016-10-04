@@ -53,7 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TransferTableDataSource extends ListDataSource {
-    private static Logger log = Logger.getLogger(TransferTableDataSource.class);
+    private static final Logger log = Logger.getLogger(TransferTableDataSource.class);
 
     public enum Column {
         progress,

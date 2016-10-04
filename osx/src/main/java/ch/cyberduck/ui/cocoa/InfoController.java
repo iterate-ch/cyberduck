@@ -104,7 +104,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class InfoController extends ToolbarWindowController {
-    private static Logger log = Logger.getLogger(InfoController.class);
+    private static final Logger log = Logger.getLogger(InfoController.class);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 

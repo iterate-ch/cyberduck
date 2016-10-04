@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class BookmarkController extends WindowController {
-    private static Logger log = Logger.getLogger(BookmarkController.class);
+    private static final Logger log = Logger.getLogger(BookmarkController.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

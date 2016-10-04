@@ -35,7 +35,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class OutlineDataSource extends ProxyController implements NSOutlineView.DataSource, NSDraggingSource {
-    private static Logger log = Logger.getLogger(OutlineDataSource.class);
+    private static final Logger log = Logger.getLogger(OutlineDataSource.class);
 
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,

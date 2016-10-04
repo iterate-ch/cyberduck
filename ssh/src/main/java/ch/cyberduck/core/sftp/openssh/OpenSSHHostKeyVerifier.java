@@ -49,7 +49,7 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
-    private static Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
+    private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
     static {
         Security.addProvider(new BouncyCastleProvider());
