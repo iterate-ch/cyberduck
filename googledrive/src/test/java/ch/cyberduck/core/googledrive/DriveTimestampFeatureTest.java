@@ -75,6 +75,7 @@ public class DriveTimestampFeatureTest {
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test);
+        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
@@ -113,6 +114,7 @@ public class DriveTimestampFeatureTest {
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DriveDirectoryFeature(session).mkdir(test);
+        test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified / 1000 * 1000, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0L);
