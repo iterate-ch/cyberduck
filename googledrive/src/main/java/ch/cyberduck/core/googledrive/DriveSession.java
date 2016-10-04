@@ -28,6 +28,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -182,6 +183,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Quota.class) {
             return (T) new DriveQuotaFeature(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new DriveAttributesFeature(this);
         }
         return super.getFeature(type);
     }

@@ -23,10 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -38,12 +36,11 @@ import com.google.api.services.drive.model.FileList;
 public class DriveListService implements ListService {
     private static final Logger log = Logger.getLogger(DriveListService.class);
 
-    private static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
-    private static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
-
     private final DriveSession session;
 
     private final int pagesize;
+
+    private final DriveAttributesFeature attributes;
 
     public DriveListService(final DriveSession session) {
         this(session, PreferencesFactory.get().getInteger("google.drive.list.limit"));
@@ -52,6 +49,7 @@ public class DriveListService implements ListService {
     public DriveListService(final DriveSession session, final int pagesize) {
         this.session = session;
         this.pagesize = pagesize;
+        this.attributes = new DriveAttributesFeature(session);
     }
 
     @Override
@@ -66,33 +64,13 @@ public class DriveListService implements ListService {
                         .setFields("nextPageToken, files")
                         .setPageSize(pagesize).execute();
                 for(File f : list.getFiles()) {
-                    final PathAttributes attributes = new PathAttributes();
-                    if(null != f.getExplicitlyTrashed()) {
-                        if(f.getExplicitlyTrashed()) {
-                            log.warn(String.format("Skip file %s", f));
-                            continue;
-                        }
+                    final PathAttributes properties = attributes.toAttributes(f);
+                    if(properties == null) {
+                        continue;
                     }
-                    if(!DRIVE_FOLDER.equals(f.getMimeType())) {
-                        if(StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                            log.warn(String.format("Skip file %s", f));
-                            continue;
-                        }
-                    }
-                    if(null != f.getSize()) {
-                        attributes.setSize(f.getSize());
-                    }
-                    attributes.setVersionId(f.getId());
-                    if(f.getModifiedTime() != null) {
-                        attributes.setModificationDate(f.getModifiedTime().getValue());
-                    }
-                    if(f.getCreatedTime() != null) {
-                        attributes.setCreationDate(f.getCreatedTime().getValue());
-                    }
-                    attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
-                    final EnumSet<AbstractPath.Type> type = DRIVE_FOLDER.equals(
+                    final EnumSet<AbstractPath.Type> type = DriveAttributesFeature.DRIVE_FOLDER.equals(
                             f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, attributes);
+                    final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, properties);
                     children.add(child);
                 }
                 listener.chunk(directory, children);
