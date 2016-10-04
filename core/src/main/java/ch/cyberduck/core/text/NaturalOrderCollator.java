@@ -44,7 +44,7 @@ import java.util.Locale;
  * @author Werner Randelshofer
  */
 public class NaturalOrderCollator extends Collator implements java.io.Serializable {
-    private static Logger log = Logger.getLogger(NaturalOrderCollator.class);
+    private static final Logger log = Logger.getLogger(NaturalOrderCollator.class);
 
     private static final long serialVersionUID = -7074910013839273765L;
 

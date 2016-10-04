@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class TransferPromptModel extends OutlineDataSource {
-    private static Logger log = Logger.getLogger(TransferPromptModel.class);
+    private static final Logger log = Logger.getLogger(TransferPromptModel.class);
 
     private TransferPromptController controller;
 

@@ -45,7 +45,7 @@ import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import org.apache.log4j.Logger;
 
 public final class MainApplication {
-    private static Logger log = Logger.getLogger(MainApplication.class);
+    private static final Logger log = Logger.getLogger(MainApplication.class);
 
     static {
         Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());

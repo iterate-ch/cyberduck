@@ -29,7 +29,7 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
-    private static Logger log = Logger.getLogger(DelayedHttpEntity.class);
+    private static final Logger log = Logger.getLogger(DelayedHttpEntity.class);
 
     private final CountDownLatch entry;
     private final CountDownLatch exit = new CountDownLatch(1);

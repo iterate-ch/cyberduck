@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
-    private static Logger log = Logger.getLogger(PlistReader.class);
+    private static final Logger log = Logger.getLogger(PlistReader.class);
 
     @Override
     public Collection<S> readCollection(final Local file) throws AccessDeniedException {

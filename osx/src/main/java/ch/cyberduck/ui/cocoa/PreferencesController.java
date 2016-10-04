@@ -81,7 +81,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class PreferencesController extends ToolbarWindowController {
-    private static Logger log = Logger.getLogger(PreferencesController.class);
+    private static final Logger log = Logger.getLogger(PreferencesController.class);
 
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();

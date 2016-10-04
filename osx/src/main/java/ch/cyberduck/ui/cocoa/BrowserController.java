@@ -130,7 +130,7 @@ import java.util.Set;
 
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
-    private static Logger log = Logger.getLogger(BrowserController.class);
+    private static final Logger log = Logger.getLogger(BrowserController.class);
 
     private final BookmarkCollection bookmarks
             = BookmarkCollection.defaultCollection();

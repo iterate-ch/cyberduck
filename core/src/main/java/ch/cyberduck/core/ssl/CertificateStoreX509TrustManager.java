@@ -28,7 +28,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
-    private static Logger log = Logger.getLogger(CertificateStoreX509TrustManager.class);
+    private static final Logger log = Logger.getLogger(CertificateStoreX509TrustManager.class);
 
     private TrustManagerHostnameCallback callback;
 
