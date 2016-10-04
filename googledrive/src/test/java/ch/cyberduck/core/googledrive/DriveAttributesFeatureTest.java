@@ -31,14 +31,17 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
+@Category(IntegrationTest.class)
 public class DriveAttributesFeatureTest {
 
     @Test(expected = NotfoundException.class)
