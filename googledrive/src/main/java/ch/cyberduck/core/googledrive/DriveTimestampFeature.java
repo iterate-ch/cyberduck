@@ -36,7 +36,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
             final String fileid = new DriveFileidProvider(session).getFileid(file);
-            final File properties = session.getClient().files().get(fileid).execute();
+            final File properties = new File();
             properties.setModifiedTime(new DateTime(modified));
             session.getClient().files().update(fileid, properties).execute();
         }
