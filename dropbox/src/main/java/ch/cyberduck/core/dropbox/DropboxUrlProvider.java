@@ -19,14 +19,12 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 
 import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
-import java.util.Locale;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
@@ -47,7 +45,7 @@ public class DropboxUrlProvider implements UrlProvider {
             try {
                 final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
                 list.add(new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary"))));
             }
             catch(DbxException e) {
                 log.warn(String.format("Failure retrieving shared link. %s", e.getMessage()));
