@@ -94,6 +94,10 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
                 .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(this, this.getBuilder().build(this).build())).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
+                if(null == tokens) {
+                    log.warn("Missing authentication access token");
+                    return;
+                }
                 DbxRequestUtil.addAuthHeader(headers, tokens.getAccessToken());
             }
         };
