@@ -184,7 +184,13 @@ public class OAuth2AuthorizationService {
 
     private Tokens find(final HostPasswordStore keychain, final Host host) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
-        final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+        final String prefix;
+        if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
+            prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+        }
+        else {
+            prefix = host.getProtocol().getDescription();
+        }
         final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
                 String.format("%s OAuth2 Access Token", prefix)),
