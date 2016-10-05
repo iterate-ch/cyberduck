@@ -48,9 +48,12 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.dropbox.core.DbxHost;
@@ -99,6 +102,14 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
                     return;
                 }
                 DbxRequestUtil.addAuthHeader(headers, tokens.getAccessToken());
+                for(Iterator<HttpRequestor.Header> iter = headers.iterator(); iter.hasNext(); ) {
+                    final HttpRequestor.Header header = iter.next();
+                    if(StringUtils.equals(header.getKey(), HttpHeaders.USER_AGENT)) {
+                        iter.remove();
+                        break;
+                    }
+                }
+                headers.add(new HttpRequestor.Header(HttpHeaders.USER_AGENT, useragent.get()));
             }
         };
     }
