@@ -66,8 +66,8 @@ public class DropboxListService implements ListService {
                     continue;
                 }
                 final Path child = new Path(directory, PathNormalizer.name(md.getName()), type, attributes.convert(md));
-                listener.chunk(directory, children);
                 children.add(child);
+                listener.chunk(directory, children);
             }
             return children;
         }
