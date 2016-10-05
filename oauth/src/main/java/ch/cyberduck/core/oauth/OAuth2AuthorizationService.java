@@ -139,7 +139,9 @@ public class OAuth2AuthorizationService {
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
             final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
-            browser.open(url);
+            if(!browser.open(url)) {
+                log.warn(String.format("Failed to launch web browser for %s", url));
+            }
             prompt.prompt(bookmark, bookmark.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
                     new LoginOptions().keychain(false).user(false)
