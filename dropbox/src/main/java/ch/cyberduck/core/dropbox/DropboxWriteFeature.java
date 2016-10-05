@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -31,12 +32,18 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
-import com.dropbox.core.v2.files.UploadUploader;
+import com.dropbox.core.v2.files.UploadSessionAppendV2Uploader;
+import com.dropbox.core.v2.files.UploadSessionCursor;
+import com.dropbox.core.v2.files.UploadSessionFinishUploader;
+import com.dropbox.core.v2.files.UploadSessionStartUploader;
+import com.dropbox.core.v2.files.WriteMode;
 
-public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
+public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
     private DropboxSession session;
@@ -67,13 +74,20 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final UploadUploader uploader = new DbxUserFilesRequests(session.getClient()).upload(file.getAbsolute());
-            return new UploadProxyOutputStream(uploader);
+            final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient());
+            final UploadSessionStartUploader start = files.uploadSessionStart();
+            start.getOutputStream().close();
+            final String sessionId = start.finish().getSessionId();
+            final UploadSessionAppendV2Uploader uploader = open(files, sessionId, 0L);
+            return new SegmentingUploadProxyOutputStream(file, status, files, uploader, sessionId);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(DbxException ex) {
-            throw new DropboxExceptionMappingService().map("Upload failed.", ex);
+            throw new DropboxExceptionMappingService().map("Upload failed.", ex, file);
         }
     }
 
@@ -87,25 +101,65 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
         return false;
     }
 
-    private static final class UploadProxyOutputStream extends ResponseOutputStream<Void> {
+    private final class SegmentingUploadProxyOutputStream extends ResponseOutputStream<String> {
+        private static final int LIMIT = 150000000;
 
-        private final UploadUploader uploader;
+        private final Path file;
+        private final TransferStatus status;
+        private final DbxUserFilesRequests files;
+        private final String sessionId;
 
-        public UploadProxyOutputStream(final UploadUploader uploader) {
+        private Long offset = 0L;
+        private UploadSessionAppendV2Uploader uploader;
+
+        public SegmentingUploadProxyOutputStream(final Path file, final TransferStatus status, final DbxUserFilesRequests client,
+                                                 final UploadSessionAppendV2Uploader uploader, final String sessionId) throws DbxException {
             super(uploader.getOutputStream());
+            this.file = file;
+            this.status = status;
+            this.files = client;
             this.uploader = uploader;
+            this.sessionId = sessionId;
         }
 
         @Override
-        public Void getResponse() throws BackgroundException {
-            return null;
+        protected void beforeWrite(final int n) throws IOException {
+            // A single request should not upload more than 150 MB of file contents.
+            if(offset + n > LIMIT) {
+                try {
+                    DropboxWriteFeature.this.close(uploader);
+                    // Next segment
+                    uploader = open(files, sessionId, offset);
+                    // Replace stream
+                    out = uploader.getOutputStream();
+                }
+                catch(DbxException e) {
+                    throw new IOException(e);
+                }
+            }
+        }
+
+        @Override
+        protected void afterWrite(final int n) throws IOException {
+            offset += n;
+        }
+
+        @Override
+        public String getResponse() throws BackgroundException {
+            return sessionId;
         }
 
         @Override
         public void close() throws IOException {
             try {
-                uploader.close();
-                uploader.finish();
+                DropboxWriteFeature.this.close(uploader);
+                final UploadSessionFinishUploader finish = files.uploadSessionFinish(new UploadSessionCursor(sessionId, offset), CommitInfo.newBuilder(file.getAbsolute())
+                        .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
+                        .withMode(WriteMode.OVERWRITE)
+                        .build()
+                );
+                finish.getOutputStream().close();
+                finish.finish();
             }
             catch(IllegalStateException e) {
                 // Already closed
@@ -117,5 +171,14 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
                 super.close();
             }
         }
+    }
+
+    private UploadSessionAppendV2Uploader open(final DbxUserFilesRequests files, final String sessionId, final Long offset) throws DbxException {
+        return files.uploadSessionAppendV2(new UploadSessionCursor(sessionId, offset));
+    }
+
+    private void close(final UploadSessionAppendV2Uploader uploader) throws DbxException, IOException {
+        uploader.getOutputStream().close();
+        uploader.finish();
     }
 }
