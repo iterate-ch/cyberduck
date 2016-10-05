@@ -68,7 +68,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(true, false).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }
