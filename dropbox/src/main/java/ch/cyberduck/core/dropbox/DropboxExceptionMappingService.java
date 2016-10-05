@@ -20,13 +20,10 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.files.DeleteError;
-import com.dropbox.core.v2.files.DeleteErrorException;
-import com.dropbox.core.v2.files.GetMetadataError;
-import com.dropbox.core.v2.files.GetMetadataErrorException;
-import com.dropbox.core.v2.files.LookupError;
+import com.dropbox.core.v2.files.*;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
 
@@ -39,11 +36,10 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathValue();
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
+                case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
-                    return new NotfoundException(buffer.toString(), failure);
                 case NOT_FILE:
-                    return new NotfoundException(buffer.toString(), failure);
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
                 case RESTRICTED_CONTENT:
@@ -55,15 +51,89 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final LookupError lookup = error.getPathLookupValue();
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
+                case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
                 case NOT_FOUND:
-                    return new NotfoundException(buffer.toString(), failure);
                 case NOT_FILE:
-                    return new NotfoundException(buffer.toString(), failure);
                 case NOT_FOLDER:
                     return new NotfoundException(buffer.toString(), failure);
                 case RESTRICTED_CONTENT:
                     return new AccessDeniedException(buffer.toString(), failure);
+            }
+        }
+        if(failure instanceof CreateFolderErrorException) {
+            final CreateFolderError error = ((CreateFolderErrorException) failure).errorValue;
+            final WriteError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case MALFORMED_PATH:
+                case DISALLOWED_NAME:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NO_WRITE_PERMISSION:
+                case CONFLICT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case INSUFFICIENT_SPACE:
+                    return new QuotaException(buffer.toString(), failure);
+            }
+        }
+        if(failure instanceof DownloadErrorException) {
+            final DownloadError error = ((DownloadErrorException) failure).errorValue;
+            final LookupError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case MALFORMED_PATH:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NOT_FOUND:
+                case NOT_FILE:
+                case NOT_FOLDER:
+                    return new NotfoundException(buffer.toString(), failure);
+                case RESTRICTED_CONTENT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+            }
+        }
+        if(failure instanceof UploadErrorException) {
+            final UploadError error = ((UploadErrorException) failure).errorValue;
+            final UploadWriteFailed lookup = error.getPathValue();
+            switch(lookup.getReason().tag()) {
+                case CONFLICT:
+                case NO_WRITE_PERMISSION:
+                case DISALLOWED_NAME:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case INSUFFICIENT_SPACE:
+                    return new QuotaException(buffer.toString(), failure);
+                case MALFORMED_PATH:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+            }
+        }
+        if(failure instanceof GetTemporaryLinkErrorException) {
+            final GetTemporaryLinkError error = ((GetTemporaryLinkErrorException) failure).errorValue;
+            final LookupError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case NOT_FOUND:
+                case NOT_FILE:
+                case NOT_FOLDER:
+                    return new NotfoundException(buffer.toString(), failure);
+                case RESTRICTED_CONTENT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case MALFORMED_PATH:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+            }
+        }
+        if(failure instanceof ListFolderContinueErrorException) {
+            final ListFolderContinueError error = ((ListFolderContinueErrorException) failure).errorValue;
+            final LookupError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case NOT_FOUND:
+                case NOT_FILE:
+                case NOT_FOLDER:
+                    return new NotfoundException(buffer.toString(), failure);
+                case RESTRICTED_CONTENT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case MALFORMED_PATH:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
             }
         }
         return new BackgroundException(buffer.toString(), failure);
