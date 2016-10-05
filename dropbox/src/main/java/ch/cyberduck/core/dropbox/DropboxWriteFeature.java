@@ -37,7 +37,6 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.UploadUploader;
 
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<Void> {
-
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
     private DropboxSession session;
