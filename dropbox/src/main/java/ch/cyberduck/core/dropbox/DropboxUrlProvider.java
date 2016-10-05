@@ -29,10 +29,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
-import com.dropbox.core.v2.sharing.RequestedVisibility;
-import com.dropbox.core.v2.sharing.SharedLinkMetadata;
-import com.dropbox.core.v2.sharing.SharedLinkSettings;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(DropboxUrlProvider.class);
@@ -48,9 +45,8 @@ public class DropboxUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             try {
-                final SharedLinkMetadata shared = new DbxUserSharingRequests(session.getClient()).createSharedLinkWithSettings(file.getAbsolute(),
-                        new SharedLinkSettings(RequestedVisibility.PUBLIC, null, null));
-                list.add(new DescriptiveUrl(URI.create(shared.getUrl()), DescriptiveUrl.Type.http,
+                final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
+                list.add(new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
                         MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
             }
             catch(DbxException e) {
