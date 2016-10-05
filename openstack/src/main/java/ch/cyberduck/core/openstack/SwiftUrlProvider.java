@@ -153,7 +153,7 @@ public class SwiftUrlProvider implements UrlProvider {
                     region.getStorageUrl(
                             containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath(), signature, expiry)),
                     DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                             + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                             UserDateFormatterFactory.get().getShortFormat(expiry * 1000))
             ));
