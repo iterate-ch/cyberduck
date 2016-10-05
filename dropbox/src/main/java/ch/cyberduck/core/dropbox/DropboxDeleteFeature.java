@@ -38,6 +38,7 @@ public class DropboxDeleteFeature implements Delete {
         for(Path file : files) {
             try {
                 callback.delete(file);
+                // Delete the file or folder at a given path. If the path is a folder, all its contents will be deleted too.
                 new DbxUserFilesRequests(session.getClient()).delete(file.getAbsolute());
             }
             catch(DbxException e) {
