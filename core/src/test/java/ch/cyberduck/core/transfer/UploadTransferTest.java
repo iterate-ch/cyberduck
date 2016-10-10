@@ -334,7 +334,7 @@ public class UploadTransferTest {
                     return (T) new Move() {
                         @Override
                         public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
-                            assertNotEquals(test, renamed);
+                            assertEquals(test, renamed);
                             moved.set(true);
                         }
 
