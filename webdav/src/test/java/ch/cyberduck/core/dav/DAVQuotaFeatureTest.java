@@ -24,12 +24,15 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class DAVQuotaFeatureTest {
 
     @Test
