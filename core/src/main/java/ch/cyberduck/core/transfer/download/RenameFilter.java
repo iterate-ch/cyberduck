@@ -54,7 +54,7 @@ public class RenameFilter extends AbstractDownloadFilter {
                 no++;
                 String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                    proposal += "." + FilenameUtils.getExtension(filename);
+                    proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                 }
                 status.rename(LocalFactory.get(parentPath, proposal));
             }
