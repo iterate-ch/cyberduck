@@ -18,18 +18,13 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Bulk;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.features.Lock;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVLockFeature<R> implements Bulk<Map<Path, String>> {
+public class DAVLockFeature implements Lock<String> {
 
     private final DAVSession session;
 
@@ -38,24 +33,28 @@ public class DAVLockFeature<R> implements Bulk<Map<Path, String>> {
     }
 
     @Override
-    public Map<Path, String> pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
-        switch(type) {
-            case download:
-                final Map<Path, String> locks = new HashMap<Path, String>();
-                for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-                    final Path file = entry.getKey();
-                    try {
-                        locks.put(file, session.getClient().lock(new DAVPathEncoder().encode(file)));
-                    }
-                    catch(SardineException e) {
-                        throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map(e, file);
-                    }
-                }
-                return locks;
+    public String lock(final Path file) throws BackgroundException {
+        try {
+            return session.getClient().lock(new DAVPathEncoder().encode(file));
         }
-        return Collections.emptyMap();
+        catch(SardineException e) {
+            throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
+    }
+
+    @Override
+    public void unlock(final Path file, final String token) throws BackgroundException {
+        try {
+            session.getClient().unlock(new DAVPathEncoder().encode(file), token);
+        }
+        catch(SardineException e) {
+            throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e, file);
+        }
     }
 }

@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
@@ -326,6 +327,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Quota.class) {
             return (T) new DAVQuotaFeature(this);
+        }
+        if(type == Lock.class) {
+            return (T) new DAVLockFeature(this);
         }
         return super.getFeature(type);
     }
