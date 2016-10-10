@@ -29,11 +29,11 @@ import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
 
-public class DavLockFeature<R> implements Bulk<Map<Path, String>> {
+public class DAVLockFeature<R> implements Bulk<Map<Path, String>> {
 
     private final DAVSession session;
 
-    public DavLockFeature(final DAVSession session) {
+    public DAVLockFeature(final DAVSession session) {
         this.session = session;
     }
 
