@@ -46,17 +46,15 @@ public class RenameFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(local.exists()) {
-            final String parentPath = local.getParent().getAbsolute();
+        if(status.isExists()) {
             final String filename = file.getName();
             int no = 0;
             do {
-                no++;
-                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                     proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                 }
-                status.rename(LocalFactory.get(parentPath, proposal));
+                status.rename(LocalFactory.get(local.getParent(), proposal));
             }
             while(status.getRename().local.exists());
             if(log.isInfoEnabled()) {
