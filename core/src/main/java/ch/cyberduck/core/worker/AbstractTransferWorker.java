@@ -380,8 +380,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 final TransferPathFilter filter = transfer.filter(session, action, progress);
                                 // Post process of file.
                                 filter.complete(
-                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
-                                        status.getRename().local != null ? status.getRename().local : item.local,
+                                        segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                        segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, progress);
 
                                 if(!iter.hasNext()) {
