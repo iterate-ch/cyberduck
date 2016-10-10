@@ -24,11 +24,11 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVLockingFeature implements Lock<String> {
+public class DAVLockFeature implements Lock<String> {
 
     private final DAVSession session;
 
-    public DAVLockingFeature(final DAVSession session) {
+    public DAVLockFeature(final DAVSession session) {
         this.session = session;
     }
 
