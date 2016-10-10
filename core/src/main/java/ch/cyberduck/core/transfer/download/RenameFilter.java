@@ -44,12 +44,11 @@ public class RenameFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(local.exists()) {
+        if(status.isExists()) {
             final String filename = file.getName();
             int no = 0;
             do {
-                no++;
-                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                     proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                 }
