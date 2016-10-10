@@ -44,10 +44,10 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
 
         <!-- Extend to the "open with" list + Win7 jump menu pinning  -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
 
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.Bookmark" Name="FriendlyTypeName" Value="Cyberduck Bookmark" Type="string" />
         <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
