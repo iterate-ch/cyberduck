@@ -449,7 +449,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 // Determine transfer filter implementation from selected overwrite action
                                 final TransferPathFilter filter = transfer.filter(session, action, progress);
                                 // Concatenate segments with completed status set
-                                filter.complete(item.remote, item.local, options, status.complete(), progress);
+                                filter.complete(
+                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                        status.getRename().local != null ? status.getRename().local : item.local,
+                                        options, status.complete(), progress);
                             }
                             finally {
                                 release(session);
