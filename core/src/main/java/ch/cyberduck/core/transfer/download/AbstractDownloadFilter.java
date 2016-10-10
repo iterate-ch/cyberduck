@@ -159,14 +159,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 status.setLength(attributes.getSize());
                 if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
                     final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
-                    status.temporary(LocalFactory.get(local.getParent(), filename));
+                    status.displayname(LocalFactory.get(local.getParent(), filename));
                     int no = 0;
-                    while(status.getTemporary().local.exists()) {
+                    while(status.getDisplayname().local.exists()) {
                         String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
                             proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                         }
-                        status.temporary(LocalFactory.get(local.getParent(), proposal));
+                        status.displayname(LocalFactory.get(local.getParent(), proposal));
                     }
                 }
             }
@@ -377,8 +377,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 }
             }
             if(file.isFile()) {
-                if(status.getTemporary().local != null) {
-                    local.rename(status.getTemporary().local);
+                if(status.getDisplayname().local != null) {
+                    local.rename(status.getDisplayname().local);
                 }
             }
         }

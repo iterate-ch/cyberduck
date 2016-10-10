@@ -53,8 +53,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
      */
-    private Temporary temporary
-            = new Temporary();
+    private Displayname displayname
+            = new Displayname();
 
     /**
      * Target file or directory already exists
@@ -313,8 +313,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return rename;
     }
 
-    public Temporary getTemporary() {
-        return temporary;
+    public Displayname getDisplayname() {
+        return displayname;
     }
 
     public TransferStatus rename(final Path renamed) {
@@ -326,7 +326,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * @param temporary Temporary file to open output stream to
      */
     public TransferStatus temporary(final Path temporary) {
-        this.temporary.remote = temporary;
+        this.rename.remote = temporary;
         return this;
     }
 
@@ -338,8 +338,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @param temporary Target filename to rename temporary file to
      */
-    public TransferStatus temporary(final Local temporary) {
-        this.temporary.local = temporary;
+    public TransferStatus displayname(final Local temporary) {
+        this.displayname.local = temporary;
         return this;
     }
 
@@ -504,11 +504,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return sb.toString();
     }
 
-    public static final class Temporary {
-        /**
-         * Temporary upload target
-         */
-        public Path remote;
+    /**
+     * Rename of target filename *after* file transfer
+     */
+    public static final class Displayname {
         /**
          * Target filename is temporary and file should be renamed to display name when transfer is complete
          */
@@ -517,13 +516,15 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("Temporary{");
-            sb.append("remote=").append(remote);
             sb.append(", local=").append(local);
             sb.append('}');
             return sb.toString();
         }
     }
 
+    /**
+     * Rename of target filename *prior* file transfer
+     */
     public static final class Rename {
         /**
          * Renamed upload target
