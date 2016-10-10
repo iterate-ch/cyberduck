@@ -72,7 +72,7 @@ public class SFTPListService implements ListService {
                 if(f.getAttributes().getType().equals(FileMode.Type.REGULAR)) {
                     type.add(Path.Type.file);
                 }
-                if(f.getAttributes().getType().equals(FileMode.Type.SYMKLINK)) {
+                if(f.getAttributes().getType().equals(FileMode.Type.SYMLINK)) {
                     type.add(Path.Type.symboliclink);
                 }
                 final Path file = new Path(directory, normalizer.normalize(f.getName()), type, attributes);
