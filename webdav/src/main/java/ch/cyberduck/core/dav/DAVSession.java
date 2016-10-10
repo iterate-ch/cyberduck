@@ -329,7 +329,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVQuotaFeature(this);
         }
         if(type == Lock.class) {
-            return (T) new DAVLockFeature(this);
+            return (T) new DAVLockingFeature(this);
         }
         return super.getFeature(type);
     }
