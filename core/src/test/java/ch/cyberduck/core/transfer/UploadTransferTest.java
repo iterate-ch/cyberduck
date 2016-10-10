@@ -334,7 +334,7 @@ public class UploadTransferTest {
                     return (T) new Move() {
                         @Override
                         public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
-                            assertEquals(test, renamed);
+                            assertNotEquals(test, renamed);
                             moved.set(true);
                         }
 
@@ -395,9 +395,7 @@ public class UploadTransferTest {
             public void transfer(final Session<?> session, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
-                assertEquals(test, file);
-                assertNull(table.get(test).getRename().remote);
-                assertNotEquals(table.get(test).getTemporary().remote, file);
+                assertEquals(table.get(test).getRename().remote, file);
                 status.setComplete();
                 set.set(true);
             }

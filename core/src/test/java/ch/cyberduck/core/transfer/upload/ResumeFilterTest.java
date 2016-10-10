@@ -104,7 +104,7 @@ public class ResumeFilterTest {
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
-        assertNull(status.getRename().remote);
+        assertNotNull(status.getRename().remote);
     }
 
     @Test
@@ -143,6 +143,7 @@ public class ResumeFilterTest {
             }
         }, new TransferStatus().exists(true));
         assertTrue(status.isAppend());
+        // Temporary target
         assertNull(status.getRename().remote);
         assertEquals(7L, status.getOffset());
     }
@@ -155,7 +156,7 @@ public class ResumeFilterTest {
         t.attributes().setSize(0L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true));
         assertFalse(status.isAppend());
-        assertNull(status.getRename().remote);
+        assertNotNull(status.getRename().remote);
         assertEquals(0L, status.getOffset());
     }
 

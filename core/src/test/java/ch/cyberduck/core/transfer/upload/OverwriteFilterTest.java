@@ -125,9 +125,9 @@ public class OverwriteFilterTest {
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertNotNull(status.getRename());
-        assertNotEquals(file, status.getTemporary().remote);
-        assertNull(status.getTemporary().local);
-        assertNotNull(status.getTemporary().remote);
+        assertNotEquals(file, status.getRename().remote);
+        assertNull(status.getRename().local);
+        assertNotNull(status.getRename().remote);
     }
 
     @Test(expected = AccessDeniedException.class)

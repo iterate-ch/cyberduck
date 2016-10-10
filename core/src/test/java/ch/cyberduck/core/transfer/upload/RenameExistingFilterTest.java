@@ -180,9 +180,9 @@ public class RenameExistingFilterTest {
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
-        assertNotNull(status.getTemporary());
-        assertNotNull(status.getTemporary().remote);
-        assertNotEquals(file, status.getTemporary().local);
+        assertNotNull(status.getRename());
+        assertNotNull(status.getRename().remote);
+        assertNotEquals(file, status.getDisplayname().local);
         assertNull(status.getRename().local);
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
         // Complete
