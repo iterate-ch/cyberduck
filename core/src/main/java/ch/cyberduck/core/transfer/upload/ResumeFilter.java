@@ -102,6 +102,8 @@ public class ResumeFilter extends AbstractUploadFilter {
                     status.setAppend(true);
                     status.setLength(status.getLength() - append.size);
                     status.setOffset(append.size);
+                    // Disable use of temporary target when resuming upload
+                    status.rename((Path) null);
                 }
             }
         }
