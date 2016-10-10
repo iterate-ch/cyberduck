@@ -160,9 +160,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
                                 file.getName(), new AlphanumericRandomStringService().random()), file.getType());
-                // File attributes should not change after calculate the hash code of the file reference
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Clear exist flag for file %s", file));
+                    log.debug(String.format("Set temporary filename %s", renamed));
                 }
                 status.temporary(renamed);
             }
@@ -264,9 +263,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         }
         if(status.isComplete()) {
             if(file.isFile()) {
-                if(status.getRename().temporary != null) {
+                if(status.getTemporary().remote != null) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(status.getRename().temporary, file, status.isExists(), new Delete.DisabledCallback());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Rename file %s to %s", status.getTemporary().remote, file));
+                    }
+                    move.move(status.getTemporary().remote, file, status.isExists(), new Delete.DisabledCallback());
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
