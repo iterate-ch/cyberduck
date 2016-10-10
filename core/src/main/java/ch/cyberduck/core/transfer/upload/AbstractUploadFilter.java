@@ -164,6 +164,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     log.debug(String.format("Set temporary filename %s", renamed));
                 }
                 status.temporary(renamed);
+                status.displayname(file);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -268,7 +269,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Rename file %s to %s", status.getRename().remote, file));
                     }
-                    move.move(status.getRename().remote, file, status.isExists(), new Delete.DisabledCallback());
+                    move.move(file, status.getDisplayname().remote, status.isExists(), new Delete.DisabledCallback());
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

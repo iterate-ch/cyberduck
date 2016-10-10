@@ -330,16 +330,21 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public TransferStatus displayname(final Path finalname) {
+        this.displayname.remote = finalname;
+        return this;
+    }
+
     public TransferStatus rename(final Local renamed) {
         this.rename.local = renamed;
         return this;
     }
 
     /**
-     * @param temporary Target filename to rename temporary file to
+     * @param finalname Target filename to rename temporary file to
      */
-    public TransferStatus displayname(final Local temporary) {
-        this.displayname.local = temporary;
+    public TransferStatus displayname(final Local finalname) {
+        this.displayname.local = finalname;
         return this;
     }
 
@@ -508,6 +513,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Rename of target filename *after* file transfer
      */
     public static final class Displayname {
+        /**
+         * Renamed upload target
+         */
+        public Path remote;
         /**
          * Target filename is temporary and file should be renamed to display name when transfer is complete
          */
