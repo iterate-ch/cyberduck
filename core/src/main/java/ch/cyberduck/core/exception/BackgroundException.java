@@ -18,6 +18,7 @@ package ch.cyberduck.core.exception;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.StringAppender;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,7 @@ public class BackgroundException extends Exception {
 
     @Override
     public String getMessage() {
-        return message;
+        return null == message ? LocaleFactory.localizedString("Unknown") : message;
     }
 
     public String getHelp() {
