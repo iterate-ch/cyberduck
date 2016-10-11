@@ -2686,6 +2686,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.ToggleMetadataSettings(true);
+                    _infoController.InitMetadata();
                 }
             }
         }
