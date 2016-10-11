@@ -133,7 +133,7 @@
         </copy>
         <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
             <include name="*.nuspec"/>
-            <include name="cyberduck/*.ps1"/>
+            <include name="tools/*.ps1"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${FEED}" value="${sparkle.feed}"/>
