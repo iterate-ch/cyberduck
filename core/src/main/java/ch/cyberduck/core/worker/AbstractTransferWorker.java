@@ -266,7 +266,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 final TransferStatus status = filter.prepare(file, local, parent);
                                 table.put(file, status);
                                 // Apply filter
-                                filter.apply(item.remote, item.local, status, progress);
+                                filter.apply(
+                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                        status.getRename().local != null ? status.getRename().local : item.local,
+                                        status, progress);
                                 // Add transfer length to total bytes
                                 transfer.addSize(status.getLength() + status.getOffset());
                                 // Add skipped bytes
@@ -376,7 +379,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 // Determine transfer filter implementation from selected overwrite action
                                 final TransferPathFilter filter = transfer.filter(session, action, progress);
                                 // Post process of file.
-                                filter.complete(item.remote, item.local, options, segment, progress);
+                                filter.complete(
+                                        segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                        segment.getRename().local != null ? segment.getRename().local : item.local,
+                                        options, segment, progress);
 
                                 if(!iter.hasNext()) {
                                     // Free memory when no more segments to transfer
@@ -443,7 +449,10 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 // Determine transfer filter implementation from selected overwrite action
                                 final TransferPathFilter filter = transfer.filter(session, action, progress);
                                 // Concatenate segments with completed status set
-                                filter.complete(item.remote, item.local, options, status.complete(), progress);
+                                filter.complete(
+                                        status.getRename().remote != null ? status.getRename().remote : item.remote,
+                                        status.getRename().local != null ? status.getRename().local : item.local,
+                                        options, status.complete(), progress);
                             }
                             finally {
                                 release(session);

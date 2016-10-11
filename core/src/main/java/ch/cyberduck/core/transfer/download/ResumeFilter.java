@@ -119,6 +119,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                             status.setAppend(true);
                             status.setLength(status.getLength() - local.attributes().getSize());
                             status.setOffset(status.getOffset() + local.attributes().getSize());
+                            status.rename((Local) null);
                         }
                     }
                 }

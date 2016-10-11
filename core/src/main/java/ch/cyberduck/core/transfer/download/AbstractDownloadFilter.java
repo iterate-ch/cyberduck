@@ -53,6 +53,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -154,6 +156,18 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 // Content length
                 status.setLength(attributes.getSize());
+                if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
+                    final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
+                    status.displayname(LocalFactory.get(local.getParent(), filename));
+                    int no = 0;
+                    while(status.getDisplayname().local.exists()) {
+                        String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
+                        if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                            proposal += String.format(".%s", FilenameUtils.getExtension(filename));
+                        }
+                        status.displayname(LocalFactory.get(local.getParent(), proposal));
+                    }
+                }
             }
         }
         status.setRemote(attributes);
@@ -284,6 +298,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 log.debug(String.format("Run completion for file %s with status %s", local, status));
             }
             if(file.isFile()) {
+                // Bounce Downloads folder dock icon by sending download finished notification
+                launcher.bounce(local);
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);
@@ -357,7 +373,11 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     }
                 }
             }
-            launcher.bounce(local);
+            if(file.isFile()) {
+                if(status.getDisplayname().local != null) {
+                    local.rename(status.getDisplayname().local);
+                }
+            }
         }
     }
 }

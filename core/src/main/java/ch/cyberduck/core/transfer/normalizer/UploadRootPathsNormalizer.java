@@ -54,12 +54,11 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
                     int index = filename.lastIndexOf('.');
                     Path remote;
                     do {
-                        no++;
                         if(index != -1 && index != 0) {
-                            proposal = String.format("%s-%d%s", filename.substring(0, index), no, filename.substring(index));
+                            proposal = String.format("%s-%d%s", filename.substring(0, index), ++no, filename.substring(index));
                         }
                         else {
-                            proposal = String.format("%s-%d", filename, no);
+                            proposal = String.format("%s-%d", filename, ++no);
                         }
                         remote = new Path(parent, proposal, upload.remote.getType());
                     }
