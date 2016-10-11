@@ -1253,6 +1253,7 @@ public class InfoController extends ToolbarWindowController {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
+                                    initMetadata();
                                 }
                             }
                     )
