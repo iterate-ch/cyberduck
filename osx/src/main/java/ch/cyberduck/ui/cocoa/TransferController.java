@@ -99,8 +99,6 @@ public final class TransferController extends WindowController implements NSTool
 
     private NSToolbar toolbar;
 
-    private RevealService reveal = RevealServiceFactory.get();
-
     private Preferences preferences
             = PreferencesFactory.get();
 
@@ -882,6 +880,7 @@ public final class TransferController extends WindowController implements NSTool
     public void revealButtonClicked(final ID sender) {
         final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
+        final RevealService reveal = RevealServiceFactory.get();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             for(TransferItem l : transfer.getRoots()) {
