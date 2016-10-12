@@ -69,7 +69,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         // Prompt user
-        if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
+        if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
             final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
             new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
                     listener, status, prompt);

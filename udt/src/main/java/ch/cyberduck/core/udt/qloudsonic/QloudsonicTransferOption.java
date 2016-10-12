@@ -69,7 +69,7 @@ public class QloudsonicTransferOption implements UDTTransferOption {
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt)
+    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt)
             throws BackgroundException {
         // Only for AWS given threshold
         if(status.getLength() < udtThreshold) {

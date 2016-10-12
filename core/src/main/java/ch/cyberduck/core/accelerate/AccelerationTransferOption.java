@@ -27,11 +27,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface AccelerationTransferOption<C extends HttpSession<?>> {
     /**
      * @param bookmark Connection
+     * @param file     File to transfer
      * @param status   File transfer status
      * @param prompt   Prompt
      * @return True if the connection should be proxied
      */
-    boolean prompt(Host bookmark, final TransferStatus status, ConnectionCallback prompt)
+    boolean prompt(Host bookmark, Path file, TransferStatus status, ConnectionCallback prompt)
             throws BackgroundException;
 
     C open(Host bookmark, Path file, X509TrustManager trust, X509KeyManager key) throws BackgroundException;

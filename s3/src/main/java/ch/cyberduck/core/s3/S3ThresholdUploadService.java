@@ -97,7 +97,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         // Prompt user
-        if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
+        if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
             final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
             if(!preferences.getBoolean("s3.upload.multipart")) {
                 // Disabled by user
