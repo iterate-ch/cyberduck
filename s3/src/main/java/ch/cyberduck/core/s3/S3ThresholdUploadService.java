@@ -24,7 +24,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.accelerate.AccelerationTransferOption;
-import ch.cyberduck.core.accelerate.DisabledAccelerationTransferOption;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -52,9 +51,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.threshold");
 
-    private Long udtThreshold
-            = preferences.getLong("s3.upload.udt.threshold");
-
     private final AccelerationTransferOption<S3Session> accelerateTransferOption;
 
     private final X509TrustManager trust;
@@ -71,7 +67,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final Long multipartThreshold) {
-        this(session, trust, key, multipartThreshold, new DisabledAccelerationTransferOption<S3Session>());
+        this(session, trust, key, multipartThreshold, new S3TransferAccelerationService(session));
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
@@ -100,24 +96,19 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-            // Only for AWS given threshold
-            if(status.getLength() > udtThreshold) {
-                // Prompt user
-                if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
-                    final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-                    if(!preferences.getBoolean("s3.upload.multipart")) {
-                        // Disabled by user
-                        if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                            log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                            final S3SingleUploadService single = new S3SingleUploadService(tunneled);
-                            return single.upload(file, local, throttle, listener, status, prompt);
-                        }
-                    }
-                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
-                    return service.upload(file, local, throttle, listener, status, prompt);
+        // Prompt user
+        if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
+            final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
+            if(!preferences.getBoolean("s3.upload.multipart")) {
+                // Disabled by user
+                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                    final S3SingleUploadService single = new S3SingleUploadService(tunneled);
+                    return single.upload(file, local, throttle, listener, status, prompt);
                 }
             }
+            final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
+            return service.upload(file, local, throttle, listener, status, prompt);
         }
         if(status.getLength() > multipartThreshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
@@ -139,11 +130,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {
         this.multipartThreshold = threshold;
-        return this;
-    }
-
-    public S3ThresholdUploadService withUdtThreshold(final Long threshold) {
-        this.udtThreshold = threshold;
         return this;
     }
 }

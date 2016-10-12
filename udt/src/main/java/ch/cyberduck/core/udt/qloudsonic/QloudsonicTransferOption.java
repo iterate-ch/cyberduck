@@ -52,6 +52,8 @@ public class QloudsonicTransferOption implements UDTTransferOption {
 
     private final Session<?> session;
 
+    private Long udtThreshold = Long.MAX_VALUE;
+
     public QloudsonicTransferOption(final Session session) {
         this(session, new QloudsonicVoucherFinder());
     }
@@ -69,6 +71,10 @@ public class QloudsonicTransferOption implements UDTTransferOption {
     @Override
     public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt)
             throws BackgroundException {
+        // Only for AWS given threshold
+        if(status.getLength() < udtThreshold) {
+            return false;
+        }
         if(Host.TransferType.unknown == bookmark.getTransfer()) {
             if(!preferences.getBoolean(String.format("connection.qloudsonic.%s", bookmark.getHostname()))) {
                 final List<License> receipts = voucher.open();
@@ -122,5 +128,10 @@ public class QloudsonicTransferOption implements UDTTransferOption {
         }
         final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
         return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key));
+    }
+
+    public QloudsonicTransferOption withUdtThreshold(final Long threshold) {
+        this.udtThreshold = threshold;
+        return this;
     }
 }

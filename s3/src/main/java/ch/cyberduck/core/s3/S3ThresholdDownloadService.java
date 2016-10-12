@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.accelerate.AccelerationTransferOption;
-import ch.cyberduck.core.accelerate.DisabledAccelerationTransferOption;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -44,8 +43,6 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
 
     private final S3Session session;
 
-    private Long udtThreshold = preferences.getLong("s3.download.udt.threshold");
-
     private final AccelerationTransferOption<S3Session> accelerateTransferOption;
 
     private final X509TrustManager trust;
@@ -53,7 +50,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     private final X509KeyManager key;
 
     public S3ThresholdDownloadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        this(session, trust, key, new DisabledAccelerationTransferOption<S3Session>());
+        this(session, trust, key, new S3TransferAccelerationService(session));
     }
 
     public S3ThresholdDownloadService(final S3Session session,
@@ -71,23 +68,13 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     public void download(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-            // Only for AWS given threshold
-            if(status.getLength() > udtThreshold) {
-                // Prompt user
-                if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
-                    final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-                    new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
-                            listener, status, prompt);
-                    return;
-                }
-            }
+        // Prompt user
+        if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
+            final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
+            new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
+                    listener, status, prompt);
+            return;
         }
         super.download(file, local, throttle, listener, status, prompt);
-    }
-
-    public S3ThresholdDownloadService withUdtThreshold(final Long threshold) {
-        this.udtThreshold = threshold;
-        return this;
     }
 }
