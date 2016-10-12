@@ -67,7 +67,44 @@ public class S3ThresholdUploadServiceTest {
     }
 
     @Test
-    public void testUploadSinglePart() throws Exception {
+    public void testUploadSinglePartEuCentral() throws Exception {
+        final S3Session session = new S3Session(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                        new Credentials(
+                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                        )));
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final String name = UUID.randomUUID().toString();
+        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
+        final String random = RandomStringUtils.random(1000);
+        IOUtils.write(random, local.getOutputStream(false), Charset.defaultCharset());
+        final TransferStatus status = new TransferStatus();
+        status.setLength((long) random.getBytes().length);
+        status.setMime("text/plain");
+        status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
+        assertTrue(status.isComplete());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        assertEquals(random.getBytes().length, attributes.getSize());
+        assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
+        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        local.delete();
+        session.close();
+    }
+
+    @Test
+    public void testUploadSinglePartUsEast() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(
