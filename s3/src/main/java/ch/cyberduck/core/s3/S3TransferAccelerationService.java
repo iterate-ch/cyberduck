@@ -105,6 +105,7 @@ public class S3TransferAccelerationService implements AccelerationTransferOption
             protected Jets3tProperties configure() {
                 final Jets3tProperties options = super.configure();
                 options.setProperty("s3service.disable-dns-buckets", String.valueOf(false));
+                options.setProperty("s3service.disable-expect-continue", String.valueOf(true));
                 return options;
             }
         };
