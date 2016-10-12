@@ -108,7 +108,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public void configure(final HttpSession session) throws BackgroundException {
+    public HttpSession<?> configure(final HttpSession session) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
@@ -120,6 +120,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                 = new UDTHttpConnectionPoolBuilder(session.getHost(), proxy, headers, trust, key, callback);
         // Inject connection builder into session
         session.setBuilder(builder);
+        return session;
     }
 
     private static final class CustomHeaderHttpRequestExecutor extends HttpRequestExecutor {

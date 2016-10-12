@@ -1,8 +1,8 @@
-package ch.cyberduck.core.udt;
+package ch.cyberduck.core.accelerate;
 
 /*
- * Copyright (c) 2002-2015 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,8 +13,6 @@ package ch.cyberduck.core.udt;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.ConnectionCallback;
@@ -27,7 +25,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DisabledUDTTransferOption<C extends HttpSession<?>> implements UDTTransferOption<C> {
+public class DisabledAccelerationTransferOption<C extends HttpSession<?>> implements AccelerationTransferOption<C> {
     @Override
     public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         return false;
@@ -36,10 +34,5 @@ public class DisabledUDTTransferOption<C extends HttpSession<?>> implements UDTT
     @Override
     public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
         throw new ConnectionCanceledException();
-    }
-
-    @Override
-    public UDTProxyProvider provider() {
-        return null;
     }
 }

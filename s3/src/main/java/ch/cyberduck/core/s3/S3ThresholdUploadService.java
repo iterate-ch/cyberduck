@@ -19,16 +19,15 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.accelerate.AccelerationTransferOption;
+import ch.cyberduck.core.accelerate.DisabledAccelerationTransferOption;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -38,24 +37,17 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.udt.DisabledUDTTransferOption;
-import ch.cyberduck.core.udt.UDTExceptionMappingService;
-import ch.cyberduck.core.udt.UDTProxyConfigurator;
-import ch.cyberduck.core.udt.UDTTransferOption;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
-
-import com.barchart.udt.ExceptionUDT;
 
 public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private S3Session session;
+    private final S3Session session;
 
     private Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.threshold");
@@ -63,11 +55,11 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long udtThreshold
             = preferences.getLong("s3.upload.udt.threshold");
 
-    private final UDTTransferOption udtTransferOption;
+    private final AccelerationTransferOption<S3Session> accelerateTransferOption;
 
-    private X509TrustManager trust;
+    private final X509TrustManager trust;
 
-    private X509KeyManager key;
+    private final X509KeyManager key;
 
     private final S3SingleUploadService singleUploadService;
 
@@ -79,22 +71,22 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final Long multipartThreshold) {
-        this(session, trust, key, multipartThreshold, new DisabledUDTTransferOption());
+        this(session, trust, key, multipartThreshold, new DisabledAccelerationTransferOption<S3Session>());
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final UDTTransferOption udtTransferOption) {
-        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), udtTransferOption);
+                                    final AccelerationTransferOption<S3Session> accelerateTransferOption) {
+        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), accelerateTransferOption);
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final Long multipartThreshold,
-                                    final UDTTransferOption udtTransferOption) {
+                                    final AccelerationTransferOption<S3Session> accelerateTransferOption) {
         this.session = session;
         this.trust = trust;
         this.key = key;
         this.multipartThreshold = multipartThreshold;
-        this.udtTransferOption = udtTransferOption;
+        this.accelerateTransferOption = accelerateTransferOption;
         this.singleUploadService = new S3SingleUploadService(session);
         this.multipartUploadService = new S3MultipartUploadService(session);
     }
@@ -112,17 +104,8 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             // Only for AWS given threshold
             if(status.getLength() > udtThreshold) {
                 // Prompt user
-                if(udtTransferOption.prompt(bookmark, status, prompt)) {
-                    final Location.Name location = session.getFeature(Location.class).getLocation(file);
-                    if(Location.unknown.equals(location)) {
-                        throw new AccessDeniedException("Cannot read bucket location");
-                    }
-                    final S3Session tunneled = new S3Session(session.getHost(), trust, key);
-                    final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, udtTransferOption.provider(), trust, key);
-                    configurator.configure(tunneled);
-                    final RequestEntityRestStorageService client = tunneled.open(new DisabledHostKeyCallback(), session);
-                    // Swap credentials. No login required
-                    client.setProviderCredentials(session.getClient().getProviderCredentials());
+                if(accelerateTransferOption.prompt(bookmark, status, prompt)) {
+                    final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                     if(!preferences.getBoolean("s3.upload.multipart")) {
                         // Disabled by user
                         if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
@@ -132,16 +115,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                         }
                     }
                     final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
-                    try {
-                        return service.upload(file, local, throttle, listener, status, prompt);
-                    }
-                    catch(BackgroundException e) {
-                        final Throwable cause = ExceptionUtils.getRootCause(e);
-                        if(cause instanceof ExceptionUDT) {
-                            throw new UDTExceptionMappingService().map((ExceptionUDT) cause);
-                        }
-                        throw e;
-                    }
+                    return service.upload(file, local, throttle, listener, status, prompt);
                 }
             }
         }

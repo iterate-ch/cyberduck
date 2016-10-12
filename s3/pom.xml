@@ -38,6 +38,7 @@
             <groupId>ch.cyberduck</groupId>
             <artifactId>udt</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

@@ -18,21 +18,10 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.accelerate.AccelerationTransferOption;
+import ch.cyberduck.core.http.HttpSession;
 
-public interface UDTTransferOption {
-
-    /**
-     * @param bookmark Connection
-     * @param status   File transfer status
-     * @param prompt   Prompt
-     * @return True if the connection should be proxied
-     */
-    boolean prompt(Host bookmark, final TransferStatus status, ConnectionCallback prompt)
-            throws BackgroundException;
+public interface UDTTransferOption<C extends HttpSession<?>> extends AccelerationTransferOption<C> {
 
     UDTProxyProvider provider();
 }

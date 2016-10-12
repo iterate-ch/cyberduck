@@ -21,13 +21,23 @@ package ch.cyberduck.core.udt.qloudsonic;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.aquaticprime.License;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.udt.UDTProxyConfigurator;
 import ch.cyberduck.core.udt.UDTProxyProvider;
 import ch.cyberduck.core.udt.UDTTransferOption;
 
@@ -35,23 +45,25 @@ import java.util.List;
 
 public class QloudsonicTransferOption implements UDTTransferOption {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private QloudsonicVoucherFinder voucherFinder
-            = new QloudsonicVoucherFinder();
+    private final QloudsonicVoucherFinder voucher;
 
-    public QloudsonicTransferOption() {
-        //
+    private final Session<?> session;
+
+    public QloudsonicTransferOption(final Session session) {
+        this(session, new QloudsonicVoucherFinder());
     }
 
-    public QloudsonicTransferOption(final QloudsonicVoucherFinder voucherFinder) {
-        this.voucherFinder = voucherFinder;
+    public QloudsonicTransferOption(final Session session, final QloudsonicVoucherFinder voucher) {
+        this.session = session;
+        this.voucher = voucher;
     }
 
     @Override
     public UDTProxyProvider provider() {
-        return new QloudsonicProxyProvider(new QloudsonicVoucherFinder());
+        return new QloudsonicProxyProvider(voucher);
     }
 
     @Override
@@ -59,31 +71,30 @@ public class QloudsonicTransferOption implements UDTTransferOption {
             throws BackgroundException {
         if(Host.TransferType.unknown == bookmark.getTransfer()) {
             if(!preferences.getBoolean(String.format("connection.qloudsonic.%s", bookmark.getHostname()))) {
-                final List<License> receipts = voucherFinder.open();
+                final List<License> receipts = voucher.open();
                 if(receipts.isEmpty()) {
                     // No installed voucher found. Continue with direct transfer
-                    return false;
-//                    try {
-//                        prompt.warn(bookmark.getProtocol(), String.format("Qloudsonic"),
-//                                LocaleFactory.localizedString(String.format("Exploit bandwidth capacity with Qloudsonic when transferring large file over a high-speed, high-latency wide area network (WAN) link to S3. Qloudsonic uses UDP-based Data Transfer Protocol to route downloads and uploads faster from and to Amazon S3. You will need to purchase a voucher for a transfer quota from https://qloudsonic.io.")),
-//                                LocaleFactory.localizedString("Continue", "Credentials"),
-//                                LocaleFactory.localizedString("Buy", "Qloudsonic"),
-//                                String.format("connection.qloudsonic.%s", bookmark.getHostname())
-//                        );
-//                        // Continue with direct transfer
-//                        return false;
-//                    }
-//                    catch(ConnectionCanceledException e) {
-//                        // Purchase
-//                        BrowserLauncherFactory.get().open(preferences.getProperty("website.qloudsonic"));
-//                        // Interrupt transfer
-//                        throw e;
-//                    }
+                    try {
+                        prompt.warn(bookmark.getProtocol(), "Qloudsonic",
+                                LocaleFactory.localizedString("Exploit bandwidth capacity with Qloudsonic when transferring large file over a high-speed, high-latency wide area network (WAN) link to S3. Qloudsonic uses UDP-based Data Transfer Protocol to route downloads and uploads faster from and to Amazon S3. You will need to purchase a voucher for a transfer quota from https://qloudsonic.io."),
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Buy", "Qloudsonic"),
+                                String.format("connection.qloudsonic.%s", bookmark.getHostname())
+                        );
+                        // Continue with direct transfer
+                        return false;
+                    }
+                    catch(ConnectionCanceledException e) {
+                        // Purchase
+                        BrowserLauncherFactory.get().open(preferences.getProperty("website.qloudsonic"));
+                        // Interrupt transfer
+                        throw e;
+                    }
                 }
                 else {
                     // Already purchased voucher. Confirm to use
                     try {
-                        prompt.warn(bookmark.getProtocol(), String.format("Qloudsonic"),
+                        prompt.warn(bookmark.getProtocol(), "Qloudsonic",
                                 String.format(LocaleFactory.localizedString("Do you want to transfer %s with Qloudsonic?", "Qloudsonic"), SizeFormatterFactory.get().format(status.getLength())),
                                 LocaleFactory.localizedString("Continue", "Credentials"),
                                 LocaleFactory.localizedString("Cancel"),
@@ -101,5 +112,15 @@ public class QloudsonicTransferOption implements UDTTransferOption {
             }
         }
         return bookmark.getTransfer() == Host.TransferType.udt;
+    }
+
+    @Override
+    public HttpSession<?> open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+        final Location.Name location = session.getFeature(Location.class).getLocation(file);
+        if(Location.unknown.equals(location)) {
+            throw new AccessDeniedException("Cannot read bucket location");
+        }
+        final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
+        return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key));
     }
 }
