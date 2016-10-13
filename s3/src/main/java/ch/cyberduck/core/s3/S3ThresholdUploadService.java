@@ -23,7 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.accelerate.AccelerationTransferOption;
+import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -51,7 +51,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.threshold");
 
-    private final AccelerationTransferOption<S3Session> accelerateTransferOption;
+    private final TransferAccelerationService<S3Session> accelerateTransferOption;
 
     private final X509TrustManager trust;
 
@@ -71,13 +71,13 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final AccelerationTransferOption<S3Session> accelerateTransferOption) {
+                                    final TransferAccelerationService<S3Session> accelerateTransferOption) {
         this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), accelerateTransferOption);
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
                                     final Long multipartThreshold,
-                                    final AccelerationTransferOption<S3Session> accelerateTransferOption) {
+                                    final TransferAccelerationService<S3Session> accelerateTransferOption) {
         this.session = session;
         this.trust = trust;
         this.key = key;

@@ -32,7 +32,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.accelerate.DisabledAccelerationTransferOption;
+import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
+import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -276,13 +277,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3ThresholdDownloadService(this, trust, key, new S3TransferAccelerationService(this));
             }
-            return (T) new S3ThresholdDownloadService(this, trust, key, new DisabledAccelerationTransferOption());
+            return (T) new S3ThresholdDownloadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this));
             }
-            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledAccelerationTransferOption());
+            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Directory.class) {
             return (T) new S3DirectoryFeature(this);
@@ -373,6 +374,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Home.class) {
             return (T) new S3HomeFinderService(this);
+        }
+        if(type == TransferAccelerationService.class) {
+            return (T) new S3TransferAccelerationService(this);
         }
         return super.getFeature(type);
     }

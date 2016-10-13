@@ -21,7 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.accelerate.AccelerationTransferOption;
+import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Location;
@@ -35,7 +35,7 @@ import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.model.AccelerateConfig;
 import org.jets3t.service.utils.ServiceUtils;
 
-public class S3TransferAccelerationService implements AccelerationTransferOption<S3Session> {
+public class S3TransferAccelerationService implements TransferAccelerationService<S3Session> {
 
     private final PathContainerService containerService
             = new S3PathContainerService();
@@ -77,7 +77,7 @@ public class S3TransferAccelerationService implements AccelerationTransferOption
                 return true;
             }
             prompt.warn(bookmark.getProtocol(), LocaleFactory.localizedString("Enable Amazon S3 Transfer Acceleration", "S3"),
-                    LocaleFactory.localizedString("Amazon S3 Transfer Acceleration makes data transfers into and out of Amazon S3 buckets as much as 300% faster, and only charges if there is a performance improvement.", "S3"),
+                    LocaleFactory.localizedString("Amazon S3 Transfer Acceleration makes data transfers into and out of Amazon S3 buckets faster, and only charges if there is a performance improvement.", "S3"),
                     LocaleFactory.localizedString("Continue", "Credentials"),
                     LocaleFactory.localizedString("Change", "Credentials"),
                     String.format("s3.acceleration.%s", bookmark.getHostname())

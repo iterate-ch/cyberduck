@@ -24,7 +24,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface AccelerationTransferOption<C extends HttpSession<?>> {
+public interface TransferAccelerationService<C extends HttpSession<?>> {
     /**
      * @param bookmark Connection
      * @param file     File to transfer
