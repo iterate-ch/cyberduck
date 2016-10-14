@@ -43,6 +43,7 @@ import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
+import ch.cyberduck.core.webloc.WeblocFileWriter;
 
 public class ApplicationPreferences extends UserDefaultsPreferences {
 
@@ -89,5 +90,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         else {
             defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
+        defaults.put("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
     }
 }

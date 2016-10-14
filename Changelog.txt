@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 5.2 [https://trac.cyberduck.io/milestone/5.2]
 - [Feature] Support connecting to Dropbox (Dropbox) (#6427)
+- [Feature] Provide URL references to Google Apps documents in browser (Google Drive)
 
 5.1.4 [https://trac.cyberduck.io/milestone/5.1.4]
 - [Bugfix] Duplicate folders displayed in file browser (Backblaze B2) (#9717)

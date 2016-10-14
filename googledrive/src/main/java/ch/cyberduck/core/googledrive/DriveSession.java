@@ -174,7 +174,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveTouchFeature(this);
         }
         if(type == UrlProvider.class) {
-            return (T) new DriveUrlProvider(this);
+            return (T) new DriveUrlProvider();
         }
         if(type == Home.class) {
             return (T) new DriveHomeFinderService(this);
