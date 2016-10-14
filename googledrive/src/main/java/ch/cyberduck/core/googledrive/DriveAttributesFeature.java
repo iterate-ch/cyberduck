@@ -15,17 +15,23 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.text.MessageFormat;
 
 import com.google.api.services.drive.model.File;
 
@@ -63,14 +69,10 @@ public class DriveAttributesFeature implements Attributes {
                 return null;
             }
         }
-        if(!DRIVE_FOLDER.equals(f.getMimeType())) {
-            if(StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
-                log.warn(String.format("Skip file %s", f));
-                return null;
-            }
-        }
         if(null != f.getSize()) {
-            attributes.setSize(f.getSize());
+            if(!StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                attributes.setSize(f.getSize());
+            }
         }
         attributes.setVersionId(f.getId());
         if(f.getModifiedTime() != null) {
@@ -80,6 +82,15 @@ public class DriveAttributesFeature implements Attributes {
             attributes.setCreationDate(f.getCreatedTime().getValue());
         }
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
+        if(StringUtils.isNotBlank(f.getWebViewLink())) {
+            attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
+                    DescriptiveUrl.Type.http,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+            if(StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
+                attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
+                        .getBytes(Charset.defaultCharset()).length);
+            }
+        }
         return attributes;
     }
 
