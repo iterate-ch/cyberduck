@@ -105,6 +105,8 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String displayname;
 
+    private DescriptiveUrl link;
+
     /**
      * HTTP headers
      */
@@ -331,6 +333,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setDisplayname(final String displayname) {
         this.displayname = displayname;
+    }
+
+    public DescriptiveUrl getLink() {
+        return link;
+    }
+
+    public void setLink(final DescriptiveUrl link) {
+        this.link = link;
     }
 
     @Override

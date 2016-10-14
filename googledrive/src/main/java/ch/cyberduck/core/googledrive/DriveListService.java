@@ -24,7 +24,10 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.webloc.UrlFileWriter;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -41,6 +44,8 @@ public class DriveListService implements ListService {
     private final int pagesize;
 
     private final DriveAttributesFeature attributes;
+
+    private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
     public DriveListService(final DriveSession session) {
         this(session, PreferencesFactory.get().getInteger("google.drive.list.limit"));
@@ -68,9 +73,18 @@ public class DriveListService implements ListService {
                     if(properties == null) {
                         continue;
                     }
-                    final EnumSet<AbstractPath.Type> type = DriveAttributesFeature.DRIVE_FOLDER.equals(
-                            f.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path child = new Path(directory, PathNormalizer.name(f.getName()), type, properties);
+                    final String filename;
+                    if(!DriveAttributesFeature.DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), DriveAttributesFeature.GOOGLE_APPS_PREFIX)) {
+                        filename = String.format("%s.%s", PathNormalizer.name(f.getName()), urlFileWriter.getExtension());
+                    }
+                    else {
+                        filename = PathNormalizer.name(f.getName());
+                    }
+                    final EnumSet<AbstractPath.Type> type = DriveAttributesFeature.DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
+                            StringUtils.startsWith(f.getMimeType(), DriveAttributesFeature.GOOGLE_APPS_PREFIX)
+                                    ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+
+                    final Path child = new Path(directory, filename, type, properties);
                     children.add(child);
                 }
                 listener.chunk(directory, children);
