@@ -1,4 +1,4 @@
-package ch.cyberduck.core.accelerate;
+package ch.cyberduck.core.features;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -24,7 +24,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface TransferAccelerationService<C extends HttpSession<?>> {
+public interface TransferAcceleration<C extends HttpSession<?>> {
     /**
      * @param bookmark Connection
      * @param file     File to transfer

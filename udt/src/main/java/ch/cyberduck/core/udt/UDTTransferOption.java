@@ -18,10 +18,10 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.accelerate.TransferAccelerationService;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
 
-public interface UDTTransferOption<C extends HttpSession<?>> extends TransferAccelerationService<C> {
+public interface UDTTransferOption<C extends HttpSession<?>> extends TransferAcceleration<C> {
 
     UDTProxyProvider provider();
 }

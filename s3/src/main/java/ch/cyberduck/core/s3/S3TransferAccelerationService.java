@@ -21,10 +21,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -35,7 +35,7 @@ import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.model.AccelerateConfig;
 import org.jets3t.service.utils.ServiceUtils;
 
-public class S3TransferAccelerationService implements TransferAccelerationService<S3Session> {
+public class S3TransferAccelerationService implements TransferAcceleration<S3Session> {
 
     private final PathContainerService containerService
             = new S3PathContainerService();

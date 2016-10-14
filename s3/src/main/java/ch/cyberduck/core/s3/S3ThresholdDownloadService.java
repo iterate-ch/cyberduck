@@ -22,8 +22,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
@@ -43,7 +43,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
 
     private final S3Session session;
 
-    private final TransferAccelerationService<S3Session> accelerateTransferOption;
+    private final TransferAcceleration<S3Session> accelerateTransferOption;
 
     private final X509TrustManager trust;
 
@@ -56,7 +56,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     public S3ThresholdDownloadService(final S3Session session,
                                       final X509TrustManager trust,
                                       final X509KeyManager key,
-                                      final TransferAccelerationService<S3Session> accelerateTransferOption) {
+                                      final TransferAcceleration<S3Session> accelerateTransferOption) {
         super(new S3ReadFeature(session));
         this.session = session;
         this.trust = trust;

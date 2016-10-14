@@ -33,7 +33,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
-import ch.cyberduck.core.accelerate.TransferAccelerationService;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -375,7 +374,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Home.class) {
             return (T) new S3HomeFinderService(this);
         }
-        if(type == TransferAccelerationService.class) {
+        if(type == TransferAcceleration.class) {
             return (T) new S3TransferAccelerationService(this);
         }
         return super.getFeature(type);

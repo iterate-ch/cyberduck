@@ -20,12 +20,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DisabledTransferAccelerationService<C extends HttpSession<?>> implements TransferAccelerationService<C> {
+public class DisabledTransferAccelerationService<C extends HttpSession<?>> implements TransferAcceleration<C> {
     @Override
     public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         return false;
