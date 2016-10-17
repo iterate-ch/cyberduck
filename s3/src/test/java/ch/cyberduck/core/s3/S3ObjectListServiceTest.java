@@ -144,7 +144,6 @@ public class S3ObjectListServiceTest {
         assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/dist.springframework.org/robots.txt", EnumSet.of(Path.Type.file))));
         session.close();
     }
 

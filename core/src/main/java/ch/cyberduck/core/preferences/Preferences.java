@@ -684,6 +684,8 @@ public abstract class Preferences {
         defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
         defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
 
+        defaults.put("s3.accelerate.prompt", String.valueOf(false));
+
         /*
           A prefix to apply to log file names
          */
@@ -745,8 +747,6 @@ public abstract class Preferences {
         defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
         defaults.put("google.drive.list.limit", String.valueOf(1000));
 
-        defaults.put("google.drive.upload.checksum", String.valueOf(false));
-
         //doc	Microsoft Word
         //html	HTML Format
         //odt	Open Document Format
@@ -787,7 +787,7 @@ public abstract class Preferences {
 
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(100));
-        defaults.put("b2.upload.checksum", String.valueOf(true));
+        defaults.put("b2.upload.checksum.verify", String.valueOf(true));
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
