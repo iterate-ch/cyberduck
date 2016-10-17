@@ -133,6 +133,16 @@ public class InfoController extends ToolbarWindowController {
     private Preferences preferences
             = PreferencesFactory.get();
 
+    /**
+     * Grant editing model.
+     */
+    private List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
+    /**
+     * Custom HTTP headers for REST protocols
+     */
+    private List<Header> metadata
+            = new ArrayList<Header>();
+
     @Outlet
     private NSTextField filenameField;
     @Outlet
@@ -177,6 +187,7 @@ public class InfoController extends ToolbarWindowController {
     private NSButton distributionEnableButton;
     @Outlet
     private NSButton distributionLoggingButton;
+    @Outlet
     private NSPopUpButton distributionLoggingPopup;
     @Outlet
     private NSButton distributionInvalidateObjectsButton;
@@ -230,10 +241,6 @@ public class InfoController extends ToolbarWindowController {
     private NSTextField distributionCnameUrlField;
     @Outlet
     private NSTextField aclUrlField;
-    /**
-     * Grant editing model.
-     */
-    private List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
     @Outlet
     private NSTableView aclTable;
     @Delegate
@@ -250,11 +257,6 @@ public class InfoController extends ToolbarWindowController {
     private ListDataSource metadataTableModel;
     @Delegate
     private AbstractTableDelegate<String> metadataTableDelegate;
-    /**
-     * Custom HTTP headers for REST protocols
-     */
-    private List<Header> metadata
-            = new ArrayList<Header>();
     @Outlet
     private NSPopUpButton metadataAddButton;
     @Outlet
@@ -309,6 +311,243 @@ public class InfoController extends ToolbarWindowController {
             return file;
         }
         return null;
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setFrameAutosaveName("Info");
+        window.setShowsResizeIndicator(true);
+        window.setContentMinSize(window.frame().size);
+        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
+        super.setWindow(window);
+        if(!preferences.getBoolean("browser.info.inspector")) {
+            cascade = this.cascade(cascade);
+        }
+    }
+
+    @Override
+    public void windowWillClose(final NSNotification notification) {
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
+                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        this.window().endEditingFor(null);
+        super.windowWillClose(notification);
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return preferences.getBoolean("browser.info.inspector");
+    }
+
+    @Override
+    protected void initializePanel(final String identifier) {
+        InfoToolbarItem item;
+        try {
+            item = InfoToolbarItem.valueOf(identifier);
+        }
+        catch(IllegalArgumentException e) {
+            item = InfoToolbarItem.info;
+        }
+        switch(item) {
+            case info:
+                this.initGeneral();
+                this.initPermissions();
+                break;
+            case permissions:
+                this.initPermissions();
+                break;
+            case acl:
+                this.initAcl();
+                break;
+            case distribution:
+                this.initDistribution();
+                break;
+            case s3:
+                this.initS3();
+                break;
+            case metadata:
+                this.initMetadata();
+                break;
+        }
+    }
+
+    @Override
+    protected NSUInteger getToolbarSize() {
+        return NSToolbar.NSToolbarSizeModeSmall;
+    }
+
+    @Override
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String identifier, final boolean flag) {
+        NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, identifier, flag);
+        switch(InfoToolbarItem.valueOf(identifier)) {
+            case distribution:
+                if(session.getFeature(DistributionConfiguration.class) != null) {
+                    // Give icon and label of the given session
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                }
+                else {
+                    // CloudFront is the default for custom distributions
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
+                }
+                break;
+            case s3:
+                if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
+                    // Set icon of cloud service provider
+                    item.setLabel(session.getHost().getProtocol().getName());
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                }
+                else {
+                    // Currently these settings are only available for Amazon S3
+                    item.setLabel(new S3Protocol().getName());
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
+                }
+                break;
+            case metadata:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
+                break;
+            case acl:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
+                break;
+        }
+        return item;
+    }
+
+    @Override
+    protected boolean validateTabWithIdentifier(final String identifier) {
+        final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
+        switch(InfoToolbarItem.valueOf(identifier)) {
+            case permissions:
+                if(anonymous) {
+                    // Anonymous never has the right to updated permissions
+                    return false;
+                }
+                return session.getFeature(UnixPermission.class) != null;
+            case acl:
+                if(anonymous) {
+                    // Anonymous never has the right to updated permissions
+                    return false;
+                }
+                return session.getFeature(AclPermission.class) != null;
+            case distribution:
+                if(anonymous) {
+                    return false;
+                }
+                // Not enabled if not a cloud session
+                return session.getFeature(DistributionConfiguration.class) != null;
+            case s3:
+                if(anonymous) {
+                    return false;
+                }
+                return session.getHost().getProtocol().getType() == Protocol.Type.s3
+                        || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+            case metadata:
+                if(anonymous) {
+                    return false;
+                }
+                // Not enabled if not a cloud session
+                return session.getFeature(Headers.class) != null;
+        }
+        return true;
+    }
+
+    @Override
+    public String getTitle(NSTabViewItem item) {
+        return String.format("%s – %s", item.label(), this.getName());
+    }
+
+    @Override
+    public void invalidate() {
+        notificationCenter.removeObserver(this.id());
+        super.invalidate();
+    }
+
+    @Override
+    protected String getBundleName() {
+        return "Info";
+    }
+
+    public void setFiles(List<Path> files) {
+        if(files.isEmpty()) {
+            return;
+        }
+        this.files = files;
+        this.initializePanel(this.getSelectedTab());
+        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
+    }
+
+    @Override
+    public void awakeFromNib() {
+        this.ownerr.setTarget(this.id());
+        final Selector s = Foundation.selector("permissionSelectionChanged:");
+        this.ownerr.setAction(s);
+        this.ownerr.setAllowsMixedState(true);
+        this.ownerw.setTarget(this.id());
+        this.ownerw.setAction(s);
+        this.ownerw.setAllowsMixedState(true);
+        this.ownerx.setTarget(this.id());
+        this.ownerx.setAction(s);
+        this.ownerx.setAllowsMixedState(true);
+
+        this.groupr.setTarget(this.id());
+        this.groupr.setAction(s);
+        this.groupr.setAllowsMixedState(true);
+        this.groupw.setTarget(this.id());
+        this.groupw.setAction(s);
+        this.groupw.setAllowsMixedState(true);
+        this.groupx.setTarget(this.id());
+        this.groupx.setAction(s);
+        this.groupx.setAllowsMixedState(true);
+
+        this.otherr.setTarget(this.id());
+        this.otherr.setAction(s);
+        this.otherr.setAllowsMixedState(true);
+        this.otherw.setTarget(this.id());
+        this.otherw.setAction(s);
+        this.otherw.setAllowsMixedState(true);
+        this.otherx.setTarget(this.id());
+        this.otherx.setAction(s);
+        this.otherx.setAllowsMixedState(true);
+
+        super.awakeFromNib();
+    }
+
+    @Override
+    protected List<NSView> getPanels() {
+        List<NSView> views = new ArrayList<NSView>();
+        views.add(panelGeneral);
+        if(session.getFeature(UnixPermission.class) != null) {
+            views.add(panelPermissions);
+        }
+        if(session.getFeature(AclPermission.class) != null) {
+            views.add(panelAcl);
+        }
+        views.add(panelMetadata);
+        views.add(panelDistribution);
+        views.add(panelCloud);
+        return views;
+    }
+
+    @Override
+    protected List<String> getPanelIdentifiers() {
+        List<String> identifiers = new ArrayList<String>();
+        identifiers.add(InfoToolbarItem.info.name());
+        if(session.getFeature(UnixPermission.class) != null) {
+            identifiers.add(InfoToolbarItem.permissions.name());
+        }
+        if(session.getFeature(AclPermission.class) != null) {
+            identifiers.add(InfoToolbarItem.acl.name());
+        }
+        identifiers.add(InfoToolbarItem.metadata.name());
+        identifiers.add(InfoToolbarItem.distribution.name());
+        identifiers.add(InfoToolbarItem.s3.name());
+        return identifiers;
+    }
+
+    private String getName() {
+        final int count = this.numberOfFiles();
+        if(count > 1) {
+            return String.format("(%s)", LocaleFactory.localizedString("Multiple files"));
+        }
+        return this.getSelected().getName();
     }
 
     public void setFilenameField(NSTextField filenameField) {
@@ -1284,142 +1523,6 @@ public class InfoController extends ToolbarWindowController {
         this.iconImageView = iconImageView;
     }
 
-    @Override
-    public void setWindow(final NSWindow window) {
-        window.setFrameAutosaveName("Info");
-        window.setShowsResizeIndicator(true);
-        window.setContentMinSize(window.frame().size);
-        window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
-        super.setWindow(window);
-        if(!preferences.getBoolean("browser.info.inspector")) {
-            cascade = this.cascade(cascade);
-        }
-    }
-
-    @Override
-    public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-                this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
-        this.window().endEditingFor(null);
-        super.windowWillClose(notification);
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return preferences.getBoolean("browser.info.inspector");
-    }
-
-    @Override
-    protected void initializePanel(final String identifier) {
-        InfoToolbarItem item;
-        try {
-            item = InfoToolbarItem.valueOf(identifier);
-        }
-        catch(IllegalArgumentException e) {
-            item = InfoToolbarItem.info;
-        }
-        switch(item) {
-            case info:
-                this.initGeneral();
-                this.initPermissions();
-                break;
-            case permissions:
-                this.initPermissions();
-                break;
-            case acl:
-                this.initAcl();
-                break;
-            case distribution:
-                this.initDistribution();
-                break;
-            case s3:
-                this.initS3();
-                break;
-            case metadata:
-                this.initMetadata();
-                break;
-        }
-    }
-
-    @Override
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String identifier, final boolean flag) {
-        NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, identifier, flag);
-        switch(InfoToolbarItem.valueOf(identifier)) {
-            case distribution:
-                if(session.getFeature(DistributionConfiguration.class) != null) {
-                    // Give icon and label of the given session
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-                }
-                else {
-                    // CloudFront is the default for custom distributions
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
-                }
-                break;
-            case s3:
-                if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
-                    // Set icon of cloud service provider
-                    item.setLabel(session.getHost().getProtocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-                }
-                else {
-                    // Currently these settings are only available for Amazon S3
-                    item.setLabel(new S3Protocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
-                }
-                break;
-            case metadata:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-                break;
-            case acl:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("permissions.tiff", 32));
-                break;
-        }
-        return item;
-    }
-
-    @Override
-    protected boolean validateTabWithIdentifier(final String identifier) {
-        final boolean anonymous = session.getHost().getCredentials().isAnonymousLogin();
-        switch(InfoToolbarItem.valueOf(identifier)) {
-            case permissions:
-                if(anonymous) {
-                    // Anonymous never has the right to updated permissions
-                    return false;
-                }
-                return session.getFeature(UnixPermission.class) != null;
-            case acl:
-                if(anonymous) {
-                    // Anonymous never has the right to updated permissions
-                    return false;
-                }
-                return session.getFeature(AclPermission.class) != null;
-            case distribution:
-                if(anonymous) {
-                    return false;
-                }
-                // Not enabled if not a cloud session
-                return session.getFeature(DistributionConfiguration.class) != null;
-            case s3:
-                if(anonymous) {
-                    return false;
-                }
-                return session.getHost().getProtocol().getType() == Protocol.Type.s3
-                        || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
-            case metadata:
-                if(anonymous) {
-                    return false;
-                }
-                // Not enabled if not a cloud session
-                return session.getFeature(Headers.class) != null;
-        }
-        return true;
-    }
-
-    @Override
-    public String getTitle(NSTabViewItem item) {
-        return String.format("%s – %s", item.label(), this.getName());
-    }
-
     public void setPanelMetadata(NSView v) {
         this.panelMetadata = v;
     }
@@ -1442,107 +1545,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setPanelGeneral(NSView v) {
         this.panelGeneral = v;
-    }
-
-    @Override
-    public void invalidate() {
-        notificationCenter.removeObserver(this.id());
-        super.invalidate();
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Info";
-    }
-
-    public void setFiles(List<Path> files) {
-        if(files.isEmpty()) {
-            return;
-        }
-        this.files = files;
-        this.initializePanel(this.getSelectedTab());
-        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
-    }
-
-    @Override
-    public void awakeFromNib() {
-        this.ownerr.setTarget(this.id());
-        final Selector s = Foundation.selector("permissionSelectionChanged:");
-        this.ownerr.setAction(s);
-        this.ownerr.setAllowsMixedState(true);
-        this.ownerw.setTarget(this.id());
-        this.ownerw.setAction(s);
-        this.ownerw.setAllowsMixedState(true);
-        this.ownerx.setTarget(this.id());
-        this.ownerx.setAction(s);
-        this.ownerx.setAllowsMixedState(true);
-
-        this.groupr.setTarget(this.id());
-        this.groupr.setAction(s);
-        this.groupr.setAllowsMixedState(true);
-        this.groupw.setTarget(this.id());
-        this.groupw.setAction(s);
-        this.groupw.setAllowsMixedState(true);
-        this.groupx.setTarget(this.id());
-        this.groupx.setAction(s);
-        this.groupx.setAllowsMixedState(true);
-
-        this.otherr.setTarget(this.id());
-        this.otherr.setAction(s);
-        this.otherr.setAllowsMixedState(true);
-        this.otherw.setTarget(this.id());
-        this.otherw.setAction(s);
-        this.otherw.setAllowsMixedState(true);
-        this.otherx.setTarget(this.id());
-        this.otherx.setAction(s);
-        this.otherx.setAllowsMixedState(true);
-
-        super.awakeFromNib();
-    }
-
-    @Override
-    protected List<NSView> getPanels() {
-        List<NSView> views = new ArrayList<NSView>();
-        views.add(panelGeneral);
-        if(session.getFeature(UnixPermission.class) != null) {
-            views.add(panelPermissions);
-        }
-        if(session.getFeature(AclPermission.class) != null) {
-            views.add(panelAcl);
-        }
-        views.add(panelMetadata);
-        views.add(panelDistribution);
-        views.add(panelCloud);
-        return views;
-    }
-
-    @Override
-    protected List<String> getPanelIdentifiers() {
-        List<String> identifiers = new ArrayList<String>();
-        identifiers.add(InfoToolbarItem.info.name());
-        if(session.getFeature(UnixPermission.class) != null) {
-            identifiers.add(InfoToolbarItem.permissions.name());
-        }
-        if(session.getFeature(AclPermission.class) != null) {
-            identifiers.add(InfoToolbarItem.acl.name());
-        }
-        identifiers.add(InfoToolbarItem.metadata.name());
-        identifiers.add(InfoToolbarItem.distribution.name());
-        identifiers.add(InfoToolbarItem.s3.name());
-        return identifiers;
-    }
-
-    private String getName() {
-        final int count = this.numberOfFiles();
-        if(count > 1) {
-            return String.format("(%s)", LocaleFactory.localizedString("Multiple files"));
-        }
-        return this.getSelected().getName();
-    }
-
-    @Override
-    protected NSUInteger getToolbarSize() {
-        return NSToolbar.NSToolbarSizeModeSmall;
     }
 
     private void initGeneral() {
