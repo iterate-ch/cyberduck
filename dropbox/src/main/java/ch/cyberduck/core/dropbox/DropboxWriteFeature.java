@@ -46,11 +46,11 @@ import com.dropbox.core.v2.files.WriteMode;
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
-    private DropboxSession session;
+    private final DropboxSession session;
 
-    private Find finder;
+    private final Find finder;
 
-    private Attributes attributes;
+    private final Attributes attributes;
 
 
     public DropboxWriteFeature(final DropboxSession session) {

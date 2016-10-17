@@ -64,7 +64,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final UseragentProvider useragent

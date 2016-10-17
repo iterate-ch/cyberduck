@@ -24,7 +24,7 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxCopyFeature implements Copy {
 
-    private DropboxSession session;
+    private final DropboxSession session;
 
     public DropboxCopyFeature(DropboxSession session) {
         this.session = session;

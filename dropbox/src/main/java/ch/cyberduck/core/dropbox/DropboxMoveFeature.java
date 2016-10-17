@@ -25,7 +25,7 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxMoveFeature implements Move {
 
-    private DropboxSession session;
+    private final DropboxSession session;
 
     public DropboxMoveFeature(final DropboxSession session) {
         this.session = session;
