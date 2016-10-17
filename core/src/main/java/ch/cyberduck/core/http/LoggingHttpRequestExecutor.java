@@ -22,6 +22,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UseragentProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpException;
@@ -58,7 +59,13 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     protected HttpResponse doSendRequest(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
         listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
-            listener.log(TranscriptListener.Type.request, header.toString());
+            if(StringUtils.equals(HttpHeaders.AUTHORIZATION, header.getName())) {
+                listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(), StringUtils.repeat("*", StringUtils.length(header.getValue()))));
+            }
+            else {
+                listener.log(TranscriptListener.Type.request, header.toString());
+            }
+
         }
         return super.doSendRequest(request, conn, context);
     }
