@@ -86,6 +86,14 @@ public class DAVAttributesFeature implements Attributes {
                     }
                     if(StringUtils.isNotBlank(resource.getEtag())) {
                         attributes.setETag(resource.getEtag());
+                        // Setting checksum is disabled. See #8798
+                        // attributes.setChecksum(Checksum.parse(resource.getEtag()));
+                    }
+                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
+                        attributes.setDisplayname(resource.getDisplayName());
+                    }
+                    if(StringUtils.isNotBlank(resource.getDisplayName())) {
+                        attributes.setDisplayname(resource.getDisplayName());
                     }
                     return attributes;
                 }
@@ -113,6 +121,8 @@ public class DAVAttributesFeature implements Attributes {
                     }
                     if(headers.containsKey(HttpHeaders.ETAG)) {
                         attributes.setETag(headers.get(HttpHeaders.ETAG));
+                        // Setting checksum is disabled. See #8798
+                        // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
                     }
                     if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
                         attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));

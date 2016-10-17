@@ -40,9 +40,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id: IRODSReadFeatureTest.java 17029 2015-02-27 13:09:19Z dkocher $
- */
 @Category(IntegrationTest.class)
 public class IRODSWriteFeatureTest {
 

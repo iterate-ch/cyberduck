@@ -85,12 +85,19 @@ public abstract class TranscriptController extends BundleController implements T
     public abstract boolean isOpen();
 
     @Override
-    public void log(final boolean request, final String transcript) {
+    public void log(final Type request, final String transcript) {
         if(this.isOpen()) {
             this.invoke(new ControllerMainAction(this) {
                 @Override
                 public void run() {
-                    write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+                    switch(request) {
+                        case request:
+                            write(FIXED_WITH_FONT_REQUEST_ATTRIBUTES, transcript);
+                            break;
+                        case response:
+                            write(FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
+                            break;
+                    }
                 }
             });
         }

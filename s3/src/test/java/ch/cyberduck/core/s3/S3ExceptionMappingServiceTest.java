@@ -80,7 +80,7 @@ public class S3ExceptionMappingServiceTest {
     public void testDNSFailure() {
         assertEquals("Custom.",
                 new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
-        assertEquals("H. The connection attempt was rejected. The server may be down, or your network may not be properly configured.",
+        assertEquals("H. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.",
                 new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
     }
 

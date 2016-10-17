@@ -18,11 +18,11 @@ package ch.cyberduck.core.date;
  * feedback@cyberduck.ch
  */
 
-/**
- * @author Benoît Mahé (bmahe@w3.org)
- */
 public class InvalidDateException extends Exception {
     private static final long serialVersionUID = -9012791102239300978L;
+
+    public InvalidDateException() {
+    }
 
     public InvalidDateException(String message) {
         super(message);

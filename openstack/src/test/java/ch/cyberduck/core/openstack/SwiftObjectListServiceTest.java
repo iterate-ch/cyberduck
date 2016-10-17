@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -46,11 +47,10 @@ public class SwiftObjectListServiceTest {
 
     @Test
     public void testList() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -89,11 +89,10 @@ public class SwiftObjectListServiceTest {
 
     @Test
     public void testListPlaceholder() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -102,17 +101,16 @@ public class SwiftObjectListServiceTest {
         new SwiftDirectoryFeature(session).mkdir(placeholder);
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
     public void testListPlaceholderParent() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -124,17 +122,16 @@ public class SwiftObjectListServiceTest {
         assertTrue(list.contains(placeholder));
         assertTrue(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertSame(list.get(placeholder), list.get(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
     public void testPlaceholderAndObjectSameName() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));

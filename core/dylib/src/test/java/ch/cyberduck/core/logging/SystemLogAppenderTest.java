@@ -6,9 +6,6 @@ import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class SystemLogAppenderTest {
 
     @Test

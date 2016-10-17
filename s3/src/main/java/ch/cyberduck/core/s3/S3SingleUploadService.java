@@ -51,7 +51,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
     public S3SingleUploadService(final S3Session session) {
-        this(session, new S3WriteFeature(session));
+        this(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
     }
 
     public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {

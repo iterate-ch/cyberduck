@@ -42,9 +42,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
-/**
- * @version $Id$
- */
 public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollection {
     private static final Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 

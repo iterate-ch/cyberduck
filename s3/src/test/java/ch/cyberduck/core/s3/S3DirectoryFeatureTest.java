@@ -78,11 +78,12 @@ public class S3DirectoryFeatureTest {
         final String name = UUID.randomUUID().toString();
         session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
-                        b.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
+                            b.set(true);
+                        }
                 }
             }
         });

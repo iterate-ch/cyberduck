@@ -24,9 +24,6 @@ import org.junit.Test;
 
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class WorkspaceApplicationLauncherTest {
 
     @Test
@@ -34,8 +31,8 @@ public class WorkspaceApplicationLauncherTest {
         new WorkspaceApplicationLauncher().open(new NullLocal("t"));
         final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(file);
-        file.delete(true);
         new WorkspaceApplicationLauncher().open(file);
+        file.delete();
     }
 
     @Test
@@ -43,7 +40,7 @@ public class WorkspaceApplicationLauncherTest {
         new WorkspaceApplicationLauncher().bounce(new NullLocal("t"));
         final NullLocal file = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         LocalTouchFactory.get().touch(file);
-        file.delete(true);
         new WorkspaceApplicationLauncher().bounce(file);
+        file.delete();
     }
 }

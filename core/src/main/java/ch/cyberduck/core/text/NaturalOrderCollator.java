@@ -42,10 +42,9 @@ import java.util.Locale;
  * sequences of digits are changed to match the collation rules of Mac OS X.
  *
  * @author Werner Randelshofer
- * @version $Id$
  */
 public class NaturalOrderCollator extends Collator implements java.io.Serializable {
-    private static Logger log = Logger.getLogger(NaturalOrderCollator.class);
+    private static final Logger log = Logger.getLogger(NaturalOrderCollator.class);
 
     private static final long serialVersionUID = -7074910013839273765L;
 

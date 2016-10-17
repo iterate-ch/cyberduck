@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>irods</artifactId>
     <packaging>jar</packaging>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.irods.jargon</groupId>
             <artifactId>jargon-core</artifactId>
-            <version>4.0.2.5-RELEASE</version>
+            <version>4.0.2.6-RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.claymoresystems</groupId>
@@ -62,9 +62,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
     </repositories>

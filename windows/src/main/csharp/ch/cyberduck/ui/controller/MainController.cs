@@ -31,12 +31,14 @@ using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.dav;
+using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.googledrive;
 using ch.cyberduck.core.googlestorage;
 using ch.cyberduck.core.hubic;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.irods;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.openstack;
 using ch.cyberduck.core.preferences;
@@ -44,6 +46,7 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.urlhandler;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
@@ -54,7 +57,6 @@ using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
-using Path = System.IO.Path;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
 
@@ -71,6 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpListManager _jumpListManager;
         private readonly BaseController _controller = new BaseController();
+        private readonly PathKindDetector _detector = new DefaultPathKindDetector();
 
         /// <summary>
         /// Saved browsers
@@ -98,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new HubicProtocol());
+                new DropboxProtocol(), new HubicProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -136,6 +139,8 @@ namespace Ch.Cyberduck.Ui.Controller
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
             {
+                // Clear temporary files
+                TemporaryFileServiceFactory.get().shutdown();
                 try
                 {
                     RendezvousFactory.instance().quit();
@@ -225,9 +230,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (args.Count > 0)
             {
-                string filename = args[0];
-                Logger.debug("applicationOpenFile:" + filename);
-                Local f = LocalFactory.get(filename);
+                string arg = args[0];
+                Logger.debug("applicationOpenFile:" + arg);
+                Local f = LocalFactory.get(arg);
                 if (f.exists())
                 {
                     if ("cyberducklicense".Equals(f.getExtension()))
@@ -287,6 +292,38 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                         }
                         NewBrowser().Mount(bookmark);
+                    }
+                }
+                else
+                {
+                    // it might be an URL
+                    if (Uri.IsWellFormedUriString(arg, UriKind.Absolute))
+                    {
+                        Host h = HostParser.parse(arg);
+                        if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
+                        {
+                            Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                            TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
+                                LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
+                                    file.getName())));
+                        }
+                        else
+                        {
+                            foreach (BrowserController b in Browsers)
+                            {
+                                if (b.IsMounted())
+                                {
+                                    if (
+                                        new HostUrlProvider().get(b.Session.getHost())
+                                            .Equals(new HostUrlProvider().get(h)))
+                                    {
+                                        b.View.BringToFront();
+                                        return;
+                                    }
+                                }
+                            }
+                            NewBrowser().Mount(h);
+                        }
                     }
                 }
             }
@@ -536,7 +573,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 new CloudberryS3BookmarkCollection(),
                 new CloudberryGoogleBookmarkCollection(),
                 new CloudberryAzureBookmarkCollection(),
-                new S3BrowserBookmarkCollection()
+                new S3BrowserBookmarkCollection(),
+                new Expandrive3BookmarkCollection(),
+                new Expandrive4BookmarkCollection(),
+                new Expandrive5BookmarkCollection(),
+                new NetDrive2BookmarkCollection()
             };
         }
 
@@ -724,16 +765,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit(bool updateInProgress)
         {
-            if (updateInProgress)
-            {
-                NotificationServiceFactory.get().unregister();
-                System.Windows.Forms.Application.Exit();
-            }
-            else if (PrepareExit())
+            NotificationServiceFactory.get().unregister();
+            if (!updateInProgress && PrepareExit())
             {
                 ApplicationShouldTerminateAfterDonationPrompt();
-                System.Windows.Forms.Application.Exit();
             }
+            System.Windows.Forms.Application.Exit();
         }
 
         private static BrowserController NewBrowser(bool force, bool show)
@@ -830,7 +867,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             Path = FolderBookmarkCollection.favoritesCollection().getFile(host).getAbsolute(),
                             Title = BookmarkNameProvider.toString(host, true),
                             Category = LocaleFactory.localizedString("History"),
-                            IconLocation = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
+                            IconLocation =
+                                System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-document.ico"),
                             IconIndex = 0
                         });
                     }

@@ -81,7 +81,7 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void willBeginQuickLook() {
-        panel.setDataSource(this.model.id());
+        panel.setDataSource(model.id());
     }
 
     @Override

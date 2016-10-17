@@ -60,7 +60,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
 public class ConnectionController extends SheetController {
-    private static Logger log = Logger.getLogger(ConnectionController.class);
+    private static final Logger log = Logger.getLogger(ConnectionController.class);
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();

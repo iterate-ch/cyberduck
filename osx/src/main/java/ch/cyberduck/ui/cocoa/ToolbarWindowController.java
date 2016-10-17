@@ -55,7 +55,7 @@ import java.util.Map;
  * A window controller with a toolbar populated from a tabbed view.
  */
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
-    private static Logger log = Logger.getLogger(ToolbarWindowController.class);
+    private static final Logger log = Logger.getLogger(ToolbarWindowController.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

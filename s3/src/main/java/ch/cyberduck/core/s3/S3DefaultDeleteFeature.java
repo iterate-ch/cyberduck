@@ -27,6 +27,7 @@ import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.MultipartUpload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +35,20 @@ import java.util.List;
 public class S3DefaultDeleteFeature extends ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3MultipartService multipartService;
+
     public S3DefaultDeleteFeature(final S3Session session) {
+        this(session, new S3DefaultMultipartService(session));
+    }
+
+    public S3DefaultDeleteFeature(final S3Session session, final S3MultipartService multipartService) {
         this.session = session;
+        this.multipartService = multipartService;
     }
 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
@@ -48,6 +56,13 @@ public class S3DefaultDeleteFeature extends ThreadedDeleteFeature implements Del
         for(Path file : files) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
+                continue;
+            }
+            if(file.getType().contains(Path.Type.upload)) {
+                callback.delete(file);
+                // In-progress multipart upload
+                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                        containerService.getContainer(file).getName(), containerService.getKey(file)));
                 continue;
             }
             this.submit(file, new Implementation() {

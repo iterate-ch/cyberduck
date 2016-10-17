@@ -28,9 +28,6 @@ import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
 
-/**
- * @version $Id$
- */
 public class WorkspaceSymlinkFeature implements Symlink {
     private static final Logger log = Logger.getLogger(WorkspaceSymlinkFeature.class);
 

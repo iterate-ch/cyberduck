@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -140,7 +139,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+                distribution.setContainers(Collections.singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
                 cache.put(container, distribution);
                 return distribution;
             }
@@ -199,7 +198,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        return Arrays.asList(Distribution.DOWNLOAD);
+        return Collections.singletonList(Distribution.DOWNLOAD);
     }
 
     @Override

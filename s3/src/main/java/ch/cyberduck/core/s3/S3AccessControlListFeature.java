@@ -22,7 +22,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Versioning;
@@ -81,13 +80,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(AccessDeniedException l) {
-                log.warn(String.format("Missing permission to read ACL for %s %s", file, e.getMessage()));
-                return Acl.EMPTY;
-            }
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
@@ -101,7 +94,8 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             }
             if(null == acl.getOwner()) {
                 // Read owner from bucket
-                acl.setOwner(this.getPermission(container).getOwner());
+                final Acl permission = this.getPermission(container);
+                acl.setOwner(permission.getOwner());
             }
             if(containerService.isContainer(file)) {
                 session.getClient().putBucketAcl(container.getName(), this.convert(acl));
@@ -124,6 +118,9 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
      * @return ACL to write to server
      */
     protected AccessControlList convert(final Acl acl) {
+        if(Acl.EMPTY.equals(acl)) {
+            return null;
+        }
         final AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         list.grantPermission(new CanonicalGrantee(acl.getOwner().getIdentifier()), Permission.PERMISSION_FULL_CONTROL);

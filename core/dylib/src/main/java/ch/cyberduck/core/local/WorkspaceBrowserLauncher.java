@@ -24,9 +24,6 @@ import ch.cyberduck.binding.foundation.NSURL;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id$
- */
 public class WorkspaceBrowserLauncher implements BrowserLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceBrowserLauncher.class);
 

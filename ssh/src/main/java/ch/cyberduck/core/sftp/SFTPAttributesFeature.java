@@ -50,7 +50,7 @@ public class SFTPAttributesFeature implements Attributes {
                 case FIFO_SPECIAL:
                 case SOCKET_SPECIAL:
                 case REGULAR:
-                case SYMKLINK:
+                case SYMLINK:
                     if(!file.getType().contains(Path.Type.file)) {
                         throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
                     }

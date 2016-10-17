@@ -12,6 +12,8 @@
 	<string>lcs.lunacloud.io</string>
 	<key>Default Port</key>
 	<string>443</string>
+	<key>Authorization</key>
+	<string>AWS2</string>
 	<key>Icon</key>
 	<string>
 	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz

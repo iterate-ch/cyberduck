@@ -46,6 +46,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -260,7 +261,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new S3SingleUploadService(this);
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this);
+            return (T) new S3WriteFeature(this, new S3DisabledMultipartService());
         }
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this);

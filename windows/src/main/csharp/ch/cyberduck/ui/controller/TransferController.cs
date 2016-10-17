@@ -118,7 +118,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        public override void log(bool request, string transcript)
+        public override void log(TranscriptListener.Type request, string transcript)
         {
             if (View.TranscriptVisible)
             {
@@ -639,9 +639,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private class LogAction : WindowMainAction
         {
             private readonly string _msg;
-            private readonly bool _request;
+            private readonly TranscriptListener.Type _request;
 
-            public LogAction(TransferController c, bool request, string msg) : base(c)
+            public LogAction(TransferController c, TranscriptListener.Type request, string msg) : base(c)
             {
                 _request = request;
                 _msg = msg;

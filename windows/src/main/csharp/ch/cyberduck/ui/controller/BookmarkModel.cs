@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Host h = (Host) host;
             return
                 IconCache.Instance.GetProtocolImages(PreferencesFactory.get().
-                    getInteger("bookmark.icon.size"))[h.getProtocol().getProvider()];
+                    getInteger("bookmark.icon.size"))[h.getProtocol().disk()];
         }
 
         public object GetHostname(object host)

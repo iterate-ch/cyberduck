@@ -1580,4 +1580,7 @@ public abstract class NSWindow extends NSResponder {
     public static final String WindowWillCloseNotification = "NSWindowWillCloseNotification";
     public static final String WindowWillMiniaturizeNotification = "NSWindowWillMiniaturizeNotification";
     public static final String WindowWillMoveNotification = "NSWindowWillMoveNotification";
+
+    public abstract void addTitlebarAccessoryViewController(NSTitlebarAccessoryViewController controller);
+
 }

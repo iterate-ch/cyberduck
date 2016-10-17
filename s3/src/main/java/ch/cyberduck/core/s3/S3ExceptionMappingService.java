@@ -78,13 +78,11 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                 // Actually never returned by S3 but always 403
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_NOT_IMPLEMENTED:
+            case HttpStatus.SC_METHOD_NOT_ALLOWED:
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 return new ConnectionRefusedException(buffer.toString(), e);
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), e);
         }

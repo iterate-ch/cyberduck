@@ -139,7 +139,9 @@ public class OAuth2AuthorizationService {
                     .build();
             // Direct the user to an authorization page to grant access to their protected data.
             final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
-            browser.open(url);
+            if(!browser.open(url)) {
+                log.warn(String.format("Failed to launch web browser for %s", url));
+            }
             prompt.prompt(bookmark, bookmark.getCredentials(),
                     LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
                     new LoginOptions().keychain(false).user(false)
@@ -147,7 +149,7 @@ public class OAuth2AuthorizationService {
             try {
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(bookmark.getCredentials().getPassword())
-                        .setRedirectUri(redirectUri).execute();
+                        .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)
                         .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
@@ -182,7 +184,13 @@ public class OAuth2AuthorizationService {
 
     private Tokens find(final HostPasswordStore keychain, final Host host) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
-        final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+        final String prefix;
+        if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
+            prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+        }
+        else {
+            prefix = host.getProtocol().getDescription();
+        }
         final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
                 host.getPort(), URI.create(tokenServerUrl).getHost(),
                 String.format("%s OAuth2 Access Token", prefix)),
@@ -217,7 +225,9 @@ public class OAuth2AuthorizationService {
                     String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
         }
         // Save expiry
-        preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
+        if(tokens.expiry != null) {
+            preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
+        }
     }
 
     private String getPrefix(final Host host) {
@@ -257,7 +267,7 @@ public class OAuth2AuthorizationService {
         }
 
         public boolean validate() {
-            return StringUtils.isNotEmpty(accesstoken) && StringUtils.isNotEmpty(refreshtoken);
+            return StringUtils.isNotEmpty(accesstoken);
         }
     }
 
@@ -276,6 +286,10 @@ public class OAuth2AuthorizationService {
                 this.append(buffer, response.getStatusMessage());
                 if(response.getStatusCode() == 401) {
                     // Invalid Credentials. Refresh the access token using the long-lived refresh token
+                    return new LoginFailureException(buffer.toString(), failure);
+                }
+                if(response.getStatusCode() == 400) {
+                    // Invalid Grant
                     return new LoginFailureException(buffer.toString(), failure);
                 }
                 if(response.getStatusCode() == 403) {

@@ -16,9 +16,6 @@ import org.rococoa.ObjCObjectByReference;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
 

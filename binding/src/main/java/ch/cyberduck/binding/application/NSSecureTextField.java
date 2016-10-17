@@ -19,8 +19,5 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public abstract class NSSecureTextField extends NSTextField {
 }

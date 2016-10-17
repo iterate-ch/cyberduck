@@ -31,7 +31,7 @@ import ch.cyberduck.core.FactoryException;
 import org.apache.log4j.Logger;
 
 public abstract class BundleController extends ProxyController {
-    private static Logger log = Logger.getLogger(BundleController.class);
+    private static final Logger log = Logger.getLogger(BundleController.class);
 
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;

@@ -18,9 +18,6 @@ package ch.cyberduck.core.proxy;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
-*/
 public final class Proxy {
 
     public enum Type {

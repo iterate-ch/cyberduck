@@ -18,8 +18,5 @@ package ch.cyberduck.core.bonjour;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
-*/
 public final class DisabledRendezvous extends AbstractRendezvous {
 }

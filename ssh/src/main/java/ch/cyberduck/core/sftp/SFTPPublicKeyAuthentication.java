@@ -38,6 +38,7 @@ import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
+import net.schmizz.sshj.userauth.keyprovider.PKCS5KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
@@ -69,6 +70,9 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                 }
                 if(format.equals(KeyFormat.OpenSSH)) {
                     provider = new OpenSSHKeyFile.Factory().create();
+                }
+                else if(format.equals(KeyFormat.PKCS5)) {
+                    provider = new PKCS5KeyFile.Factory().create();
                 }
                 else if(format.equals(KeyFormat.PKCS8)) {
                     provider = new PKCS8KeyFile.Factory().create();

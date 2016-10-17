@@ -22,9 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public class DisabledUDTTransferOption implements UDTTransferOption {
     @Override
     public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {

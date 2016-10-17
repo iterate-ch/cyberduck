@@ -11,8 +11,10 @@
         <key>Default Hostname</key>
         <string>ecc.eucalyptus.com</string>
         <key>Default Port</key>
-       	<string>8773</string>
+        <string>8773</string>
         <key>Context</key>
         <string>/services/objectstorage</string>
+        <key>Authorization</key>
+        <string>AWS2</string>
     </dict>
 </plist>

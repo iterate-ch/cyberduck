@@ -11,10 +11,6 @@ import java.util.Collections;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
-@Ignore
 public class KeychainTest {
 
     @Test
@@ -27,26 +23,26 @@ public class KeychainTest {
     @Test
     public void testTrustedEmptyCertificates() throws Exception {
         final Keychain k = new Keychain();
-        assertFalse(k.isTrusted("cyberduck.ch", Collections.<X509Certificate>emptyList()));
+        assertFalse(k.isTrusted("cyberduck.ch", Collections.emptyList()));
     }
 
     @Test
+    @Ignore
     public void testTrusted() throws Exception {
         final Keychain k = new Keychain();
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        final boolean trusted = k.isTrusted("test.cyberduck.ch", Collections.<X509Certificate>singletonList(cert));
-        assertTrue(trusted);
+        assertTrue(k.isTrusted("test.cyberduck.ch", Collections.singletonList(cert)));
     }
 
     @Test
+    @Ignore
     public void testTrustedHostnameMismatch() throws Exception {
         final Keychain k = new Keychain();
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        final boolean trusted = k.isTrusted("s.test.cyberduck.ch", Collections.<X509Certificate>singletonList(cert));
-        assertTrue(trusted);
+        assertTrue(k.isTrusted("s.test.cyberduck.ch", Collections.singletonList(cert)));
     }
 }

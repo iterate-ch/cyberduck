@@ -65,9 +65,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
 
     private final B2Session session;
 
-    private final ThreadPool<B2UploadPartResponse> pool;
+    private final Long partSize;
 
-    private Long partSize;
+    private final Integer concurrency;
 
     public B2LargeUploadService(final B2Session session) {
         this(session, new B2PartWriteFeature(session));
@@ -90,7 +90,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         super(writer);
         this.session = session;
         this.partSize = partSize;
-        this.pool = new DefaultThreadPool<B2UploadPartResponse>(concurrency, "largeupload");
+        this.concurrency = concurrency;
     }
 
     @Override
@@ -99,6 +99,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                                        final StreamListener listener,
                                        final TransferStatus status,
                                        final ConnectionCallback callback) throws BackgroundException {
+        final DefaultThreadPool<B2UploadPartResponse> pool = new DefaultThreadPool<>(concurrency, "largeupload");
         try {
             final String fileid;
             // Get the results of the uploads in the order they were submitted
@@ -141,21 +142,22 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                                 log.info(String.format("Skip completed part number %d", partNumber));
                             }
                             skip = true;
+                            offset += c.getContentLength();
                             break;
                         }
                     }
                 }
-                final Long length = Math.min(Math.max((status.getLength() / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                 if(!skip) {
+                    final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(file, local, throttle, listener, status, partNumber, offset, length));
+                    parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Part %s submitted with size %d and offset %d",
                                 partNumber, length, offset));
                     }
+                    remaining -= length;
+                    offset += length;
                 }
-                offset += length;
-                remaining -= length;
             }
             try {
                 for(Future<B2UploadPartResponse> f : parts) {
@@ -189,7 +191,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 checksums.add(part.getContentSha1());
             }
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileid, checksums.toArray(new String[checksums.size()]));
-            log.info(String.format("Finished large file upload %s", response.getFileId()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+            }
             // Mark parent status as complete
             status.setComplete();
             return null;
@@ -202,7 +206,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         }
     }
 
-    private Future<B2UploadPartResponse> submit(final Path file, final Local local,
+    private Future<B2UploadPartResponse> submit(final ThreadPool<B2UploadPartResponse> pool, final Path file, final Local local,
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus overall,
                                                 final int partNumber,

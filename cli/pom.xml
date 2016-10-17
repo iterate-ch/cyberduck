@@ -19,7 +19,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli</artifactId>
 
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>1.12</version>
+            <version>1.13</version>
         </dependency>
     </dependencies>
 </project>

@@ -18,9 +18,6 @@ package ch.cyberduck.core.http;
  * feedback@cyberduck.ch
  */
 
-/**
- * @version $Id:$
- */
 public interface RedirectCallback {
     /**
      * @param method HTTP method

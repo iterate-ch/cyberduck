@@ -48,7 +48,7 @@ public class ChecksumFilter extends AbstractCopyFilter {
     }
 
     @Override
-    public boolean accept(final Path source, final Local lolcal, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {

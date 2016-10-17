@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -95,7 +95,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u92</version>
+                                            <version>8u102</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

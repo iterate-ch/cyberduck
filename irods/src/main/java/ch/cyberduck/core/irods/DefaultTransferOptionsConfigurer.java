@@ -29,8 +29,6 @@ public class DefaultTransferOptionsConfigurer {
     public TransferOptions configure(final TransferOptions options) {
         options.setPutOption(TransferOptions.PutOptions.NORMAL);
         options.setForceOption(TransferOptions.ForceOption.ASK_CALLBACK_LISTENER);
-        options.setComputeAndVerifyChecksumAfterTransfer(false);
-        options.setComputeChecksumAfterTransfer(false);
         options.setMaxThreads(preferences.getInteger("queue.maxtransfers"));
         // Enable progress callbacks
         options.setIntraFileStatusCallbacks(true);

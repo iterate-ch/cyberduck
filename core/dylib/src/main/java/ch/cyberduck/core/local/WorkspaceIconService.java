@@ -26,9 +26,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public final class WorkspaceIconService implements IconService {
 
     @Override

@@ -22,9 +22,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class SmartFtpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)

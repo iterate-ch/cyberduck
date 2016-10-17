@@ -67,6 +67,7 @@ import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.BooleanRecursiveCallback;
 import ch.cyberduck.core.worker.CalculateSizeWorker;
 import ch.cyberduck.core.worker.ReadAclWorker;
 import ch.cyberduck.core.worker.ReadMetadataWorker;
@@ -104,6 +105,7 @@ import java.util.TimeZone;
 
 public class InfoController extends ToolbarWindowController {
     private static final Logger log = Logger.getLogger(InfoController.class);
+
     private static NSPoint cascade = new NSPoint(0, 0);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
@@ -1234,6 +1236,7 @@ public class InfoController extends ToolbarWindowController {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
+                                    initMetadata();
                                 }
                             }
                     )
@@ -1941,7 +1944,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Encryption.class) != null) {
                         // Add additional keys stored in KMS
-                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(prompt);
+                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(container, prompt);
                         for(final Path file : files) {
                             selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(file));
                         }
@@ -2312,7 +2315,7 @@ public class InfoController extends ToolbarWindowController {
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
-                    new WritePermissionWorker(files, permission, recursive, controller) {
+                    new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<Permission>(this) : new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     togglePermissionSettings(true);

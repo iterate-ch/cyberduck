@@ -20,9 +20,6 @@ package ch.cyberduck.core.ftp.parser;
 
 import org.apache.commons.net.ftp.FTPFile;
 
-/**
- * @version $Id:$
- */
 public class FTPExtendedFile extends FTPFile {
     private static final long serialVersionUID = 6829009965929769052L;
 

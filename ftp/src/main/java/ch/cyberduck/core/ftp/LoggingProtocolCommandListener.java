@@ -39,16 +39,16 @@ public class LoggingProtocolCommandListener implements ProtocolCommandListener, 
         if(message.startsWith(FTPCmd.PASS.name())) {
             message = String.format("%s ********", FTPCmd.PASS.name());
         }
-        this.log(true, message);
+        this.log(Type.request, message);
     }
 
     @Override
     public void protocolReplyReceived(final ProtocolCommandEvent event) {
-        this.log(false, StringUtils.chomp(event.getMessage()));
+        this.log(Type.response, StringUtils.chomp(event.getMessage()));
     }
 
     @Override
-    public void log(boolean request, String event) {
+    public void log(final Type request, final String event) {
         transcript.log(request, event);
     }
 }

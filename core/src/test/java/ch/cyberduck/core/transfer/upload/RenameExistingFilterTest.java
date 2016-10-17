@@ -182,8 +182,7 @@ public class RenameExistingFilterTest {
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true));
         assertNotNull(status.getRename());
         assertNotNull(status.getRename().remote);
-        assertTrue(status.isRename());
-        assertNotEquals(file, status.getRename().remote);
+        assertNotEquals(file, status.getDisplayname().local);
         assertNull(status.getRename().local);
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
         // Complete

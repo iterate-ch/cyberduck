@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
@@ -26,10 +27,10 @@ import org.apache.log4j.Logger;
 public class SFTPQuotaFeature implements Quota {
     private static final Logger log = Logger.getLogger(SFTPQuotaFeature.class);
 
-    public final SFTPCommandFeature command;
+    private final SFTPSession session;
 
     public SFTPQuotaFeature(final SFTPSession session) {
-        command = new SFTPCommandFeature(session);
+        this.session = session;
     }
 
     @Override
@@ -40,23 +41,25 @@ public class SFTPQuotaFeature implements Quota {
                 return new Space(0L, Long.MAX_VALUE);
             }
         };
-        command.send("df -k . | awk '{print $3, $4}'", new DisabledProgressListener(),
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        new SFTPCommandFeature(session).send(String.format("df -Pk %s | awk '{print $3, $4}'", home.getAbsolute()), new DisabledProgressListener(),
                 new TranscriptListener() {
                     @Override
-                    public void log(final boolean request, final String output) {
-                        if(!request) {
-                            final String[] numbers = StringUtils.split(output, ' ');
-                            if(numbers.length == 2) {
-                                try {
-                                    quota.set(new Space(Long.valueOf(numbers[0]) * 1000L, Long.valueOf(numbers[1]) * 1000L));
+                    public void log(final Type request, final String output) {
+                        switch(request) {
+                            case response:
+                                final String[] numbers = StringUtils.split(output, ' ');
+                                if(numbers.length == 2) {
+                                    try {
+                                        quota.set(new Space(Long.valueOf(numbers[0]) * 1000L, Long.valueOf(numbers[1]) * 1000L));
+                                    }
+                                    catch(NumberFormatException e) {
+                                        log.warn(String.format("Ignore line %s", output));
+                                    }
                                 }
-                                catch(NumberFormatException e) {
+                                else {
                                     log.warn(String.format("Ignore line %s", output));
                                 }
-                            }
-                            else {
-                                log.warn(String.format("Ignore line %s", output));
-                            }
                         }
                     }
                 });

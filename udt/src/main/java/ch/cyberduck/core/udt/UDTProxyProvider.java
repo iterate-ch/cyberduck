@@ -25,9 +25,6 @@ import ch.cyberduck.core.features.Location;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public interface UDTProxyProvider {
 
     /**

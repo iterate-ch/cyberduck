@@ -28,6 +28,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
@@ -35,6 +36,7 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -54,6 +56,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -65,8 +68,11 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
+
+import java.util.EnumSet;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = Logger.getLogger(S3Session.class);
@@ -79,21 +85,24 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-            = host.getHostname().endsWith(preferences.getProperty("s3.domain")) ?
-            // Only for AWS
-            S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(preferences.getProperty("s3.signature.version")) :
-            S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
-        super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
-        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
+        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+                new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, proxy);
     }
 
     @Override
@@ -237,7 +246,20 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return new S3BucketListService(this, new S3LocationFeature.S3Region(host.getRegion())).list(directory, listener);
         }
         else {
-            return new S3ObjectListService(this).list(directory, listener);
+            final AttributedList<Path> objects = new S3ObjectListService(this).list(directory, listener);
+            try {
+                for(MultipartUpload upload : new S3DefaultMultipartService(this).find(directory)) {
+                    final PathAttributes attributes = new PathAttributes();
+                    attributes.setDuplicate(true);
+                    attributes.setVersionId(upload.getUploadId());
+                    attributes.setModificationDate(upload.getInitiatedDate().getTime());
+                    objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+                }
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+            }
+            return objects;
         }
     }
 
@@ -248,10 +270,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ReadFeature(this);
         }
         if(type == Write.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3MultipartWriteFeature(this);
-            }
-            return (T) new S3WriteFeature(this);
+            return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Download.class) {
             return (T) new S3ThresholdDownloadService(this, trust, key, new QloudsonicTransferOption());
@@ -287,7 +306,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3TouchFeature(this);
         }
         if(type == Location.class) {
-            // Only for AWS
             if(this.isConnected()) {
                 return (T) new S3LocationFeature(this, client.getRegionEndpointCache());
             }
@@ -313,18 +331,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Logging.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3LoggingFeature(this);
-            }
-            return null;
+            return (T) new S3LoggingFeature(this);
         }
         if(type == Lifecycle.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3LifecycleConfiguration(this);
-            }
-            return null;
+            return (T) new S3LifecycleConfiguration(this);
         }
         if(type == Encryption.class) {
             // Only for AWS
@@ -334,11 +344,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == Redundancy.class) {
-            // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3StorageClassFeature(this);
-            }
-            return null;
+            return (T) new S3StorageClassFeature(this);
         }
         if(type == IdentityConfiguration.class) {
             // Only for AWS

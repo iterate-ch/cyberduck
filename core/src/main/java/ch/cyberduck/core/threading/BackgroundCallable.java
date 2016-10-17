@@ -7,9 +7,6 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id:$
- */
 public final class BackgroundCallable<T> implements Callable<T> {
     private static final Logger log = Logger.getLogger(BackgroundCallable.class);
 

@@ -90,6 +90,28 @@ public class IRODSSessionTest {
         assertFalse(session.isConnected());
     }
 
+    @Test
+    public void testLoginWhitespaceHomeDirectory() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+        host.setDefaultPath("/cyber duck");
+
+        final IRODSSession session = new IRODSSession(host);
+
+        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
+    }
+
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(

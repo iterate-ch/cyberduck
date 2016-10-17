@@ -32,6 +32,16 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSFont extends NSObject implements NSCopying {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFont", _Class.class);
 
+    public static final double NSFontWeightUltraLight = -0.80d;
+    public static final double NSFontWeightThin = -0.60d;
+    public static final double NSFontWeightLight = -0.40d;
+    public static final double NSFontWeightRegular = 0.00d;
+    public static final double NSFontWeightMedium = 0.23d;
+    public static final double NSFontWeightSemibold = 0.30d;
+    public static final double NSFontWeightBold = 0.40d;
+    public static final double NSFontWeightHeavy = 0.56d;
+    public static final double NSFontWeightBlack = 0.62d;
+
     /**
      * User font settings<br>
      * Original signature : <code>NSFont* userFontOfSize(CGFloat)</code><br>
@@ -68,6 +78,10 @@ public abstract class NSFont extends NSObject implements NSCopying {
      */
     public static NSFont boldSystemFontOfSize(double fontSize) {
         return CLASS.boldSystemFontOfSize(new CGFloat(fontSize));
+    }
+
+    public static NSFont monospacedDigitSystemFontOfSize(double fontSize) {
+        return CLASS.monospacedDigitSystemFontOfSize_weight(new CGFloat(fontSize), new CGFloat(NSFontWeightRegular));
     }
 
     public static double smallSystemFontSize() {
@@ -159,6 +173,8 @@ public abstract class NSFont extends NSObject implements NSCopying {
          * <i>native declaration : :85</i>
          */
         NSFont boldSystemFontOfSize(CGFloat fontSize);
+
+        NSFont monospacedDigitSystemFontOfSize_weight(CGFloat fontSize, CGFloat fontWeight);
 
         /**
          * Original signature : <code>NSFont* labelFontOfSize(CGFloat)</code><br>

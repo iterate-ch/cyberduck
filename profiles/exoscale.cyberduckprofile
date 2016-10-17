@@ -22,6 +22,8 @@
         <string>API Key</string>
         <key>Password Placeholder</key>
         <string>Secret Key</string>
+        <key>Authorization</key>
+        <string>AWS2</string>
         <key>Disk</key>
         <string>
 TU0AKgAQAFIABJAEAAIAAAAUAAAAPqABAAMAAAAB//8AAKACAAQAAAABAAACAKAD

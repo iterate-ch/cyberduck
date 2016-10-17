@@ -66,10 +66,16 @@ public class DAVListService implements ListService {
                 }
                 if(StringUtils.isNotBlank(resource.getEtag())) {
                     attributes.setETag(resource.getEtag());
+                    // Setting checksum is disabled. See #8798
+                    // attributes.setChecksum(Checksum.parse(resource.getEtag()));
                 }
-                children.add(new Path(directory, PathNormalizer.name(href),
+                if(StringUtils.isNotBlank(resource.getDisplayName())) {
+                    attributes.setDisplayname(resource.getDisplayName());
+                }
+                final Path file = new Path(directory, PathNormalizer.name(href),
                         resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                        attributes));
+                        attributes);
+                children.add(file);
                 listener.chunk(directory, children);
             }
             return children;

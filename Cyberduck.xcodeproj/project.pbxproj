@@ -243,6 +243,7 @@
 		47F85C3C1C0F103E00FDA856 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2A1C0F103E00FDA856 /* main.m */; };
 		47F85C401C0F103E00FDA856 /* SNDisclosableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */; };
 		47F85C411C0F103E00FDA856 /* SNDisclosableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */; };
+		47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47F9380E1D7F63CE00108AB5 /* dropbox.tiff */; };
 		47FB79D81C2E9E67008D3B9C /* launcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FB79D51C2E9E67008D3B9C /* launcher.h */; };
 		47FB79D91C2E9E67008D3B9C /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D61C2E9E67008D3B9C /* launcher.m */; };
 		47FB79DA1C2E9E67008D3B9C /* launcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FB79D61C2E9E67008D3B9C /* launcher.m */; };
@@ -1538,6 +1539,7 @@
 		47F85C2A1C0F103E00FDA856 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = osx/src/main/objc/main.m; sourceTree = "<group>"; };
 		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
 		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
+		47F9380E1D7F63CE00108AB5 /* dropbox.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = dropbox.tiff; sourceTree = "<group>"; };
 		47FB79D51C2E9E67008D3B9C /* launcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = launcher.h; path = cli/osx/src/main/objc/launcher.h; sourceTree = "<group>"; };
 		47FB79D61C2E9E67008D3B9C /* launcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = launcher.m; path = cli/osx/src/main/objc/launcher.m; sourceTree = "<group>"; };
 		47FB79D71C2E9E67008D3B9C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = cli/osx/src/main/objc/main.m; sourceTree = "<group>"; };
@@ -1799,6 +1801,7 @@
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
 				47B331911668102400C9FFA0 /* s3.tiff */,
 				47B331921668102400C9FFA0 /* swift.tiff */,
+				47F9380E1D7F63CE00108AB5 /* dropbox.tiff */,
 				4767306716108E1200B28D35 /* add.tiff */,
 				4767306816108E1200B28D35 /* addPressed.tiff */,
 				4767306916108E1200B28D35 /* advanced.tiff */,
@@ -2268,6 +2271,7 @@
 				475C6D5A170C9214006535BB /* googlestorage.tiff in Resources */,
 				47B888A917984584004E298A /* Folder.xib in Resources */,
 				47CE3BFA1799309F0031DB9F /* transfer-copy.tiff in Resources */,
+				47F9380F1D7F63CE00108AB5 /* dropbox.tiff in Resources */,
 				47CE3BFB1799309F0031DB9F /* transfer-move.tiff in Resources */,
 				47CE3BFC1799309F0031DB9F /* transfer-sync.tiff in Resources */,
 			);

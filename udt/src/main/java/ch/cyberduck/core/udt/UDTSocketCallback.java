@@ -18,9 +18,6 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-/**
- * @version $Id$
- */
 public interface UDTSocketCallback {
 
     void socketCreated(UDTSocket socket);

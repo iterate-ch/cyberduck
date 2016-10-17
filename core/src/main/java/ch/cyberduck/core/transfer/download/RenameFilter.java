@@ -20,10 +20,8 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
@@ -46,17 +44,15 @@ public class RenameFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent);
-        if(local.exists()) {
-            final String parentPath = local.getParent().getAbsolute();
+        if(status.isExists()) {
             final String filename = file.getName();
             int no = 0;
             do {
-                no++;
-                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                 if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                    proposal += "." + FilenameUtils.getExtension(filename);
+                    proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                 }
-                status.rename(LocalFactory.get(parentPath, proposal));
+                status.rename(LocalFactory.get(local.getParent(), proposal));
             }
             while(status.getRename().local.exists());
             if(log.isInfoEnabled()) {
@@ -68,27 +64,5 @@ public class RenameFilter extends AbstractDownloadFilter {
             status.setExists(false);
         }
         return status;
-    }
-
-    @Override
-    public void apply(final Path file, final Local local, final TransferStatus status,
-                      final ProgressListener listener) throws BackgroundException {
-        if(status.isRename()) {
-            super.apply(file, status.getRename().local, status, listener);
-        }
-        else {
-            super.apply(file, local, status, listener);
-        }
-    }
-
-    @Override
-    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) throws BackgroundException {
-        if(status.isRename()) {
-            super.complete(file, status.getRename().local, options, status, listener);
-        }
-        else {
-            super.complete(file, local, options, status, listener);
-        }
     }
 }

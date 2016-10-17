@@ -24,9 +24,6 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import java.util.UUID;
 
-/**
- * @version $Id$
- */
 public class QloudsonicTestVoucher extends DonationKey {
     public QloudsonicTestVoucher() throws LocalAccessDeniedException {
         super(new Local(UUID.randomUUID().toString()));

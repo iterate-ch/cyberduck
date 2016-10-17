@@ -51,16 +51,14 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Tra
                     // The selected file has the same name; if downloaded as a root element
                     // it would overwrite the earlier
                     final String parent = download.local.getParent().getAbsolute();
-                    //TODO returns \ instead of / on Windows
                     final String filename = download.remote.getName();
                     String proposal;
                     int no = 0;
                     Local local;
                     do {
-                        no++;
-                        proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), no);
+                        proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
                         if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                            proposal += "." + FilenameUtils.getExtension(filename);
+                            proposal += String.format(".%s", FilenameUtils.getExtension(filename));
                         }
                         local = LocalFactory.get(parent, proposal);
                     }

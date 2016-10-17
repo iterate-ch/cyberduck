@@ -48,23 +48,27 @@ import java.util.List;
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 
-    private KeyStore store;
+    private KeyStore _keystore;
 
-    private CertificateStore callback;
+    private final CertificateStore callback;
 
     public CertificateStoreX509KeyManager(final CertificateStore callback) {
-        this.callback = callback;
+        this(callback, null);
     }
 
     public CertificateStoreX509KeyManager(final CertificateStore callback, final KeyStore store) {
         this.callback = callback;
-        this.store = store;
+        this._keystore = store;
     }
 
-    public CertificateStoreX509KeyManager init() {
+    public CertificateStoreX509KeyManager init() throws IOException {
+        return this;
+    }
+
+    private synchronized KeyStore getKeystore() throws IOException {
         String type = null;
         try {
-            if(null == store) {
+            if(null == _keystore) {
                 // Get the key manager factory for the default algorithm.
                 final Preferences preferences = PreferencesFactory.get();
                 type = preferences.getProperty("connection.ssl.keystore.type");
@@ -76,14 +80,14 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
                 final String provider = preferences.getProperty("connection.ssl.keystore.provider");
                 if(StringUtils.isBlank(provider)) {
-                    store = KeyStore.getInstance(type);
+                    _keystore = KeyStore.getInstance(type);
                 }
                 else {
-                    store = KeyStore.getInstance(type, provider);
+                    _keystore = KeyStore.getInstance(type, provider);
                 }
+                // Load default key store
+                _keystore.load(null, null);
             }
-            // Load default key store
-            store.load(null, null);
         }
         catch(Exception e) {
             try {
@@ -91,14 +95,15 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info("Load default store of default type");
                 }
-                store = KeyStore.getInstance(KeyStore.getDefaultType());
-                store.load(null, null);
+                _keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                _keystore.load(null, null);
             }
-            catch(NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException ex) {
-                log.error(String.format("Initialization of key store failed %s", e.getMessage()));
+            catch(NoSuchAlgorithmException | KeyStoreException | CertificateException ex) {
+                log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
+                throw new IOException(e);
             }
         }
-        return this;
+        return _keystore;
     }
 
     @Override
@@ -110,6 +115,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             final Enumeration<String> aliases = store.aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
@@ -138,7 +150,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
         if(list.isEmpty()) {
-            // null if there were no matches
+            // Return null if there were no matches
             return null;
         }
         return list.toArray(new String[list.size()]);
@@ -146,6 +158,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             final Certificate cert = store.getCertificate(alias);
             if(this.matches(cert, keyTypes, issuers)) {
                 return (X509Certificate) cert;
@@ -220,6 +239,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             }
             final String[] aliases = this.getClientAliases(keyTypes, issuers);
             if(null != aliases) {
+                final KeyStore store;
+                try {
+                    store = this.getKeystore();
+                }
+                catch(IOException e) {
+                    return null;
+                }
                 for(String alias : aliases) {
                     if(store.getCertificate(alias).equals(selected)) {
                         if(log.isInfoEnabled()) {
@@ -243,6 +269,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public X509Certificate[] getCertificateChain(final String alias) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             final List<X509Certificate> result = new ArrayList<X509Certificate>();
             final Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
@@ -280,6 +313,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public PrivateKey getPrivateKey(final String alias) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             if(store.isKeyEntry(alias)) {
                 final Key key = store.getKey(alias, "null".toCharArray());
                 if(key instanceof PrivateKey) {

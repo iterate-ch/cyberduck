@@ -34,7 +34,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class SpectraSessionTest {
@@ -68,14 +69,8 @@ public class SpectraSessionTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            fail();
-        }
-        catch(LoginFailureException e) {
-            assertEquals("Authorization id 'u' is unknown. Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        fail();
     }
 
     @Test

@@ -47,9 +47,6 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
 
     private final B2Session session;
 
-    private final ThreadLocal<B2GetUploadPartUrlResponse> urls
-            = new ThreadLocal<B2GetUploadPartUrlResponse>();
-
     public B2PartWriteFeature(final B2Session session) {
         super(session);
         this.session = session;
@@ -58,14 +55,8 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
     @Override
     public ResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final B2GetUploadPartUrlResponse uploadUrl;
-            if(null == urls.get()) {
-                uploadUrl = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
-                urls.set(uploadUrl);
-            }
-            else {
-                uploadUrl = urls.get();
-            }
+            final B2GetUploadPartUrlResponse uploadUrl
+                    = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
             // Submit store call to background thread
             final DelayedHttpEntityCallable<B2UploadPartResponse> command = new DelayedHttpEntityCallable<B2UploadPartResponse>() {
                 /**
@@ -82,11 +73,9 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
                                 status.getPart(), entity, checksum.toString());
                     }
                     catch(B2ApiException e) {
-                        urls.remove();
                         throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
                     }
                     catch(IOException e) {
-                        urls.remove();
                         throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                     }
                 }

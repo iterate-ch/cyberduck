@@ -15,9 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class ProxyControllerTest {
 
     @Test

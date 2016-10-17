@@ -19,15 +19,21 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class S3Protocol extends AbstractProtocol {
+    private static final Logger log = Logger.getLogger(S3Protocol.class);
+
     @Override
     public String getName() {
         return "S3";
@@ -44,11 +50,6 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isPortConfigurable() {
-        return false;
-    }
-
-    @Override
     public Scheme getScheme() {
         return Scheme.https;
     }
@@ -60,6 +61,11 @@ public final class S3Protocol extends AbstractProtocol {
 
     @Override
     public boolean isHostnameConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPortConfigurable() {
         return true;
     }
 
@@ -118,6 +124,22 @@ public final class S3Protocol extends AbstractProtocol {
             }
         };
 
+        public static AuthenticationHeaderSignatureVersion getDefault(final Protocol protocol) {
+            try {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(protocol.getAuthorization());
+            }
+            catch(IllegalArgumentException e) {
+                log.warn(String.format("Unsupported authentication context %s", protocol.getAuthorization()));
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
+                        PreferencesFactory.get().getProperty("s3.signature.version"));
+            }
+        }
+
         public abstract HashAlgorithm getHashAlgorithm();
+    }
+
+    @Override
+    public String getAuthorization() {
+        return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 }

@@ -35,39 +35,45 @@ import java.security.cert.X509Certificate;
 
 /**
  * Default implementation to choose certificates from key store.
-
  */
 public class DefaultX509KeyManager implements X509KeyManager {
     private static final Logger log = Logger.getLogger(DefaultX509KeyManager.class);
 
-    private javax.net.ssl.X509KeyManager manager;
+    private javax.net.ssl.X509KeyManager _manager;
 
     @Override
-    public X509KeyManager init() {
+    public X509KeyManager init() throws IOException {
+        return this;
+    }
+
+    private synchronized javax.net.ssl.X509KeyManager getKeystore() throws IOException {
         try {
-            // Get the key manager factory for the default algorithm.
-            final KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            final KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
-            // Load default key store
-            store.load(null);
-            // Load default key manager factory using key store
-            factory.init(store, null);
-            for(KeyManager m : factory.getKeyManagers()) {
-                if(m instanceof javax.net.ssl.X509KeyManager) {
-                    // Get the first X509KeyManager in the list
-                    manager = (javax.net.ssl.X509KeyManager) m;
-                    break;
+            if(null == _manager) {
+                // Get the key manager factory for the default algorithm.
+                final KeyManagerFactory factory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                final KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
+                // Load default key store
+                store.load(null);
+                // Load default key manager factory using key store
+                factory.init(store, null);
+                for(KeyManager m : factory.getKeyManagers()) {
+                    if(m instanceof javax.net.ssl.X509KeyManager) {
+                        // Get the first X509KeyManager in the list
+                        _manager = (javax.net.ssl.X509KeyManager) m;
+                        break;
+                    }
+                }
+                if(null == _manager) {
+                    throw new NoSuchAlgorithmException(String.format("The default algorithm %s did not produce a X.509 key manager",
+                            KeyManagerFactory.getDefaultAlgorithm()));
                 }
             }
-            if(null == manager) {
-                throw new NoSuchAlgorithmException(String.format("The default algorithm %s did not produce a X509 Key manager",
-                        KeyManagerFactory.getDefaultAlgorithm()));
-            }
+            return _manager;
         }
-        catch(IOException | CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
-            log.error(String.format("Initialization of key store failed %s", e.getMessage()));
+        catch(CertificateException | UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+            log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
+            throw new IOException(e);
         }
-        return this;
     }
 
     @Override
@@ -77,6 +83,13 @@ public class DefaultX509KeyManager implements X509KeyManager {
 
     @Override
     public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.getClientAliases(keyType, issuers);
     }
 
@@ -91,16 +104,37 @@ public class DefaultX509KeyManager implements X509KeyManager {
      */
     @Override
     public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.chooseClientAlias(keyType, issuers, socket);
     }
 
     @Override
     public String[] getServerAliases(final String keyType, final Principal[] issuers) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.getServerAliases(keyType, issuers);
     }
 
     @Override
     public String chooseServerAlias(final String keyType, final Principal[] issuers, final Socket socket) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.chooseServerAlias(keyType, issuers, socket);
     }
 
@@ -109,11 +143,25 @@ public class DefaultX509KeyManager implements X509KeyManager {
      */
     @Override
     public X509Certificate[] getCertificateChain(final String alias) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.getCertificateChain(alias);
     }
 
     @Override
     public PrivateKey getPrivateKey(String alias) {
+        final javax.net.ssl.X509KeyManager manager;
+        try {
+            manager = this.getKeystore();
+        }
+        catch(IOException e) {
+            return null;
+        }
         return manager.getPrivateKey(alias);
     }
 }

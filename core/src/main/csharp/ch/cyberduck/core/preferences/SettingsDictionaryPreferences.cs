@@ -262,6 +262,18 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("bookmark.import.cloudberry.azure.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
+            defaults.put("bookmark.import.expandrive3.location",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "ExpanDrive", "favorites.js"));
+            defaults.put("bookmark.import.expandrive4.location",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "ExpanDrive", "expandrive4.favorites.js"));
+            defaults.put("bookmark.import.expandrive5.location",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "ExpanDrive", "expandrive5.favorites.js"));
+            defaults.put("bookmark.import.netdrive2.location",
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "NetDrive2", "drives.dat"));
 
             //disable reminder for protocol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());

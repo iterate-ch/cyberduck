@@ -36,7 +36,6 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".duck" Value="Cyberduck.Bookmark" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberduckprofile" Value="Cyberduck Connection.Profile" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberducklicense" Value="Cyberduck.License" Type="string" />
-        <!--      <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\MIMEAssociations" Name="application/xyz" Value="Cyberduck.Document" Type="string" />-->
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\shell\Open\command" Value='"[INSTALLLOCATION]Cyberduck.exe" "%1"' Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="!(bind.property.ProductName)" Value="SOFTWARE\Cyberduck\Capabilities" Type="string" />
 
@@ -45,10 +44,10 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Cyberduck.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
 
         <!-- Extend to the "open with" list + Win7 jump menu pinning  -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberuck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".duck" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberduckprofile" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\SupportedTypes" Name=".cyberducklicense" Value="" Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\Cyberduck.exe\shell\open" Name="FriendlyAppName" Value="!(bind.property.ProductName)" Type="string" />
 
         <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.Bookmark" Name="FriendlyTypeName" Value="Cyberduck Bookmark" Type="string" />
         <ProgId Id="Cyberduck.Bookmark" Description="Cyberduck Bookmark" Icon="cd_document.ico" Advertise="yes">
@@ -271,6 +270,106 @@
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
+      </Component>
+
+      <!-- protocol handlers -->
+      <Component Id="ftp" Guid="B7619F7A-1CCC-451D-95D4-1AE3A267FC05">
+        <RegistryKey Root="HKCR"
+                     Key="ftp"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:ftp Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="ftps" Guid="D6870ED1-BE4B-43E6-B405-9362DC12EB48">
+        <RegistryKey Root="HKCR"
+                     Key="ftps"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:ftps Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="dav" Guid="300BA5DE-87BE-4F08-B78B-991E15AE3C6D">
+        <RegistryKey Root="HKCR"
+                     Key="dav"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:dav Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="davs" Guid="25ECEBD0-8F2F-4C72-8445-8466A1E799C0">
+        <RegistryKey Root="HKCR"
+                     Key="davs"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:davs Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="sftp" Guid="7C828847-5026-478C-B0C5-E7CD720A94FC">
+        <RegistryKey Root="HKCR"
+                     Key="sftp"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:sftp Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="s3" Guid="5F33A7F5-0DBA-437C-914E-A0CF6E016C11">
+        <RegistryKey Root="HKCR"
+                     Key="s3"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:s3 Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
+      </Component>
+      <Component Id="irods" Guid="4E5C043F-B5E3-4C6C-84C9-0D7EAF69D338">
+        <RegistryKey Root="HKCR"
+                     Key="irods"
+                     Action="createAndRemoveOnUninstall">
+          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+          <RegistryValue Type="string" Value="URL:irods Protocol"/>
+          <RegistryKey Key="DefaultIcon">
+            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
+          </RegistryKey>
+          <RegistryKey Key="shell\open\command">
+            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
+          </RegistryKey>
+        </RegistryKey>
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="Profiles" Directory="PROFILES">

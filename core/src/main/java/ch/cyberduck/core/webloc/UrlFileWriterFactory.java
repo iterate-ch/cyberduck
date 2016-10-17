@@ -1,4 +1,4 @@
-package ch.cyberduck.core.googlestorage;
+package ch.cyberduck.core.webloc;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,20 +15,15 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.Factory;
 
-import org.junit.Test;
+public class UrlFileWriterFactory extends Factory<UrlFileWriter> {
 
-import static org.junit.Assert.assertNotNull;
+    public UrlFileWriterFactory() {
+        super("factory.urlfilewriter.class");
+    }
 
-public class SessionFactoryTest {
-
-    @Test
-    public void testCreateSession() throws Exception {
-        assertNotNull(SessionFactory.create(new Host(new GoogleStorageProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+    public static UrlFileWriter get() {
+        return new UrlFileWriterFactory().create();
     }
 }

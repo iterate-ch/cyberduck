@@ -43,7 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ActivityController extends WindowController {
-    private static Logger log = Logger.getLogger(ActivityController.class);
+    private static final Logger log = Logger.getLogger(ActivityController.class);
 
     private BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();

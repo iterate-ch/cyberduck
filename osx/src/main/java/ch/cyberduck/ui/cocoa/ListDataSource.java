@@ -36,7 +36,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class ListDataSource extends ProxyController implements NSTableView.DataSource, NSDraggingSource {
-    private static Logger log = Logger.getLogger(ListDataSource.class);
+    private static final Logger log = Logger.getLogger(ListDataSource.class);
 
     @Override
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {

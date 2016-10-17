@@ -44,8 +44,18 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    /**
+     * Change target filename
+     */
     private Rename rename
             = new Rename();
+
+    /**
+     * Temporary filename only used for transfer. Rename when file transfer is complete
+     */
+    private Displayname displayname
+            = new Displayname();
+
     /**
      * Target file or directory already exists
      */
@@ -303,8 +313,25 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return rename;
     }
 
+    public Displayname getDisplayname() {
+        return displayname;
+    }
+
     public TransferStatus rename(final Path renamed) {
         this.rename.remote = renamed;
+        return this;
+    }
+
+    /**
+     * @param temporary Temporary file to open output stream to
+     */
+    public TransferStatus temporary(final Path temporary) {
+        this.rename.remote = temporary;
+        return this;
+    }
+
+    public TransferStatus displayname(final Path finalname) {
+        this.displayname.remote = finalname;
         return this;
     }
 
@@ -313,11 +340,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public boolean isRename() {
-        if(this.isAppend()) {
-            return false;
-        }
-        return rename.remote != null || rename.local != null;
+    /**
+     * @param finalname Target filename to rename temporary file to
+     */
+    public TransferStatus displayname(final Local finalname) {
+        this.displayname.local = finalname;
+        return this;
     }
 
     public void setRename(final Rename rename) {
@@ -481,11 +509,39 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return sb.toString();
     }
 
-    public static final class Rename {
+    /**
+     * Rename of target filename *after* file transfer
+     */
+    public static final class Displayname {
         /**
-         * Upload target
+         * Renamed upload target
          */
         public Path remote;
+        /**
+         * Target filename is temporary and file should be renamed to display name when transfer is complete
+         */
+        public Local local;
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Temporary{");
+            sb.append(", local=").append(local);
+            sb.append('}');
+            return sb.toString();
+        }
+    }
+
+    /**
+     * Rename of target filename *prior* file transfer
+     */
+    public static final class Rename {
+        /**
+         * Renamed upload target
+         */
+        public Path remote;
+        /**
+         * Renamed local target
+         */
         public Local local;
 
         @Override

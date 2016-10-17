@@ -253,8 +253,6 @@
         <false/>
         <key>SUEnableSystemProfiling</key>
         <false/>
-        <key>SUEnableAutomaticChecks</key>
-        <false/>
         <key>SUAllowsAutomaticUpdates</key>
         <false/>
         <key>SUPublicDSAKeyFile</key>

@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.download;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -54,6 +53,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -155,6 +156,20 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 // Content length
                 status.setLength(attributes.getSize());
+                if(StringUtils.startsWith(attributes.getDisplayname(), "file:")) {
+                    final String filename = StringUtils.removeStart(attributes.getDisplayname(), "file:");
+                    if(!StringUtils.equals(file.getName(), filename)) {
+                        status.displayname(LocalFactory.get(local.getParent(), filename));
+                        int no = 0;
+                        while(status.getDisplayname().local.exists()) {
+                            String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
+                            if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                                proposal += String.format(".%s", FilenameUtils.getExtension(filename));
+                            }
+                            status.displayname(LocalFactory.get(local.getParent(), proposal));
+                        }
+                    }
+                }
             }
         }
         status.setRemote(attributes);
@@ -181,45 +196,43 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         status.setAcl(attributes.getAcl());
         if(options.segments) {
             if(file.isFile()) {
-                if(session.getTransferType() == Host.TransferType.concurrent) {
-                    // Make segments
-                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                            && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                        final Download read = session.getFeature(Download.class);
-                        if(read.offset(file)) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Split download %s into segments", local));
-                            }
-                            long remaining = status.getLength();
-                            long offset = 0;
-                            // Part size from default setting of size divided by maximum number of connections
-                            long partsize = Math.max(
-                                    preferences.getLong("queue.download.segments.size"),
-                                    status.getLength() / preferences.getInteger("queue.maxtransfers"));
-                            // Sorted list
-                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                                final Local segmentFile = LocalFactory.get(
-                                        LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName())),
-                                        String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                                boolean skip = false;
-                                // Last part can be less than 5 MB. Adjust part size.
-                                Long length = Math.min(partsize, remaining);
-                                final TransferStatus segmentStatus = new TransferStatus()
-                                        .segment(true)
-                                        .append(true)
-                                        .skip(offset)
-                                        .length(length)
-                                        .rename(segmentFile);
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
-                                }
-                                segments.add(segmentStatus);
-                                remaining -= length;
-                                offset += length;
-                            }
-                            status.withSegments(segments);
+                // Make segments
+                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                    final Download read = session.getFeature(Download.class);
+                    if(read.offset(file)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Split download %s into segments", local));
                         }
+                        long remaining = status.getLength();
+                        long offset = 0;
+                        // Part size from default setting of size divided by maximum number of connections
+                        long partsize = Math.max(
+                                preferences.getLong("queue.download.segments.size"),
+                                status.getLength() / preferences.getInteger("queue.maxtransfers"));
+                        // Sorted list
+                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                        final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
+                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                            final Local segmentFile = LocalFactory.get(
+                                    segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                            boolean skip = false;
+                            // Last part can be less than 5 MB. Adjust part size.
+                            Long length = Math.min(partsize, remaining);
+                            final TransferStatus segmentStatus = new TransferStatus()
+                                    .segment(true)
+                                    .append(true)
+                                    .skip(offset)
+                                    .length(length)
+                                    .rename(segmentFile);
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                            }
+                            segments.add(segmentStatus);
+                            remaining -= length;
+                            offset += length;
+                        }
+                        status.withSegments(segments);
                     }
                 }
             }
@@ -287,6 +300,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 log.debug(String.format("Run completion for file %s with status %s", local, status));
             }
             if(file.isFile()) {
+                // Bounce Downloads folder dock icon by sending download finished notification
+                launcher.bounce(local);
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
                     icon.set(local, status);
@@ -354,13 +369,17 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         if(!checksum.equals(download)) {
                             throw new ChecksumException(
                                     MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between {0} hash {1} of downloaded data and ETag {2} returned by the server",
+                                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
                                             download.algorithm.toString(), download.hash, checksum.hash));
                         }
                     }
                 }
             }
-            launcher.bounce(local);
+            if(file.isFile()) {
+                if(status.getDisplayname().local != null) {
+                    local.rename(status.getDisplayname().local);
+                }
+            }
         }
     }
 }

@@ -45,11 +45,10 @@ public class SwiftLargeUploadWriteFeatureTest {
 
     @Test
     public void testWriteUploadLargeBuffer() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -80,11 +79,10 @@ public class SwiftLargeUploadWriteFeatureTest {
 
     @Test
     public void testWriteUploadSmallBuffer() throws Exception {
-        final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftRegionService regionService = new SwiftRegionService(session);

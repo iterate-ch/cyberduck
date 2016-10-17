@@ -28,6 +28,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -160,7 +162,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveDirectoryFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new DriveDeleteFeature(this);
+            return (T) new DriveBatchDeleteFeature(this);
         }
         if(type == Move.class) {
             return (T) new DriveMoveFeature(this);
@@ -172,7 +174,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveTouchFeature(this);
         }
         if(type == UrlProvider.class) {
-            return (T) new DriveUrlProvider(this);
+            return (T) new DriveUrlProvider();
         }
         if(type == Home.class) {
             return (T) new DriveHomeFinderService(this);
@@ -182,6 +184,12 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Quota.class) {
             return (T) new DriveQuotaFeature(this);
+        }
+        if(type == Attributes.class) {
+            return (T) new DriveAttributesFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new DriveTimestampFeature(this);
         }
         return super.getFeature(type);
     }

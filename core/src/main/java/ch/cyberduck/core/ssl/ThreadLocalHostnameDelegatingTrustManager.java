@@ -74,4 +74,13 @@ public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManag
     public void setTarget(final String hostname) {
         this.target.set(hostname);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ThreadLocalHostnameDelegatingTrustManager{");
+        sb.append("target=").append(target);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

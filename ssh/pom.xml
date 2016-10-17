@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
@@ -44,12 +44,7 @@
         <dependency>
             <groupId>ch.iterate.ssh</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.16.0</version>
-        </dependency>
-        <dependency>
-            <groupId>net.vrallev.ecc</groupId>
-            <artifactId>ecc-25519-java</artifactId>
-            <version>1.0.1</version>
+            <version>0.18</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>

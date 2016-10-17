@@ -28,6 +28,7 @@ import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -48,6 +49,8 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMSClient;
 import com.amazonaws.services.kms.model.AliasListEntry;
 import com.amazonaws.services.kms.model.KeyListEntry;
@@ -56,6 +59,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
     private final Host host;
+    private final S3Session session;
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -71,6 +75,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
         host = session.getHost();
+        this.session = session;
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
@@ -143,8 +148,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      * @return List of IDs of KMS managed keys
      */
     @Override
-    public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
-        final Set<Algorithm> keys = super.getKeys(prompt);
+    public Set<Algorithm> getKeys(final Path container, final LoginCallback prompt) throws BackgroundException {
+        final Set<Algorithm> keys = super.getKeys(container, prompt);
         try {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
@@ -163,6 +168,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                                 }
                             }, configuration
                     );
+                    final Location feature = session.getFeature(Location.class);
+                    final Location.Name region = feature.getLocation(containerService.getContainer(container));
+                    client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {
@@ -170,7 +178,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                         }
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
-                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId())));
+                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId()), region));
                         }
                         return keys;
                     }
@@ -203,11 +211,13 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static class AliasedAlgorithm extends Algorithm {
         private final KeyListEntry entry;
         private final String alias;
+        private final Location.Name region;
 
-        public AliasedAlgorithm(final KeyListEntry entry, final String alias) {
+        public AliasedAlgorithm(final KeyListEntry entry, final String alias, final Location.Name region) {
             super(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, entry.getKeyArn());
             this.entry = entry;
             this.alias = alias;
+            this.region = region;
         }
 
         @Override
@@ -216,6 +226,10 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 return String.format("SSE-KMS (%s)", entry.getKeyArn());
             }
             return String.format("SSE-KMS (%s - %s)", alias, entry.getKeyArn());
+        }
+
+        public Location.Name getRegion() {
+            return region;
         }
     }
 }

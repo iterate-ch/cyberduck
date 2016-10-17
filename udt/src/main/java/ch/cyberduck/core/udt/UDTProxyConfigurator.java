@@ -61,9 +61,6 @@ import java.util.List;
 
 import com.barchart.udt.ResourceUDT;
 
-/**
- * @version $Id$
- */
 public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
 

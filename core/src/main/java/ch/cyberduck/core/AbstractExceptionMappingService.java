@@ -21,12 +21,14 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.log4j.Logger;
 
+import java.io.EOFException;
 import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -92,8 +94,11 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
             if(cause instanceof SocketException) {
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
             }
-            if(cause instanceof UnknownHostException) {
+            if(cause instanceof EOFException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
+            }
+            if(cause instanceof UnknownHostException) {
+                return new ResolveFailedException(buffer.toString(), failure);
             }
             if(cause instanceof NoHttpResponseException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);

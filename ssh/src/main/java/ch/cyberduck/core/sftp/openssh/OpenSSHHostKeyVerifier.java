@@ -49,7 +49,7 @@ import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
-    private static Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
+    private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -191,7 +191,17 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         @Override
         protected boolean hostKeyChangedAction(HostEntry entry, String hostname, PublicKey key) {
             try {
-                return isChangedKeyAccepted(hostname, key);
+                final boolean accepted = isChangedKeyAccepted(hostname, key);
+                if(accepted) {
+                    database.entries().remove(entry);
+                    try {
+                        database.write();
+                    }
+                    catch(IOException e) {
+                        log.error(String.format("Failure removing host key from database: %s", e.getMessage()));
+                    }
+                }
+                return accepted;
             }
             catch(ConnectionCanceledException e) {
                 return false;

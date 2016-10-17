@@ -26,9 +26,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @version $Id:$
- */
 public class FinderSidebarService implements SidebarService {
     private static final Logger log = Logger.getLogger(FinderSidebarService.class);
 

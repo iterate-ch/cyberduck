@@ -32,4 +32,12 @@ public class DefaultTrustManagerHostnameCallback implements TrustManagerHostname
     public String getTarget() {
         return new PunycodeConverter().convert(host.getHostname());
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultTrustManagerHostnameCallback{");
+        sb.append("host=").append(host);
+        sb.append('}');
+        return sb.toString();
+    }
 }

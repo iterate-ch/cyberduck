@@ -21,9 +21,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class Expandrive5BookmarkCollection extends ExpandriveBookmarkCollection {
 
     @Override

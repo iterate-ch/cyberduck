@@ -10,9 +10,6 @@ import org.junit.Test;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-/**
- * @version $Id$
- */
 @Ignore
 public class LaunchServicesQuarantineServiceTest {
 

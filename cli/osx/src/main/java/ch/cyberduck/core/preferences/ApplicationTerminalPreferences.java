@@ -28,6 +28,7 @@ import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
+import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
@@ -58,5 +59,6 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         defaults.put("factory.symlink.class", WorkspaceSymlinkFeature.class.getName());
         defaults.put("factory.watchservice.class", FSEventWatchService.class.getName());
         defaults.put("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
+        defaults.put("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
     }
 }

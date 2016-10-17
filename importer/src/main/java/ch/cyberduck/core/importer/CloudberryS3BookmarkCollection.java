@@ -22,9 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-/**
- * @version $Id$
- */
 public class CloudberryS3BookmarkCollection extends CloudberryBookmarkCollection {
     private static final long serialVersionUID = -7710256176319275583L;
 

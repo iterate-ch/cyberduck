@@ -191,14 +191,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = new S3Protocol().getName();
                 View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -216,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             else
             {
@@ -225,12 +225,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (distribution)
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
                 }
                 else
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
                 }
             }
             if (anonymous)
@@ -1699,23 +1699,25 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
 
-            private String _encryption;
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly InfoController _infoController;
             private readonly Path _selected;
 
-            private String _storageClass;
             private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly IInfoView _view;
             private Credentials _credentials;
 
+            private String _encryption;
+
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
+
+            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1759,7 +1761,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
-                Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof (Redundancy));
+                Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof (Redundancy));
                 if (redundancyFeature != null)
                 {
                     List list = redundancyFeature.getClasses();
@@ -1797,7 +1799,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _encryption = algorithm.ToString();
                     }
                     // Add additional keys stored in KMS
-                    Set keys = encryptionFeature.getKeys(_infoController._prompt);
+                    Set keys = encryptionFeature.getKeys(_container, _infoController._prompt);
                     Iterator iterator = keys.iterator();
                     while (iterator.hasNext())
                     {
@@ -2684,6 +2686,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.ToggleMetadataSettings(true);
+                    _infoController.InitMetadata();
                 }
             }
         }
@@ -2695,7 +2698,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        permission, recursive))
+                        permission,
+                        recursive
+                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
+                            : new BooleanRecursiveCallback(false)))
             {
             }
 
@@ -2704,8 +2710,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                    bool recursive)
-                    : base(files, permission, recursive, infoController._controller)
+                    RecursiveCallback callback)
+                    : base(files, permission, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }

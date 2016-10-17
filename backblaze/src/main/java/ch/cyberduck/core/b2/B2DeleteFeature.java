@@ -45,6 +45,9 @@ public class B2DeleteFeature extends ThreadedDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
+            if(file.getType().contains(Path.Type.upload)) {
+                new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
+            }
             this.submit(file, new Implementation() {
                 @Override
                 public void delete(final Path file) throws BackgroundException {

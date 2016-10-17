@@ -23,7 +23,6 @@ import ch.cyberduck.binding.foundation.NSURL;
 public class SecurityScopedFilesystemBookmarkResolver extends AbstractPromptBookmarkResolver {
 
     public SecurityScopedFilesystemBookmarkResolver() {
-        super(NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationSuitableForBookmarkFile | NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope,
-                NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope);
+        super(NSURL.NSURLBookmarkCreationOptions.NSURLBookmarkCreationWithSecurityScope, NSURL.NSURLBookmarkResolutionOptions.NSURLBookmarkResolutionWithSecurityScope);
     }
 }

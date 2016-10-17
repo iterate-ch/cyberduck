@@ -49,17 +49,22 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftContainerListService implements RootListService {
     private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private boolean cdn;
+    /**
+     * Preload CDN configuration
+     */
+    private final boolean cdnPreload;
 
-    private boolean size;
+    /**
+     * Preload container size
+     */
+    private final boolean containerPreload;
 
-    private SwiftRegionService regionService;
-    private SwiftLocationFeature.SwiftRegion region;
+    private final SwiftLocationFeature.SwiftRegion region;
 
     public SwiftContainerListService(final SwiftSession session, final SwiftRegionService regionService, final SwiftLocationFeature.SwiftRegion region) {
         this(session, regionService, region,
@@ -70,12 +75,11 @@ public class SwiftContainerListService implements RootListService {
     public SwiftContainerListService(final SwiftSession session,
                                      final SwiftRegionService regionService,
                                      final SwiftLocationFeature.SwiftRegion region,
-                                     final boolean cdn, final boolean size) {
+                                     final boolean cdnPreload, final boolean containerPreload) {
         this.session = session;
-        this.regionService = regionService;
         this.region = region;
-        this.cdn = cdn;
-        this.size = size;
+        this.cdnPreload = cdnPreload;
+        this.containerPreload = containerPreload;
     }
 
     @Override
@@ -109,8 +113,8 @@ public class SwiftContainerListService implements RootListService {
                     listener.chunk(directory, containers);
                 }
                 while(!chunk.isEmpty());
-                if(cdn) {
-                    final DistributionConfiguration feature = new SwiftDistributionConfiguration(session, regionService);
+                if(cdnPreload) {
+                    final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
                     final ThreadPool<Void> pool = new DefaultThreadPool<Void>(2, "cdn");
                     try {
                         for(final Path container : containers) {
@@ -138,7 +142,7 @@ public class SwiftContainerListService implements RootListService {
                         pool.shutdown(true);
                     }
                 }
-                if(size) {
+                if(containerPreload) {
                     final ThreadPool<Long> pool = new DefaultThreadPool<Long>(2, "container");
                     try {
                         for(final Path container : containers) {

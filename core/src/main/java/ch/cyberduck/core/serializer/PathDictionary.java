@@ -49,9 +49,9 @@ public class PathDictionary {
         final Path path;
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            PathAttributes attributes = new PathAttributesDictionary(deserializer).deserialize(attributesObj);
+            final PathAttributes attributes = new PathAttributesDictionary(deserializer).deserialize(attributesObj);
             // Legacy
-            String legacyTypeObj = deserializer.create(attributesObj).stringForKey("Type");
+            final String legacyTypeObj = deserializer.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
                 if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
                     type.add(AbstractPath.Type.file);

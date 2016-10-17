@@ -18,8 +18,13 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
+
+import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -38,15 +43,30 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
         if(failure instanceof HttpResponseException) {
             final HttpResponseException response = (HttpResponseException) failure;
             this.append(buffer, response.getStatusMessage());
-            if(response.getStatusCode() == 401) {
-                // Invalid Credentials. Refresh the access token using the long-lived refresh token
-                return new LoginFailureException(buffer.toString(), failure);
-            }
-            if(response.getStatusCode() == 403) {
-                return new AccessDeniedException(buffer.toString(), failure);
-            }
-            if(response.getStatusCode() == 404) {
-                return new NotfoundException(buffer.toString(), failure);
+            switch(response.getStatusCode()) {
+                case HttpStatus.SC_UNAUTHORIZED:
+                    // Invalid Credentials. Refresh the access token using the long-lived refresh token
+                    return new LoginFailureException(buffer.toString(), failure);
+                case HttpStatus.SC_FORBIDDEN:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case HttpStatus.SC_NOT_FOUND:
+                    return new NotfoundException(buffer.toString(), failure);
+                case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_INSUFFICIENT_STORAGE:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_PAYMENT_REQUIRED:
+                    return new QuotaException(buffer.toString(), failure);
+                case HttpStatus.SC_BAD_REQUEST:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_METHOD_NOT_ALLOWED:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_NOT_IMPLEMENTED:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                    return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
         return super.map(failure);

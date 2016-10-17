@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.UUID;
 
 public class Host implements Serializable, Comparable<Host> {
 
@@ -390,7 +389,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     public String getUuid() {
         if(null == uuid) {
-            uuid = UUID.randomUUID().toString();
+            uuid = new UUIDRandomStringService().random();
         }
         return uuid;
     }

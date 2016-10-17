@@ -23,10 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-/**
- * @param <S>
- * @version $Id$
- */
 public interface Reader<S extends Serializable> {
 
     /**

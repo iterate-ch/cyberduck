@@ -36,6 +36,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
@@ -98,17 +99,25 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                     final String base = session.getClient().getRootUrl();
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
-                    request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
+                    if(status.isExists()) {
+                        final String fileid = new DriveFileidProvider(session).getFileid(file);
+                        request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s", base, fileid));
+                        // Upload the file
+                        request.setEntity(entity);
+                    }
+                    else {
+                        request = new HttpPost(String.format("%s/upload/drive/v3/files?uploadType=resumable", base));
+                        request.setEntity(new StringEntity("{\"name\": \""
+                                + file.getName() + "\", \"parents\": [\""
+                                + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}",
+                                ContentType.create("application/json", "UTF-8")));
+                    }
                     if(StringUtils.isNotBlank(status.getMime())) {
                         // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                         request.addHeader("X-Upload-Content-Type", status.getMime());
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getTokens().getAccessToken()));
-                    request.setEntity(new StringEntity("{\"name\": \""
-                            + file.getName() + "\", \"parents\": [\""
-                            + new DriveFileidProvider(session).getFileid(file.getParent()) + "\"]}",
-                            ContentType.create("application/json", "UTF-8")));
                     final CloseableHttpClient client = session.getBuilder().build(new DisabledTranscriptListener()).build();
                     final CloseableHttpResponse response = client.execute(request);
                     try {
@@ -123,29 +132,31 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
                     finally {
                         EntityUtils.consume(response.getEntity());
                     }
-                    if(response.containsHeader(HttpHeaders.LOCATION)) {
-                        final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
-                        // Upload the file
-                        final HttpPut put = new HttpPut(putTarget);
-                        put.setEntity(entity);
-                        final CloseableHttpResponse putResponse = client.execute(put);
-                        try {
-                            switch(putResponse.getStatusLine().getStatusCode()) {
-                                case HttpStatus.SC_OK:
-                                case HttpStatus.SC_CREATED:
-                                    break;
-                                default:
-                                    throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                            putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                    if(!status.isExists()) {
+                        if(response.containsHeader(HttpHeaders.LOCATION)) {
+                            final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+                            // Upload the file
+                            final HttpPut put = new HttpPut(putTarget);
+                            put.setEntity(entity);
+                            final CloseableHttpResponse putResponse = client.execute(put);
+                            try {
+                                switch(putResponse.getStatusLine().getStatusCode()) {
+                                    case HttpStatus.SC_OK:
+                                    case HttpStatus.SC_CREATED:
+                                        break;
+                                    default:
+                                        throw new DriveExceptionMappingService().map(new HttpResponseException(
+                                                putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                                }
+                            }
+                            finally {
+                                EntityUtils.consume(putResponse.getEntity());
                             }
                         }
-                        finally {
-                            EntityUtils.consume(putResponse.getEntity());
+                        else {
+                            throw new DriveExceptionMappingService().map(new HttpResponseException(
+                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
-                    }
-                    else {
-                        throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
                     return null;
                 }

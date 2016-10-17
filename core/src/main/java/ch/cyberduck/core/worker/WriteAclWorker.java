@@ -53,12 +53,7 @@ public class WriteAclWorker extends Worker<Boolean> {
     public WriteAclWorker(final List<Path> files,
                           final Acl acl, final boolean recursive,
                           final ProgressListener listener) {
-        this(files, acl, new RecursiveCallback<Acl>() {
-            @Override
-            public boolean recurse(final Path directory, final Acl value) {
-                return recursive;
-            }
-        }, listener);
+        this(files, acl, new BooleanRecursiveCallback<Acl>(recursive), listener);
     }
 
     public WriteAclWorker(final List<Path> files,
@@ -86,7 +81,6 @@ public class WriteAclWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), acl));
         feature.setPermission(file, acl);
-        file.attributes().setAcl(acl);
         if(file.isVolume()) {
             // No recursion when changing container ACL
         }

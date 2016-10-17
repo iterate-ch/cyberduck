@@ -18,7 +18,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -58,22 +57,5 @@ public class DAVDeleteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testDeleteFolder() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path folder = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(folder);
-        final Path file = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file);
-        new DAVDeleteFeature(session).delete(Arrays.asList(folder, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

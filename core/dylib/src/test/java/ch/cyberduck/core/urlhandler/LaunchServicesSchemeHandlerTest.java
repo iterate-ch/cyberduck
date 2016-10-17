@@ -10,9 +10,6 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class LaunchServicesSchemeHandlerTest {
 
     @Test

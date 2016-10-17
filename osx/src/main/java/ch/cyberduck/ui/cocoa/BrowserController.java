@@ -99,7 +99,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -130,7 +130,7 @@ import java.util.Set;
 
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
-    private static Logger log = Logger.getLogger(BrowserController.class);
+    private static final Logger log = Logger.getLogger(BrowserController.class);
 
     private final BookmarkCollection bookmarks
             = BookmarkCollection.defaultCollection();
@@ -674,34 +674,32 @@ public class BrowserController extends WindowController
         this.logDrawer.setDelegate(this.id());
     }
 
-    private NSButton donateButton;
+    private NSTitlebarAccessoryViewController accessoryView;
 
-    public void setDonateButton(NSButton donateButton) {
-        this.donateButton = donateButton;
-        this.donateButton.setTitle(LocaleFactory.localizedString("Get a donation key!", "License"));
-        this.donateButton.setAction(Foundation.selector("donateMenuClicked:"));
-        this.donateButton.sizeToFit();
+    public void setDonateButton(NSButton button) {
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            button.setTitle(LocaleFactory.localizedString("Get a donation key!", "License"));
+            button.setAction(Foundation.selector("donateMenuClicked:"));
+            button.sizeToFit();
+            NSView view = NSView.create();
+            view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
+            view.addSubview(button);
+            accessoryView = NSTitlebarAccessoryViewController.create();
+            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
+            accessoryView.setView(view);
+        }
     }
 
     private void addDonateWindowTitle() {
-        NSView parent = this.window().contentView().superview();
-        NSSize bounds = parent.frame().size;
-        NSSize size = donateButton.frame().size;
-        donateButton.setFrame(new NSRect(
-                        new NSPoint(
-                                bounds.width.intValue() - size.width.intValue() - 40,
-                                bounds.height.intValue() - size.height.intValue() + 3),
-                        new NSSize(
-                                size.width.intValue(),
-                                size.height.intValue())
-                )
-        );
-        donateButton.setAutoresizingMask(new NSUInteger(NSView.NSViewMinXMargin | NSView.NSViewMinYMargin));
-        parent.addSubview(donateButton);
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            window.addTitlebarAccessoryViewController(accessoryView);
+        }
     }
 
     public void removeDonateWindowTitle() {
-        donateButton.removeFromSuperview();
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            accessoryView.removeFromParentViewController();
+        }
     }
 
     protected enum BrowserTab {
@@ -2452,7 +2450,7 @@ public class BrowserController extends WindowController
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 

@@ -44,8 +44,7 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SFTPReadFeatureTest {
@@ -92,7 +91,7 @@ public class SFTPReadFeatureTest {
             in.close();
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -130,7 +129,18 @@ public class SFTPReadFeatureTest {
             System.arraycopy(content, 100, reference, 0, content.length - 100);
             assertArrayEquals(reference, buffer.toByteArray());
         }
-        new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
+    }
+
+    @Test
+    public void testUnconfirmedReadsNumber() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        final SFTPReadFeature feature = new SFTPReadFeature(session);
+        assertEquals(33, feature.getMaxUnconfirmedReads(new TransferStatus().length(TransferStatus.MEGA * 1L)));
+        assertEquals(64, feature.getMaxUnconfirmedReads(new TransferStatus().length((long) (TransferStatus.GIGA * 1.3))));
     }
 }

@@ -43,7 +43,6 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -92,6 +91,21 @@ public class SwiftSession extends HttpSession<Client> {
 
     protected Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
+
+    /**
+     * Preload account info
+     */
+    private boolean accountPreload = preferences.getBoolean("openstack.account.preload");
+
+    /**
+     * Preload CDN configuration
+     */
+    private boolean cdnPreload = preferences.getBoolean("openstack.cdn.preload");
+
+    /**
+     * Preload container size
+     */
+    private boolean containerPreload = preferences.getBoolean("openstack.container.size.preload");
 
     public SwiftSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -163,7 +177,7 @@ public class SwiftSession extends HttpSession<Client> {
                 log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
                 return;
             }
-            if(preferences.getBoolean("openstack.account.preload")) {
+            if(accountPreload) {
                 final ThreadPool<AccountInfo> pool = new DefaultThreadPool<AccountInfo>("accounts");
                 try {
                     for(Region region : client.getRegions()) {
@@ -198,11 +212,26 @@ public class SwiftSession extends HttpSession<Client> {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             return new SwiftContainerListService(this, regionService,
-                    new SwiftLocationFeature.SwiftRegion(host.getRegion())).list(directory, listener);
+                    new SwiftLocationFeature.SwiftRegion(host.getRegion()), cdnPreload, containerPreload).list(directory, listener);
         }
         else {
             return new SwiftObjectListService(this, regionService).list(directory, listener);
         }
+    }
+
+    public SwiftSession withAccountPreload(final boolean preload) {
+        this.accountPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withCdnPreload(final boolean preload) {
+        this.cdnPreload = preload;
+        return this;
+    }
+
+    public SwiftSession withContainerPreload(final boolean preload) {
+        this.containerPreload = preload;
+        return this;
     }
 
     @Override
@@ -251,16 +280,13 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) cdn;
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this, accounts);
+            return (T) new SwiftUrlProvider(this, accounts, regionService);
         }
         if(type == Attributes.class) {
             return (T) new SwiftAttributesFeature(this, regionService);
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
-        }
-        if(type == Quota.class) {
-            return (T) new SwiftQuotaFeature(this);
         }
         return super.getFeature(type);
     }

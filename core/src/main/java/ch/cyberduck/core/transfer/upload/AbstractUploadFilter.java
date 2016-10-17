@@ -18,6 +18,7 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Attributes;
@@ -55,7 +57,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.UUID;
 
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
@@ -158,12 +159,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(options.temporary) {
                 final Path renamed = new Path(file.getParent(),
                         MessageFormat.format(preferences.getProperty("queue.upload.file.temporary.format"),
-                                file.getName(), UUID.randomUUID().toString()), file.getType());
-                // File attributes should not change after calculate the hash code of the file reference
+                                file.getName(), new AlphanumericRandomStringService().random()), file.getType());
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Clear exist flag for file %s", file));
+                    log.debug(String.format("Set temporary filename %s", renamed));
                 }
-                status.rename(renamed);
+                status.temporary(renamed);
+                status.displayname(file);
             }
             status.setMime(mapping.getMime(file.getName()));
         }
@@ -171,33 +172,40 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             status.setLength(0L);
         }
         if(options.permissions) {
-            Permission permission = Permission.EMPTY;
             final UnixPermission feature = session.getFeature(UnixPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
                     // Already set when reading attributes of file
-                    permission = status.getRemote().getPermission();
+                    status.setPermission(status.getRemote().getPermission());
                 }
                 else {
-                    permission = feature.getDefault(local);
+                    status.setPermission(feature.getDefault(local));
                 }
             }
-            // Setting target UNIX permissions in transfer status
-            status.setPermission(permission);
+            else {
+                // Setting target UNIX permissions in transfer status
+                status.setPermission(Permission.EMPTY);
+            }
         }
         if(options.acl) {
-            Acl acl = Acl.EMPTY;
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    acl = feature.getPermission(file);
+                    try {
+                        status.setAcl(feature.getPermission(file));
+                    }
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        status.setAcl(feature.getDefault(local));
+                    }
                 }
                 else {
-                    acl = feature.getDefault(local);
+                    status.setAcl(feature.getDefault(local));
                 }
             }
-            // Setting target ACL in transfer status
-            status.setAcl(acl);
+            else {
+                // Setting target ACL in transfer status
+                status.setAcl(Acl.EMPTY);
+            }
         }
         if(options.timestamp) {
             final Timestamp feature = session.getFeature(Timestamp.class);
@@ -210,7 +218,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             final Headers feature = session.getFeature(Headers.class);
             if(feature != null) {
                 if(status.isExists()) {
-                    status.setMetadata(feature.getMetadata(file));
+                    try {
+                        status.setMetadata(feature.getMetadata(file));
+                    }
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        status.setMetadata(feature.getDefault(local));
+                    }
                 }
                 else {
                     status.setMetadata(feature.getDefault(local));
@@ -253,7 +266,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(this.options.temporary) {
                     final Move move = session.getFeature(Move.class);
-                    move.move(status.getRename().remote, file, status.isExists(), new Delete.DisabledCallback());
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Rename file %s to %s", status.getRename().remote, file));
+                    }
+                    move.move(file, status.getDisplayname().remote, status.isExists(), new Delete.DisabledCallback());
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

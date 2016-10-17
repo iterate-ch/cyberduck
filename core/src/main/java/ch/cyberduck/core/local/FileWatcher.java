@@ -40,7 +40,7 @@ import java.util.concurrent.CountDownLatch;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 public final class FileWatcher {
-    private static Logger log = Logger.getLogger(FileWatcher.class);
+    private static final Logger log = Logger.getLogger(FileWatcher.class);
 
     private RegisterWatchService monitor;
 

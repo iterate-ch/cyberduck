@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -65,8 +66,17 @@ public class B2LargeUploadPartService {
                 chunk = session.getClient().listUnfinishedLargeFiles(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
-                    if(StringUtils.equals(upload.getFileName(), containerService.getKey(file))) {
-                        uploads.add(upload);
+                    if(file.isDirectory()) {
+                        final Path parent = new Path(containerService.getContainer(file), upload.getFileName(),
+                                EnumSet.of(Path.Type.file, Path.Type.upload)).getParent();
+                        if(parent.equals(file)) {
+                            uploads.add(upload);
+                        }
+                    }
+                    else {
+                        if(StringUtils.equals(upload.getFileName(), containerService.getKey(file))) {
+                            uploads.add(upload);
+                        }
                     }
                 }
                 if(log.isInfoEnabled()) {
@@ -95,7 +105,6 @@ public class B2LargeUploadPartService {
     /**
      * @param fileid File id of unfinished large upload
      * @return List of parts
-     * @throws BackgroundException
      */
     public List<B2UploadPartResponse> list(final String fileid) throws BackgroundException {
         if(log.isInfoEnabled()) {

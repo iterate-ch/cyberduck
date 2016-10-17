@@ -47,7 +47,7 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        NSAlert alert = NSAlert.alert("Redirect", //title
+        final NSAlert alert = NSAlert.alert("Redirect", //title
                 LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"),
                 LocaleFactory.localizedString("Allow"), // defaultbutton
                 LocaleFactory.localizedString("Cancel", "Alert"), //alternative button

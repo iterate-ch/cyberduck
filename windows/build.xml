@@ -26,6 +26,11 @@
 
     <property name="app.name" value="Cyberduck"/>
 
+    <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
+
+    <property name="chocolatey.source" value="${setup}/chocolatey/cyberduck"/>
+    <property name="chocolatey.target" value="${build.deploy}"/>
+
     <!-- try to detect the process architecture (32/64bit) -->
     <condition property="programFiles" value="${env.ProgramFiles(x86)}">
         <available file="${env.ProgramFiles(x86)}"/>
@@ -119,5 +124,21 @@
                 <exclude name="*.exe"/>
             </fileset>
         </foreach>
+        <checksum file="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe"
+                  algorithm="sha-256" property="archive.sha256"/>
+        <copy todir="${chocolatey.target}">
+            <fileset dir="${chocolatey.source}">
+                <include name="*/**"/>
+            </fileset>
+        </copy>
+        <replace dir="${chocolatey.target}" summary="true" encoding="UTF-8">
+            <include name="*.nuspec"/>
+            <include name="tools/*.ps1"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${FEED}" value="${sparkle.feed}"/>
+            <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
+        </replace>
+        <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
 </project>

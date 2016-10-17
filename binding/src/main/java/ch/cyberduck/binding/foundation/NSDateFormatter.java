@@ -22,9 +22,6 @@ package ch.cyberduck.binding.foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-/**
- * @version $Id$
- */
 public abstract class NSDateFormatter extends NSFormatter {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSDateFormatter", _Class.class);
 
