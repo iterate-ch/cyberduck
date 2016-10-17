@@ -552,10 +552,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("filenameInputDidEndEditing:"),
-                NSControl.NSControlTextDidEndEditingNotification,
-                filenameField);
+        this.filenameField.setEditable(false);
     }
 
     public void setGroupField(NSTextField t) {
@@ -2187,28 +2184,6 @@ public class InfoController extends ToolbarWindowController {
      */
     private int numberOfFiles() {
         return null == files ? 0 : files.size();
-    }
-
-    @Action
-    public void filenameInputDidEndEditing(NSNotification sender) {
-        if(this.numberOfFiles() == 1) {
-            final Path current = getSelected();
-            if(!filenameField.stringValue().equals(current.getName())) {
-                if(StringUtils.contains(filenameField.stringValue(), Path.DELIMITER)) {
-                    AppKitFunctionsLibrary.beep();
-                    return;
-                }
-                if(StringUtils.isBlank(filenameField.stringValue())) {
-                    filenameField.setStringValue(current.getName());
-                }
-                else {
-                    final Path renamed = new Path(
-                            current.getParent(), filenameField.stringValue(), current.getType());
-                    new MoveController(controller, cache).rename(current, renamed);
-                    this.initWebUrl();
-                }
-            }
-        }
     }
 
     @Action
