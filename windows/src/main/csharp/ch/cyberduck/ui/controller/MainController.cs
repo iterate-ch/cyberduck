@@ -576,7 +576,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 new S3BrowserBookmarkCollection(),
                 new Expandrive3BookmarkCollection(),
                 new Expandrive4BookmarkCollection(),
-                new Expandrive5BookmarkCollection()
+                new Expandrive5BookmarkCollection(),
+                new NetDrive2BookmarkCollection()
             };
         }
 
