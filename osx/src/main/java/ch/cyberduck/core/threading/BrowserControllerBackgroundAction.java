@@ -21,13 +21,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.ui.cocoa.BrowserController;
 
 public abstract class BrowserControllerBackgroundAction<T> extends BrowserBackgroundAction<T> {
-
-    public BrowserControllerBackgroundAction(final BrowserController controller) {
-        super(controller, controller.getSession(), controller.getCache());
-    }
 
     public BrowserControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(controller, session, cache);

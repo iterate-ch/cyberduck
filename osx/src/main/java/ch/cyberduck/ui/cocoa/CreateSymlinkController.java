@@ -63,7 +63,7 @@ public class CreateSymlinkController extends FileController {
 
     protected void run(final Path selected, final String symlink, final boolean edit) {
         final Path link = new Path(this.getWorkdir(), symlink, EnumSet.of(Path.Type.file));
-        parent.background(new BrowserControllerBackgroundAction<Path>(parent) {
+        parent.background(new BrowserControllerBackgroundAction<Path>(parent, parent.getSession(), parent.getCache()) {
             @Override
             public Path run() throws BackgroundException {
                 // Symlink pointing to existing file
