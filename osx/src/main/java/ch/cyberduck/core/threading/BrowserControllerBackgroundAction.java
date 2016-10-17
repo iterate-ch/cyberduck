@@ -22,7 +22,7 @@ import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 
-public abstract class BrowserControllerBackgroundAction<T> extends BrowserBackgroundAction<T> {
+public abstract class BrowserControllerBackgroundAction<T> extends RegistryBackgroundAction<T> {
 
     public BrowserControllerBackgroundAction(final Controller controller, final Session<?> session, final Cache<Path> cache) {
         super(controller, session, cache);

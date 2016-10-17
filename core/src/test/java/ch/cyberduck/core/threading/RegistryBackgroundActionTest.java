@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class BrowserBackgroundActionTest {
+public class RegistryBackgroundActionTest {
 
     @Test
     public void testGetSessions() throws Exception {
-        assertNotNull(new BrowserBackgroundAction(new AbstractController() {
+        assertNotNull(new RegistryBackgroundAction(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 throw new UnsupportedOperationException();
