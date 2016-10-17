@@ -19,12 +19,15 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
@@ -36,11 +39,16 @@ import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -252,5 +260,51 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 }
             }
         });
+    }
+
+    @Override
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+        if(null == digest) {
+            return super.decorate(in, null);
+        }
+        else {
+            return new DigestInputStream(super.decorate(in, digest), digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() throws IOException {
+        MessageDigest digest = null;
+        if(PreferencesFactory.get().getBoolean("b2.upload.checksum.verify")) {
+            try {
+                digest = MessageDigest.getInstance("SHA1");
+            }
+            catch(NoSuchAlgorithmException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        }
+        return digest;
+    }
+
+    @Override
+    protected void post(final Path file, final MessageDigest digest, final B2UploadPartResponse response) throws BackgroundException {
+        if(null == digest) {
+            log.debug(String.format("Digest disabled for file %s", file));
+            return;
+        }
+        this.verify(file, digest, Checksum.parse(response.getContentSha1()));
+    }
+
+    protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
+        if(null == digest) {
+            log.debug(String.format("Digest verification disabled for file %s", file));
+            return;
+        }
+        final String expected = Hex.encodeHexString(digest.digest());
+        if(!checksum.equals(Checksum.parse(expected))) {
+            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                            checksum.algorithm.toString(), expected, checksum.hash));
+        }
     }
 }

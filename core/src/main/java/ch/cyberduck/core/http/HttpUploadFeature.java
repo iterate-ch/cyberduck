@@ -100,7 +100,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
         return null;
     }
 
-    protected void post(final Path file, final Digest pre, final Output response) throws BackgroundException {
+    protected void post(final Path file, final Digest digest, final Output response) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Received response %s", response));
         }
