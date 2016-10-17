@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
@@ -86,9 +87,10 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
+                        final Credentials credentials = host.getCredentials();
+                        if(StringUtils.isEmpty(credentials.getPassword())) {
                             try {
-                                prompt.prompt(host, host.getCredentials(),
+                                prompt.prompt(host, credentials,
                                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
@@ -100,7 +102,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                                 return null;
                             }
                         }
-                        return host.getCredentials().getPassword().toCharArray();
+                        return credentials.getPassword().toCharArray();
                     }
 
                     @Override
