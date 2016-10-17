@@ -62,7 +62,7 @@
                         <executions>
                             <execution>
                                 <id>run-ant-package-target</id>
-                                <phase>install</phase>
+                                <phase>deploy</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
