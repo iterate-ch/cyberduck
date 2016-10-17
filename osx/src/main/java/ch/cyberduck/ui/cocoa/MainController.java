@@ -985,7 +985,7 @@ public class MainController extends BundleController implements NSApplication.De
                 && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
                     Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                    new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
+                    new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                         LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         LocaleFactory.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
@@ -1005,7 +1005,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
                             Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                            new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString())
+                            new Application(preferences.getProperty("application.identifier"))
                     );
                 }
             }
