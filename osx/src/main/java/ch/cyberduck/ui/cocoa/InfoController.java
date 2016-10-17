@@ -64,7 +64,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.AlertRecursiveCallback;
-import ch.cyberduck.core.threading.BrowserControllerBackgroundAction;
+import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.BooleanRecursiveCallback;
@@ -756,7 +756,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Boolean>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Boolean>(controller, session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Logging logging = session.getFeature(Logging.class);
@@ -807,7 +807,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
@@ -845,7 +845,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     session.getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
@@ -874,7 +874,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     session.getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -946,7 +946,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     session.getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
@@ -1902,7 +1902,7 @@ public class InfoController extends ToolbarWindowController {
                     s3torrentUrlField.setToolTip(torrent.getHelp());
                 }
             }
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
@@ -2400,7 +2400,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
@@ -2438,7 +2438,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
@@ -2476,7 +2476,7 @@ public class InfoController extends ToolbarWindowController {
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
-            controller.background(new BrowserControllerBackgroundAction<Distribution>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Distribution>(controller, session, cache) {
                 private Distribution distribution = new Distribution(method, false);
 
                 @Override
@@ -2618,7 +2618,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new BrowserControllerBackgroundAction<Void>(controller, session, cache) {
+            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
