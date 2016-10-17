@@ -34,9 +34,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 
-public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCollection {
+public abstract class ExpandriveBookmarkCollection extends JsonBookmarkCollection {
     private static final Logger log = Logger.getLogger(ExpandriveBookmarkCollection.class);
 
     @Override
@@ -107,17 +106,6 @@ public abstract class ExpandriveBookmarkCollection extends ThirdpartyBookmarkCol
         }
         catch(IllegalStateException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
-        }
-    }
-
-    private String readNext(final String name, final JsonReader reader) throws IOException {
-        if(reader.peek() != JsonToken.NULL) {
-            return reader.nextString();
-        }
-        else {
-            reader.skipValue();
-            log.warn(String.format("No value for key %s", name));
-            return null;
         }
     }
 }
