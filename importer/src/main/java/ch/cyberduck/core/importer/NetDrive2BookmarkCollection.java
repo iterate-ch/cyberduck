@@ -15,7 +15,6 @@ package ch.cyberduck.core.importer;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -122,9 +121,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                                 break;
                         }
                     }
-                    final Host bookmark = HostParser.parse(ProtocolFactory.global, protocol, url);
-                    bookmark.getCredentials().setUsername(user);
-                    this.add(bookmark);
+                    this.add(HostParser.parse(ProtocolFactory.global, protocol, url));
                 }
             }
             reader.endArray();
