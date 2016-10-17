@@ -110,6 +110,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         private final String sessionId;
 
         private Long offset = 0L;
+        private Long written = 0L;
         private UploadSessionAppendV2Uploader uploader;
 
         public SegmentingUploadProxyOutputStream(final Path file, final TransferStatus status, final DbxUserFilesRequests client,
@@ -128,10 +129,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             if(offset + n > LIMIT) {
                 try {
                     DropboxWriteFeature.this.close(uploader);
-                    // Next segment
-                    uploader = open(files, sessionId, offset);
-                    // Replace stream
-                    out = uploader.getOutputStream();
+                    this.next();
                 }
                 catch(DbxException e) {
                     throw new IOException(e);
@@ -139,9 +137,21 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             }
         }
 
+        /**
+         * Open next chunk
+         */
+        private void next() throws DbxException {
+            // Next segment
+            uploader = open(files, sessionId, written);
+            // Replace stream
+            out = uploader.getOutputStream();
+            offset = 0L;
+        }
+
         @Override
         protected void afterWrite(final int n) throws IOException {
             offset += n;
+            written += n;
         }
 
         @Override
@@ -153,7 +163,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         public void close() throws IOException {
             try {
                 DropboxWriteFeature.this.close(uploader);
-                final UploadSessionFinishUploader finish = files.uploadSessionFinish(new UploadSessionCursor(sessionId, offset), CommitInfo.newBuilder(file.getAbsolute())
+                final UploadSessionFinishUploader finish = files.uploadSessionFinish(new UploadSessionCursor(sessionId, written), CommitInfo.newBuilder(file.getAbsolute())
                         .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
                         .withMode(WriteMode.OVERWRITE)
                         .build()
