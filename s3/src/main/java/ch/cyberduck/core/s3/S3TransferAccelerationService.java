@@ -83,8 +83,7 @@ public class S3TransferAccelerationService implements TransferAcceleration<S3Ses
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status,
-                          final ConnectionCallback prompt) throws BackgroundException {
+    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         try {
             // Read transfer acceleration state. Enabled | Suspended
             prompt.warn(bookmark.getProtocol(), LocaleFactory.localizedString("Enable Amazon S3 Transfer Acceleration", "S3"),
