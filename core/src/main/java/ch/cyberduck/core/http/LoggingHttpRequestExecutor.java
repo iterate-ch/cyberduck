@@ -39,7 +39,7 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     private final UseragentProvider useragentProvider
             = new PreferencesUseragentProvider();
 
-    private TranscriptListener listener;
+    private final TranscriptListener listener;
 
     public LoggingHttpRequestExecutor(final TranscriptListener listener) {
         this.listener = listener;
