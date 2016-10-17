@@ -683,6 +683,8 @@ public abstract class Preferences {
         defaults.put("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
         defaults.put("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
 
+        defaults.put("s3.accelerate.prompt", String.valueOf(false));
+
         /*
           A prefix to apply to log file names
          */
