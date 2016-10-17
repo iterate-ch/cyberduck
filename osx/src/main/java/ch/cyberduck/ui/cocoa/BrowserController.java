@@ -3412,7 +3412,7 @@ public class BrowserController extends WindowController
      * Unmount this session
      */
     private void disconnect(final Runnable disconnected) {
-        final InfoController c = InfoControllerFactory.get(BrowserController.this);
+        final InfoController c = InfoControllerFactory.get(this);
         if(null != c) {
             c.window().close();
         }
