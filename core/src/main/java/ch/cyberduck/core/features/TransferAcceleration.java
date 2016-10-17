@@ -26,6 +26,18 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface TransferAcceleration<C extends HttpSession<?>> {
     /**
+     * @param file File
+     * @return True if enabled
+     */
+    boolean getStatus(Path file) throws BackgroundException;
+
+    /**
+     * @param file    File
+     * @param enabled True to enable
+     */
+    void setStatus(Path file, boolean enabled) throws BackgroundException;
+
+    /**
      * @param bookmark Connection
      * @param file     File to transfer
      * @param status   File transfer status

@@ -27,7 +27,17 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DisabledUDTTransferOption<C extends HttpSession<?>> implements UDTTransferOption<C> {
+public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implements UDTTransferAcceleration<C> {
+    @Override
+    public boolean getStatus(final Path file) {
+        return false;
+    }
+
+    @Override
+    public void setStatus(final Path file, final boolean enabled) {
+        //
+    }
+
     @Override
     public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         return false;

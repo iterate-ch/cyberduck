@@ -39,11 +39,11 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.UDTProxyConfigurator;
 import ch.cyberduck.core.udt.UDTProxyProvider;
-import ch.cyberduck.core.udt.UDTTransferOption;
+import ch.cyberduck.core.udt.UDTTransferAcceleration;
 
 import java.util.List;
 
-public class QloudsonicTransferOption implements UDTTransferOption {
+public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -54,11 +54,11 @@ public class QloudsonicTransferOption implements UDTTransferOption {
 
     private Long udtThreshold = Long.MAX_VALUE;
 
-    public QloudsonicTransferOption(final Session session) {
+    public QloudsonicTransferAcceleration(final Session session) {
         this(session, new QloudsonicVoucherFinder());
     }
 
-    public QloudsonicTransferOption(final Session session, final QloudsonicVoucherFinder voucher) {
+    public QloudsonicTransferAcceleration(final Session session, final QloudsonicVoucherFinder voucher) {
         this.session = session;
         this.voucher = voucher;
     }
@@ -66,6 +66,16 @@ public class QloudsonicTransferOption implements UDTTransferOption {
     @Override
     public UDTProxyProvider provider() {
         return new QloudsonicProxyProvider(voucher);
+    }
+
+    @Override
+    public boolean getStatus(final Path file) {
+        return preferences.getBoolean(String.format("connection.qloudsonic.%s", session.getHost().getHostname()));
+    }
+
+    @Override
+    public void setStatus(final Path file, final boolean enabled) {
+        preferences.setProperty(String.format("connection.qloudsonic.%s", session.getHost().getHostname()), enabled);
     }
 
     @Override
@@ -130,7 +140,7 @@ public class QloudsonicTransferOption implements UDTTransferOption {
         return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key));
     }
 
-    public QloudsonicTransferOption withUdtThreshold(final Long threshold) {
+    public QloudsonicTransferAcceleration withUdtThreshold(final Long threshold) {
         this.udtThreshold = threshold;
         return this;
     }

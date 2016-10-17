@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -57,25 +58,35 @@ public class S3TransferAccelerationService implements TransferAcceleration<S3Ses
     }
 
     @Override
+    public boolean getStatus(final Path file) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        try {
+            return session.getClient().getAccelerateConfig(bucket.getName()).isEnabled();
+        }
+        catch(S3ServiceException failure) {
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", failure, bucket);
+        }
+    }
+
+    @Override
+    public void setStatus(final Path file, final boolean enabled) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        try {
+            if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
+                throw new InteroperabilityException("The name of the bucket used for Transfer Acceleration must be DNS-compliant and must not contain periods.");
+            }
+            session.getClient().setAccelerateConfig(bucket.getName(), new AccelerateConfig(enabled));
+        }
+        catch(S3ServiceException failure) {
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", failure, bucket);
+        }
+    }
+
+    @Override
     public boolean prompt(final Host bookmark, final Path file, final TransferStatus status,
                           final ConnectionCallback prompt) throws BackgroundException {
-        final Path bucket = containerService.getContainer(file);
-        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-            // The name of the bucket used for Transfer Acceleration must be DNS-compliant and must not contain periods (".").
-            return false;
-        }
         try {
             // Read transfer acceleration state. Enabled | Suspended
-            final boolean enabled;
-            try {
-                enabled = session.getClient().getAccelerateConfig(bucket.getName()).isEnabled();
-            }
-            catch(S3ServiceException failure) {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", failure, bucket);
-            }
-            if(enabled) {
-                return true;
-            }
             prompt.warn(bookmark.getProtocol(), LocaleFactory.localizedString("Enable Amazon S3 Transfer Acceleration", "S3"),
                     LocaleFactory.localizedString("Amazon S3 Transfer Acceleration makes data transfers into and out of Amazon S3 buckets faster, and only charges if there is a performance improvement.", "S3"),
                     LocaleFactory.localizedString("Continue", "Credentials"),
@@ -87,12 +98,7 @@ public class S3TransferAccelerationService implements TransferAcceleration<S3Ses
         }
         catch(ConnectionCanceledException e) {
             // Enable transfer acceleration for bucket
-            try {
-                session.getClient().setAccelerateConfig(bucket.getName(), new AccelerateConfig(true));
-            }
-            catch(S3ServiceException failure) {
-                throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", failure, bucket);
-            }
+            this.setStatus(file, true);
             return true;
         }
     }
