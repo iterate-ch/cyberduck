@@ -73,7 +73,7 @@ public class DriveUrlProviderTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final DriveUrlProvider provider = new DriveUrlProvider(session);
+        final DriveUrlProvider provider = new DriveUrlProvider();
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertNotNull(provider.toUrl(test));
         assertTrue(provider.toUrl(test).isEmpty());

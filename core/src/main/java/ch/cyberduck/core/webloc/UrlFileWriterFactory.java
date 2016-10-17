@@ -1,4 +1,4 @@
-package ch.cyberduck.core.googledrive;
+package ch.cyberduck.core.webloc;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,20 +15,15 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.Factory;
 
-public class DriveUrlProvider implements UrlProvider {
+public class UrlFileWriterFactory extends Factory<UrlFileWriter> {
 
-    @Override
-    public DescriptiveUrlBag toUrl(Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isFile()) {
-            if(file.attributes().getLink() != null) {
-                list.add(file.attributes().getLink());
-            }
-        }
-        return list;
+    public UrlFileWriterFactory() {
+        super("factory.urlfilewriter.class");
+    }
+
+    public static UrlFileWriter get() {
+        return new UrlFileWriterFactory().create();
     }
 }

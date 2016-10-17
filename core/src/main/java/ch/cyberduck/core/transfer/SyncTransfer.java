@@ -178,10 +178,17 @@ public class SyncTransfer extends Transfer {
         final Set<TransferItem> children = new HashSet<TransferItem>();
         final Find finder = new DefaultFindFeature(session).withCache(cache);
         if(finder.find(directory)) {
-            children.addAll(download.list(session, directory, local, listener));
+            final List<TransferItem> list = download.list(session, directory, local, listener);
+            for(TransferItem item : list) {
+                // Nullify attributes not available for local file to fix default comparison with DefaultPathReference.
+                item.remote.attributes().setVersionId(null);
+                item.remote.attributes().setRegion(null);
+            }
+            children.addAll(list);
         }
         if(local.exists()) {
-            children.addAll(upload.list(session, directory, local, listener));
+            final List<TransferItem> list = upload.list(session, directory, local, listener);
+            children.addAll(list);
         }
         return new ArrayList<TransferItem>(children);
     }
