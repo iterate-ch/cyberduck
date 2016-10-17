@@ -32,6 +32,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -60,7 +61,6 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.udt.qloudsonic.QloudsonicTransferOption;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -273,10 +273,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Download.class) {
-            return (T) new S3ThresholdDownloadService(this, trust, key, new QloudsonicTransferOption());
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3ThresholdDownloadService(this, trust, key, new S3TransferAccelerationService(this));
+            }
+            return (T) new S3ThresholdDownloadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this, trust, key, new QloudsonicTransferOption());
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this));
+            }
+            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Directory.class) {
             return (T) new S3DirectoryFeature(this);
@@ -367,6 +373,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Home.class) {
             return (T) new S3HomeFinderService(this);
+        }
+        if(type == TransferAcceleration.class) {
+            return (T) new S3TransferAccelerationService(this);
         }
         return super.getFeature(type);
     }

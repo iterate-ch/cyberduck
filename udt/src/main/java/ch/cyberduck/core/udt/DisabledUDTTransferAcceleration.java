@@ -19,13 +19,33 @@ package ch.cyberduck.core.udt;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DisabledUDTTransferOption implements UDTTransferOption {
+public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implements UDTTransferAcceleration<C> {
     @Override
-    public boolean prompt(final Host bookmark, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+    public boolean getStatus(final Path file) {
         return false;
+    }
+
+    @Override
+    public void setStatus(final Path file, final boolean enabled) {
+        //
+    }
+
+    @Override
+    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+        return false;
+    }
+
+    @Override
+    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+        throw new ConnectionCanceledException();
     }
 
     @Override
