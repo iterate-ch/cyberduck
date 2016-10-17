@@ -128,15 +128,23 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             if(offset + n > LIMIT) {
                 try {
                     DropboxWriteFeature.this.close(uploader);
-                    // Next segment
-                    uploader = open(files, sessionId, offset);
-                    // Replace stream
-                    out = uploader.getOutputStream();
+                    this.next();
                 }
                 catch(DbxException e) {
                     throw new IOException(e);
                 }
             }
+        }
+
+        /**
+         * Open next chunk
+         */
+        private void next() throws DbxException {
+            // Next segment
+            uploader = open(files, sessionId, offset);
+            // Replace stream
+            out = uploader.getOutputStream();
+            offset = 0L;
         }
 
         @Override
