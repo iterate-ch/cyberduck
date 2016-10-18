@@ -26,9 +26,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -38,6 +39,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class DAVTimestampFeatureTest {
 
     @Test
@@ -58,12 +60,11 @@ public class DAVTimestampFeatureTest {
     }
 
     @Test
-    @Ignore
     public void testSetTimestampOwncloud() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "192.168.0.23", new Credentials(
-                "owncloud", "owncloud"
+        final Host host = new Host(new DAVSSLProtocol(), "demo.nextcloud.com", new Credentials(
+                "test", "test"
         ));
-        host.setDefaultPath("/owncloud/remote.php/webdav");
+        host.setDefaultPath("/remote.php/webdav");
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
