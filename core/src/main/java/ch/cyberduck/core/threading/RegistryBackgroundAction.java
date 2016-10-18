@@ -28,55 +28,55 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 
-public abstract class BrowserBackgroundAction<T> extends ControllerBackgroundAction<T> {
+public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
     private BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
-    public BrowserBackgroundAction(final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache) {
+    public RegistryBackgroundAction(final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache) {
         super(controller, session, cache);
     }
 
-    public BrowserBackgroundAction(final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript) {
+    public RegistryBackgroundAction(final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache,
+                                    final ProgressListener progress,
+                                    final TranscriptListener transcript) {
         super(controller, session, cache, progress, transcript);
     }
 
-    public BrowserBackgroundAction(final ConnectionService connection,
-                                   final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache) {
+    public RegistryBackgroundAction(final ConnectionService connection,
+                                    final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache) {
         super(connection, controller, session, cache, controller, controller);
     }
 
-    public BrowserBackgroundAction(final ConnectionService connection,
-                                   final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript) {
+    public RegistryBackgroundAction(final ConnectionService connection,
+                                    final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache,
+                                    final ProgressListener progress,
+                                    final TranscriptListener transcript) {
         super(connection, controller, session, cache, progress, transcript);
     }
 
-    public BrowserBackgroundAction(final LoginService login,
-                                   final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript,
-                                   final HostKeyCallback key) {
+    public RegistryBackgroundAction(final LoginService login,
+                                    final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache,
+                                    final ProgressListener progress,
+                                    final TranscriptListener transcript,
+                                    final HostKeyCallback key) {
         super(login, controller, session, cache, progress, transcript, key);
     }
 
-    public BrowserBackgroundAction(final LoginService login,
-                                   final Controller controller,
-                                   final Session<?> session,
-                                   final Cache<Path> cache) {
+    public RegistryBackgroundAction(final LoginService login,
+                                    final Controller controller,
+                                    final Session<?> session,
+                                    final Cache<Path> cache) {
         super(login, controller, session, cache, controller, controller,
                 HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
     }

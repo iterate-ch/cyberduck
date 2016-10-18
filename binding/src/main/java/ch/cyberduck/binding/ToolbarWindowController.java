@@ -1,9 +1,8 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.binding;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,12 +13,8 @@ package ch.cyberduck.ui.cocoa;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSTabView;
 import ch.cyberduck.binding.application.NSTabViewItem;

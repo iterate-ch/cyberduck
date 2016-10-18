@@ -1,5 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -25,15 +27,30 @@ public final class InfoControllerFactory {
                 return c;
             }
         }
-        final InfoController c = new InfoController(controller, files) {
+        final InfoController info = new InfoController(controller, controller.getSession(), controller.getCache(), files) {
+            private WindowListener listener;
+
+            @Override
+            public void setWindow(final NSWindow window) {
+                listener = new WindowListener() {
+                    @Override
+                    public void windowWillClose() {
+                        window.close();
+                    }
+                };
+                controller.addListener(listener);
+                super.setWindow(window);
+            }
+
             @Override
             public void windowWillClose(final NSNotification notification) {
+                controller.removeListener(listener);
                 InfoControllerFactory.open.remove(controller);
                 super.windowWillClose(notification);
             }
         };
-        open.put(controller, c);
-        return c;
+        open.put(controller, info);
+        return info;
     }
 
     /**
