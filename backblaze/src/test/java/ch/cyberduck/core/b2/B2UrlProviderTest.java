@@ -49,7 +49,7 @@ public class B2UrlProviderTest {
         final B2UrlProvider provider = new B2UrlProvider(session);
         assertEquals(0, provider.toUrl(bucket).size());
         assertEquals(1, provider.toUrl(new Path(bucket, "f", EnumSet.of(Path.Type.file))).size());
-        assertEquals("https://f001.backblaze.com/file/test-cyberduck/f",
+        assertEquals("https://f001.backblazeb2.com/file/test-cyberduck/f",
                 provider.toUrl(new Path(bucket, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
         session.close();
     }
