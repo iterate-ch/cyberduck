@@ -377,12 +377,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     local.rename(status.getDisplayname().local);
                 }
                 if(options.open) {
-                    if(status.getDisplayname().local != null) {
-                        launcher.open(status.getDisplayname().local);
-                    }
-                    else {
-                        launcher.open(local);
-                    }
+                    launcher.open(local);
                 }
             }
         }
