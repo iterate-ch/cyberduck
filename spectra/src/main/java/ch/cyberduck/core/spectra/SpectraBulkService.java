@@ -140,6 +140,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         job = helper.startWriteJob(
                                 container.getKey().getName(), container.getValue(), WriteJobOptions.create()
+                                        .withMaxUploadSize(Integer.MAX_VALUE)
                                         .withChecksumType(Checksum.Type.CRC32));
                         break;
                     default:
