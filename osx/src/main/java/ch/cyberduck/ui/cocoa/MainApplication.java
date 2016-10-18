@@ -278,7 +278,7 @@ public final class MainApplication extends ProxyController implements NSApplicat
                 }
                 else {
                     final NSAlert alert = NSAlert.alert(
-                            LocaleFactory.localizedString("Not a valid donation key", "License"),
+                            LocaleFactory.localizedString("Not a valid registration key", "License"),
                             LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
                             LocaleFactory.localizedString("Continue", "License"), //default
                             null, //other

@@ -256,8 +256,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            _bc.WarningBox(LocaleFactory.localizedString("Not a valid donation key", "License"),
-                                LocaleFactory.localizedString("Not a valid donation key", "License"),
+                            _bc.WarningBox(LocaleFactory.localizedString("Not a valid registration key", "License"),
+                                LocaleFactory.localizedString("Not a valid registration key", "License"),
                                 LocaleFactory.localizedString("This donation key does not appear to be valid.",
                                     "License"), null,
                                 String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
