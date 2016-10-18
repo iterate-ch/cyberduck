@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +92,8 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
+            final BackgroundException failure = new SFTPExceptionMappingService().map(e);
+            throw new LoginFailureException(failure.getDetail(), failure);
         }
     }
 }
