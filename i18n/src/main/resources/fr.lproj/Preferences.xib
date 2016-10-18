@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11185.3" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1050" identifier="macosx"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11185.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -206,7 +206,7 @@
                 <box title="Navigateur" id="31">
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="TG8-21-4yf">
+                    <view key="contentView" id="iFR-U9-WX4">
                         <rect key="frame" x="2" y="2" width="469" height="158"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -273,7 +273,7 @@
                 <box title="Connexion" id="46">
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="cqx-gb-rXw">
+                    <view key="contentView" id="UEQ-tJ-gif">
                         <rect key="frame" x="2" y="2" width="469" height="185"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -345,7 +345,7 @@
                 <box title="Signets" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="k0i-Et-TMh">
+                    <view key="contentView" id="43i-wO-OOS">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -379,7 +379,7 @@
                 <box title="Apparence" id="71">
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="S0h-sX-Xdv">
+                    <view key="contentView" id="O3W-JC-BP1">
                         <rect key="frame" x="2" y="2" width="469" height="78"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -413,7 +413,7 @@
                 <box title="Général" id="78">
                     <rect key="frame" x="17" y="216" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="rkb-Oe-LB9">
+                    <view key="contentView" id="q4y-UH-N2p">
                         <rect key="frame" x="2" y="2" width="469" height="169"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1192,7 +1192,7 @@
                 <box title="Gestionnaire de protocole par défaut" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="jGd-Rs-lCX">
+                    <view key="contentView" id="g9Q-bu-hWU">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1230,7 +1230,7 @@
                 <box title="Gestionnaire de protocole par défaut" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="TMM-pt-6F7">
+                    <view key="contentView" id="nVI-xJ-L6n">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1268,7 +1268,7 @@
                 <box title="Encodage du texte" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="K5c-Rb-07R">
+                    <view key="contentView" id="3bh-up-nj3">
                         <rect key="frame" x="2" y="2" width="468" height="94"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1301,7 +1301,7 @@
                 <box title="Proxys" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="i3q-kE-G03">
+                    <view key="contentView" id="sqP-KH-WnK">
                         <rect key="frame" x="2" y="2" width="469" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1327,7 +1327,7 @@
                 <box title="Temps d'attente" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="ZPb-Da-YNo">
+                    <view key="contentView" id="5Nd-Ln-5rZ">
                         <rect key="frame" x="2" y="2" width="469" height="117"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1442,7 +1442,7 @@
                 <box title="Mise à jour" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="Z40-97-S0q">
+                    <view key="contentView" id="AFU-MO-7ef">
                         <rect key="frame" x="2" y="2" width="469" height="112"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1496,7 +1496,7 @@
                 <box title="Limiter les transferts" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="Tgn-Fi-yR0">
+                    <view key="contentView" id="Zu5-Uu-zIt">
                         <rect key="frame" x="2" y="2" width="469" height="130"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1588,7 +1588,7 @@
                 <box title="Chiffrement" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="JoN-gM-eKt">
+                    <view key="contentView" id="7cX-lA-1DN">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1616,7 +1616,7 @@
                 <box title="Lieu par défaut du bucket" id="356">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="jIr-75-kBM">
+                    <view key="contentView" id="8SZ-JD-iXq">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1644,7 +1644,7 @@
                 <box title="Classe d'enregistrement par défaut" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="MJv-Sr-Jss">
+                    <view key="contentView" id="6QR-LU-3l2">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1679,7 +1679,7 @@
                 <box title="Éditeur" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="u4h-vE-46L">
+                    <view key="contentView" id="Rfw-q2-mb0">
                         <rect key="frame" x="2" y="2" width="469" height="115"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1726,7 +1726,7 @@
                 <box title="Téléversements" id="379">
                     <rect key="frame" x="17" y="16" width="473" height="178"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="tyj-ee-BFP">
+                    <view key="contentView" id="Jq7-Gh-skZ">
                         <rect key="frame" x="2" y="2" width="469" height="161"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1771,7 +1771,7 @@
                 <box title="Téléchargements" id="388">
                     <rect key="frame" x="17" y="198" width="473" height="158"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="5Hf-9K-qfw">
+                    <view key="contentView" id="gaz-Mu-3FZ">
                         <rect key="frame" x="2" y="2" width="469" height="141"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1859,7 +1859,7 @@
                 <box title="Langue" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="ONg-Gq-B8c">
+                    <view key="contentView" id="i9a-zK-8tM">
                         <rect key="frame" x="2" y="2" width="469" height="81"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>

@@ -92,16 +92,16 @@ import_strings() {
     else
 	{
 	    # Checkout previous version from base language
-        git show `git log -2 --format="%H" $base_language/$nibfile | tail -n 1`:./$base_language/$nibfile > $base_language/$nibfile.prev
+        git show `git log -2 --format="%H" $base_language/$nibfile | tail -n 1`:./$base_language/$nibfile > $base_language/$nibfile.prev.xib
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
 		$nibtool    --write $language/$nibfile \
                     --incremental-file $language/$nibfile \
-                    --previous-file $base_language/$nibfile.prev \
+                    --previous-file $base_language/$nibfile.prev.xib \
                     --import-strings-file $language/$nib.strings \
                     --localize-incremental \
                     $base_language/$nibfile
-        rm $base_language/$nibfile.prev
+        rm $base_language/$nibfile.prev.xib
 	}
     fi;
 }

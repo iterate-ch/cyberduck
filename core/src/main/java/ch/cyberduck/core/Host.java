@@ -310,25 +310,25 @@ public class Host implements Serializable, Comparable<Host> {
         browser {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Use browser connection");
+                return LocaleFactory.localizedString("Use browser connection", "Transfer");
             }
         },
         newconnection {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Open new connection");
+                return LocaleFactory.localizedString("Open new connection", "Transfer");
             }
         },
         concurrent {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Open multiple connections");
+                return LocaleFactory.localizedString("Open multiple connections", "Transfer");
             }
         },
         udt {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)");
+                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)", "Transfer");
             }
         }
     }
