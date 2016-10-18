@@ -1,8 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7706" systemVersion="15A204h" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7706"/>
+        <development version="7000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDPreferencesController">
@@ -104,9 +106,9 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="Podešavanja" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Podešavanja" animationBehavior="default" id="3" customClass="NSPanel">
+        <window title="Podešavanja" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
@@ -118,97 +120,83 @@
                     <tabView allowsTruncatedLabels="NO" type="noTabsNoBorder" id="5">
                         <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <animations/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
                             <tabViewItem label="Opšte" identifier="general" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Pretraživač" identifier="browser" id="8">
                                 <view key="view" id="9">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Prebacivanja" identifier="queue" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Editor" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="FTP" identifier="ftp" id="14">
                                 <view key="view" id="15">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="SFTP" identifier="sftp" id="16">
                                 <view key="view" id="17">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="S3" identifier="s3" id="18">
                                 <view key="view" id="19">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Google Dokumenta" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Protok" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Konekcija" identifier="connection" id="24">
                                 <view key="view" id="25">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Ažuriraj" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Jezik" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
-                                    <animations/>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
                 </subviews>
-                <animations/>
             </view>
         </window>
         <customView id="30">
@@ -218,14 +206,13 @@
                 <box title="Pretraživač" id="31">
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="odC-gi-cIb">
                         <rect key="frame" x="2" y="2" width="469" height="158"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="32">
                                 <rect key="frame" x="263" y="42" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -239,7 +226,6 @@
                             <button id="36">
                                 <rect key="frame" x="10" y="72" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Otvori novi prozor pretraživača pri pokretanju programa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -248,7 +234,6 @@
                             <textField verticalHuggingPriority="750" id="38">
                                 <rect key="frame" x="9" y="48" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Poveži se sa bukmarkom:" id="39">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -258,7 +243,6 @@
                             <button id="40">
                                 <rect key="frame" x="10" y="130" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Snimi radno okruženje" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -267,7 +251,6 @@
                             <textField verticalHuggingPriority="750" id="42">
                                 <rect key="frame" x="9" y="96" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ovo će sačuvati sve otvorene prozore pretraživača i ponovo uspostaviti konekciju prilikom pokretanja aplikacije." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -277,7 +260,6 @@
                             <textField verticalHuggingPriority="750" id="44">
                                 <rect key="frame" x="9" y="12" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="title">Otvara prazan prozor pretraživača kada se aplikacija pokrene. Povezivanje sa izabranim bukmarkom je otvorena za novi pretraživač.</string>
@@ -286,23 +268,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Konekcija" id="46">
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="TcI-IV-oNz">
                         <rect key="frame" x="2" y="2" width="469" height="185"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="47">
                                 <rect key="frame" x="17" y="39" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Podrazumevani protokol:" id="48">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -312,7 +289,6 @@
                             <popUpButton verticalHuggingPriority="750" id="49">
                                 <rect key="frame" x="263" y="33" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -326,7 +302,6 @@
                             <button id="53">
                                 <rect key="frame" x="10" y="157" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Koristi bazu lozinki" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -335,7 +310,6 @@
                             <button id="55">
                                 <rect key="frame" x="10" y="99" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Potvrdi odjavljivanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -344,7 +318,6 @@
                             <textField verticalHuggingPriority="750" id="57">
                                 <rect key="frame" x="9" y="123" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Pretražuje lozinke u listi lozinki. Snima lozinku u listi lozinki nakon uspešnog prijavljivanja." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -354,7 +327,6 @@
                             <textField verticalHuggingPriority="750" id="59">
                                 <rect key="frame" x="9" y="65" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Pitaj pre zatvaranja konektovanog prozora pretraživača." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -362,14 +334,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="61">
             <rect key="frame" x="0.0" y="0.0" width="555" height="422"/>
@@ -378,14 +345,13 @@
                 <box title="Bukmarkovi" id="62">
                     <rect key="frame" x="17" y="16" width="521" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="S69-O7-k3f">
                         <rect key="frame" x="2" y="2" width="517" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="63">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title="Koristi male ikone" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -401,7 +367,6 @@
                             <textField verticalHuggingPriority="750" id="69">
                                 <rect key="frame" x="9" y="40" width="499" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Prilikom korišćenja malih ikona, prikazuje se samo nadimak bukmarka." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -409,23 +374,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Izgled" id="71">
                     <rect key="frame" x="17" y="117" width="521" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="ISX-fc-jID">
                         <rect key="frame" x="2" y="2" width="517" height="78"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Koristi pozadinske linije u dve boje" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -434,7 +394,6 @@
                             <button id="74">
                                 <rect key="frame" x="10" y="30" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Horizontalne linije" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -443,30 +402,24 @@
                             <button id="76">
                                 <rect key="frame" x="10" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Vertikalne linije" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Opšte" id="78">
                     <rect key="frame" x="17" y="216" width="521" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="qDC-5g-qGV">
                         <rect key="frame" x="2" y="2" width="517" height="169"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="79">
                                 <rect key="frame" x="10" y="141" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Prikaži skrivene datoteke" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -475,7 +428,6 @@
                             <button id="81">
                                 <rect key="frame" x="10" y="121" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Dvostruki klik otvara datoteku u eksternom editoru" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -484,7 +436,6 @@
                             <button id="83">
                                 <rect key="frame" x="10" y="81" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Prozor za informacije uvek prikazuje trenutni izbor" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -493,7 +444,6 @@
                             <button id="85">
                                 <rect key="frame" x="10" y="61" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Koristi elastične foldere prilikom prevlačenja datoteka" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -505,19 +455,17 @@
                             <slider verticalHuggingPriority="750" id="87">
                                 <rect key="frame" x="164" y="31" width="216" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <sliderCell key="cell" controlSize="small" alignment="left" minValue="0.10000000000000001" maxValue="2" doubleValue="1.05" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
                                     <font key="font" size="12" name="Helvetica"/>
                                 </sliderCell>
                                 <connections>
-                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand.useDelay" id="529"/>
                                     <binding destination="314" name="value" keyPath="values.browser.view.autoexpand.delay" id="528"/>
+                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand.useDelay" id="529"/>
                                 </connections>
                             </slider>
                             <textField verticalHuggingPriority="750" id="89">
                                 <rect key="frame" x="120" y="12" width="101" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Kratko" id="90">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -527,7 +475,6 @@
                             <textField verticalHuggingPriority="750" id="91">
                                 <rect key="frame" x="222" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Srednje" id="92">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -537,7 +484,6 @@
                             <textField verticalHuggingPriority="750" id="93">
                                 <rect key="frame" x="324" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Dugo" id="94">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -547,7 +493,6 @@
                             <button id="95">
                                 <rect key="frame" x="56" y="35" width="102" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="sa kašnjenjem:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -560,21 +505,15 @@
                             <button id="97">
                                 <rect key="frame" x="10" y="101" width="485" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Povratnim ključem se izabira fascikla ili datoteka koju treba preimenovati" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="99">
             <rect key="frame" x="0.0" y="0.0" width="574" height="379"/>
@@ -583,7 +522,6 @@
                 <tabView id="100">
                     <rect key="frame" x="13" y="11" width="548" height="354"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <animations/>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
                         <tabViewItem label="Opšte" identifier="1" id="101">
@@ -594,7 +532,6 @@
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Otvori preuzete datoteke sa podrazumevanom aplikacijom" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -603,7 +540,6 @@
                                     <button id="105">
                                         <rect key="frame" x="10" y="214" width="404" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Ukloni iz prozora za transfere kada je preuzimanje završeno" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -612,7 +548,6 @@
                                     <textField verticalHuggingPriority="750" id="107">
                                         <rect key="frame" x="34" y="120" width="128" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Postojeće datoteke:" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -622,7 +557,6 @@
                                     <textField verticalHuggingPriority="750" id="109">
                                         <rect key="frame" x="2" y="145" width="160" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Fascikla za preuzimanja:" id="110">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -632,7 +566,6 @@
                                     <popUpButton verticalHuggingPriority="750" id="111">
                                         <rect key="frame" x="164" y="114" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="114" id="112">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
@@ -646,7 +579,6 @@
                                     <button id="115">
                                         <rect key="frame" x="10" y="254" width="397" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Postavi prozor transfera napred kada započne prebacivanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -655,42 +587,31 @@
                                     <button id="117">
                                         <rect key="frame" x="10" y="234" width="401" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zatvori prozor sa transferima kada je prebacivanje završeno" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="119">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="119">
                                         <rect key="frame" x="12" y="73" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="120">
                                         <rect key="frame" x="9" y="76" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Prebacivanja na server" id="121">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="122">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="122">
                                         <rect key="frame" x="12" y="191" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="123">
                                         <rect key="frame" x="9" y="194" width="510" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Preuzimanja" id="124">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -700,7 +621,6 @@
                                     <textField verticalHuggingPriority="750" id="125">
                                         <rect key="frame" x="9" y="28" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Postojeće datoteke:" id="126">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -710,7 +630,6 @@
                                     <popUpButton verticalHuggingPriority="750" id="127">
                                         <rect key="frame" x="164" y="22" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="130" id="128">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
@@ -724,25 +643,22 @@
                                     <button id="131">
                                         <rect key="frame" x="165" y="96" width="356" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
-                                        <buttonCell key="cell" type="check" title="Uvek zameni fajlove novim kada ponovo prebacujem na server" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Uvek zameni fajlove novim kada ponovo prebacujem na server" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
+                                            <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                     <button id="133">
                                         <rect key="frame" x="165" y="4" width="356" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
-                                        <buttonCell key="cell" type="check" title="Uvek zameni fajlove novim kada ponovo prebacujem na server" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" title="Uvek zameni fajlove novim kada ponovo prebacujem na server" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                            <font key="font" metaFont="smallSystem"/>
+                                            <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                     <popUpButton verticalHuggingPriority="750" id="135">
                                         <rect key="frame" x="164" y="139" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="138" id="136">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
@@ -756,7 +672,6 @@
                                     <textField verticalHuggingPriority="750" id="139">
                                         <rect key="frame" x="9" y="278" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Prebaci datoteke:" id="140">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -766,7 +681,6 @@
                                     <popUpButton verticalHuggingPriority="750" id="141">
                                         <rect key="frame" x="164" y="272" width="192" height="26"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title="Otvori novu konekciju" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
@@ -781,14 +695,12 @@
                                     <button id="146">
                                         <rect key="frame" x="10" y="52" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Prebacivanje sa privremenim imenima" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
                                 </subviews>
-                                <animations/>
                             </view>
                         </tabViewItem>
                         <tabViewItem label="Dozvole" identifier="2" id="148">
@@ -799,7 +711,6 @@
                                     <button id="150">
                                         <rect key="frame" x="10" y="115" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Promeni dozvole" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -808,7 +719,6 @@
                                     <button id="152">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Promeni dozvole" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -817,7 +727,6 @@
                                     <button id="154">
                                         <rect key="frame" x="220" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -826,7 +735,6 @@
                                     <button id="156">
                                         <rect key="frame" x="303" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -835,7 +743,6 @@
                                     <textField verticalHuggingPriority="750" id="158">
                                         <rect key="frame" x="9" y="19" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ostali" id="159">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -845,7 +752,6 @@
                                     <button id="160">
                                         <rect key="frame" x="220" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -854,7 +760,6 @@
                                     <textField verticalHuggingPriority="750" id="162">
                                         <rect key="frame" x="9" y="37" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Grupa" id="163">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -864,7 +769,6 @@
                                     <button id="164">
                                         <rect key="frame" x="303" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -873,7 +777,6 @@
                                     <button id="166">
                                         <rect key="frame" x="303" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -882,7 +785,6 @@
                                     <button id="168">
                                         <rect key="frame" x="137" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -891,7 +793,6 @@
                                     <button id="170">
                                         <rect key="frame" x="137" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -900,7 +801,6 @@
                                     <button id="172">
                                         <rect key="frame" x="137" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -909,7 +809,6 @@
                                     <textField verticalHuggingPriority="750" id="174">
                                         <rect key="frame" x="9" y="54" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Vlasnik" id="175">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -919,7 +818,6 @@
                                     <button id="176">
                                         <rect key="frame" x="220" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -928,7 +826,6 @@
                                     <button id="178">
                                         <rect key="frame" x="137" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -937,7 +834,6 @@
                                     <button id="180">
                                         <rect key="frame" x="303" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -946,7 +842,6 @@
                                     <textField verticalHuggingPriority="750" id="182">
                                         <rect key="frame" x="9" y="179" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Grupa" id="183">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -956,7 +851,6 @@
                                     <button id="184">
                                         <rect key="frame" x="303" y="177" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -965,7 +859,6 @@
                                     <button id="186">
                                         <rect key="frame" x="137" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -974,7 +867,6 @@
                                     <button id="188">
                                         <rect key="frame" x="137" y="177" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Pročitaj" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -983,7 +875,6 @@
                                     <button id="190">
                                         <rect key="frame" x="303" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -992,7 +883,6 @@
                                     <button id="192">
                                         <rect key="frame" x="220" y="177" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1001,7 +891,6 @@
                                     <button id="194">
                                         <rect key="frame" x="220" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1010,7 +899,6 @@
                                     <button id="196">
                                         <rect key="frame" x="220" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zapiši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1019,7 +907,6 @@
                                     <textField verticalHuggingPriority="750" id="198">
                                         <rect key="frame" x="9" y="161" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ostali" id="199">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1029,7 +916,6 @@
                                     <textField verticalHuggingPriority="750" id="200">
                                         <rect key="frame" x="9" y="196" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Vlasnik" id="201">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1039,7 +925,6 @@
                                     <button id="202">
                                         <rect key="frame" x="48" y="91" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="radio" title="dozvolama lokalnih datoteka ili fascikli" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1048,7 +933,6 @@
                                     <button id="204">
                                         <rect key="frame" x="48" y="74" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="radio" title="ovim dozvolama:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1057,7 +941,6 @@
                                     <button id="206">
                                         <rect key="frame" x="48" y="233" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="radio" title="dozvolama datoteka ili fascikli na udaljenom serveru" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1066,42 +949,31 @@
                                     <button id="208">
                                         <rect key="frame" x="48" y="216" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="radio" title="ovim dozvolama:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="210">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="210">
                                         <rect key="frame" x="12" y="279" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="211">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Preuzimanja" id="212">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="213">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="213">
                                         <rect key="frame" x="12" y="137" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="214">
                                         <rect key="frame" x="9" y="140" width="510" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Prebacivanja na server" id="215">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1111,7 +983,6 @@
                                     <popUpButton verticalHuggingPriority="750" id="216">
                                         <rect key="frame" x="191" y="76" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title="za datoteke" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="219" id="217">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
@@ -1126,7 +997,6 @@
                                     <popUpButton verticalHuggingPriority="750" id="221">
                                         <rect key="frame" x="191" y="218" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <popUpButtonCell key="cell" type="push" title="za datoteke" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
@@ -1139,7 +1009,6 @@
                                         </popUpButtonCell>
                                     </popUpButton>
                                 </subviews>
-                                <animations/>
                             </view>
                         </tabViewItem>
                         <tabViewItem label="Vremenski pečat" identifier="3" id="226">
@@ -1150,7 +1019,6 @@
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zadrži datum izmene" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
@@ -1159,42 +1027,31 @@
                                     <button id="230">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Zadrži datum izmene" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="232">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="232">
                                         <rect key="frame" x="12" y="279" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="233">
                                         <rect key="frame" x="9" y="282" width="510" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Preuzimanja" id="234">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="235">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="235">
                                         <rect key="frame" x="12" y="222" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="236">
                                         <rect key="frame" x="9" y="225" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Prebacivanja na server" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1202,7 +1059,6 @@
                                         </textFieldCell>
                                     </textField>
                                 </subviews>
-                                <animations/>
                             </view>
                         </tabViewItem>
                         <tabViewItem label="Napredno" identifier="4" id="238">
@@ -1210,36 +1066,26 @@
                                 <rect key="frame" x="10" y="33" width="528" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="240">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="240">
                                         <rect key="frame" x="12" y="279" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="241">
                                         <rect key="frame" x="9" y="282" width="510" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Preuzimanja" id="242">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                     </textField>
-                                    <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="243">
+                                    <box verticalHuggingPriority="750" boxType="separator" id="243">
                                         <rect key="frame" x="12" y="152" width="504" height="5"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
-                                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <font key="titleFont" metaFont="system"/>
                                     </box>
                                     <textField verticalHuggingPriority="750" id="244">
                                         <rect key="frame" x="9" y="155" width="510" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <animations/>
                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Prebacivanja na server" id="245">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1249,75 +1095,60 @@
                                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="246">
                                         <rect key="frame" x="12" y="177" width="504" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <clipView key="contentView" id="Qkq-Ff-6QN">
+                                        <clipView key="contentView" id="vAD-UH-Zk7">
                                             <rect key="frame" x="1" y="1" width="502" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textView importsGraphics="NO" richText="NO" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="248">
+                                                <textView importsGraphics="NO" richText="NO" usesFontPanel="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="248">
                                                     <rect key="frame" x="0.0" y="0.0" width="1507" height="74"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <animations/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <size key="minSize" width="502" height="74"/>
-                                                    <size key="maxSize" width="1509" height="10000000"/>
+                                                    <size key="maxSize" width="1507" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <size key="minSize" width="502" height="74"/>
-                                                    <size key="maxSize" width="1509" height="10000000"/>
                                                 </textView>
                                             </subviews>
-                                            <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
-                                        <animations/>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                         </scroller>
                                     </scrollView>
                                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="251">
                                         <rect key="frame" x="12" y="50" width="504" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <clipView key="contentView" id="CWy-0C-pcZ">
+                                        <clipView key="contentView" id="jKQ-pd-auB">
                                             <rect key="frame" x="1" y="1" width="502" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textView importsGraphics="NO" richText="NO" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="253">
+                                                <textView importsGraphics="NO" richText="NO" usesFontPanel="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="253">
                                                     <rect key="frame" x="0.0" y="0.0" width="1440" height="74"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <animations/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <size key="minSize" width="502" height="74"/>
-                                                    <size key="maxSize" width="1442" height="10000000"/>
+                                                    <size key="maxSize" width="1440" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                    <size key="minSize" width="502" height="74"/>
-                                                    <size key="maxSize" width="1442" height="10000000"/>
                                                 </textView>
                                             </subviews>
-                                            <animations/>
                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
-                                        <animations/>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <animations/>
                                         </scroller>
                                     </scrollView>
                                     <button id="256">
                                         <rect key="frame" x="9" y="257" width="312" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Preskoči datoteke koje pripadaju standardnom izrazu:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1326,7 +1157,6 @@
                                     <button id="258">
                                         <rect key="frame" x="9" y="130" width="312" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="check" title="Preskoči datoteke koje pripadaju standardnom izrazu:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
@@ -1335,7 +1165,6 @@
                                     <button verticalHuggingPriority="750" id="260">
                                         <rect key="frame" x="423" y="257" width="94" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="push" title="Podrazumevano" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
@@ -1344,20 +1173,17 @@
                                     <button verticalHuggingPriority="750" id="262">
                                         <rect key="frame" x="423" y="130" width="94" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <animations/>
                                         <buttonCell key="cell" type="push" title="Podrazumevano" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
                                     </button>
                                 </subviews>
-                                <animations/>
                             </view>
                         </tabViewItem>
                     </tabViewItems>
                 </tabView>
             </subviews>
-            <animations/>
         </customView>
         <customView id="264">
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
@@ -1366,14 +1192,13 @@
                 <box title="Podrazumevani protokol" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="ZvX-3y-Mdw">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="266">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="269" id="267">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1387,7 +1212,6 @@
                             <textField verticalHuggingPriority="750" id="270">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevanu aplikaciju koja će se otvoriti za datoteke ili linkove koji ukazuju na FTP lokaciju." id="271">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1395,14 +1219,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="272">
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
@@ -1411,14 +1230,13 @@
                 <box title="Podrazumevani protokol" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="Amj-SJ-bqG">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="274">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="277" id="275">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1432,7 +1250,6 @@
                             <textField verticalHuggingPriority="750" id="278">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevanu aplikaciju koja će se otvoriti za datoteke ili linkove koji ukazuju na SFTP lokaciju." id="279">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1440,14 +1257,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="280">
             <rect key="frame" x="0.0" y="0.0" width="508" height="383"/>
@@ -1456,14 +1268,13 @@
                 <box title="Kodni raspored teksta" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="liR-XH-VvK">
                         <rect key="frame" x="2" y="2" width="468" height="94"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="282">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1477,7 +1288,6 @@
                             <textField verticalHuggingPriority="750" id="286">
                                 <rect key="frame" x="9" y="40" width="455" height="42"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="title">Izabrani kodni raspored se koristi za konverziju karaktera u imenima koja se prikazuju u pretraživaču. Ovaj kodni raspored bi trebao da se poklapa sa onim na serveru.</string>
@@ -1486,23 +1296,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Proksi" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="k51-ye-UHf">
                         <rect key="frame" x="2" y="2" width="469" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button verticalHuggingPriority="750" id="289">
                                 <rect key="frame" x="151" y="3" width="156" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="push" title="Promeni podešavanja…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1511,30 +1316,24 @@
                             <button id="291">
                                 <rect key="frame" x="10" y="49" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Iskoristi sistemska podešavanja proksija" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Vreme za pokušaje" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="Dsn-3R-UMr">
                         <rect key="frame" x="2" y="2" width="469" height="117"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="294">
                                 <rect key="frame" x="9" y="88" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Vreme za pokušaje povezivanja (u sekundama):" id="295">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1544,7 +1343,6 @@
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="296">
                                 <rect key="frame" x="349" y="35" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
                                 <connections>
                                     <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="525"/>
@@ -1553,7 +1351,6 @@
                             <textField verticalHuggingPriority="750" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="299">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1566,7 +1363,6 @@
                             <textField verticalHuggingPriority="750" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Broj ponovnih pokušaja:" id="301">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1576,7 +1372,6 @@
                             <textField verticalHuggingPriority="750" id="302">
                                 <rect key="frame" x="9" y="39" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="sa kašnjenjem (u sekundama):" id="303">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1586,7 +1381,6 @@
                             <button id="304">
                                 <rect key="frame" x="10" y="62" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Ponovi neuspešne mrežne zadatke" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1598,7 +1392,6 @@
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="306">
                                 <rect key="frame" x="349" y="9" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
                                 <connections>
                                     <binding destination="314" name="value" keyPath="values.connection.retry" id="522"/>
@@ -1607,7 +1400,6 @@
                             <textField verticalHuggingPriority="750" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="309">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1620,8 +1412,7 @@
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="310">
                                 <rect key="frame" x="349" y="84" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
-                                <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="60" doubleValue="10" id="311"/>
+                                <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
                                 <connections>
                                     <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="520"/>
                                 </connections>
@@ -1629,7 +1420,6 @@
                             <textField verticalHuggingPriority="750" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="313">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1640,14 +1430,9 @@
                                 </connections>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <userDefaultsController representsSharedInstance="YES" id="314"/>
         <customView id="315">
@@ -1657,14 +1442,13 @@
                 <box title="Ažuriraj" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="RAk-TF-SRL">
                         <rect key="frame" x="2" y="2" width="469" height="112"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="317">
                                 <rect key="frame" x="10" y="84" width="291" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Automatski proveri ima li ažurirane verzije" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1673,7 +1457,6 @@
                             <button verticalHuggingPriority="750" id="319">
                                 <rect key="frame" x="118" y="38" width="232" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="push" title="Proveri ima li ažurirane verzije" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -1682,7 +1465,6 @@
                             <textField verticalHuggingPriority="750" id="321">
                                 <rect key="frame" x="9" y="12" width="447" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" id="322">
                                     <dateFormatter key="formatter" formatterBehavior="pre10_4" dateFormat="%x" id="323"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -1696,7 +1478,6 @@
                             <popUpButton verticalHuggingPriority="750" id="324">
                                 <rect key="frame" x="304" y="79" width="150" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1704,14 +1485,9 @@
                                 </popUpButtonCell>
                             </popUpButton>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="327">
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
@@ -1720,40 +1496,30 @@
                 <box title="Propusti prebacivanja" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="w7d-0Y-eTk">
                         <rect key="frame" x="2" y="2" width="469" height="130"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="329">
+                            <box verticalHuggingPriority="750" boxType="separator" id="329">
                                 <rect key="frame" x="12" y="101" width="445" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
-                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <font key="titleFont" metaFont="system"/>
                             </box>
                             <textField verticalHuggingPriority="750" id="330">
                                 <rect key="frame" x="9" y="104" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Preuzimanja" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <box verticalHuggingPriority="750" title="Kutija" boxType="separator" titlePosition="noTitle" id="332">
+                            <box verticalHuggingPriority="750" boxType="separator" id="332">
                                 <rect key="frame" x="12" y="38" width="445" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
-                                <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                                <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <font key="titleFont" metaFont="system"/>
                             </box>
                             <textField verticalHuggingPriority="750" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Prebacivanja na server" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1763,7 +1529,6 @@
                             <popUpButton verticalHuggingPriority="750" id="335">
                                 <rect key="frame" x="254" y="71" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="339" id="336">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1780,7 +1545,6 @@
                             <textField verticalHuggingPriority="750" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maksimalni protok:" id="341">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1790,7 +1554,6 @@
                             <popUpButton verticalHuggingPriority="750" id="342">
                                 <rect key="frame" x="254" y="8" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="346" id="343">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1807,7 +1570,6 @@
                             <textField verticalHuggingPriority="750" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maksimalni protok:" id="348">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1815,14 +1577,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="349">
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
@@ -1831,14 +1588,13 @@
                 <box title="Enkripcija" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="TKJ-8e-8fz">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="351">
                                 <rect key="frame" x="8" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="352">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1848,7 +1604,6 @@
                             <textField verticalHuggingPriority="750" id="354">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite algoritam kojim ćete enkodirati datoteke prilikom prenosa." id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1856,23 +1611,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Podrazumevana lokacija za skup logova" id="356">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="c6E-jv-iaG">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="357">
                                 <rect key="frame" x="9" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="358">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1882,7 +1632,6 @@
                             <textField verticalHuggingPriority="750" id="360">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Podrazumevana lokacija u kojoj će se snimati grupni logovi." id="361">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1890,23 +1639,18 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Podrazumevana klasa skladištenja" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="3b7-Lg-GMk">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="363">
                                 <rect key="frame" x="8" y="8" width="255" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="364">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1916,7 +1660,6 @@
                             <textField verticalHuggingPriority="750" id="366">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="title">Izaberite Smanjeno Skladištenje Nepotrebnih datoteka (RRS) da smanjite troškove tako što ćete skladištiti nekritične, obnovljive datoteke u smanjenim količinama.</string>
@@ -1925,14 +1668,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="368">
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
@@ -1941,14 +1679,13 @@
                 <box title="Editor" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="vLz-3H-NIr">
                         <rect key="frame" x="2" y="2" width="469" height="115"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="370">
                                 <rect key="frame" x="9" y="43" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -1962,7 +1699,6 @@
                             <textField verticalHuggingPriority="750" id="374">
                                 <rect key="frame" x="9" y="75" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevani tekstualni editor za otvaranje datoteka." id="375">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1972,21 +1708,15 @@
                             <button id="376">
                                 <rect key="frame" x="10" y="11" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Uvek koristi podrazumevani tekstualni editor" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="378">
             <rect key="frame" x="0.0" y="0.0" width="507" height="376"/>
@@ -1995,14 +1725,13 @@
                 <box title="Prebacivanja na server" id="379">
                     <rect key="frame" x="17" y="16" width="473" height="178"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="RHu-XS-i8Y">
                         <rect key="frame" x="2" y="2" width="469" height="161"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="380">
                                 <rect key="frame" x="9" y="71" width="451" height="56"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Možete snimiti prenešene datoteke u Google Docs formatu da bi ste kasnije izmenili njihov sadržaj sa mreže." id="381">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2012,7 +1741,6 @@
                             <button id="382">
                                 <rect key="frame" x="10" y="133" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Konvertuj u Google Docs format" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="383">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -2021,7 +1749,6 @@
                             <textField verticalHuggingPriority="750" id="384">
                                 <rect key="frame" x="9" y="13" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Pokušaj da izvučeš tekst i kreiraš nov dokument iz PNG, JPEG i GIF slika koje su snimljene na server." id="385">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2031,30 +1758,24 @@
                             <button id="386">
                                 <rect key="frame" x="10" y="47" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <buttonCell key="cell" type="check" title="Optičko prepoznavanje karaktera (OCR)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="387">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
                 <box title="Preuzimanja" id="388">
                     <rect key="frame" x="17" y="198" width="473" height="158"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="BbH-2O-WSG">
                         <rect key="frame" x="2" y="2" width="469" height="141"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="389">
                                 <rect key="frame" x="235" y="69" width="225" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="390">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -2064,7 +1785,6 @@
                             <textField verticalHuggingPriority="750" id="392">
                                 <rect key="frame" x="9" y="101" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="393">
                                     <font key="font" metaFont="smallSystem"/>
                                     <string key="title">Google Docs podržava eksportovanje dokumenata u različitim formatima. Izaberite podrazumevani format za eksportovanje preuzetih dokumenata.</string>
@@ -2075,7 +1795,6 @@
                             <textField verticalHuggingPriority="750" id="394">
                                 <rect key="frame" x="9" y="75" width="225" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dokumenti:" id="395">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2085,7 +1804,6 @@
                             <textField verticalHuggingPriority="750" id="396">
                                 <rect key="frame" x="9" y="46" width="225" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Prezentacije:" id="397">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2095,7 +1813,6 @@
                             <textField verticalHuggingPriority="750" id="398">
                                 <rect key="frame" x="9" y="15" width="225" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Tabele:" id="399">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2105,7 +1822,6 @@
                             <popUpButton verticalHuggingPriority="750" id="400">
                                 <rect key="frame" x="235" y="39" width="225" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="403" id="401">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -2119,7 +1835,6 @@
                             <popUpButton verticalHuggingPriority="750" id="404">
                                 <rect key="frame" x="235" y="9" width="225" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="407" id="405">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -2131,14 +1846,9 @@
                                 </popUpButtonCell>
                             </popUpButton>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <customView id="408">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
@@ -2147,14 +1857,13 @@
                 <box title="Jezik" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="35y-ta-Aj3">
                         <rect key="frame" x="2" y="2" width="469" height="81"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="410">
                                 <rect key="frame" x="9" y="41" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Promene će biti vidljive kada pokrenete aplikaciju sledeći put." id="411">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -2164,7 +1873,6 @@
                             <popUpButton verticalHuggingPriority="750" id="412">
                                 <rect key="frame" x="9" y="9" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -2172,64 +1880,49 @@
                                 </popUpButtonCell>
                             </popUpButton>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
         <view id="415">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="416">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="417">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="418">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="419">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="420">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="421">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="422">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="423">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
         <view id="424">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
             <autoresizingMask key="autoresizingMask"/>
-            <animations/>
         </view>
     </objects>
 </document>
