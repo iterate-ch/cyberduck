@@ -142,7 +142,7 @@ public class LocalTest {
         final TestLocal n = new TestLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         n.mkdir();
         n.rename(l);
-        assertFalse(n.exists());
+        assertTrue(n.exists());
         assertTrue(l.exists());
         l.delete();
         assertFalse(l.exists());
@@ -156,7 +156,7 @@ public class LocalTest {
         new DefaultLocalTouchFeature().touch(n);
         l.rename(n);
         assertTrue(n.exists());
-        assertFalse(l.exists());
+        assertTrue(l.exists());
         n.delete();
     }
 
