@@ -186,9 +186,9 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         final DAVSession session = new DAVSession(host);
         assertFalse(session.alert(new DisabledConnectionCallback()));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(session.isSecured());
         try {
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            assertTrue(session.isSecured());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
@@ -201,13 +201,13 @@ public class DAVSessionTest {
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         try {
+            session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
         catch(InteroperabilityException e) {
-            assertEquals("Not a valid DAV response.", e.getDetail());
+            assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
@@ -393,19 +393,6 @@ public class DAVSessionTest {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
-    public void testInteroperabilityDocumentsEpflFailure() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "documents.epfl.ch");
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager(), "TLSv12"));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertTrue(session.isConnected());
-        assertTrue(session.isSecured());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.getAcceptedIssuers().isEmpty());
-        session.close();
-    }
-
     public void testLoginChangeUsername() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav/basic");
@@ -552,10 +539,10 @@ public class DAVSessionTest {
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-                assertEquals(3, certs.length);
-                assertEquals("CN=StartCom Class 2 Primary Intermediate Server CA,OU=Secure Digital Certificate Signing,O=StartCom Ltd.,C=IL",
+                assertEquals(2, certs.length);
+                assertEquals("CN=Let's Encrypt Authority X3,O=Let's Encrypt,C=US",
                         certs[1].getSubjectX500Principal().getName());
-                assertEquals("C=CH,ST=Bern,L=Bern,O=iterate GmbH,CN=*.cyberduck.io,E=hostmaster@cyberduck.io",
+                assertEquals("CN=svn.cyberduck.io",
                         certs[0].getSubjectDN().getName());
                 verified.set(true);
                 super.verify(hostname, certs, cipher);
