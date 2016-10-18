@@ -57,7 +57,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * Absolute path in local file system
      */
-    protected final String path;
+    private String path;
 
     private final LocalAttributes attributes;
 
@@ -299,6 +299,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
             Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
+            path = renamed.getAbsolute();
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
@@ -420,7 +421,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         final String prefix = FilenameUtils.getPrefix(this.getAbsolute());
         String parent = this.getAbsolute();
-        while(!parent.equals(prefix)){
+        while(!parent.equals(prefix)) {
             parent = this.parent(parent);
             if(directory.getAbsolute().equals(parent)) {
                 return true;
