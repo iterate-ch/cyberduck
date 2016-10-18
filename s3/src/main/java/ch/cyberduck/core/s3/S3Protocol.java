@@ -78,13 +78,16 @@ public final class S3Protocol extends AbstractProtocol {
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
                 new S3LocationFeature.S3Region("us-east-1"),
-                new S3LocationFeature.S3Region("eu-west-1"),
-                new S3LocationFeature.S3Region("eu-central-1"),
+                new S3LocationFeature.S3Region("us-east-2"),
                 new S3LocationFeature.S3Region("us-west-1"),
                 new S3LocationFeature.S3Region("us-west-2"),
+                new S3LocationFeature.S3Region("eu-west-1"),
+                new S3LocationFeature.S3Region("eu-central-1"),
                 new S3LocationFeature.S3Region("ap-southeast-1"),
                 new S3LocationFeature.S3Region("ap-southeast-2"),
                 new S3LocationFeature.S3Region("ap-northeast-1"),
+                new S3LocationFeature.S3Region("ap-northeast-2"),
+                new S3LocationFeature.S3Region("ap-south-1"),
                 new S3LocationFeature.S3Region("sa-east-1")
         ));
     }
