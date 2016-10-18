@@ -324,9 +324,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
                     }
                 }
-                if(options.open) {
-                    launcher.open(local);
-                }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 if(file.isDirectory()) {
@@ -378,6 +375,14 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             if(file.isFile()) {
                 if(status.getDisplayname().local != null) {
                     local.rename(status.getDisplayname().local);
+                }
+                if(options.open) {
+                    if(status.getDisplayname().local != null) {
+                        launcher.open(status.getDisplayname().local);
+                    }
+                    else {
+                        launcher.open(local);
+                    }
                 }
             }
         }
