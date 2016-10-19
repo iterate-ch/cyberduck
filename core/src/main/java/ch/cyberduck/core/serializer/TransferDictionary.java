@@ -206,6 +206,10 @@ public class TransferDictionary {
                 log.warn(String.format("Unknown transfer type %s", kindObj));
                 return null;
         }
+        final Object uuidObj = dict.stringForKey("UUID");
+        if(uuidObj != null) {
+            transfer.setUuid(uuidObj.toString());
+        }
         final Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             transfer.setSize((long) Double.parseDouble(sizeObj.toString()));
