@@ -24,7 +24,9 @@ import ch.cyberduck.binding.foundation.NSCopying;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 
+import org.rococoa.Foundation;
 import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -81,7 +83,11 @@ public abstract class NSFont extends NSObject implements NSCopying {
     }
 
     public static NSFont monospacedDigitSystemFontOfSize(double fontSize) {
-        return CLASS.monospacedDigitSystemFontOfSize_weight(new CGFloat(fontSize), new CGFloat(NSFontWeightRegular));
+        if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
+                Foundation.selector("monospacedDigitSystemFontOfSize:weight:"))) {
+            return CLASS.monospacedDigitSystemFontOfSize_weight(new CGFloat(fontSize), new CGFloat(NSFontWeightRegular));
+        }
+        return systemFontOfSize(fontSize);
     }
 
     public static double smallSystemFontSize() {
