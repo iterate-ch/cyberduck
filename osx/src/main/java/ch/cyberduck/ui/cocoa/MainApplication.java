@@ -574,6 +574,8 @@ public final class MainApplication extends ProxyController implements NSApplicat
      */
     @Override
     public void applicationDidFinishLaunching(NSNotification notification) {
+        // Opt-in of automatic window tabbing
+        NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
         controller.loadBundle();
         // Open default windows
