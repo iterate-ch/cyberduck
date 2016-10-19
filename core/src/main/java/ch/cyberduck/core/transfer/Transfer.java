@@ -171,10 +171,10 @@ public abstract class Transfer implements Serializable {
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(this.getUuid(), "UUID");
         if(size != null) {
-            dict.setStringForKey(String.valueOf(this.getSize()), "Size");
+            dict.setStringForKey(String.valueOf(size), "Size");
         }
         if(transferred != null) {
-            dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
+            dict.setStringForKey(String.valueOf(transferred), "Current");
         }
         if(timestamp != null) {
             dict.setStringForKey(String.valueOf(timestamp.getTime()), "Timestamp");
