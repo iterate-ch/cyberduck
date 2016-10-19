@@ -47,11 +47,11 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     };
 
-    private static final String DEFAULT_PREFIX = "bookmark.";
+    private static final String DEFAULT_PREFIX = "bookmark";
 
     private static final long serialVersionUID = -675342412129904735L;
 
-    private String prefix;
+    private final String prefix;
 
     /**
      * @return Singleton instance
@@ -71,18 +71,32 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     public FolderBookmarkCollection(final Local f, final String prefix) {
         super(f);
-        this.prefix = prefix;
+        this.prefix = String.format("%s.", prefix);
     }
 
     @Override
     public void collectionItemAdded(final Host bookmark) {
-        if(this.isLocked()) {
-            log.debug("Skip indexing collection while loading");
+        try {
+            if(this.isLocked()) {
+                log.debug("Skip indexing collection while loading");
+            }
+            else {
+                this.index();
+            }
         }
-        else {
-            this.index();
+        finally {
+            super.collectionItemAdded(bookmark);
         }
-        super.collectionItemAdded(bookmark);
+    }
+
+    @Override
+    public void collectionItemRemoved(final Host bookmark) {
+        try {
+            preferences.deleteProperty(String.format("%s%s", prefix, bookmark.getUuid()));
+        }
+        finally {
+            super.collectionItemRemoved(bookmark);
+        }
     }
 
     @Override

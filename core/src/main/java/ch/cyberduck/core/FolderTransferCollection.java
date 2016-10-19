@@ -50,23 +50,23 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     private static final long serialVersionUID = -8276371611952331966L;
 
-    private static final String DEFAULT_PREFIX = "transfer.";
+    private static final String DEFAULT_PREFIX = "transfer";
 
-    private Writer<Transfer> writer = TransferWriterFactory.get();
+    private final Writer<Transfer> writer = TransferWriterFactory.get();
 
-    private Reader<Transfer> reader = TransferReaderFactory.get();
+    private final Reader<Transfer> reader = TransferReaderFactory.get();
 
-    private String prefix;
+    private final String prefix;
 
     /**
      * Formatter for file size
      */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private Local folder;
+    private final Local folder;
 
     public FolderTransferCollection(final Local folder) {
         this(folder, DEFAULT_PREFIX);
@@ -74,7 +74,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
 
     public FolderTransferCollection(final Local folder, final String prefix) {
         this.folder = folder;
-        this.prefix = prefix;
+        this.prefix = String.format("%s.", prefix);
     }
 
     /**
@@ -93,29 +93,40 @@ public class FolderTransferCollection extends Collection<Transfer> {
     public void collectionItemRemoved(final Transfer transfer) {
         try {
             this.getFile(transfer).delete();
+            preferences.deleteProperty(String.format("%s%s", prefix, transfer.getUuid()));
         }
         catch(AccessDeniedException e) {
             log.error(String.format("Failure removing transfer %s", e.getMessage()));
         }
-        super.collectionItemRemoved(transfer);
+        finally {
+            super.collectionItemRemoved(transfer);
+        }
     }
 
     @Override
     public void collectionItemChanged(final Transfer transfer) {
-        this.save(transfer);
-        super.collectionItemChanged(transfer);
+        try {
+            this.save(transfer);
+        }
+        finally {
+            super.collectionItemChanged(transfer);
+        }
     }
 
     @Override
     public void collectionItemAdded(final Transfer transfer) {
-        this.save(transfer);
-        if(this.isLocked()) {
-            log.debug("Skip indexing collection while loading");
+        try {
+            this.save(transfer);
+            if(this.isLocked()) {
+                log.debug("Skip indexing collection while loading");
+            }
+            else {
+                this.index();
+            }
         }
-        else {
-            this.index();
+        finally {
+            super.collectionItemAdded(transfer);
         }
-        super.collectionItemAdded(transfer);
     }
 
     protected void save(final Transfer transfer) {
@@ -188,7 +199,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         for(Transfer transfer : c) {
             if(temporary.contains(transfer)) {
                 log.warn(String.format("Reset UUID of duplicate in collection for %s", transfer));
-                transfer.setUuid(null);
+                transfer.setUuid(new UUIDRandomStringService().random());
             }
             temporary.add(transfer);
         }
