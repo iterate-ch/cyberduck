@@ -247,7 +247,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                                     "License"),
                                 LocaleFactory.localizedString(
-                                    "Your donation key has been copied to the Application Support folder.", "License"),
+                                    "Your registration key has been copied to the Application Support folder.", "License"),
                                 String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null, false);
                             foreach (BrowserController controller in new List<BrowserController>(Browsers))
                             {
@@ -258,7 +258,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             _bc.WarningBox(LocaleFactory.localizedString("Not a valid registration key", "License"),
                                 LocaleFactory.localizedString("Not a valid registration key", "License"),
-                                LocaleFactory.localizedString("This donation key does not appear to be valid.",
+                                LocaleFactory.localizedString("This registration key does not appear to be valid.",
                                     "License"), null,
                                 String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), false,
                                 PreferencesFactory.get().getProperty("website.help") + "/faq", delegate { });
