@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -124,6 +125,7 @@ public class S3AccessControlListFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testWriteMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"

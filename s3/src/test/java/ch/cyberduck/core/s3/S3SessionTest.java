@@ -309,6 +309,7 @@ public class S3SessionTest {
     }
 
     @Test
+    @Ignore
     public void testAuthenticationV4Thirdparty() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
