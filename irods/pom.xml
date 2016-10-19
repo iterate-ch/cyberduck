@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>5.2.0</version>
+        <version>5.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>irods</artifactId>
     <packaging>jar</packaging>
