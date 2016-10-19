@@ -3,9 +3,9 @@ https://cyberduck.io/
 
 5.2 [https://trac.cyberduck.io/milestone/5.2]
 - [Feature] Support connecting to Dropbox (Dropbox) (#6427)
-- [Feature] Provide URL references to Google Apps documents in browser (Google Drive)
 - [Feature] Tabbed windows (macOS 10.12) (#5998)
 - [Feature] Support transfer acceleration (S3) (#9570)
+- [Feature] Provide URL references to Google Apps documents in browser (Google Drive)
 - [Feature] Support for US East (Ohio) region (S3)
 - [Feature] Support for Asia Pacific (Seoul) region (S3)
 - [Feature] Support for Asia Pacific (Mumbai) region (S3)
