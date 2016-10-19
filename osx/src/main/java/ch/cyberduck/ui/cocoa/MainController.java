@@ -446,6 +446,11 @@ public class MainController extends BundleController {
         this.openDefaultBookmark(this.newDocument(true));
     }
 
+    @Action
+    public void newWindowForTab(final ID sender) {
+        this.openDefaultBookmark(this.newDocument(true));
+    }
+
     /**
      * Mounts the default bookmark if any
      */

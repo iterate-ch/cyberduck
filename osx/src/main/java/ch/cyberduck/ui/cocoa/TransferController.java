@@ -177,6 +177,9 @@ public final class TransferController extends WindowController implements NSTool
         window.setContentMinSize(new NSSize(400d, 150d));
         window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
+        if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
+            window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
+        }
         super.setWindow(window);
     }
 

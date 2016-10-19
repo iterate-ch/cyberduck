@@ -579,6 +579,9 @@ public class BrowserController extends WindowController
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(600d, 200d));
+        if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
+            window.setTabbingIdentifier(preferences.getProperty("browser.window.tabbing.identifier"));
+        }
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
