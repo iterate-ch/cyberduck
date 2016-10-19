@@ -63,6 +63,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     text = String.Empty;
                 }
             }
+            else
+            {
+                text = message;
+            }
             AsyncDelegate d = () => View.MessageText = text;
             invoke(new SimpleDefaultMainAction(this, d));
         }
