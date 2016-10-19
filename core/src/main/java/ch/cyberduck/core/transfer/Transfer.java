@@ -123,7 +123,8 @@ public abstract class Transfer implements Serializable {
     /**
      * Unique identifier
      */
-    private String uuid;
+    protected String uuid
+            = new UUIDRandomStringService().random();
 
     /**
      * Transfer state
@@ -169,7 +170,7 @@ public abstract class Transfer implements Serializable {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
-        dict.setStringForKey(this.getUuid(), "UUID");
+        dict.setStringForKey(uuid, "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
@@ -391,9 +392,6 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getUuid() {
-        if(null == uuid) {
-            uuid = new UUIDRandomStringService().random();
-        }
         return uuid;
     }
 
