@@ -118,7 +118,7 @@ public class CopyTransfer extends Transfer {
         }
         dict.setListForKey(new ArrayList<Serializable>(mapping.values()), "Destinations");
         dict.setListForKey(new ArrayList<Serializable>(mapping.keySet()), "Roots");
-        dict.setStringForKey(this.getUuid(), "UUID");
+        dict.setStringForKey(uuid, "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
