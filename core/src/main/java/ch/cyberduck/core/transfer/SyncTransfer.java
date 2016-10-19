@@ -110,7 +110,7 @@ public class SyncTransfer extends Transfer {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
-        dict.setStringForKey(this.getUuid(), "UUID");
+        dict.setStringForKey(uuid, "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
