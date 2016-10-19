@@ -46,22 +46,30 @@ import com.dropbox.core.v2.files.WriteMode;
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
+    private static final long DEFAULT_CHUNK_SIZE = 150000000L;
+
     private final DropboxSession session;
 
     private final Find finder;
 
     private final Attributes attributes;
 
+    private final Long chunksize;
 
     public DropboxWriteFeature(final DropboxSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, DEFAULT_CHUNK_SIZE);
     }
 
-    public DropboxWriteFeature(final DropboxSession session, final Find finder, final Attributes attributes) {
+    public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session), chunksize);
+    }
+
+    public DropboxWriteFeature(final DropboxSession session, final Find finder, final Attributes attributes, final Long chunksize) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
+        this.chunksize = chunksize;
     }
 
     @Override
@@ -102,7 +110,6 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     private final class SegmentingUploadProxyOutputStream extends ResponseOutputStream<String> {
-        private static final int LIMIT = 150000000;
 
         private final Path file;
         private final TransferStatus status;
@@ -126,7 +133,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         @Override
         protected void beforeWrite(final int n) throws IOException {
             // A single request should not upload more than 150 MB of file contents.
-            if(offset + n > LIMIT) {
+            if(offset + n > chunksize) {
                 try {
                     DropboxWriteFeature.this.close(uploader);
                     this.next();
