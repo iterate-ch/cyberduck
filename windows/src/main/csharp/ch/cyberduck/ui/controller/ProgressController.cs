@@ -40,11 +40,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly SizeFormatter _sizeFormatter = SizeFormatterFactory.get();
         private readonly Transfer _transfer;
 
-        /// <summary>
-        /// The current connection status message
-        /// </summary>
-        private String _messageText;
-
         public ProgressController(Transfer transfer)
         {
             _transfer = transfer;
@@ -54,22 +49,25 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void message(string message)
         {
-            _messageText = message;
-            StringBuilder b = new StringBuilder();
-            if (null == _messageText)
+            string text;
+            if (Utils.IsBlank(message))
             {
                 // Do not display any progress text when transfer is stopped
                 Date timestamp = _transfer.getTimestamp();
                 if (null != timestamp)
                 {
-                    _messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
+                    text = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
+                }
+                else
+                {
+                    text = String.Empty;
                 }
             }
-            if (null != _messageText)
+            else
             {
-                b.Append(_messageText);
+                text = message;
             }
-            AsyncDelegate d = () => View.MessageText = b.ToString();
+            AsyncDelegate d = () => View.MessageText = text;
             invoke(new SimpleDefaultMainAction(this, d));
         }
 
@@ -215,7 +213,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetMessageText()
         {
-            message(null);
+            message(String.Empty);
         }
 
         private void SetIcon()
