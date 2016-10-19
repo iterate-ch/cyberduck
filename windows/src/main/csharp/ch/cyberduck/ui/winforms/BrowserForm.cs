@@ -1038,7 +1038,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             button.FlatAppearance.BorderSize = 0;
             button.FlatStyle = FlatStyle.Flat;
 
-            button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
+            button.Text = " " + LocaleFactory.localizedString("Get a registration key!", "License") + " ";
             button.Click +=
                 delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
             menu.Items.Add(button);

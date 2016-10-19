@@ -678,7 +678,7 @@ public class BrowserController extends WindowController
 
     public void setDonateButton(NSButton button) {
         if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            button.setTitle(LocaleFactory.localizedString("Get a donation key!", "License"));
+            button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
             button.setAction(Foundation.selector("donateMenuClicked:"));
             button.sizeToFit();
             NSView view = NSView.create();
