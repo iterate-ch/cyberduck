@@ -208,6 +208,10 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("connection.ssl.keystore.provider", "Apple");
 
         defaults.put("network.interface.blacklist", "awdl0 utun0");
+
+        defaults.put("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
+        // Allow to show transfers in browser window as tab
+        defaults.put("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
     }
 
     /**
