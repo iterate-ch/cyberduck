@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -68,14 +69,18 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     public void download(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        // Prompt user
-        boolean accelerate = accelerateTransferOption.getStatus(file);
-        if(accelerateTransferOption.getStatus(file) ||
-                (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
-            final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-            new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
-                    listener, status, prompt);
-            return;
+        try {
+            boolean accelerate = accelerateTransferOption.getStatus(file);
+            if(accelerateTransferOption.getStatus(file) ||
+                    (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
+                final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
+                new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
+                        listener, status, prompt);
+                return;
+            }
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Ignore failure reading S3 Accelerate Configuration. %s", e.getMessage()));
         }
         super.download(file, local, throttle, listener, status, prompt);
     }
