@@ -83,6 +83,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path"), "Sessions"),
                 "session");
 
+        private readonly CountdownEvent transfersSemaphore = new CountdownEvent(1);
+
         /// <summary>
         /// Helper controller to ensure STA when running threads while launching
         /// </summary>
@@ -247,7 +249,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                     "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                                     "License"),
                                 LocaleFactory.localizedString(
-                                    "Your registration key has been copied to the Application Support folder.", "License"),
+                                    "Your registration key has been copied to the Application Support folder.",
+                                    "License"),
                                 String.Format("{0}", LocaleFactory.localizedString("Continue", "License")), null, false);
                             foreach (BrowserController controller in new List<BrowserController>(Browsers))
                             {
@@ -303,6 +306,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
                         {
                             Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                            // wait until transferCollection is loaded
+                            transfersSemaphore.Wait();
                             TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
                                 LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
                                     file.getName())));
@@ -352,6 +357,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ApplicationDidFinishLaunching(object sender, StartupEventArgs e)
         {
             Logger.debug("ApplicationDidFinishLaunching");
+            _controller.Background(delegate
+            {
+                TransferCollection.defaultCollection().load();
+                transfersSemaphore.Signal();
+            }, delegate { });
+            _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
             CommandsAfterLaunch(CommandLineArgs);
             HistoryCollection.defaultCollection().addListener(this);
             if (PreferencesFactory.get().getBoolean("browser.serialize"))
@@ -396,21 +407,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             });
-            _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
-            _controller.Background(delegate
+            if (PreferencesFactory.get().getBoolean("queue.window.open.default"))
             {
-                lock (TransferCollection.defaultCollection())
+                _bc.Invoke(delegate
                 {
-                    TransferCollection.defaultCollection().load();
-                }
-            }, delegate
-            {
-                if (PreferencesFactory.get().getBoolean("queue.window.open.default"))
-                {
-                    _bc.Invoke(delegate { TransferController.Instance.View.Show(); });
-                }
-            });
-
+                    transfersSemaphore.Wait();
+                    TransferController.Instance.View.Show();
+                });
+            }
             // Bonjour initialization
             ThreadStart start = delegate
             {
