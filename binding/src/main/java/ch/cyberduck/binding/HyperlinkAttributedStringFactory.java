@@ -59,7 +59,7 @@ public final class HyperlinkAttributedStringFactory {
             return NSAttributedString.attributedString(title);
         }
         return create(NSMutableAttributedString.create(title,
-                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), file.getAbsolute());
+                BundleController.TRUNCATE_MIDDLE_ATTRIBUTES), String.format("file://%s", file.getAbsolute()));
     }
 
     public static NSAttributedString create(final String title, final String url) {
