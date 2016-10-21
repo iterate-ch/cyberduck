@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -96,20 +97,24 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
-        // Prompt user
-        if(accelerateTransferOption.getStatus(file) ||
-                (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
-            final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-            if(!preferences.getBoolean("s3.upload.multipart")) {
-                // Disabled by user
-                if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                    final S3SingleUploadService single = new S3SingleUploadService(tunneled);
-                    return single.upload(file, local, throttle, listener, status, prompt);
+        try {
+            if(accelerateTransferOption.getStatus(file) ||
+                    (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
+                final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
+                if(!preferences.getBoolean("s3.upload.multipart")) {
+                    // Disabled by user
+                    if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                        final S3SingleUploadService single = new S3SingleUploadService(tunneled);
+                        return single.upload(file, local, throttle, listener, status, prompt);
+                    }
                 }
+                final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
+                return service.upload(file, local, throttle, listener, status, prompt);
             }
-            final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
-            return service.upload(file, local, throttle, listener, status, prompt);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Ignore failure reading S3 Accelerate Configuration. %s", e.getMessage()));
         }
         if(status.getLength() > multipartThreshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
