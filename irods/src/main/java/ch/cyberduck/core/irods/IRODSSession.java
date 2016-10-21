@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -89,6 +90,8 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         properties.setEncoding(this.getEncoding());
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
+        properties.setGetBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
+        properties.setPutBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure client %s with properties %s", client, properties));
         }
