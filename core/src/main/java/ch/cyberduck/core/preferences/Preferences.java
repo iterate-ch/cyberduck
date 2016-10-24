@@ -693,11 +693,15 @@ public abstract class Preferences {
         defaults.put("google.logging.prefix", "log");
         defaults.put("cloudfront.logging.prefix", "logs/");
 
-        defaults.put("google.storage.oauth.clientid", "996125414232.apps.googleusercontent.com");
-        defaults.put("google.storage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
+        defaults.put("googlestorage.oauth.clientid", "996125414232.apps.googleusercontent.com");
+        defaults.put("googlestorage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
+        defaults.put("googlestorage.oauth.redirecturi", "urn:ietf:wg:oauth:2.0:oob");
+//        defaults.put("googlestorage.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("hubic.oauth.clientid", "api_hubic_Hoh1lpzGzsLxUV6VKI3BuiFcyJECBEPH");
         defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
+        defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
+//        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
@@ -743,47 +747,12 @@ public abstract class Preferences {
 
         defaults.put("openstack.delete.multiple.partition", String.valueOf(10000));
 
-        defaults.put("google.drive.client.id", "996125414232.apps.googleusercontent.com");
-        defaults.put("google.drive.client.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
-        defaults.put("google.drive.list.limit", String.valueOf(1000));
+        defaults.put("googledrive.oauth.clientid", "996125414232.apps.googleusercontent.com");
+        defaults.put("googledrive.oauth.clientsecret", "YdaFjo2t74-Q0sThsXgeTv3l");
+        defaults.put("googledrive.oauth.redirecturi", "urn:ietf:wg:oauth:2.0:oob");
+//        defaults.put("googledrive.oauth.redirecturi", "x-cyberduck-action:oauth");
 
-        //doc	Microsoft Word
-        //html	HTML Format
-        //odt	Open Document Format
-        //pdf	Portable Document Format
-        //png	Portable Networks Graphic Image Format
-        //rtf	Rich Format
-        //txt	TXT File
-        //zip	ZIP archive. Contains the images (if any) used in the document and an exported .html file.
-        defaults.put("google.docs.export.document", "doc");
-        defaults.put("google.docs.export.document.formats", "doc,html,odt,pdf,png,rtf,txt,zip");
-        //pdf	Portable Document Format
-        //png	Portable Networks Graphic Image Format
-        //ppt	Powerpoint Format
-        //swf	Flash Format
-        //txt	TXT file
-        defaults.put("google.docs.export.presentation", "ppt");
-        defaults.put("google.docs.export.presentation.formats", "ppt,pdf,png,swf,txt");
-        //xls	XLS (Microsoft Excel)
-        //csv	CSV (Comma Seperated Value)
-        //pdf	PDF (Portable Document Format)
-        //ods	ODS (Open Document Spreadsheet)
-        //tsv	TSV (Tab Seperated Value)
-        //html	HTML Format
-        defaults.put("google.docs.export.spreadsheet", "xls");
-        defaults.put("google.docs.export.spreadsheet.formats", "xls,csv,pdf,ods,tsv,html");
-
-        defaults.put("google.docs.upload.convert", String.valueOf(true));
-        defaults.put("google.docs.upload.ocr", String.valueOf(false));
-
-        /*
-          Show revisions as hidden files in browser
-         */
-        defaults.put("google.docs.revisions.enable", String.valueOf(false));
-        /*
-          If set to true will only trash documents
-         */
-        defaults.put("google.docs.delete.trash", String.valueOf(false));
+        defaults.put("googledrive.list.limit", String.valueOf(1000));
 
         defaults.put("b2.bucket.acl.default", "allPrivate");
         defaults.put("b2.listing.chunksize", String.valueOf(100));
@@ -1042,8 +1011,10 @@ public abstract class Preferences {
 
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
-        defaults.put("dropbox.client.id", "rjqgs45ntjp1va9");
-        defaults.put("dropbox.client.secret", "yg1uopbf5c1h1rk");
+        defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");
+        defaults.put("dropbox.oauth.clientsecret", "yg1uopbf5c1h1rk");
+        defaults.put("dropbox.oauth.redirecturi", "https://cyberduck.io/oauth");
+//        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
     }
 
     protected void setLogging() {

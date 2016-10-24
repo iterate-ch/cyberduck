@@ -15,6 +15,7 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -57,6 +59,7 @@ public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
     private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -107,8 +110,8 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Credential authorize(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt) throws BackgroundException {
-
+    public Credential authorize(final Host bookmark, final HostPasswordStore keychain,
+                                final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Tokens saved = this.find(keychain, bookmark);
         final Credential tokens;
         if(saved.validate()) {
@@ -127,6 +130,7 @@ public class OAuth2AuthorizationService {
             }
         }
         else {
+            final Credentials token = new Credentials(bookmark.getCredentials().getUsername());
             // Start OAuth2 flow within browser
             final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
                     method,
@@ -142,13 +146,24 @@ public class OAuth2AuthorizationService {
             if(!browser.open(url)) {
                 log.warn(String.format("Failed to launch web browser for %s", url));
             }
-            prompt.prompt(bookmark, bookmark.getCredentials(),
-                    LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
-                    new LoginOptions().keychain(false).user(false)
-            );
+            if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+                final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+                registry.register(new OAuth2TokenListener() {
+                    @Override
+                    public void callback(final String param) {
+                        token.setPassword(param);
+                    }
+                }, cancel);
+            }
+            else {
+                prompt.prompt(bookmark, token,
+                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
+                        new LoginOptions().keychain(false).user(false)
+                );
+            }
             try {
                 // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(bookmark.getCredentials().getPassword())
+                final TokenResponse response = flow.newTokenRequest(token.getPassword())
                         .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
                 tokens = new Credential.Builder(method)
                         .setTransport(transport)

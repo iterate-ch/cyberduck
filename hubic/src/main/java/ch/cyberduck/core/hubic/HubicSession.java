@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -45,13 +46,15 @@ import com.google.api.client.auth.oauth2.Credential;
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
 
+    public final Preferences preferences = PreferencesFactory.get();
+
     private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
             "https://api.hubic.com/oauth/token",
             "https://api.hubic.com/oauth/auth",
-            PreferencesFactory.get().getProperty("hubic.oauth.clientid"),
-            PreferencesFactory.get().getProperty("hubic.oauth.secret"),
+            preferences.getProperty("hubic.oauth.clientid"),
+            preferences.getProperty("hubic.oauth.secret"),
             Collections.singletonList("credentials.r")
-    ).withRedirectUri("https://cyberduck.io/oauth");
+    ).withRedirectUri(preferences.getProperty("hubic.oauth.redirecturi"));
 
     public HubicSession(final Host host) {
         super(host);
@@ -72,7 +75,7 @@ public class HubicSession extends SwiftSession {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final Credential tokens = authorizationService.authorize(host, keychain, prompt);
+        final Credential tokens = authorizationService.authorize(host, keychain, prompt, cancel);
         try {
             try {
                 client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()),

@@ -109,7 +109,7 @@ public class GoogleStorageSessionTest {
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("Google OAuth2 Access Token")) {
                     // Mark as not expired
-                    PreferencesFactory.get().setProperty("google.storage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
+                    PreferencesFactory.get().setProperty("googlestorage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
                     return "a";
                 }
                 if(user.equals("Google OAuth2 Refresh Token")) {

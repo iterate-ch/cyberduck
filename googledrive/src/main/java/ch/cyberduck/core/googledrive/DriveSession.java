@@ -92,9 +92,10 @@ public class DriveSession extends HttpSession<Drive> {
         this.transport = new ApacheHttpTransport(builder.build(this).build());
         this.authorizationService = new OAuth2AuthorizationService(transport,
                 GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-                preferences.getProperty("google.drive.client.id"),
-                preferences.getProperty("google.drive.client.secret"),
+                preferences.getProperty("googledrive.oauth.clientid"),
+                preferences.getProperty("googledrive.oauth.clientsecret"),
                 Collections.singletonList(DriveScopes.DRIVE))
+                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"))
                 .withLegacyPrefix(host.getProtocol().getDescription());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
@@ -111,7 +112,7 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        credential = authorizationService.authorize(host, keychain, prompt);
+        credential = authorizationService.authorize(host, keychain, prompt, cancel);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
