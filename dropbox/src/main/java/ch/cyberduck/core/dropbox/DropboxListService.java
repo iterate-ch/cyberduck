@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,27 +53,37 @@ public class DropboxListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
-            final ListFolderResult result = new DbxUserFilesRequests(session.getClient()).listFolder(path);
-            for(Metadata md : result.getEntries()) {
-                final EnumSet<AbstractPath.Type> type;
-                if(md instanceof FileMetadata) {
-                    type = EnumSet.of(Path.Type.file);
-                }
-                else if(md instanceof FolderMetadata) {
-                    type = EnumSet.of(Path.Type.directory);
-                }
-                else {
-                    log.warn(String.format("Skip file %s", md));
-                    continue;
-                }
-                final Path child = new Path(directory, PathNormalizer.name(md.getName()), type, attributes.convert(md));
-                children.add(child);
-                listener.chunk(directory, children);
+            ListFolderResult result;
+            this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient()).listFolder(path));
+            // If true, then there are more entries available. Pass the cursor to list_folder/continue to retrieve the rest.
+            while(result.getHasMore()) {
+                this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient())
+                        .listFolderContinue(result.getCursor()));
             }
             return children;
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
+        }
+    }
+
+    private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)
+            throws ConnectionCanceledException {
+        for(Metadata md : result.getEntries()) {
+            final EnumSet<AbstractPath.Type> type;
+            if(md instanceof FileMetadata) {
+                type = EnumSet.of(Path.Type.file);
+            }
+            else if(md instanceof FolderMetadata) {
+                type = EnumSet.of(Path.Type.directory);
+            }
+            else {
+                log.warn(String.format("Skip file %s", md));
+                continue;
+            }
+            final Path child = new Path(directory, PathNormalizer.name(md.getName()), type, attributes.convert(md));
+            children.add(child);
+            listener.chunk(directory, children);
         }
     }
 }
