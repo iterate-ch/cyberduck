@@ -73,13 +73,13 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private final CustomTrustSSLProtocolSocketFactory sslSocketFactory
             = new CustomTrustSSLProtocolSocketFactory(trust, key);
 
-    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(
-            new NetHttpTransport(),
+    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(new NetHttpTransport(),
             "https://api.dropboxapi.com/1/oauth2/token",
             "https://www.dropbox.com/1/oauth2/authorize",
-            PreferencesFactory.get().getProperty("dropbox.client.id"),
-            PreferencesFactory.get().getProperty("dropbox.client.secret"),
-            Collections.emptyList()).withRedirectUri("https://cyberduck.io/oauth");
+            preferences.getProperty("dropbox.oauth.clientid"),
+            preferences.getProperty("dropbox.oauth.clientsecret"),
+            Collections.emptyList())
+            .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
 
     private Credential tokens;
 
@@ -106,7 +106,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache)
             throws BackgroundException {
-        tokens = authorizationService.authorize(host, keychain, prompt);
+        tokens = authorizationService.authorize(host, keychain, prompt, cancel);
     }
 
     @Override

@@ -60,6 +60,7 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -1397,8 +1398,20 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        if("x-cyberduck-action:update".equals(url)) {
-            updater.check(false);
+        if(StringUtils.startsWith(url, "x-cyberduck-action:")) {
+            final String action = StringUtils.removeStart(url, "x-cyberduck-action:");
+            switch(action) {
+                case "update":
+                    updater.check(false);
+                    break;
+                default:
+                    if(StringUtils.startsWith(action, "oauth?token=")) {
+                        final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                        final String token = StringUtils.removeStart(action, "oauth?token=");
+                        oauth.notify(token);
+                        break;
+                    }
+            }
         }
         else {
             final Host h = HostParser.parse(url);

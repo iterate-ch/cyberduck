@@ -48,7 +48,7 @@ public class DriveListService implements ListService {
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
     public DriveListService(final DriveSession session) {
-        this(session, PreferencesFactory.get().getInteger("google.drive.list.limit"));
+        this(session, PreferencesFactory.get().getInteger("googledrive.list.limit"));
     }
 
     public DriveListService(final DriveSession session, final int pagesize) {
