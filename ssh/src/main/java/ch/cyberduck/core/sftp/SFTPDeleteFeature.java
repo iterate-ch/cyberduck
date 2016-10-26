@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SFTPDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPDeleteFeature(final SFTPSession session) {
         this.session = session;

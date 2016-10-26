@@ -37,9 +37,9 @@ import net.schmizz.sshj.sftp.RemoteFile;
 public class SFTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(SFTPWriteFeature.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public SFTPWriteFeature(final SFTPSession session) {

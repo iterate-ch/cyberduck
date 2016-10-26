@@ -44,9 +44,9 @@ public class SFTPListService implements ListService {
 
     private final NFCNormalizer normalizer = new NFCNormalizer();
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
-    private SFTPAttributesFeature feature;
+    private final SFTPAttributesFeature feature;
 
     public SFTPListService(final SFTPSession session) {
         this.session = session;

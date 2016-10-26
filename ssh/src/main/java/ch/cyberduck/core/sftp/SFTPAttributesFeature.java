@@ -31,7 +31,7 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPAttributesFeature implements Attributes {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPAttributesFeature(final SFTPSession session) {
         this.session = session;

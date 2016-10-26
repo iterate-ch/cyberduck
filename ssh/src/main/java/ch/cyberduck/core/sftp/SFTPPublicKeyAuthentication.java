@@ -48,7 +48,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPPublicKeyAuthentication(final SFTPSession session) {
         this.session = session;

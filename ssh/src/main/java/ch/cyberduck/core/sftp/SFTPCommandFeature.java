@@ -39,7 +39,7 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 public class SFTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(SFTPCommandFeature.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPCommandFeature(final SFTPSession session) {
         this.session = session;

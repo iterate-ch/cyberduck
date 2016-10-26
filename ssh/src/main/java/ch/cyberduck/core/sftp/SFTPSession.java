@@ -85,7 +85,7 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 public class SFTPSession extends Session<SSHClient> {
     private static final Logger log = Logger.getLogger(SFTPSession.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private SFTPEngine sftp;
@@ -94,7 +94,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     private NegotiatedAlgorithms algorithms;
 
-    private SocketFactory socketFactory;
+    private final SocketFactory socketFactory;
 
     public SFTPSession(final Host h) {
         this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));

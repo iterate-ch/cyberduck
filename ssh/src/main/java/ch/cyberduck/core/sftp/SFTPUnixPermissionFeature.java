@@ -29,7 +29,7 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature implements UnixPermission {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPUnixPermissionFeature(final SFTPSession session) {
         this.session = session;

@@ -40,7 +40,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPasswordAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPPasswordAuthentication(final SFTPSession session) {
         this.session = session;

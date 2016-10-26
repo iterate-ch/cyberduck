@@ -31,7 +31,7 @@ import net.schmizz.sshj.userauth.method.AuthNone;
 public class SFTPNoneAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPNoneAuthentication(final SFTPSession session) {
         this.session = session;

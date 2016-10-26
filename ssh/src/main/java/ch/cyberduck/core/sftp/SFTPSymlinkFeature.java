@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class SFTPSymlinkFeature implements Symlink {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPSymlinkFeature(final SFTPSession session) {
         this.session = session;

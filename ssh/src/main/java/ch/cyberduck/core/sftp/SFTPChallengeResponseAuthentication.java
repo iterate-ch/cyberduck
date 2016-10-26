@@ -42,7 +42,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     private static final char[] EMPTY_RESPONSE = new char[0];
 

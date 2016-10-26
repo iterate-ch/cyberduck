@@ -35,9 +35,9 @@ import net.schmizz.sshj.userauth.UserAuthException;
 public class SFTPAgentAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
-    private AgentAuthenticator agent;
+    private final AgentAuthenticator agent;
 
     public SFTPAgentAuthentication(final SFTPSession session, final AgentAuthenticator agent) {
         this.session = session;
