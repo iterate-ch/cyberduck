@@ -27,7 +27,7 @@ import java.util.EnumSet;
 
 public class AzureHomeFinderService extends DefaultHomeFinderService {
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureHomeFinderService(final AzureSession session) {

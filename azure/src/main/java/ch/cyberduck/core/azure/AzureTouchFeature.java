@@ -38,11 +38,11 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureTouchFeature implements Touch {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureTouchFeature(final AzureSession session, final OperationContext context) {

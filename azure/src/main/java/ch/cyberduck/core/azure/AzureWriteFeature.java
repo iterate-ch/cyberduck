@@ -52,16 +52,16 @@ import com.microsoft.azure.storage.core.SR;
 public class AzureWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private Find finder;
+    private final Find finder;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {

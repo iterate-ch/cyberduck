@@ -78,7 +78,7 @@ import com.microsoft.azure.storage.blob.CloudBlobClient;
 public class AzureSession extends SSLSession<CloudBlobClient> {
     private static final Logger log = Logger.getLogger(AzureSession.class);
 
-    private OperationContext context
+    private final OperationContext context
             = new OperationContext();
 
     private StorageEvent<SendingRequestEvent> listener;

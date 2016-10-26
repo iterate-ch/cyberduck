@@ -40,11 +40,11 @@ import com.microsoft.azure.storage.blob.ContainerListingDetails;
 
 public class AzureContainerListService implements RootListService {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public AzureContainerListService(final AzureSession session, final OperationContext context) {

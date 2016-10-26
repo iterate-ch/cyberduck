@@ -46,11 +46,11 @@ import com.microsoft.azure.storage.core.SR;
 public class AzureReadFeature implements Read {
     private static final Logger log = Logger.getLogger(AzureReadFeature.class);
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureReadFeature(final AzureSession session, final OperationContext context) {

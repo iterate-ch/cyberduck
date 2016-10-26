@@ -52,11 +52,11 @@ import com.microsoft.azure.storage.blob.ListBlobItem;
 
 public class AzureObjectListService implements ListService {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureObjectListService(final AzureSession session, final OperationContext context) {

@@ -44,11 +44,11 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureAttributesFeature implements Attributes {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureAttributesFeature(final AzureSession session, final OperationContext context) {

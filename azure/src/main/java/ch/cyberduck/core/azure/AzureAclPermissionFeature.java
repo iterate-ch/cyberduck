@@ -55,11 +55,11 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
  */
 public class AzureAclPermissionFeature extends DefaultAclFeature implements AclPermission {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureAclPermissionFeature(final AzureSession session, final OperationContext context) {

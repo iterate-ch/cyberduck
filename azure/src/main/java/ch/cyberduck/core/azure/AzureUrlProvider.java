@@ -46,10 +46,10 @@ import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
 public class AzureUrlProvider implements UrlProvider {
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
-    private AzureSession session;
+    private final AzureSession session;
 
     public AzureUrlProvider(final AzureSession session) {
         this.session = session;
