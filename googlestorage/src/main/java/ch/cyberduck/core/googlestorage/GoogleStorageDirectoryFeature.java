@@ -27,9 +27,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class GoogleStorageDirectoryFeature implements Directory {
 
-    private GoogleStorageSession session;
+    private final GoogleStorageSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {

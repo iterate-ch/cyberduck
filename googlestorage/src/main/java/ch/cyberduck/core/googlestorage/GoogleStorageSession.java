@@ -78,7 +78,7 @@ import com.google.api.client.auth.oauth2.Credential;
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,

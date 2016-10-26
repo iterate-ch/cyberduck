@@ -49,9 +49,9 @@ import java.util.List;
 
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
 
-    private GoogleStorageSession session;
+    private final GoogleStorageSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
