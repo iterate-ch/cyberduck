@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+5.2.1 [https://trac.cyberduck.io/milestone/5.2.1]
+- [Feature] All embedded assemblies are cryptographically signed (Windows)
+- [Bugfix] Paginate directory listings (Dropbox)
+- [Bugfix] Ignore permission failure for reading transfer acceleration configuration (S3) (#9741)
+
 5.2 [https://trac.cyberduck.io/milestone/5.2]
 - [Feature] Support connecting to Dropbox (Dropbox) (#6427)
 - [Feature] Tabbed windows (macOS 10.12) (#5998)
