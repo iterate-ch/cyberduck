@@ -32,7 +32,7 @@ import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
 public class IRODSCopyFeature implements Copy {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSCopyFeature(final IRODSSession session) {
         this.session = session;

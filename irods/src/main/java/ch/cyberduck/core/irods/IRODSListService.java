@@ -41,7 +41,7 @@ import java.util.EnumSet;
 
 public class IRODSListService implements ListService {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSListService(IRODSSession session) {
         this.session = session;

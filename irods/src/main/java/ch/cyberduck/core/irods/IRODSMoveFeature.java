@@ -32,7 +32,7 @@ import java.util.Collections;
 
 public class IRODSMoveFeature implements Move {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSMoveFeature(IRODSSession session) {
         this.session = session;

@@ -27,7 +27,7 @@ import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
 public class IRODSTouchFeature implements Touch {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSTouchFeature(final IRODSSession session) {
         this.session = session;

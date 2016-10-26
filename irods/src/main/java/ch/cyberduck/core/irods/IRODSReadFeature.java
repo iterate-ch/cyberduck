@@ -35,7 +35,7 @@ import java.io.InputStream;
 
 public class IRODSReadFeature implements Read {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSReadFeature(IRODSSession session) {
         this.session = session;
