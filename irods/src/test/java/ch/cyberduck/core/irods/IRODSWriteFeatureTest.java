@@ -27,6 +27,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,6 +47,38 @@ public class IRODSWriteFeatureTest {
     @BeforeClass
     public static void protocol() {
         ProtocolFactory.register(new IRODSProtocol());
+    }
+
+    @Test
+    public void testWriteConcurent() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+
+        final IRODSSession session1 = new IRODSSession(host);
+        session1.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        final IRODSSession session2 = new IRODSSession(host);
+        session2.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+
+        final byte[] content = RandomUtils.nextBytes(68400);
+
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session1).write(test2, new TransferStatus().append(false).length(content.length));
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
+        out2.close();
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
+        out1.close();
+
+        session1.close();
+        session2.close();
     }
 
     @Test
