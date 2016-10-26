@@ -141,18 +141,18 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
 
     private static final class UDTHttpConnectionPoolBuilder extends HttpConnectionPoolBuilder {
 
-        private SocketConfigurator configurator
+        private final SocketConfigurator configurator
                 = new DefaultSocketConfigurator();
 
         private final Host proxy;
 
-        private X509TrustManager trust;
+        private final X509TrustManager trust;
 
-        private X509KeyManager key;
+        private final X509KeyManager key;
 
-        private UDTSocketCallback callback;
+        private final UDTSocketCallback callback;
 
-        private List<Header> headers;
+        private final List<Header> headers;
 
         public UDTHttpConnectionPoolBuilder(final Host host, final Host proxy, final List<Header> headers,
                                             final X509TrustManager trust, final X509KeyManager key,

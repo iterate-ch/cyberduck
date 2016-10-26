@@ -37,7 +37,7 @@ import java.util.List;
 public class QloudsonicProxyProvider implements UDTProxyProvider {
     private static final Logger log = Logger.getLogger(QloudsonicProxyProvider.class);
 
-    private LicenseFactory factory;
+    private final LicenseFactory factory;
 
     public QloudsonicProxyProvider() {
         this.factory = new QloudsonicVoucherFinder();
