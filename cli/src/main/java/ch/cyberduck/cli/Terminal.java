@@ -235,6 +235,7 @@ public class Terminal {
                 case edit:
                     return this.edit(session, remote);
                 case list:
+                case longlist:
                     return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
                 case mount:
                     return this.mount(session);
