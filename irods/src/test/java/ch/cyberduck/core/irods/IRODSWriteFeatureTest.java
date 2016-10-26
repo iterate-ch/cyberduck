@@ -76,7 +76,20 @@ public class IRODSWriteFeatureTest {
         out2.close();
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
         out1.close();
-
+        {
+            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+            final byte[] buffer1 = new byte[content.length];
+            IOUtils.readFully(in1, buffer1);
+            in1.close();
+            assertArrayEquals(content, buffer1);
+        }
+        {
+            final InputStream in2 = session1.getFeature(Read.class).read(test2, new TransferStatus());
+            final byte[] buffer2 = new byte[content.length];
+            IOUtils.readFully(in2, buffer2);
+            in2.close();
+            assertArrayEquals(content, buffer2);
+        }
         session1.close();
         session2.close();
     }
