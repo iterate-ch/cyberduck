@@ -31,7 +31,7 @@ import com.dropbox.core.v2.files.FileMetadata;
 
 public class DropboxReadFeature implements Read {
 
-    private DropboxSession session;
+    private final DropboxSession session;
 
     public DropboxReadFeature(final DropboxSession session) {
         this.session = session;
