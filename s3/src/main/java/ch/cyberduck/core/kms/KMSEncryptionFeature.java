@@ -80,7 +80,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgent(ua.get());
+        configuration.setUserAgentPrefix(ua.get());
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));

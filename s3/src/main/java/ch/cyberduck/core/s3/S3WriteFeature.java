@@ -62,9 +62,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private final S3MultipartService multipartService;
 
-    private Find finder;
+    private final Find finder;
 
-    private Attributes attributes;
+    private final Attributes attributes;
 
     public S3WriteFeature(final S3Session session) {
         this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));

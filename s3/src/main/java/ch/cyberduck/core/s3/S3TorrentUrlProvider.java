@@ -25,7 +25,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class S3TorrentUrlProvider {
 
-    private Host endpoint;
+    private final Host endpoint;
 
     public S3TorrentUrlProvider(final Host endpoint) {
         this.endpoint = endpoint;

@@ -45,9 +45,9 @@ import java.security.NoSuchAlgorithmException;
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private ChecksumCompute checksum
+    private final ChecksumCompute checksum
             = ChecksumComputeFactory.get(HashAlgorithm.sha256);
 
     public S3SingleUploadService(final S3Session session) {

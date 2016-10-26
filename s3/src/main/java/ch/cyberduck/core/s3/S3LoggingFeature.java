@@ -34,7 +34,7 @@ import org.jets3t.service.model.StorageBucketLoggingStatus;
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
     public S3LoggingFeature(final S3Session session) {
         this.session = session;

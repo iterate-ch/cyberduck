@@ -37,9 +37,9 @@ import java.util.Set;
 public class S3LocationFeature implements Location {
     private static final Logger log = Logger.getLogger(S3LocationFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     private RegionEndpointCache cache

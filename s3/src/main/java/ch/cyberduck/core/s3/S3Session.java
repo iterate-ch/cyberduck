@@ -81,7 +81,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private Versioning versioning;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion

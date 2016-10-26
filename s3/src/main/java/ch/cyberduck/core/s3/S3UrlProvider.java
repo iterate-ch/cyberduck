@@ -46,12 +46,12 @@ import java.util.concurrent.TimeUnit;
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private HostPasswordStore store;
+    private final HostPasswordStore store;
 
-    private S3Session session;
+    private final S3Session session;
 
     public S3UrlProvider(final S3Session session) {
         this(session, PasswordStoreFactory.get());

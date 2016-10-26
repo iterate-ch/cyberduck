@@ -51,10 +51,10 @@ import java.util.List;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private S3Session session;
+    private final S3Session session;
 
     public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         super(session, trust, key);

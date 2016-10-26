@@ -92,14 +92,14 @@ public class CloudFrontDistributionConfiguration
         implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
-    protected S3Session session;
+    protected final S3Session session;
 
-    private CloudFrontService client;
+    private final CloudFrontService client;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new PathContainerService();
 
-    private Map<Path, Distribution> cache
+    private final Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
     public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {

@@ -44,9 +44,9 @@ import java.util.List;
 public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3AccessControlListFeature(final S3Session session) {

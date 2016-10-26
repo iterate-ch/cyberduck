@@ -44,9 +44,9 @@ import java.util.concurrent.Callable;
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
-    private Host origin;
+    private final Host origin;
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
                                                            final TranscriptListener transcript) {
@@ -69,7 +69,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         this.transcript = transcript;
     }
 
-    private static interface Connected<T> extends Callable<T> {
+    private interface Connected<T> extends Callable<T> {
         T call() throws BackgroundException;
     }
 

@@ -51,7 +51,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
      * Prefix in preferences
      */
     private static final String prefix = "iam.";
-    public ClientConfiguration configuration;
+    public final ClientConfiguration configuration;
 
     public AmazonIdentityConfiguration(final Host host) {
         this(host, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
@@ -63,7 +63,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.configuration.setConnectionTimeout(timeout);
         this.configuration.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
-        this.configuration.setUserAgent(ua.get());
+        this.configuration.setUserAgentPrefix(ua.get());
         this.configuration.setMaxErrorRetry(0);
         this.configuration.setMaxConnections(1);
         this.configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));

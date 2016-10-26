@@ -28,7 +28,7 @@ import java.util.EnumSet;
 
 public class S3HomeFinderService extends DefaultHomeFinderService {
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3HomeFinderService(final Session session) {

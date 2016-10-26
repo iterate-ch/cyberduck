@@ -34,7 +34,7 @@ import org.jets3t.service.model.LifecycleConfig;
 public class S3LifecycleConfiguration implements Lifecycle {
     private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);
 
-    private S3Session session;
+    private final S3Session session;
 
     public S3LifecycleConfiguration(final S3Session session) {
         this.session = session;

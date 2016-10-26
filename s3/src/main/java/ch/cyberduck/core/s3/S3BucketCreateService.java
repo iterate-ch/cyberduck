@@ -30,9 +30,9 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketCreateService {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3BucketCreateService(final S3Session session) {

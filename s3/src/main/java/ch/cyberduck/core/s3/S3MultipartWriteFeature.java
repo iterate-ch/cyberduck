@@ -51,11 +51,11 @@ public class S3MultipartWriteFeature implements Write {
 
     private final S3Session session;
 
-    private Find finder;
+    private final Find finder;
 
-    private Attributes attributes;
+    private final Attributes attributes;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public S3MultipartWriteFeature(final S3Session session) {
