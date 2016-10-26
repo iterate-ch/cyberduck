@@ -708,7 +708,6 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Redundancy feature = session.getFeature(Redundancy.class);
             final String redundancy = sender.selectedItem().representedObject();
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
                     new WriteRedundancyWorker(files, redundancy, new AlertRecursiveCallback<String>(this), controller) {
@@ -732,7 +731,6 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void encryptionPopupClicked(final NSPopUpButton sender) {
-        final Encryption feature = session.getFeature(Encryption.class);
         final String algorithm = sender.selectedItem().representedObject();
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);

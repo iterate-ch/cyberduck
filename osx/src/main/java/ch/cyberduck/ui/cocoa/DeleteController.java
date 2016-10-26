@@ -95,7 +95,7 @@ public class DeleteController extends ProxyController {
                             @Override
                             public void cleanup(final List<Path> deleted) {
                                 super.cleanup(deleted);
-                                parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
+                                parent.reload(parent.workdir(), files, Collections.emptyList());
                             }
                         }
                 )
