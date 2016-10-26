@@ -36,7 +36,7 @@ import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     private final SpectraSession session;
