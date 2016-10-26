@@ -42,7 +42,6 @@ public class IRODSAttributesFeature implements Attributes {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final AttributedList<Path> children = new AttributedList<Path>();
             final IRODSFileSystemAO fs = session.filesystem();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(!f.exists()) {
@@ -61,7 +60,6 @@ public class IRODSAttributesFeature implements Attributes {
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-
     }
 
     @Override
