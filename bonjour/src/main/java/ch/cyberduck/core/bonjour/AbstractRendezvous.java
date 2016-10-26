@@ -88,9 +88,9 @@ public abstract class AbstractRendezvous implements Rendezvous {
         };
     }
 
-    private Map<String, Host> services = new ConcurrentHashMap<String, Host>();
+    private final Map<String, Host> services = new ConcurrentHashMap<String, Host>();
 
-    private Set<RendezvousListener> listeners =
+    private final Set<RendezvousListener> listeners =
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
     private LimitedRendezvousListener notifier;

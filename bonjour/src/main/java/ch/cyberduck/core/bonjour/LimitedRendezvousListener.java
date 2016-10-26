@@ -34,9 +34,9 @@ public class LimitedRendezvousListener implements RendezvousListener {
     /**
      * Rate limit for notifications
      */
-    private TimedSemaphore limit;
+    private final TimedSemaphore limit;
 
-    private Set<RendezvousListener> listeners;
+    private final Set<RendezvousListener> listeners;
 
     public LimitedRendezvousListener(final Set<RendezvousListener> listeners) {
         this(new TimedSemaphore(
