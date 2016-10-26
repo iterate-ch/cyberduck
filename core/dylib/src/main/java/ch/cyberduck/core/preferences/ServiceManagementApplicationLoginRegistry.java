@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class ServiceManagementApplicationLoginRegistry implements ApplicationLoginRegistry {
     private static final Logger log = Logger.getLogger(ServiceManagementApplicationLoginRegistry.class);
 
-    private LaunchServicesApplicationFinder finder
+    private final LaunchServicesApplicationFinder finder
             = new LaunchServicesApplicationFinder();
 
     /**

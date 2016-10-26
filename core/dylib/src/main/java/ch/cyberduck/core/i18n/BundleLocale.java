@@ -30,10 +30,10 @@ import java.util.Map;
 
 public class BundleLocale implements Locale {
 
-    private NSBundle bundle;
+    private final NSBundle bundle;
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> cache
+    private final Map<String, String> cache
             = Collections.<String, String>synchronizedMap(new LRUMap<String, String>(1000));
 
     public BundleLocale() {

@@ -44,7 +44,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     /**
      * Cache limited to n entries
      */
-    private Map<String, NSImage> cache;
+    private final Map<String, NSImage> cache;
 
     public NSImageIconCache() {
         if(0 == PreferencesFactory.get().getInteger("icon.cache.size")) {

@@ -31,7 +31,7 @@ import java.util.List;
 public class FSEventWatchEditorFactory extends EditorFactory {
     private final List<Application> editors = new ArrayList<Application>();
 
-    private ApplicationFinder finder;
+    private final ApplicationFinder finder;
 
     public FSEventWatchEditorFactory() {
         this(ApplicationFinderFactory.get());

@@ -23,7 +23,7 @@ public abstract class NSOperation extends NSObject {
     public static final _Class CLASS = Rococoa.createClass(NSOperation.class.getSimpleName(), _Class.class);
 
     public interface _Class extends ObjCClass {
-        public NSOperation alloc();
+        NSOperation alloc();
     }
 
     public abstract NSOperation init();

@@ -75,14 +75,14 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * display name of application
      */
     @SuppressWarnings("unchecked")
-    private static Map<String, Application> applicationNameCache
+    private static final Map<String, Application> applicationNameCache
             = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
      *
      */
     @SuppressWarnings("unchecked")
-    private static Map<String, Application> defaultApplicationCache
+    private static final Map<String, Application> defaultApplicationCache
             = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
@@ -90,7 +90,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * file type extensions.
      */
     @SuppressWarnings("unchecked")
-    private static Map<String, List<Application>> defaultApplicationListCache
+    private static final Map<String, List<Application>> defaultApplicationListCache
             = Collections.<String, List<Application>>synchronizedMap(new LRUMap<String, List<Application>>(20));
 
     @Override

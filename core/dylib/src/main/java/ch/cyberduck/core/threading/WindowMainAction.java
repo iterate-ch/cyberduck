@@ -21,7 +21,7 @@ import ch.cyberduck.binding.WindowController;
 
 public abstract class WindowMainAction extends ControllerMainAction {
 
-    private WindowController controller;
+    private final WindowController controller;
 
     public WindowMainAction(final WindowController c) {
         super(c);

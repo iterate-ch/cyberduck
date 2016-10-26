@@ -25,7 +25,7 @@ import ch.cyberduck.core.LocaleFactory;
 
 public class NotificationCenter implements NotificationService {
 
-    private NSUserNotificationCenter center
+    private final NSUserNotificationCenter center
             = NSUserNotificationCenter.defaultUserNotificationCenter();
 
     @Override

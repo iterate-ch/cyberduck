@@ -19,10 +19,10 @@ import java.text.MessageFormat;
 public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
 
-    private ApplicationFinder finder
+    private final ApplicationFinder finder
             = ApplicationFinderFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

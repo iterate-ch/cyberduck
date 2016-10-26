@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class NSObjectPathReference implements CacheReference<Path> {
 
-    private static Map<Path, NSString> cache = new LRUMap<Path, NSString>(
+    private static final Map<Path, NSString> cache = new LRUMap<Path, NSString>(
             PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
@@ -44,7 +44,7 @@ public class NSObjectPathReference implements CacheReference<Path> {
         return cache.get(file);
     }
 
-    private int hashCode;
+    private final int hashCode;
 
     public NSObjectPathReference(final NSObject reference) {
         this.hashCode = reference.toString().hashCode();

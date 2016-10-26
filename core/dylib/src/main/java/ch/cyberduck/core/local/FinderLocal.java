@@ -68,7 +68,7 @@ public class FinderLocal extends Local {
      */
     private String bookmark;
 
-    private FinderLocalAttributes attributes
+    private final FinderLocalAttributes attributes
             = new FinderLocalAttributes(this);
 
     public FinderLocal(final Local parent, final String name) throws LocalAccessDeniedException {

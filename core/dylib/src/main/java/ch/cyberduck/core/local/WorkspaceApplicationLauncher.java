@@ -37,7 +37,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private final NSWorkspace workspace
             = NSWorkspace.sharedWorkspace();
 
-    private Map<Application, ApplicationQuitCallback> registered
+    private final Map<Application, ApplicationQuitCallback> registered
             = new HashMap<Application, ApplicationQuitCallback>();
 
     public void register(final Application application, final ApplicationQuitCallback callback) {
