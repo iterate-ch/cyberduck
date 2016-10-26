@@ -203,8 +203,8 @@ public class B2ObjectListService implements ListService {
     }
 
     private static final class Marker {
-        public String nextFilename;
-        public String nextFileId;
+        public final String nextFilename;
+        public final String nextFileId;
 
         public Marker(final String nextFilename, final String nextFileId) {
             this.nextFilename = nextFilename;

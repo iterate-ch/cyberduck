@@ -38,7 +38,8 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2TouchFeature implements Touch {
 
     private final B2Session session;
-    private PathContainerService containerService
+
+    private final PathContainerService containerService
             = new B2PathContainerService();
 
     public B2TouchFeature(final B2Session session) {
