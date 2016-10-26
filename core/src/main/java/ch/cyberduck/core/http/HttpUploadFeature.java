@@ -69,8 +69,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                          final StreamListener listener, final TransferStatus status,
                          final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         try {
-            InputStream in = null;
-            ResponseOutputStream<Output> out = null;
+            InputStream in;
+            ResponseOutputStream<Output> out;
             final Digest digest = this.digest();
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);

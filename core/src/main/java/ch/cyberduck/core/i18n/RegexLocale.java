@@ -39,7 +39,7 @@ public class RegexLocale implements Locale {
     private static final Logger log = Logger.getLogger(RegexLocale.class);
 
     private final Map<Key, String> cache
-            = Collections.<Key, String>synchronizedMap(new LRUMap<Key, String>(1000));
+            = Collections.synchronizedMap(new LRUMap<Key, String>(1000));
 
     private final Local resources;
 

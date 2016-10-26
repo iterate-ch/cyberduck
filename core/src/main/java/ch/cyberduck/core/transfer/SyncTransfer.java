@@ -71,7 +71,7 @@ public class SyncTransfer extends Transfer {
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private final Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap<TransferItem, Comparison>(
+    private final Map<TransferItem, Comparison> compareCache = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
             PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {

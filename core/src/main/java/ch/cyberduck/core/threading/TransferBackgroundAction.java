@@ -193,7 +193,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     /**
      * @return Return zero. Retry is handled in transfer worker.
-     * @param failure
+     * @param failure Transfer error
      */
     @Override
     protected int retry(final BackgroundException failure) {

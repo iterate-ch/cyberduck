@@ -54,7 +54,7 @@ public class ThrottledOutputStream extends ProxyOutputStream {
      */
     @Override
     public void write(final int b) throws IOException {
-        int allow = throttle.request(1); //Note that _request never returns zero.
+        throttle.request(1); //Note that _request never returns zero.
         delegate.write(b);
     }
 
