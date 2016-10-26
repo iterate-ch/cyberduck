@@ -30,7 +30,7 @@ import java.util.List;
 
 public final class QuartzQuickLook implements QuickLook {
 
-    private List<QLPreviewItem> previews
+    private final List<QLPreviewItem> previews
             = new ArrayList<QLPreviewItem>();
 
     private final QLPreviewPanel panel;
@@ -57,7 +57,7 @@ public final class QuartzQuickLook implements QuickLook {
         }
     }
 
-    private QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
+    private final QLPreviewPanelDataSource model = new QLPreviewPanelDataSource() {
         @Override
         public NSInteger numberOfPreviewItemsInPreviewPanel(QLPreviewPanel panel) {
             return new NSInteger(previews.size());

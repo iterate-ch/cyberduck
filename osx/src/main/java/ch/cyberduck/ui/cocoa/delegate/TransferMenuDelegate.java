@@ -38,9 +38,9 @@ import java.util.List;
 
 public class TransferMenuDelegate extends AbstractMenuDelegate {
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
-    private RevealService reveal = RevealServiceFactory.get();
+    private final RevealService reveal = RevealServiceFactory.get();
 
     public TransferMenuDelegate(final Transfer transfer) {
         this.transfer = transfer;

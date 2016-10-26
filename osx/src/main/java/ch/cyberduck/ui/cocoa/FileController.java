@@ -47,9 +47,9 @@ public abstract class FileController extends AlertController {
         this.inputField = inputField;
     }
 
-    protected BrowserController parent;
+    protected final BrowserController parent;
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
     public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
         super(parent, alert);

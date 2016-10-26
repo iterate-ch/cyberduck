@@ -69,7 +69,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         status,
     }
 
-    protected BrowserController controller;
+    protected final BrowserController controller;
 
     private HostFilter filter;
 
@@ -82,7 +82,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     private CollectionListener<Host> listener;
 
-    private ScheduledThreadPool timerPool = new ScheduledThreadPool();
+    private final ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
     private final HostPasteboard pasteboard
             = HostPasteboard.getPasteboard();

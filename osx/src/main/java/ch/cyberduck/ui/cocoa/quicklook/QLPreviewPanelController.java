@@ -26,19 +26,19 @@ public interface QLPreviewPanelController {
      * @ Sent to each object in the responder chain to find a controller.
      * @result YES if the receiver accepts to control the panel. You should never call this method directly.
      */
-    public boolean acceptsPreviewPanelControl(QLPreviewPanel panel);
+    boolean acceptsPreviewPanelControl(QLPreviewPanel panel);
 
     /**
      * @param panel The Preview Panel the receiver will control.
      * @ Sent to the object taking control of the Preview Panel.
      * @discussion The receiver should setup the preview panel (data source, delegate, binding, etc.) here. You should never call this method directly.
      */
-    public void beginPreviewPanelControl(QLPreviewPanel panel);
+    void beginPreviewPanelControl(QLPreviewPanel panel);
 
     /**
      * @param panel The Preview Panel that the receiver will stop controlling.
      * @ Sent to the object in control of the Preview Panel just before stopping its control.
      * @discussion The receiver should unsetup the preview panel (data source, delegate, binding, etc.) here. You should never call this method directly.
      */
-    public void endPreviewPanelControl(QLPreviewPanel panel);
+    void endPreviewPanelControl(QLPreviewPanel panel);
 }

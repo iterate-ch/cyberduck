@@ -32,7 +32,7 @@ import java.util.List;
 
 public class ArchiveController extends ProxyController {
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public ArchiveController(final BrowserController parent) {
         this.parent = parent;

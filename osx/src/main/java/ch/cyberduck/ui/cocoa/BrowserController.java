@@ -153,7 +153,7 @@ public class BrowserController extends WindowController
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     /**
@@ -210,16 +210,16 @@ public class BrowserController extends WindowController
 
     private PathPasteboard pasteboard;
 
-    private ListProgressListener listener
+    private final ListProgressListener listener
             = new PromptLimitedListProgressListener(this);
 
     /**
      * Caching files listings of previously listed directories
      */
-    private PathCache cache
+    private final PathCache cache
             = new PathCache(preferences.getInteger("browser.cache.size"));
 
-    private List<Editor> editors
+    private final List<Editor> editors
             = new ArrayList<Editor>();
 
     public BrowserController() {
@@ -1878,7 +1878,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSComboBox quickConnectPopup;
 
-    private ProxyController quickConnectPopupModel = new QuickConnectModel();
+    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;

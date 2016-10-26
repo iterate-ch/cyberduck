@@ -65,7 +65,7 @@ public class TransferTableDataSource extends ListDataSource {
     private TransferFilter filter
             = new NullTransferFilter();
 
-    private TransferCollection collection
+    private final TransferCollection collection
             = TransferCollection.defaultCollection();
 
     public TransferTableDataSource() {

@@ -63,12 +63,12 @@ public class ProgressController extends BundleController implements TransferList
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
     /**
      * Formatter for file size
      */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     public ProgressController(final Transfer transfer) {
         this.transfer = transfer;

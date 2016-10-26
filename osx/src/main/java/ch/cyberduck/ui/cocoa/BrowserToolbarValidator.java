@@ -45,7 +45,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
-    private BrowserController controller;
+    private final BrowserController controller;
 
     public BrowserToolbarValidator(final BrowserController controller) {
         this.controller = controller;

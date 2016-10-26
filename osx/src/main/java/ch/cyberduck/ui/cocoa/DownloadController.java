@@ -43,10 +43,10 @@ import java.util.EnumSet;
 
 public class DownloadController extends AlertController {
 
-    protected NSTextField urlField
+    protected final NSTextField urlField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
-    private PathKindDetector detector = new DefaultPathKindDetector();
+    private final PathKindDetector detector = new DefaultPathKindDetector();
 
     @Override
     protected void beginSheet(final NSWindow window) {
@@ -56,7 +56,7 @@ public class DownloadController extends AlertController {
         super.beginSheet(window);
     }
 
-    private String url;
+    private final String url;
 
     public DownloadController(final WindowController parent) {
         this(parent, StringUtils.EMPTY);

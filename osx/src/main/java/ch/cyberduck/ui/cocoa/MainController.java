@@ -145,7 +145,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Saved browsers
      */
-    private AbstractHostCollection sessions = new FolderBookmarkCollection(
+    private final AbstractHostCollection sessions = new FolderBookmarkCollection(
             LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
 
     /**

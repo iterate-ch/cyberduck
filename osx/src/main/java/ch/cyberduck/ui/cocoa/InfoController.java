@@ -124,24 +124,24 @@ public class InfoController extends ToolbarWindowController {
      */
     private List<Path> files;
 
-    private FileDescriptor descriptor = FileDescriptorFactory.get();
+    private final FileDescriptor descriptor = FileDescriptorFactory.get();
 
-    private LoginCallback prompt = LoginCallbackFactory.get(this);
+    private final LoginCallback prompt = LoginCallbackFactory.get(this);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new PathContainerService();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     /**
      * Grant editing model.
      */
-    private List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
+    private final List<Acl.UserAndRole> acl = new ArrayList<Acl.UserAndRole>();
     /**
      * Custom HTTP headers for REST protocols
      */
-    private List<Header> metadata
+    private final List<Header> metadata
             = new ArrayList<Header>();
 
     @Outlet
@@ -1907,11 +1907,11 @@ public class InfoController extends ToolbarWindowController {
                 Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
-                Set<String> containers = new HashSet<String>();
+                final Set<String> containers = new HashSet<String>();
                 // Available encryption keys in KMS
                 Set<Encryption.Algorithm> managedEncryptionKeys = new HashSet<Encryption.Algorithm>();
-                Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
-                Set<String> selectedStorageClasses = new HashSet<String>();
+                final Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
+                final Set<String> selectedStorageClasses = new HashSet<String>();
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
 

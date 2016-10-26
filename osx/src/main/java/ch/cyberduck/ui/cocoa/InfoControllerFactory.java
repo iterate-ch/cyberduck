@@ -12,7 +12,7 @@ import java.util.Map;
 
 public final class InfoControllerFactory {
 
-    private static Map<BrowserController, InfoController> open
+    private static final Map<BrowserController, InfoController> open
             = new HashMap<BrowserController, InfoController>();
 
     private InfoControllerFactory() {

@@ -68,7 +68,7 @@ public abstract class TransferPromptController extends SheetController
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
@@ -90,11 +90,11 @@ public abstract class TransferPromptController extends SheetController
     @Delegate
     protected AbstractPathTableDelegate browserViewDelegate;
 
-    protected Transfer transfer;
+    protected final Transfer transfer;
 
     private TransferAction action;
 
-    protected Cache<TransferItem> cache
+    protected final Cache<TransferItem> cache
             = new TransferItemCache(Integer.MAX_VALUE);
 
     public TransferPromptController(final WindowController parent, final Transfer transfer) {

@@ -45,7 +45,7 @@ import java.util.Map;
 public final class ActivityController extends WindowController {
     private static final Logger log = Logger.getLogger(ActivityController.class);
 
-    private BackgroundActionRegistry registry
+    private final BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
     private final Map<BackgroundAction, TaskController> tasks

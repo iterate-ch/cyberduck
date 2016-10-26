@@ -35,7 +35,7 @@ import java.util.List;
 
 public class DeleteController extends ProxyController {
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public DeleteController(final BrowserController parent) {
         this.parent = parent;

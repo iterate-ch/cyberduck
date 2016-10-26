@@ -45,14 +45,14 @@ public abstract class QLPreviewPanel extends NSPanel {
          * Original signature : <code>+(QLPreviewPanel*)sharedPreviewPanel</code><br>
          * <i>native declaration : line 39</i>
          */
-        public abstract QLPreviewPanel sharedPreviewPanel();
+        QLPreviewPanel sharedPreviewPanel();
 
         /**
          * @abstract Returns YES if the shared Preview Panel has been created, NO if it hasn\u00d5t..<br>
          * Original signature : <code>+(BOOL)sharedPreviewPanelExists</code><br>
          * <i>native declaration : line 44</i>
          */
-        public abstract boolean sharedPreviewPanelExists();
+        boolean sharedPreviewPanelExists();
     }
 
     /**

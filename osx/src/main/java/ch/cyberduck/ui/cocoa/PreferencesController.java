@@ -87,7 +87,7 @@ public class PreferencesController extends ToolbarWindowController {
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public PreferencesController() {
@@ -386,7 +386,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Outlet
     private NSOpenPanel editorPathPanel;
-    private ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
+    private final ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
 
     @Action
     public void editorComboboxClicked(NSPopUpButton sender) {

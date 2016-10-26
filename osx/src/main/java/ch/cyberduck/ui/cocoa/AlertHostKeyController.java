@@ -48,7 +48,7 @@ import net.schmizz.sshj.common.KeyType;
 public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
 
-    private WindowController parent;
+    private final WindowController parent;
 
     public AlertHostKeyController(final WindowController c) {
         this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(

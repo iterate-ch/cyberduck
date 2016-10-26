@@ -90,13 +90,13 @@ import java.util.Set;
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
     private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
-    private AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
+    private final AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
 
-    private IconCache<NSImage> icons = IconCacheFactory.get();
+    private final IconCache<NSImage> icons = IconCacheFactory.get();
 
-    private FileDescriptor descriptor = FileDescriptorFactory.get();
+    private final FileDescriptor descriptor = FileDescriptorFactory.get();
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -104,13 +104,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             preferences.getInteger("browser.model.cache.size")
     );
 
-    protected BrowserController controller;
+    protected final BrowserController controller;
 
-    protected Cache<Path> cache;
+    protected final Cache<Path> cache;
 
     private static final class Item {
-        private Path file;
-        private String column;
+        private final Path file;
+        private final String column;
 
         public Item(final Path file, final String column) {
             this.file = file;

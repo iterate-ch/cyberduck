@@ -99,10 +99,10 @@ public final class TransferController extends WindowController implements NSTool
 
     private NSToolbar toolbar;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private TransferCollection collection = TransferCollection.defaultCollection();
+    private final TransferCollection collection = TransferCollection.defaultCollection();
 
     public TransferController() {
         this.loadBundle();

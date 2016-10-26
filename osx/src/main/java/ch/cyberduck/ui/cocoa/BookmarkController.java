@@ -526,7 +526,7 @@ public class BookmarkController extends WindowController {
     /**
      * The bookmark
      */
-    private Host host;
+    private final Host host;
 
     /**
      * @param host The bookmark to edit

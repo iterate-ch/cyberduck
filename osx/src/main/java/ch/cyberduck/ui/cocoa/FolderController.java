@@ -53,9 +53,9 @@ public class FolderController extends FileController {
         this.view = view;
     }
 
-    private Set<Location.Name> regions;
+    private final Set<Location.Name> regions;
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, NSAlert.alert(

@@ -27,7 +27,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
 
-    private Collection<T> collection;
+    private final Collection<T> collection;
 
     public CollectionMenuDelegate(Collection<T> c) {
         this.collection = c;

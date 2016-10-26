@@ -56,10 +56,10 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    private AbstractHostCollection collection
+    private final AbstractHostCollection collection
             = HistoryCollection.defaultCollection();
 
-    private MenuCallback callback;
+    private final MenuCallback callback;
 
     private final Preferences preferences
             = PreferencesFactory.get();

@@ -52,23 +52,23 @@ import java.util.Map;
 public abstract class TransferPromptModel extends OutlineDataSource {
     private static final Logger log = Logger.getLogger(TransferPromptModel.class);
 
-    private TransferPromptController controller;
+    private final TransferPromptController controller;
 
-    private Session session;
+    private final Session session;
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
     /**
      * Selected transfer action in prompt
      */
     private TransferAction action;
 
-    private Cache<TransferItem> cache;
+    private final Cache<TransferItem> cache;
 
     /**
      * Selection status map in the prompt
      */
-    protected Map<TransferItem, Boolean> selected
+    protected final Map<TransferItem, Boolean> selected
             = new HashMap<TransferItem, Boolean>();
 
     /**

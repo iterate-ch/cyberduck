@@ -30,7 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SyncPromptModel extends TransferPromptModel {
 
-    private SyncTransfer transfer;
+    private final SyncTransfer transfer;
 
     public SyncPromptModel(final TransferPromptController c, final Session session,
                            final SyncTransfer transfer, final Cache<TransferItem> cache) {

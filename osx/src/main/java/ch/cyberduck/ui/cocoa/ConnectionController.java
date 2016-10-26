@@ -68,7 +68,7 @@ public class ConnectionController extends SheetController {
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override
@@ -217,7 +217,7 @@ public class ConnectionController extends SheetController {
     }
 
     private NSComboBox hostField;
-    private ProxyController hostFieldModel = new HostFieldModel();
+    private final ProxyController hostFieldModel = new HostFieldModel();
 
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;

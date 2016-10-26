@@ -32,10 +32,10 @@ import org.apache.log4j.Logger;
 public class PromptRedirectCallback implements RedirectCallback {
     private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
 
-    private RedirectCallback preferences
+    private final RedirectCallback preferences
             = new PreferencesRedirectCallback();
 
-    private WindowController parent;
+    private final WindowController parent;
 
     public PromptRedirectCallback(final WindowController parent) {
         this.parent = parent;

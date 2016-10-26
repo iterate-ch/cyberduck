@@ -45,16 +45,16 @@ import java.util.Comparator;
 public class GotoController extends AlertController {
 
     @Outlet
-    private NSComboBox folderCombobox;
+    private final NSComboBox folderCombobox;
 
     @Delegate
-    private ProxyController folderComboboxModel;
+    private final ProxyController folderComboboxModel;
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
     private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
-        private Path workdir;
+        private final Path workdir;
 
         private final Comparator<Path> comparator = new NullComparator<Path>();
 

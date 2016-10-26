@@ -68,13 +68,13 @@ public final class PromptLoginController implements LoginCallback {
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private HostPasswordStore keychain
+    private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private WindowController parent;
+    private final WindowController parent;
 
     public PromptLoginController(final WindowController parent) {
         this.parent = parent;

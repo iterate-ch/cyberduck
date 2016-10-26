@@ -97,7 +97,7 @@ public class CommandController extends SheetController implements TranscriptList
         }
     }
 
-    private Session<?> session;
+    private final Session<?> session;
 
     public CommandController(final WindowController parent, final Session session) {
         super(parent);

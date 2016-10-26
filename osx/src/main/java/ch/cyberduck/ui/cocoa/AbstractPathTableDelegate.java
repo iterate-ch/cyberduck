@@ -41,7 +41,7 @@ import java.util.Comparator;
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
     private static final Logger log = Logger.getLogger(AbstractTableDelegate.class);
 
-    private PathTooltipService tooltip = new PathTooltipService();
+    private final PathTooltipService tooltip = new PathTooltipService();
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);
