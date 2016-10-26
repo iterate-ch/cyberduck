@@ -54,7 +54,7 @@ import static com.google.api.client.json.Json.MEDIA_TYPE;
 public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
 
-    private DriveSession session;
+    private final DriveSession session;
 
     private final Find finder;
 

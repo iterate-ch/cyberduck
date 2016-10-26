@@ -37,7 +37,7 @@ import com.google.api.services.drive.Drive;
 public class DriveReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DriveReadFeature.class);
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveReadFeature(DriveSession session) {
         this.session = session;

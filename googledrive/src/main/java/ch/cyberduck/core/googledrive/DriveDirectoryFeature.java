@@ -28,7 +28,7 @@ import com.google.api.services.drive.model.File;
 
 public class DriveDirectoryFeature implements Directory {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveDirectoryFeature(DriveSession session) {
         this.session = session;

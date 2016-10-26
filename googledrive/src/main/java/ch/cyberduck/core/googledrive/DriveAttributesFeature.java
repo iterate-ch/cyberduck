@@ -41,7 +41,7 @@ public class DriveAttributesFeature implements Attributes {
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveAttributesFeature(final DriveSession session) {
         this.session = session;

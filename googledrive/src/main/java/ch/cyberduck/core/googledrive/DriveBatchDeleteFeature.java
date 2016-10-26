@@ -36,7 +36,7 @@ import com.google.api.client.http.HttpHeaders;
 public class DriveBatchDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(DriveBatchDeleteFeature.class);
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveBatchDeleteFeature(DriveSession session) {
         this.session = session;

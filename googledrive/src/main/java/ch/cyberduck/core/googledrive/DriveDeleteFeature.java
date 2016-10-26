@@ -26,7 +26,7 @@ import java.util.List;
 
 public class DriveDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveDeleteFeature(DriveSession session) {
         this.session = session;

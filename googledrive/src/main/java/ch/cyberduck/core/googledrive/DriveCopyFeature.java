@@ -26,7 +26,7 @@ import com.google.api.services.drive.model.File;
 
 public class DriveCopyFeature implements Copy {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveCopyFeature(DriveSession session) {
         this.session = session;

@@ -27,7 +27,7 @@ import com.google.api.services.drive.model.File;
 
 public class DriveTouchFeature implements Touch {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveTouchFeature(final DriveSession session) {
         this.session = session;

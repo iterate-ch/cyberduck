@@ -26,7 +26,7 @@ import com.google.api.services.drive.model.File;
 
 public class DriveTimestampFeature extends DefaultTimestampFeature {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveTimestampFeature(final DriveSession session) {
         this.session = session;
