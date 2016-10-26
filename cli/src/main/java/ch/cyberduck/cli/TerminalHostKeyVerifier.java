@@ -33,7 +33,7 @@ import net.schmizz.sshj.common.KeyType;
 
 public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
-    private TerminalPromptReader prompt;
+    private final TerminalPromptReader prompt;
 
     public TerminalHostKeyVerifier() {
         this(new InteractiveTerminalPromptReader());

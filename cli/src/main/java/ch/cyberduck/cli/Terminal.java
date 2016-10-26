@@ -93,20 +93,20 @@ public class Terminal {
 
     private final TerminalPromptReader reader;
 
-    private PathCache cache;
+    private final PathCache cache;
 
-    private ProgressListener progress;
+    private final ProgressListener progress;
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
     private enum Exit {
         success,
         failure
     }
 
-    private CommandLine input;
+    private final CommandLine input;
 
-    private Options options;
+    private final Options options;
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);

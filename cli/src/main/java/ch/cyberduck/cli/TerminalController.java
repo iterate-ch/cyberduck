@@ -27,9 +27,9 @@ import ch.cyberduck.core.threading.MainAction;
 
 public class TerminalController extends AbstractController {
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
-    private ProgressListener progress;
+    private final ProgressListener progress;
 
     public TerminalController(final ProgressListener progress,
                               final TranscriptListener transcript) {

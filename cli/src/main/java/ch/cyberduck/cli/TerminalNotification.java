@@ -22,7 +22,7 @@ import ch.cyberduck.core.notification.NotificationService;
 
 public class TerminalNotification implements NotificationService {
 
-    private TerminalProgressListener console
+    private final TerminalProgressListener console
             = new TerminalProgressListener();
 
     @Override

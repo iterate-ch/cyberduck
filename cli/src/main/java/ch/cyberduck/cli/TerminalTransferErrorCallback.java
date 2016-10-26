@@ -25,10 +25,10 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 
 public class TerminalTransferErrorCallback implements TransferErrorCallback {
 
-    private TerminalProgressListener console
+    private final TerminalProgressListener console
             = new TerminalProgressListener();
 
-    private TerminalPromptReader prompt;
+    private final TerminalPromptReader prompt;
 
     public TerminalTransferErrorCallback() {
         this.prompt = new InteractiveTerminalPromptReader();

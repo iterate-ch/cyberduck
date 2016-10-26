@@ -30,7 +30,7 @@ import java.util.Set;
 
 public class SingleTransferItemFinder implements TransferItemFinder {
 
-    private WorkdirPrefixer prefixer
+    private final WorkdirPrefixer prefixer
             = new WorkdirPrefixer();
 
     @Override
