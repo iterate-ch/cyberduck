@@ -45,12 +45,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
-    private SSLSocketFactory factory;
+    private final SSLSocketFactory factory;
 
     /**
      * Shared context
      */
-    private SSLContext context;
+    private final SSLContext context;
 
     private final String[] protocols;
 
@@ -59,23 +59,9 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final SecureRandom rpng;
+    private final X509TrustManager trust;
 
-    {
-        final String random = preferences.getProperty("connection.ssl.securerandom");
-        try {
-            // Obtains random numbers from the underlying native OS, without blocking to prevent
-            // from excessive stalling. For example, /dev/urandom
-            rpng = SecureRandom.getInstance(random);
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.warn(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
-        }
-    }
-
-    private X509TrustManager trust;
-
-    private X509KeyManager key;
+    private final X509KeyManager key;
 
     /**
      * @param trust Verifying trusts in system settings
@@ -89,6 +75,16 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                                                final String... protocols) {
         this.trust = trust;
         this.key = key;
+        final String random = preferences.getProperty("connection.ssl.securerandom");
+        SecureRandom rpng = null;
+        try {
+            // Obtains random numbers from the underlying native OS, without blocking to prevent
+            // from excessive stalling. For example, /dev/urandom
+            rpng = SecureRandom.getInstance(random);
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.warn(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
+        }
         try {
             context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, rpng);
