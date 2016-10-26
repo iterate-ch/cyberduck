@@ -28,6 +28,7 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
+import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -48,8 +49,9 @@ public class IRODSWriteFeature extends AppendWriteFeature {
         try {
             try {
                 final IRODSFileSystemAO fs = session.filesystem();
-                return new iRODSProxyOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
+                final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+                return new iRODSSessionClosingProxyOutputStream(fs, fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
+                        f, status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
             }
             catch(JargonRuntimeException e) {
                 if(e.getCause() instanceof JargonException) {
@@ -73,11 +75,13 @@ public class IRODSWriteFeature extends AppendWriteFeature {
         return false;
     }
 
-    private static class iRODSProxyOutputStream extends ProxyOutputStream {
+    private static class iRODSSessionClosingProxyOutputStream extends ProxyOutputStream {
         private final AtomicBoolean close = new AtomicBoolean();
+        private final IRODSFileSystemAO fs;
 
-        public iRODSProxyOutputStream(final OutputStream proxy) {
+        public iRODSSessionClosingProxyOutputStream(final IRODSFileSystemAO fs, final OutputStream proxy) {
             super(proxy);
+            this.fs = fs;
         }
 
         @Override
@@ -88,6 +92,12 @@ public class IRODSWriteFeature extends AppendWriteFeature {
             }
             try {
                 super.close();
+                try {
+                    fs.getIRODSSession().closeSession(fs.getIRODSAccount());
+                }
+                catch(JargonException e) {
+                    throw new IOException(e);
+                }
             }
             finally {
                 close.set(true);
