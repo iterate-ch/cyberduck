@@ -76,14 +76,14 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @SuppressWarnings("unchecked")
     private static final Map<String, Application> applicationNameCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
+            = Collections.synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
      *
      */
     @SuppressWarnings("unchecked")
     private static final Map<String, Application> defaultApplicationCache
-            = Collections.<String, Application>synchronizedMap(new LRUMap<String, Application>(20));
+            = Collections.synchronizedMap(new LRUMap<String, Application>(20));
 
     /**
      * Caching map between application bundle identifiers and
@@ -91,7 +91,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @SuppressWarnings("unchecked")
     private static final Map<String, List<Application>> defaultApplicationListCache
-            = Collections.<String, List<Application>>synchronizedMap(new LRUMap<String, List<Application>>(20));
+            = Collections.synchronizedMap(new LRUMap<String, List<Application>>(20));
 
     @Override
     public List<Application> findAll(final String filename) {

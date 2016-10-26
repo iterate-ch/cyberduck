@@ -34,7 +34,7 @@ public class BundleLocale implements Locale {
 
     @SuppressWarnings("unchecked")
     private final Map<String, String> cache
-            = Collections.<String, String>synchronizedMap(new LRUMap<String, String>(1000));
+            = Collections.synchronizedMap(new LRUMap<String, String>(1000));
 
     public BundleLocale() {
         this(new BundleApplicationResourcesFinder().bundle());
