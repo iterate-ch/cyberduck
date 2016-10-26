@@ -176,7 +176,7 @@ public abstract class ToolbarWindowController extends WindowController implement
      * item already supplied to it, in which case this method may return the same toolbar
      * item it returned before
      */
-    private Map<String, NSToolbarItem> cache
+    private final Map<String, NSToolbarItem> cache
             = new HashMap<String, NSToolbarItem>();
 
     @Override

@@ -33,7 +33,7 @@ public abstract class AlertController extends SheetController {
     /**
      * If using alert and no custom window
      */
-    protected NSAlert alert;
+    protected final NSAlert alert;
 
     public AlertController(final WindowController parent, final NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);

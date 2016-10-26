@@ -25,7 +25,7 @@ import org.rococoa.Selector;
 
 /// <i>native declaration : :29</i>
 public abstract class NSNotificationCenter extends NSObject {
-    private static _Class CLASS = org.rococoa.Rococoa.createClass("NSNotificationCenter", _Class.class);
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSNotificationCenter", _Class.class);
 
     public interface _Class extends ObjCClass {
         /**

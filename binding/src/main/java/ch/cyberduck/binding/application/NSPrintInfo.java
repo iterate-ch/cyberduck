@@ -30,7 +30,7 @@ import org.rococoa.ObjCClass;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>, <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public abstract class NSPrintInfo extends NSObject {
-    private static _Class CLASS = org.rococoa.Rococoa.createClass("NSPrintInfo", _Class.class);
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPrintInfo", _Class.class);
 
     /**
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/AppKitDefines.h</i><br>

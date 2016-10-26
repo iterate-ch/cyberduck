@@ -52,7 +52,7 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     private int returncode;
 
-    private CountDownLatch signal
+    private final CountDownLatch signal
             = new CountDownLatch(1);
 
     /**
