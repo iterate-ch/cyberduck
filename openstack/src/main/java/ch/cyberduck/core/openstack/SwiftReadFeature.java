@@ -37,12 +37,12 @@ import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftReadFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;

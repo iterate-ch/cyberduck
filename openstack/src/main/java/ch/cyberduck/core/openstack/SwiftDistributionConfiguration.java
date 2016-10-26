@@ -55,15 +55,15 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Map<Path, Distribution> cache
+    private final Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftDistributionConfiguration(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

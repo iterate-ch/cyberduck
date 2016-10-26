@@ -36,14 +36,14 @@ import ch.iterate.openstack.swift.exception.GenericException;
 public class SwiftDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSegmentService segmentService;
+    private final SwiftSegmentService segmentService;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftDeleteFeature(final SwiftSession session) {
         this(session, new SwiftSegmentService(session), new SwiftRegionService(session));

@@ -39,12 +39,12 @@ import ch.iterate.openstack.swift.model.ObjectMetadata;
 public class SwiftMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(SwiftMetadataFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftMetadataFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

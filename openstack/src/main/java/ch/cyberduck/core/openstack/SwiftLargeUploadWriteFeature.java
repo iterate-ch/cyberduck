@@ -55,12 +55,12 @@ public class SwiftLargeUploadWriteFeature implements Write {
 
     private final Attributes attributes;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSegmentService segmentService;
+    private final SwiftSegmentService segmentService;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));

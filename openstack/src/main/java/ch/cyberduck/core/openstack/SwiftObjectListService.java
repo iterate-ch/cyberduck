@@ -46,15 +46,15 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftObjectListService implements ListService {
     private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private ISO8601DateParser dateParser
+    private final ISO8601DateParser dateParser
             = new ISO8601DateParser();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftObjectListService(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

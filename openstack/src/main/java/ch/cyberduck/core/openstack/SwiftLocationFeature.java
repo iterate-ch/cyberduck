@@ -47,12 +47,12 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftLocationFeature implements Location {
     private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Map<Path, Name> cache = new HashMap<Path, Name>();
+    private final Map<Path, Name> cache = new HashMap<Path, Name>();
 
     public SwiftLocationFeature(final SwiftSession session) {
         this.session = session;

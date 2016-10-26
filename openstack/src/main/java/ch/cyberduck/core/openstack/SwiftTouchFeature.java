@@ -32,15 +32,15 @@ import java.util.Collections;
 
 public class SwiftTouchFeature implements Touch {
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
     final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private MimeTypeService mapping
+    private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftTouchFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

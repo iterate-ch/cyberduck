@@ -44,15 +44,15 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(SwiftAttributesFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private RFC1123DateFormatter dateParser
+    private final RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftAttributesFeature(SwiftSession session) {
         this(session, new SwiftRegionService(session));

@@ -89,7 +89,7 @@ public class SwiftSession extends HttpSession<Client> {
     private final SwiftDistributionConfiguration cdn
             = new SwiftDistributionConfiguration(this, regionService);
 
-    protected Map<Region, AccountInfo> accounts
+    protected final Map<Region, AccountInfo> accounts
             = new HashMap<Region, AccountInfo>();
 
     /**

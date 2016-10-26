@@ -31,12 +31,12 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftRegionService {
     private static final Logger log = Logger.getLogger(SwiftRegionService.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftLocationFeature location;
+    private final SwiftLocationFeature location;
 
     public SwiftRegionService(final SwiftSession session) {
         this(session, new SwiftLocationFeature(session));
