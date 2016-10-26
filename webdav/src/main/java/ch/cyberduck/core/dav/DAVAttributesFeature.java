@@ -46,9 +46,9 @@ import com.github.sardine.impl.handler.HeadersResponseHandler;
 public class DAVAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
 
-    private DAVSession session;
+    private final DAVSession session;
 
-    private RFC1123DateFormatter dateParser
+    private final RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
 
     public DAVAttributesFeature(DAVSession session) {

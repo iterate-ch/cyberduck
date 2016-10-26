@@ -94,7 +94,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     private RedirectCallback redirect
             = new PreferencesRedirectCallback();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public DAVSession(final Host host) {

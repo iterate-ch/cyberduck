@@ -42,7 +42,7 @@ import com.github.sardine.impl.io.ContentLengthInputStream;
 public class DAVReadFeature implements Read {
     private static final Logger log = Logger.getLogger(DAVReadFeature.class);
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVReadFeature(final DAVSession session) {
         this.session = session;

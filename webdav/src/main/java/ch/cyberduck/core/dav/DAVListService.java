@@ -37,7 +37,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVListService implements ListService {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVListService(final DAVSession session) {
         this.session = session;

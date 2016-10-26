@@ -47,12 +47,12 @@ import com.github.sardine.impl.handler.ETagResponseHandler;
 public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
     private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
 
-    private DAVSession session;
+    private final DAVSession session;
 
     /**
      * Use Expect directive
      */
-    private boolean expect;
+    private final boolean expect;
 
     public DAVWriteFeature(final DAVSession session) {
         this(session, PreferencesFactory.get().getBoolean("webdav.expect-continue"));
