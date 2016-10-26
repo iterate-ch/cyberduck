@@ -15,7 +15,6 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
