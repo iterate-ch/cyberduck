@@ -37,8 +37,9 @@ public class IRODSTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
-            fs.createFile(file.getAbsolute(),
+            final int descriptor = fs.createFile(file.getAbsolute(),
                     DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
+            fs.fileClose(descriptor, false);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create file {0}", e, file);
