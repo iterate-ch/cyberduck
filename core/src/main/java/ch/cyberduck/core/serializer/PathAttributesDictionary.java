@@ -25,7 +25,7 @@ import java.util.Collections;
 
 public class PathAttributesDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public PathAttributesDictionary() {
         this.deserializer = new DeserializerFactory();

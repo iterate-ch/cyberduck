@@ -44,7 +44,7 @@ import java.util.Map;
 public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
     private final ProtocolFactory protocols;
 
     public TransferDictionary() {

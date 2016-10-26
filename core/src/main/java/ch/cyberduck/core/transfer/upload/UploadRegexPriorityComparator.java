@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class UploadRegexPriorityComparator extends LocalPriorityComparator {
 
-    private String pattern;
+    private final String pattern;
 
     public UploadRegexPriorityComparator() {
         this(PreferencesFactory.get().getProperty("queue.upload.priority.regex"));

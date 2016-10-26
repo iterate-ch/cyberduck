@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 public class TransferSpeedometer extends Speedometer {
     private static final Logger log = Logger.getLogger(TransferSpeedometer.class);
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
     public TransferSpeedometer(final Transfer transfer) {
         this.transfer = transfer;

@@ -48,7 +48,7 @@ import java.text.MessageFormat;
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private AbstractHttpWriteFeature<Output> writer;
+    private final AbstractHttpWriteFeature<Output> writer;
 
     public HttpUploadFeature(final AbstractHttpWriteFeature<Output> writer) {
         this.writer = writer;

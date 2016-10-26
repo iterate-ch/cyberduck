@@ -37,7 +37,7 @@ public class ReadPermissionWorker extends Worker<List<Permission>> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     public ReadPermissionWorker(final List<Path> files) {
         this.files = files;

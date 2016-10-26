@@ -36,19 +36,19 @@ public class WriteAclWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Permissions to apply to files.
      */
-    private Acl acl;
+    private final Acl acl;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<Acl> callback;
+    private final RecursiveCallback<Acl> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WriteAclWorker(final List<Path> files,
                           final Acl acl, final boolean recursive,

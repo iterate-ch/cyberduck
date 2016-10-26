@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private ComparisonServiceFilter comparisonService;
+    private final ComparisonServiceFilter comparisonService;
 
     protected Cache<Path> cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));

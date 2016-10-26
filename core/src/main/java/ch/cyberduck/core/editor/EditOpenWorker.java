@@ -50,17 +50,17 @@ import java.text.MessageFormat;
 public class EditOpenWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
 
-    private AbstractEditor editor;
+    private final AbstractEditor editor;
 
-    private Transfer download;
+    private final Transfer download;
 
-    private TransferErrorCallback callback;
+    private final TransferErrorCallback callback;
 
-    private ApplicationQuitCallback quit;
+    private final ApplicationQuitCallback quit;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    private FileWatcherListener watcher;
+    private final FileWatcherListener watcher;
 
     public EditOpenWorker(final Host bookmark, final AbstractEditor editor,
                           final TransferErrorCallback callback,

@@ -33,7 +33,7 @@ public final class Proxy {
         SOCKS
     }
 
-    private Type type;
+    private final Type type;
     private String hostname;
     private int port;
 

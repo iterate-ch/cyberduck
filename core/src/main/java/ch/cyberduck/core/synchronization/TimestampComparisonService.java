@@ -31,7 +31,7 @@ import java.util.TimeZone;
 public class TimestampComparisonService implements ComparisonService {
     private static final Logger log = Logger.getLogger(TimestampComparisonService.class);
 
-    private CalendarService calendarService;
+    private final CalendarService calendarService;
 
     public TimestampComparisonService(final TimeZone tz) {
         this.calendarService = new CalendarService(tz);

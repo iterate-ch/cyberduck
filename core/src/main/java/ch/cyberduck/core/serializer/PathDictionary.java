@@ -27,7 +27,7 @@ import java.util.EnumSet;
 
 public class PathDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public PathDictionary() {
         this.deserializer = new DeserializerFactory();

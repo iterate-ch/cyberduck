@@ -401,7 +401,7 @@ public class Permission implements Serializable {
          */
         public final String symbolic;
 
-        private Action(final String symbol) {
+        Action(final String symbol) {
             symbolic = symbol;
         }
 

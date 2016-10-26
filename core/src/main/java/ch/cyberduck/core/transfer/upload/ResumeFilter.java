@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 public class ResumeFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
-    private Upload upload;
+    private final Upload upload;
 
     private PathCache cache = PathCache.empty();
 

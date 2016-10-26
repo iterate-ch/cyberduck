@@ -68,20 +68,20 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
-    private AlertCallback alert;
+    private final AlertCallback alert;
 
-    private ProgressListener progressListener;
+    private final ProgressListener progressListener;
 
-    private TranscriptListener transcriptListener;
+    private final TranscriptListener transcriptListener;
 
-    protected ConnectionService connection;
+    protected final ConnectionService connection;
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    protected Session<?> session;
+    protected final Session<?> session;
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
     public SessionBackgroundAction(final Session<?> session,
                                    final Cache<Path> cache,

@@ -34,19 +34,19 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Redundancy class
      */
-    private String level;
+    private final String level;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<String> callback;
+    private final RecursiveCallback<String> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WriteRedundancyWorker(final List<Path> files,
                                  final String level,

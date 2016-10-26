@@ -23,7 +23,7 @@ import java.text.MessageFormat;
 
 public class WebUrlProvider implements UrlProvider {
 
-    private Host host;
+    private final Host host;
 
     public WebUrlProvider(final Host host) {
         this.host = host;

@@ -70,7 +70,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     /**
      * The number of times this action has been run
      */
-    private ThreadLocal<Integer> repeat = new ThreadLocal<Integer>() {
+    private final ThreadLocal<Integer> repeat = new ThreadLocal<Integer>() {
         @Override
         protected Integer initialValue() {
             return 0;

@@ -26,7 +26,7 @@ import java.security.KeyStore;
 
 public class PreferencesX509KeyManager extends KeychainX509KeyManager {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public PreferencesX509KeyManager(final CertificateStore callback) {

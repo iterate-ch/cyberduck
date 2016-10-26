@@ -46,5 +46,5 @@ interface Head {
 	 *            the character which decides which heads are returned.
 	 * @return a list of heads based on the input.
 	 */
-	public abstract List<Head> getNextHeads(char c);
+    List<Head> getNextHeads(char c);
 }

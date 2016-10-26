@@ -40,7 +40,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     public ReadMetadataWorker(final List<Path> files) {
         this.files = files;

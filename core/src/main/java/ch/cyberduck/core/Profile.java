@@ -41,14 +41,14 @@ import java.util.Set;
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
-    private Deserializer<String> dict;
+    private final Deserializer<String> dict;
 
     /**
      * The actual protocol implementation registered
      */
-    private Protocol parent;
+    private final Protocol parent;
 
-    private Local image;
+    private final Local image;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
         this.parent = parent;

@@ -19,7 +19,7 @@ package ch.cyberduck.core.formatter;
  */
 
 public abstract class Unit {
-    private Long multiple;
+    private final Long multiple;
 
     public Unit(final Long multiple) {
         this.multiple = multiple;

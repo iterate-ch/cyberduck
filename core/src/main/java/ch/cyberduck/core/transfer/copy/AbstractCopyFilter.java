@@ -49,19 +49,19 @@ import java.util.Map;
 public abstract class AbstractCopyFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
 
-    protected Session<?> sourceSession;
+    protected final Session<?> sourceSession;
 
-    protected Session<?> destinationSession;
+    protected final Session<?> destinationSession;
 
     protected PathCache sourceCache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    protected PathCache destinationCache
+    protected final PathCache destinationCache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     protected final Map<Path, Path> files;
 
-    private UploadFilterOptions options;
+    private final UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         this(source, destination, files, new UploadFilterOptions());

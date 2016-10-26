@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public class UploadRegexFilter implements Filter<Local> {
     private static final Logger log = Logger.getLogger(UploadRegexFilter.class);
 
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public UploadRegexFilter() {
         this(Pattern.compile(PreferencesFactory.get().getProperty("queue.upload.skip.regex")));

@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class LimitedListProgressListener implements ListProgressListener {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     /**
@@ -38,7 +38,7 @@ public class LimitedListProgressListener implements ListProgressListener {
     private Integer directory
             = preferences.getInteger("browser.list.limit.directory");
 
-    private ProgressListener delegate;
+    private final ProgressListener delegate;
 
     public LimitedListProgressListener(final ProgressListener delegate) {
         this.delegate = delegate;

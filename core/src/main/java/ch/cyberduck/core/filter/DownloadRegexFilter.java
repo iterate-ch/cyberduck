@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class DownloadRegexFilter extends DownloadDuplicateFilter {
     private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
 
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public DownloadRegexFilter() {
         this(Pattern.compile(PreferencesFactory.get().getProperty("queue.download.skip.regex")));

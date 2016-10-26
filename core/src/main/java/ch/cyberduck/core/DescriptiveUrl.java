@@ -26,9 +26,9 @@ public class DescriptiveUrl {
 
     public static final DescriptiveUrl EMPTY = new DescriptiveUrl(null);
 
-    private URI url;
+    private final URI url;
 
-    private Type type;
+    private final Type type;
 
     private String help = StringUtils.EMPTY;
 

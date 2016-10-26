@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 public class EnvironmentVariableProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(EnvironmentVariableProxyFinder.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

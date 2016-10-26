@@ -51,7 +51,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Files and folders initially selected to be part of this transfer
      */
-    protected List<TransferItem> roots;
+    protected final List<TransferItem> roots;
 
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
@@ -101,7 +101,7 @@ public abstract class Transfer implements Serializable {
 
     }
 
-    protected Host host;
+    protected final Host host;
 
     /**
      * In Bytes per second

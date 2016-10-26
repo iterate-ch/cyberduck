@@ -25,12 +25,12 @@ public class Navigation {
     /**
      * Keeps a ordered backward history of previously visited paths
      */
-    private List<Path> back = new Collection<Path>();
+    private final List<Path> back = new Collection<Path>();
 
     /**
      * Keeps a ordered forward history of previously visited paths
      */
-    private List<Path> forward = new Collection<Path>();
+    private final List<Path> forward = new Collection<Path>();
 
     /**
      * @param p Directory

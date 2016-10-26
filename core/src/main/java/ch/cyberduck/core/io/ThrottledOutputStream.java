@@ -27,11 +27,11 @@ public class ThrottledOutputStream extends ProxyOutputStream {
     /**
      * The delegate.
      */
-    private OutputStream delegate;
+    private final OutputStream delegate;
     /**
      * Limits throughput.
      */
-    private BandwidthThrottle throttle;
+    private final BandwidthThrottle throttle;
 
     /**
      * Wraps the delegate stream with the given throttle.

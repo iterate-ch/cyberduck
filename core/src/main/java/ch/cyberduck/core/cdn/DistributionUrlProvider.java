@@ -35,9 +35,9 @@ import java.util.List;
 
 public class DistributionUrlProvider implements UrlProvider {
 
-    private Distribution distribution;
+    private final Distribution distribution;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new PathContainerService();
 
     public DistributionUrlProvider(final Distribution distribution) {

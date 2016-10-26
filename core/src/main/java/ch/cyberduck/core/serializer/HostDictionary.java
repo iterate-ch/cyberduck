@@ -35,7 +35,7 @@ import java.util.TimeZone;
 public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
     private final ProtocolFactory protocols;
 
     public HostDictionary() {

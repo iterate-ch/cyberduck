@@ -53,7 +53,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
      */
-    private Displayname displayname
+    private final Displayname displayname
             = new Displayname();
 
     /**
@@ -81,7 +81,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * The number of transferred bytes. Must be less or equals size.
      */
-    private AtomicLong offset
+    private final AtomicLong offset
             = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
@@ -91,13 +91,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * The transfer has been canceled by the user.
      */
-    private AtomicBoolean canceled
+    private final AtomicBoolean canceled
             = new AtomicBoolean();
 
-    private AtomicBoolean complete
+    private final AtomicBoolean complete
             = new AtomicBoolean();
 
-    private CountDownLatch done
+    private final CountDownLatch done
             = new CountDownLatch(1);
 
     private Checksum checksum;

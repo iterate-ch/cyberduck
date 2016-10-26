@@ -33,7 +33,7 @@ import java.net.URLEncoder;
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private static final Logger log = Logger.getLogger(QloudstatAnalyticsProvider.class);
 
-    private String target;
+    private final String target;
 
     public QloudstatAnalyticsProvider() {
         this(PreferencesFactory.get().getProperty("analytics.provider.qloudstat.setup"));

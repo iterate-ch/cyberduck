@@ -106,8 +106,8 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     }
 
     public static class UserAndRole implements Comparable<UserAndRole> {
-        private Acl.User user;
-        private Acl.Role role;
+        private final Acl.User user;
+        private final Acl.Role role;
 
         public UserAndRole(User user, Role role) {
             this.user = user;
@@ -154,7 +154,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     public static abstract class User implements Comparable<User> {
 
         private String identifier;
-        private boolean editable;
+        private final boolean editable;
         private boolean modified;
 
         public User(String identifier) {
@@ -358,7 +358,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         public static final String WRITE = "WRITE";
 
         private String name;
-        private boolean editable;
+        private final boolean editable;
         private boolean modified;
 
         public Role(String name) {

@@ -23,7 +23,7 @@ import ch.cyberduck.core.Permission;
 
 public class PermissionDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public PermissionDictionary() {
         this.deserializer = new DeserializerFactory();

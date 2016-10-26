@@ -27,7 +27,7 @@ public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
 
     private String message;
-    private String detail;
+    private final String detail;
 
     public BackgroundException() {
         this(null, null, null);

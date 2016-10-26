@@ -30,11 +30,11 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     private static final long serialVersionUID = 6598370606581477494L;
 
-    private Writer<Host> writer = HostWriterFactory.get();
+    private final Writer<Host> writer = HostWriterFactory.get();
 
-    private Reader<Host> reader = HostReaderFactory.get();
+    private final Reader<Host> reader = HostReaderFactory.get();
 
-    protected Local folder;
+    protected final Local folder;
 
     /**
      * Reading bookmarks from this folder

@@ -57,9 +57,9 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private final AtomicBoolean initializer
             = new AtomicBoolean(false);
 
-    private Preferences preferences = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
-    private SecureRandom rpng;
+    private final SecureRandom rpng;
 
     {
         final String random = preferences.getProperty("connection.ssl.securerandom");

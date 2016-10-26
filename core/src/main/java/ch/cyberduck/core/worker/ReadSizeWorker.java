@@ -33,7 +33,7 @@ public class ReadSizeWorker extends Worker<Long> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     private Long total = 0L;
 

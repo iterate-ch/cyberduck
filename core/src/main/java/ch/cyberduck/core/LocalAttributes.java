@@ -31,7 +31,7 @@ import java.nio.file.attribute.FileTime;
 public class LocalAttributes extends Attributes {
     private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
-    private String path;
+    private final String path;
 
     private Checksum checksum;
 

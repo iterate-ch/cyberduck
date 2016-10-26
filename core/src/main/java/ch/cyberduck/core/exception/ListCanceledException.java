@@ -24,7 +24,7 @@ import ch.cyberduck.core.Path;
 public class ListCanceledException extends ConnectionCanceledException {
     private static final long serialVersionUID = 7637613473871074200L;
 
-    private AttributedList<Path> chunk;
+    private final AttributedList<Path> chunk;
 
     public ListCanceledException(final String detail, final AttributedList<Path> chunk) {
         super(detail);

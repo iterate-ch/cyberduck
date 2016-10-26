@@ -93,7 +93,7 @@ public class StreamGobbler extends InputStream {
         }
     }
 
-    private InputStream is;
+    private final InputStream is;
 
     private final Object synchronizer = new Object();
 

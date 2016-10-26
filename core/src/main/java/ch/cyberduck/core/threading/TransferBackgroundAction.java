@@ -48,14 +48,14 @@ import java.util.concurrent.TimeUnit;
 public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> implements TransferItemCallback {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
-    private TransferOptions options;
+    private final TransferOptions options;
 
     /**
      * Keeping track of the current transfer rate
      */
-    private TransferSpeedometer meter;
+    private final TransferSpeedometer meter;
 
     /**
      * Timer to update the progress indicator
@@ -65,9 +65,9 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
     private ScheduledThreadPool timerPool
             = new ScheduledThreadPool();
 
-    private TransferListener listener;
+    private final TransferListener listener;
 
-    private TransferPrompt prompt;
+    private final TransferPrompt prompt;
 
     public TransferBackgroundAction(final Controller controller,
                                     final Session<?> session,

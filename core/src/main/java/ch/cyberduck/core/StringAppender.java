@@ -23,7 +23,7 @@ public final class StringAppender {
 
     private final StringBuilder buffer;
 
-    private char suffix;
+    private final char suffix;
 
     public StringAppender() {
         this.buffer = new StringBuilder();

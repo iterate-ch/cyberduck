@@ -187,7 +187,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         no_renegotiation(100),
         unsupported_extension(110);
 
-        private int code;
+        private final int code;
 
         Alert(int code) {
             this.code = code;

@@ -27,7 +27,7 @@ import java.util.Comparator;
 public class FilenameComparator extends BrowserComparator {
     private static final long serialVersionUID = -6726865487297853350L;
 
-    private Comparator<String> impl = new NaturalOrderComparator();
+    private final Comparator<String> impl = new NaturalOrderComparator();
 
     public FilenameComparator(boolean ascending) {
         super(ascending, null);

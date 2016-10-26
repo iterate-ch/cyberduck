@@ -41,13 +41,13 @@ public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Attributes attribute;
 
-    private ComparisonService checksum;
+    private final ComparisonService checksum;
 
-    private ComparisonService size;
+    private final ComparisonService size;
 
-    private ComparisonService timestamp;
+    private final ComparisonService timestamp;
 
-    private ProgressListener progress;
+    private final ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
         this.finder = new DefaultFindFeature(session);

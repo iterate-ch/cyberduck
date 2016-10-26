@@ -38,11 +38,11 @@ import java.util.EnumSet;
 public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
-    private Host bookmark;
+    private final Host bookmark;
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
-    private ListProgressListener listener;
+    private final ListProgressListener listener;
 
     protected MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
         this.bookmark = bookmark;

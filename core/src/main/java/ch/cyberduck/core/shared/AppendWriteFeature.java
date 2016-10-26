@@ -29,9 +29,9 @@ import ch.cyberduck.core.features.Write;
 
 public abstract class AppendWriteFeature implements Write {
 
-    private Find finder;
+    private final Find finder;
 
-    private Attributes attributes;
+    private final Attributes attributes;
 
     protected AppendWriteFeature(final Session<?> session) {
         this.finder = new DefaultFindFeature(session);

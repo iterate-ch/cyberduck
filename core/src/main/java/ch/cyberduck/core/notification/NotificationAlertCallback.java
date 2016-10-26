@@ -24,7 +24,7 @@ import ch.cyberduck.core.threading.AlertCallback;
 
 public class NotificationAlertCallback implements AlertCallback {
 
-    private NotificationService notification = NotificationServiceFactory.get();
+    private final NotificationService notification = NotificationServiceFactory.get();
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {

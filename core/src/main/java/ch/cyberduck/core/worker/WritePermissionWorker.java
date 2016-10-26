@@ -35,19 +35,19 @@ public class WritePermissionWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Permissions to apply to files.
      */
-    private Permission permission;
+    private final Permission permission;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<Permission> callback;
+    private final RecursiveCallback<Permission> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,

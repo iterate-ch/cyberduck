@@ -38,19 +38,19 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * The updated metadata to apply
      */
-    private Map<String, String> metadata;
+    private final Map<String, String> metadata;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<String> callback;
+    private final RecursiveCallback<String> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                   final boolean recursive,

@@ -43,14 +43,14 @@ public class AttributedListAttributes<E> {
     /**
      * Hidden attribute holds a list of hidden files.
      */
-    private List<E> hidden
+    private final List<E> hidden
             = new ArrayList<E>();
 
     /**
      * The cached version should be superseded
      * with an updated listing.
      */
-    private AtomicBoolean invalid
+    private final AtomicBoolean invalid
             = new AtomicBoolean();
 
     private Long timestamp;

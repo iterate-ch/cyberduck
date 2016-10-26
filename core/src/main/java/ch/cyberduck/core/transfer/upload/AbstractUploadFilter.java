@@ -61,9 +61,9 @@ import java.util.EnumSet;
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
-    private SymlinkResolver<Local> symlinkResolver;
+    private final SymlinkResolver<Local> symlinkResolver;
 
-    private Session<?> session;
+    private final Session<?> session;
 
     private UploadFilterOptions options;
 
@@ -71,10 +71,10 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Attributes attribute;
 
-    private MimeTypeService mapping
+    private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

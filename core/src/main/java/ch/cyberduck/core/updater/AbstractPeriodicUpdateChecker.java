@@ -28,7 +28,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
 
     private final Duration delay;
 
-    private Timer timer = new Timer("updater", true);
+    private final Timer timer = new Timer("updater", true);
 
     /**
      * Defaults to 24 hours

@@ -34,7 +34,7 @@ import java.util.Locale;
 
 public class DefaultUrlProvider implements UrlProvider {
 
-    private Host host;
+    private final Host host;
 
     public DefaultUrlProvider(final Host host) {
         this.host = host;

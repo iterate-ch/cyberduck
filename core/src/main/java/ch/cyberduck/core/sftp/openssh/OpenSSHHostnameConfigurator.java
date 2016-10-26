@@ -32,7 +32,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private static final Local file
             = LocalFactory.get(Local.HOME, ".ssh/config");
 
-    private OpenSshConfig configuration;
+    private final OpenSshConfig configuration;
 
     public OpenSSHHostnameConfigurator() {
         this(new OpenSshConfig(file));

@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 
 public class TouchWorker extends Worker<Boolean> {
 
-    private Path file;
+    private final Path file;
 
     public TouchWorker(final Path file) {
         this.file = file;

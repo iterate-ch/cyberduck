@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Worker<T> {
 
-    private AtomicBoolean canceled
+    private final AtomicBoolean canceled
             = new AtomicBoolean();
 
     protected String toString(List<Path> files) {

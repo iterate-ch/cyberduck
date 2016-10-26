@@ -30,9 +30,9 @@ import java.util.Comparator;
 public abstract class BrowserComparator implements Comparator<Path>, Serializable {
     private static final long serialVersionUID = -5905031111032653689L;
 
-    protected boolean ascending;
+    protected final boolean ascending;
 
-    private BrowserComparator fallback;
+    private final BrowserComparator fallback;
 
     /**
      * @param ascending The items should be sorted in a ascending manner.

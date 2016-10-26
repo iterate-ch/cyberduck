@@ -37,7 +37,7 @@ import java.util.Locale;
 public abstract class Archive {
     private static final Logger log = Logger.getLogger(Archive.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public static final Archive TAR
@@ -145,7 +145,7 @@ public abstract class Archive {
     /**
      * Typical filename extension. The default
      */
-    private String identifier;
+    private final String identifier;
 
     /**
      * @param extension Filename extension for archive format

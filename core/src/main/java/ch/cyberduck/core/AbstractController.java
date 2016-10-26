@@ -38,9 +38,9 @@ import java.util.concurrent.RejectedExecutionException;
 public abstract class AbstractController implements Controller {
     private static final Logger log = Logger.getLogger(AbstractController.class);
 
-    private ThreadPool singleExecutor;
+    private final ThreadPool singleExecutor;
 
-    private ThreadPool concurrentExecutor;
+    private final ThreadPool concurrentExecutor;
 
     protected AbstractController() {
         this(new LoggingUncaughtExceptionHandler());
@@ -64,7 +64,7 @@ public abstract class AbstractController implements Controller {
     /**
      * List of pending background tasks or this browser
      */
-    private BackgroundActionRegistry registry
+    private final BackgroundActionRegistry registry
             = new BackgroundActionRegistry();
 
     /**

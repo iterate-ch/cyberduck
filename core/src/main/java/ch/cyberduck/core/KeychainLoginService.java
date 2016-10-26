@@ -35,9 +35,9 @@ public class KeychainLoginService implements LoginService {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private LoginCallback callback;
+    private final LoginCallback callback;
 
-    private HostPasswordStore keychain;
+    private final HostPasswordStore keychain;
 
     public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
         this.callback = prompt;

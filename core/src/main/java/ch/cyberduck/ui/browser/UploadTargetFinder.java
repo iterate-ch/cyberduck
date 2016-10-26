@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 
 public class UploadTargetFinder {
 
-    private Path workdir;
+    private final Path workdir;
 
     public UploadTargetFinder(final Path workdir) {
         this.workdir = workdir;

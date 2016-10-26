@@ -45,9 +45,9 @@ public class TransferCollection extends Collection<Transfer> {
         return DEFAULT_COLLECTION;
     }
 
-    private Local file;
+    private final Local file;
 
-    private Reader<Transfer> reader = TransferReaderFactory.get();
+    private final Reader<Transfer> reader = TransferReaderFactory.get();
 
     protected TransferCollection(final Local file) {
         this.file = file;

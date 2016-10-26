@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 
 public abstract class AbstractLicense implements License {
 
-    private Local file;
+    private final Local file;
 
     protected AbstractLicense(final Local file) {
         this.file = file;

@@ -41,25 +41,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
-    private HostKeyCallback key;
+    private final HostKeyCallback key;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
-    private Resolver resolver
+    private final Resolver resolver
             = new Resolver();
 
-    private ProxyFinder proxy;
+    private final ProxyFinder proxy;
 
-    private LoginService login;
+    private final LoginService login;
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    private NotificationService notification;
+    private final NotificationService notification;
 
-    private AtomicBoolean canceled
+    private final AtomicBoolean canceled
             = new AtomicBoolean();
 
     public LoginConnectionService(final LoginCallback prompt,

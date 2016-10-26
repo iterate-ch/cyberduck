@@ -25,7 +25,7 @@ import java.util.TimeZone;
 public class CalendarService implements DateDomainService<Calendar> {
     private static final Logger log = Logger.getLogger(CalendarService.class);
 
-    private TimeZone tz;
+    private final TimeZone tz;
 
     public CalendarService(final TimeZone tz) {
         this.tz = null == tz ? TimeZone.getTimeZone("UTC") : tz;

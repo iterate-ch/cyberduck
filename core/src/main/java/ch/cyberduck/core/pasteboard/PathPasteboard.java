@@ -28,7 +28,7 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
 
     private boolean cut;
 
-    private Session session;
+    private final Session session;
 
     protected PathPasteboard(final Session session) {
         this.session = session;

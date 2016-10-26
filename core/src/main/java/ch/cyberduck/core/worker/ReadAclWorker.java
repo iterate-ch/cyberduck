@@ -34,7 +34,7 @@ import java.util.List;
 
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
-    private List<Path> files;
+    private final List<Path> files;
 
     public ReadAclWorker(final List<Path> files) {
         this.files = files;

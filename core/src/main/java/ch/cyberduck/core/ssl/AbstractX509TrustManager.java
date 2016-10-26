@@ -37,7 +37,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
      * A set of all X509 certificates accepted by the user that contains
      * no duplicate elements
      */
-    private Set<X509Certificate> accepted
+    private final Set<X509Certificate> accepted
             = Collections.synchronizedSet(new LinkedHashSet<X509Certificate>());
 
     protected void accept(final List<X509Certificate> certs) {

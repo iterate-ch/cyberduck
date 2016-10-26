@@ -47,9 +47,9 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
 
     private final Proxy proxy;
 
-    private List<String> blacklisted;
+    private final List<String> blacklisted;
 
-    private SocketFactory delegate;
+    private final SocketFactory delegate;
 
     public NetworkInterfaceAwareSocketFactory() {
         this(new DefaultSocketFactory());

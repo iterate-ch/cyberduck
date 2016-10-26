@@ -34,11 +34,11 @@ import java.text.MessageFormat;
 public class SessionListWorker extends Worker<AttributedList<Path>> implements ListProgressListener {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
-    private Path directory;
+    private final Path directory;
 
-    private ListProgressListener listener;
+    private final ListProgressListener listener;
 
     public SessionListWorker(final Cache<Path> cache, final Path directory,
                              final ListProgressListener listener) {

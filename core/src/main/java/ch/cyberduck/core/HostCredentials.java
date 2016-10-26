@@ -21,7 +21,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public final class HostCredentials extends Credentials {
 
-    private Host host;
+    private final Host host;
 
     public HostCredentials(final Host host) {
         super(PreferencesFactory.get().getProperty("connection.login.name"));

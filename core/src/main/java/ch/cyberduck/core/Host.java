@@ -54,7 +54,7 @@ public class Host implements Serializable, Comparable<Host> {
     /**
      * The credentials to authenticate with for the CDN
      */
-    private Credentials cloudfront = new DistributionCredentials();
+    private final Credentials cloudfront = new DistributionCredentials();
 
     /**
      * Unique identifier

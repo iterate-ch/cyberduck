@@ -42,13 +42,13 @@ import java.util.Map;
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
-    private TransferAction action;
+    private final TransferAction action;
 
-    private Cache<TransferItem> cache;
+    private final Cache<TransferItem> cache;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public TransferPromptFilterWorker(final Transfer transfer, final TransferAction action,
                                       final Cache<TransferItem> cache, final ProgressListener listener) {

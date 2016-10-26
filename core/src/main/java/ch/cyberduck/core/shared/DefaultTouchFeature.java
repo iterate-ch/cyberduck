@@ -35,10 +35,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DefaultTouchFeature implements Touch {
 
-    private MimeTypeService mapping
+    private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private Upload feature;
+    private final Upload feature;
 
     public DefaultTouchFeature(final Session<?> session) {
         this.feature = session.getFeature(Upload.class);

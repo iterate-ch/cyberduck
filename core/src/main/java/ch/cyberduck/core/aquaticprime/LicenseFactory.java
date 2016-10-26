@@ -46,7 +46,7 @@ public abstract class LicenseFactory extends Factory<License> {
      * Delegate returning the first key found.
      */
     public static final class DefaultLicenseFactory extends Factory<License> {
-        private LicenseFactory delegate;
+        private final LicenseFactory delegate;
 
         public DefaultLicenseFactory(final LicenseFactory delegate) {
             this.delegate = delegate;
@@ -68,9 +68,9 @@ public abstract class LicenseFactory extends Factory<License> {
         }
     }
 
-    protected Local folder;
+    protected final Local folder;
 
-    private Filter<Local> filter;
+    private final Filter<Local> filter;
 
     protected LicenseFactory() {
         this(LocalFactory.get(PreferencesFactory.get().getProperty("application.support.path")));

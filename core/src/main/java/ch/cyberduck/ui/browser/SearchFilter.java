@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public class SearchFilter implements Filter<Path> {
 
-    private String input;
+    private final String input;
 
     public SearchFilter(final String input) {
         this.input = input;

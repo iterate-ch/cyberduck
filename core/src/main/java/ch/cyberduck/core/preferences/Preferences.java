@@ -91,7 +91,7 @@ import java.util.TimeZone;
 public abstract class Preferences {
     private static final Logger log = Logger.getLogger(Preferences.class);
 
-    protected Map<String, String> defaults
+    protected final Map<String, String> defaults
             = new HashMap<String, String>();
 
     /*

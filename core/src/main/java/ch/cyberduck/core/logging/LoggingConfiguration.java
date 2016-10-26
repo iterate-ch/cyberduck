@@ -25,9 +25,9 @@ public class LoggingConfiguration {
         return new LoggingConfiguration();
     }
 
-    private boolean enabled;
+    private final boolean enabled;
 
-    private String loggingTarget;
+    private final String loggingTarget;
 
     public LoggingConfiguration() {
         this.enabled = false;

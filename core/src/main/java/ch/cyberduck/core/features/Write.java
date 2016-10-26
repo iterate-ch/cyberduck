@@ -55,9 +55,9 @@ public interface Write {
         /**
          * Append to file
          */
-        public boolean append;
+        public final boolean append;
 
-        public boolean override;
+        public final boolean override;
 
         /**
          * Remote file size

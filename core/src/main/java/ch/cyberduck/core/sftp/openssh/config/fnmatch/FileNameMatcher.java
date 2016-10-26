@@ -81,7 +81,7 @@ public class FileNameMatcher {
     private static final Pattern characterClassStartPattern = Pattern
             .compile("\\[[.:=]");
 
-    private List<Head> headsStartValue;
+    private final List<Head> headsStartValue;
 
     private List<Head> heads;
 

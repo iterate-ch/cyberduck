@@ -32,9 +32,9 @@ import java.math.RoundingMode;
 
 public class IconUpdateSreamListener extends DelegateStreamListener {
 
-    private TransferStatus status;
+    private final TransferStatus status;
 
-    private Local file;
+    private final Local file;
 
     private final IconService icon
             = IconServiceFactory.get();
@@ -47,9 +47,9 @@ public class IconUpdateSreamListener extends DelegateStreamListener {
 
     // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
     // overhead when transferring a large amount of files
-    private boolean threshold;
+    private final boolean threshold;
 
-    private boolean enabled = preferences.getBoolean("queue.download.icon.update");
+    private final boolean enabled = preferences.getBoolean("queue.download.icon.update");
 
     public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
         super(delegate);

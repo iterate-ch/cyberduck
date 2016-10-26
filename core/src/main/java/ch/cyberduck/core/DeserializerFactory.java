@@ -32,7 +32,7 @@ public class DeserializerFactory<T> extends Factory<Deserializer> {
     private static final Preferences preferences
             = PreferencesFactory.get();
 
-    private String clazz;
+    private final String clazz;
 
     public DeserializerFactory() {
         this.clazz = preferences.getProperty("factory.deserializer.class");

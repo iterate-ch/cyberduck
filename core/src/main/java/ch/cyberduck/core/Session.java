@@ -53,7 +53,7 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Encapsulating all the information of the remote host
      */
-    protected Host host;
+    protected final Host host;
 
     protected C client;
 
@@ -64,7 +64,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     private State state = State.closed;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {

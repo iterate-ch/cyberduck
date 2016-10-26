@@ -49,7 +49,7 @@ public class Speedometer {
     /**
      * Formatter for remaining time
      */
-    private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
+    private final PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
 
     public Speedometer() {
         this(System.currentTimeMillis());

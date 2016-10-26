@@ -18,5 +18,5 @@ package ch.cyberduck.core.transfer.normalizer;
  */
 
 public interface RootPathsNormalizer<T> {
-    public T normalize(T roots);
+    T normalize(T roots);
 }

@@ -38,15 +38,15 @@ import java.util.regex.Pattern;
 public class RegexLocale implements Locale {
     private static final Logger log = Logger.getLogger(RegexLocale.class);
 
-    private Map<Key, String> cache
+    private final Map<Key, String> cache
             = Collections.<Key, String>synchronizedMap(new LRUMap<Key, String>(1000));
 
-    private Local resources;
+    private final Local resources;
 
     private String locale
             = java.util.Locale.getDefault().getLanguage();
 
-    private Pattern pattern
+    private final Pattern pattern
             = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
 
     public RegexLocale() {
@@ -99,8 +99,8 @@ public class RegexLocale implements Locale {
     }
 
     private final class Key {
-        private String table;
-        private String key;
+        private final String table;
+        private final String key;
 
         public Key(final String table, final String key) {
             this.table = table;

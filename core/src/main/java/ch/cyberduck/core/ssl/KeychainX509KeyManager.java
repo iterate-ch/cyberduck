@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private Map<Key, String> memory
+    private final Map<Key, String> memory
             = new HashMap<Key, String>();
 
     public KeychainX509KeyManager() {
@@ -77,9 +77,9 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
     }
 
     protected static final class Key {
-        private String hostname;
-        private int port;
-        private Principal[] issuers;
+        private final String hostname;
+        private final int port;
+        private final Principal[] issuers;
 
         private Key(String hostname, int port, Principal[] issuers) {
             this.hostname = hostname;

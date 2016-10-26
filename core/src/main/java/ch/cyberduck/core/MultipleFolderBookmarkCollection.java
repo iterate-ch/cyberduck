@@ -49,7 +49,7 @@ public class MultipleFolderBookmarkCollection extends Collection<FolderBookmarkC
         return DEFAULT_COLLECTION;
     }
 
-    private Local folder;
+    private final Local folder;
 
     /**
      * Reading bookmarks from this folder

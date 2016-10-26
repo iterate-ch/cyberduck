@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class TildeExpander {
     private static final Logger log = Logger.getLogger(TildeExpander.class);
 
-    private Preferences preferences = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     public String abbreviate(final String name) {
         if(StringUtils.startsWith(name, preferences.getProperty("local.user.home"))) {

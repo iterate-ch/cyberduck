@@ -30,7 +30,7 @@ import ch.cyberduck.core.TranscriptListener;
 
 public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
-    private BackgroundActionRegistry registry
+    private final BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
     public RegistryBackgroundAction(final Controller controller,

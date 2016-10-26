@@ -28,12 +28,12 @@ public class ThrottledInputStream extends ProxyInputStream {
     /**
      * The delegate.
      */
-    private InputStream delegate;
+    private final InputStream delegate;
 
     /**
      * Limits throughput.
      */
-    private BandwidthThrottle throttle;
+    private final BandwidthThrottle throttle;
 
     public ThrottledInputStream(final InputStream delegate, final BandwidthThrottle throttle) {
         super(delegate);

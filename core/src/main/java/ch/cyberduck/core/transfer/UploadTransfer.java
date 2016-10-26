@@ -64,9 +64,9 @@ import java.util.Map;
 public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 
-    private Filter<Local> filter;
+    private final Filter<Local> filter;
 
-    private Comparator<Local> comparator;
+    private final Comparator<Local> comparator;
 
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));

@@ -49,13 +49,13 @@ import java.text.MessageFormat;
 public class EditSaveWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditSaveWorker.class);
 
-    private AbstractEditor editor;
+    private final AbstractEditor editor;
 
-    private Transfer upload;
+    private final Transfer upload;
 
-    private TransferErrorCallback callback;
+    private final TransferErrorCallback callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public EditSaveWorker(final Host bookmark, final AbstractEditor editor,
                           final TransferErrorCallback callback, final ProgressListener listener) {

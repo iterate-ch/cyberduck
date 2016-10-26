@@ -23,7 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class DownloadRegexPriorityComparator extends PathPriorityComparator {
 
-    private String pattern;
+    private final String pattern;
 
     public DownloadRegexPriorityComparator() {
         this(PreferencesFactory.get().getProperty("queue.download.priority.regex"));

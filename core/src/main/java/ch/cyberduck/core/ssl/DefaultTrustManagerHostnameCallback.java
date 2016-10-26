@@ -22,7 +22,7 @@ import ch.cyberduck.core.idna.PunycodeConverter;
 
 public class DefaultTrustManagerHostnameCallback implements TrustManagerHostnameCallback {
 
-    private Host host;
+    private final Host host;
 
     public DefaultTrustManagerHostnameCallback(final Host host) {
         this.host = host;

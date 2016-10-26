@@ -27,7 +27,7 @@ public class TildePathExpander {
     public static final String PREFIX
             = String.format("%s%s", Path.DELIMITER, Path.HOME);
 
-    private Path workdir;
+    private final Path workdir;
 
     public TildePathExpander(final Path workdir) {
         this.workdir = workdir;

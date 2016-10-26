@@ -34,19 +34,19 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Algorithm
      */
-    private Encryption.Algorithm algorithm;
+    private final Encryption.Algorithm algorithm;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<Encryption.Algorithm> callback;
+    private final RecursiveCallback<Encryption.Algorithm> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
                                  final boolean recursive, final ProgressListener listener) {

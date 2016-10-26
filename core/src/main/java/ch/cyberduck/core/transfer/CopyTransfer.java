@@ -64,16 +64,16 @@ import java.util.Map;
 public class CopyTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
-    private Filter<Path> filter = new NullFilter<Path>();
+    private final Filter<Path> filter = new NullFilter<Path>();
 
-    private Comparator<Path> comparator = new NullComparator<Path>();
+    private final Comparator<Path> comparator = new NullComparator<Path>();
 
     /**
      * Mapping source to destination files
      */
     protected final Map<Path, Path> mapping;
 
-    private Session<?> destination;
+    private final Session<?> destination;
 
     public CopyTransfer(final Host source, final Session destination,
                         final Map<Path, Path> selected) {

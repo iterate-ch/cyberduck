@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LocalDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public LocalDictionary() {
         this.deserializer = new DeserializerFactory();

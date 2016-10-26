@@ -27,8 +27,8 @@ public class Application {
     public static final Application notfound
             = new Application(null, LocaleFactory.localizedString("Unknown"));
 
-    private String identifier;
-    private String name;
+    private final String identifier;
+    private final String name;
 
     public Application(final String identifier) {
         this(identifier, null);
