@@ -35,9 +35,9 @@ import java.util.List;
 public class FTPStatListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
-    private FTPDataResponseReader reader;
+    private final FTPDataResponseReader reader;
 
     public FTPStatListService(final FTPSession session, final FTPFileEntryParser parser) {
         this.session = session;

@@ -52,9 +52,9 @@ import java.util.TimeZone;
 public class FTPListService implements ListService {
     private static final Logger log = Logger.getLogger(FTPListService.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
-    protected Map<Command, ListService> implementations
+    protected final Map<Command, ListService> implementations
             = new HashMap<Command, ListService>();
 
     public enum Command {
@@ -63,8 +63,8 @@ public class FTPListService implements ListService {
         list(FTPCmd.LIST),
         lista(FTPCmd.LIST, "-a");
 
-        private FTPCmd command;
-        private String arg;
+        private final FTPCmd command;
+        private final String arg;
 
         Command(FTPCmd command) {
             this(command, null);

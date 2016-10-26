@@ -35,7 +35,7 @@ import java.util.Arrays;
 
 public class FTPAttributesFeature implements Attributes {
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPAttributesFeature(FTPSession session) {
         this.session = session;

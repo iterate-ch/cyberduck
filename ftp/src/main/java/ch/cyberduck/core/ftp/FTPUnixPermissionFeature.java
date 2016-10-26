@@ -30,7 +30,7 @@ import java.io.IOException;
 public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature implements UnixPermission {
     private static final Logger log = Logger.getLogger(FTPUnixPermissionFeature.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
     private BackgroundException failure;
 

@@ -38,9 +38,9 @@ import java.util.List;
 public class FTPListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 
-    private FTPFileEntryParser parser;
+    private final FTPFileEntryParser parser;
 
-    private boolean lenient;
+    private final boolean lenient;
 
     public FTPListResponseReader(final FTPFileEntryParser parser) {
         this(parser, false);

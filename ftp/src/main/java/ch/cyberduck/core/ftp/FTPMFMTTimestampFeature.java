@@ -31,7 +31,7 @@ import java.util.TimeZone;
 public class FTPMFMTTimestampFeature extends DefaultTimestampFeature implements Timestamp {
     private static final Logger log = Logger.getLogger(FTPMFMTTimestampFeature.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
     private FTPException failure;
 

@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class FTPSymlinkFeature implements Symlink {
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPSymlinkFeature(FTPSession session) {
         this.session = session;

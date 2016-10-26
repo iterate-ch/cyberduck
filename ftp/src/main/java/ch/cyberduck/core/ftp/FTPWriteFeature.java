@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FTPWriteFeature extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(FTPWriteFeature.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPWriteFeature(final FTPSession session) {
         super(session);

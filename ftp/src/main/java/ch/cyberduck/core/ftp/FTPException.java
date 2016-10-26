@@ -24,7 +24,7 @@ import java.io.IOException;
 public class FTPException extends IOException {
     private static final long serialVersionUID = -809453207804218675L;
 
-    private int code;
+    private final int code;
 
     public FTPException(int code, String message) {
         super(message);

@@ -32,7 +32,7 @@ import java.util.Collections;
 public class FTPMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(FTPMoveFeature.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPMoveFeature(final FTPSession session) {
         this.session = session;
