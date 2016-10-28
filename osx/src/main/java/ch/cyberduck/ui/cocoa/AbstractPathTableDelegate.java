@@ -18,6 +18,7 @@
 
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;

@@ -19,9 +19,11 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ToolbarWindowController;
 import ch.cyberduck.binding.application.*;

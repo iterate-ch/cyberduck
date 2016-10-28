@@ -18,7 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSTableColumn;

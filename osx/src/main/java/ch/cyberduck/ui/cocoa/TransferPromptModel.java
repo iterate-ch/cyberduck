@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.OutlineDataSource;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSOutlineView;

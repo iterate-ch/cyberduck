@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableColumn;
