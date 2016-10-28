@@ -43,17 +43,14 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         }
         switch(e.getHttpStatusCode()) {
             case HttpStatus.SC_UNAUTHORIZED:
+            case HttpStatus.SC_BAD_REQUEST:
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
                 return new AccessDeniedException(buffer.toString(), e);
             case HttpStatus.SC_NOT_FOUND:
                 return new NotfoundException(buffer.toString(), e);
-            case HttpStatus.SC_BAD_REQUEST:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_CONFLICT:
                 return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
