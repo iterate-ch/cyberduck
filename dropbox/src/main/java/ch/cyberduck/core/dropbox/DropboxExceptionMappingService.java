@@ -106,6 +106,21 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new InteroperabilityException(buffer.toString(), failure);
             }
         }
+        if(failure instanceof UploadSessionFinishErrorException) {
+            final UploadSessionFinishError error = ((UploadSessionFinishErrorException) failure).errorValue;
+            final WriteError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case MALFORMED_PATH:
+                case DISALLOWED_NAME:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NO_WRITE_PERMISSION:
+                case CONFLICT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case INSUFFICIENT_SPACE:
+                    return new QuotaException(buffer.toString(), failure);
+            }
+        }
         if(failure instanceof GetTemporaryLinkErrorException) {
             final GetTemporaryLinkError error = ((GetTemporaryLinkErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
@@ -136,6 +151,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new InteroperabilityException(buffer.toString(), failure);
             }
         }
-        return new BackgroundException(buffer.toString(), failure);
+        return new InteroperabilityException(buffer.toString(), failure);
     }
 }
