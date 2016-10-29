@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
@@ -69,20 +70,24 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Reading private key %s with key format %s", identity, format));
                 }
-                if(format.equals(KeyFormat.OpenSSH)) {
-                    provider = new OpenSSHKeyFile.Factory().create();
-                }
-                else if(format.equals(KeyFormat.PKCS5)) {
-                    provider = new PKCS5KeyFile.Factory().create();
-                }
-                else if(format.equals(KeyFormat.PKCS8)) {
-                    provider = new PKCS8KeyFile.Factory().create();
-                }
-                else if(format.equals(KeyFormat.PuTTY)) {
-                    provider = new PuTTYKeyFile.Factory().create();
-                }
-                else {
-                    throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
+                switch(format) {
+                    case PKCS5:
+                        provider = new PKCS5KeyFile.Factory().create();
+                        break;
+                    case PKCS8:
+                        provider = new PKCS8KeyFile.Factory().create();
+                        break;
+                    case OpenSSH:
+                        provider = new OpenSSHKeyFile.Factory().create();
+                        break;
+                    case OpenSSHv1:
+                        provider = new OpenSSHKeyV1KeyFile.Factory().create();
+                        break;
+                    case PuTTY:
+                        provider = new PuTTYKeyFile.Factory().create();
+                        break;
+                    default:
+                        throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
                 }
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
