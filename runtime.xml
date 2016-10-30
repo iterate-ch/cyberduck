@@ -2,7 +2,7 @@
 
 <project name="Java Runtime" basedir=".">
 
-    <property name="runtime.dependency" value="${build}/1.8.0_102.jre"/>
+    <property name="runtime.dependency" value="${build}/jre1.8.0_112.jre"/>
 
     <property name="bundle.runtime" value="${bundle.plugins}/Runtime.jre"/>
     <property name="bundle.runtime.lib"
@@ -11,7 +11,7 @@
     <target name="runtime">
         <mkdir dir="${bundle}/${bundle.runtime}"/>
         <!-- Copy runtime -->
-        <echo message="Copy runtime from ${jvm.runtime.home} to ${bundle}/${bundle.runtime}"/>
+        <echo message="Copy runtime from ${runtime.dependency} to ${bundle}/${bundle.runtime}"/>
         <copy todir="${bundle}/${bundle.runtime}" preservelastmodified="true">
             <fileset followsymlinks="true" dir="${runtime.dependency}" excludesfile="${home}/runtime-excludes.properties"/>
         </copy>
