@@ -88,8 +88,7 @@ import java.util.concurrent.Callable;
 /**
  * Amazon CloudFront CDN configuration.
  */
-public class CloudFrontDistributionConfiguration
-        implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
+public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
     private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     protected final S3Session session;
@@ -180,7 +179,8 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         return this.authenticated(new Authenticated<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
@@ -241,7 +241,8 @@ public class CloudFrontDistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {

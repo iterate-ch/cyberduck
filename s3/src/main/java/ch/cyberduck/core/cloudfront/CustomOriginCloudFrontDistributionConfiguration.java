@@ -37,7 +37,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -81,21 +81,21 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         return this.connected(new Connected<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
-                return CustomOriginCloudFrontDistributionConfiguration.super.read(container, method, prompt);
+                return CustomOriginCloudFrontDistributionConfiguration.super.read(file, method, prompt);
             }
         });
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         this.connected(new Connected<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution, prompt);
+                CustomOriginCloudFrontDistributionConfiguration.super.write(file, distribution, prompt);
                 return null;
             }
         });
@@ -103,7 +103,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        return Arrays.asList(Distribution.CUSTOM);
+        return Collections.singletonList(Distribution.CUSTOM);
     }
 
     @Override
