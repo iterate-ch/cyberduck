@@ -61,6 +61,7 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                     file.getAbsolute()));
         }
         exception.setMessage(m.toString());
+        exception.setFile(file);
         return exception;
     }
 
