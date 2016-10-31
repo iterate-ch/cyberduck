@@ -148,7 +148,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      * @return List of IDs of KMS managed keys
      */
     @Override
-    public Set<Algorithm> getKeys(final Path container, final LoginCallback prompt) throws BackgroundException {
+    public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         final Set<Algorithm> keys = super.getKeys(container, prompt);
         try {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
@@ -169,7 +170,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                             }, configuration
                     );
                     final Location feature = session.getFeature(Location.class);
-                    final Location.Name region = feature.getLocation(containerService.getContainer(container));
+                    final Location.Name region = feature.getLocation(container);
                     client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
