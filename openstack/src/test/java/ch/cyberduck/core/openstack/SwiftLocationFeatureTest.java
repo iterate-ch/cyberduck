@@ -18,6 +18,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static ch.cyberduck.core.features.Location.unknown;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -85,11 +86,13 @@ public class SwiftLocationFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new SwiftLocationFeature.SwiftRegion("IAD"), new SwiftLocationFeature(session).getLocation(
                 new Path("cdn.duck.sh", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+        assertEquals(unknown, new SwiftLocationFeature(session).getLocation(
+                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))));
         session.close();
     }
 
     @Test
     public void testEquals() throws Exception {
-        assertEquals(Location.unknown, new SwiftLocationFeature.SwiftRegion(null));
+        assertEquals(unknown, new SwiftLocationFeature.SwiftRegion(null));
     }
 }

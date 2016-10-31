@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -35,6 +34,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.features.Location.unknown;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -59,6 +59,9 @@ public class S3LocationFeatureTest {
         assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
                 new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
+        assertEquals(unknown, feature.getLocation(
+                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
+        ));
         session.close();
     }
 
@@ -69,7 +72,7 @@ public class S3LocationFeatureTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        assertEquals(Location.unknown,
+        assertEquals(unknown,
                 new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
@@ -123,7 +126,7 @@ public class S3LocationFeatureTest {
 
     @Test
     public void testEquals() throws Exception {
-        assertEquals(Location.unknown, new S3LocationFeature.S3Region(null));
+        assertEquals(unknown, new S3LocationFeature.S3Region(null));
     }
 
     @Test
