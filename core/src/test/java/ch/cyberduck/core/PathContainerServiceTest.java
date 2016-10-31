@@ -45,7 +45,8 @@ public class PathContainerServiceTest {
     public void testGetContainer() throws Exception {
         final PathContainerService s = new PathContainerService();
         assertEquals("/t", s.getContainer(new Path("/t", EnumSet.of(Path.Type.directory))).getAbsolute());
-        assertNull(s.getContainer(new Path("/", EnumSet.of(Path.Type.directory))));
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory));
+        assertSame(root, s.getContainer(root));
     }
 
     @Test

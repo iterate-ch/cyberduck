@@ -31,7 +31,7 @@ public class PathContainerService {
      */
     public Path getContainer(final Path file) {
         if(file.isRoot()) {
-            return null;
+            return file;
         }
         Path container = file;
         while(!this.isContainer(container)) {

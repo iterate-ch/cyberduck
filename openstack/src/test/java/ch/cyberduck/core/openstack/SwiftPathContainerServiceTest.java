@@ -27,6 +27,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 @Category(IntegrationTest.class)
 public class SwiftPathContainerServiceTest {
@@ -35,5 +36,6 @@ public class SwiftPathContainerServiceTest {
     public void testLookup() throws Exception {
         final Path c = new Path("/container", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals(c, new SwiftPathContainerService().getContainer(c));
+        assertSame(c, new SwiftPathContainerService().getContainer(c));
     }
 }
