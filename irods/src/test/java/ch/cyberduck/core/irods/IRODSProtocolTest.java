@@ -60,4 +60,36 @@ public class IRODSProtocolTest {
             }
         }).getRegion());
     }
+
+    @Test
+    public void testResource() throws Exception {
+        final Host bookmark = new Host(new Profile(new IRODSProtocol(), new Deserializer<String>() {
+            @Override
+            public String stringForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public String objectForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public <L> List<L> listForKey(final String key) {
+                return null;
+            }
+
+            @Override
+            public boolean booleanForKey(final String key) {
+                return false;
+            }
+        }) {
+            @Override
+            public String getRegion() {
+                return "DowZone01:MidlandResc";
+            }
+        });
+        assertEquals("DowZone01", new IRODSSession(bookmark).getRegion());
+        assertEquals("MidlandResc", new IRODSSession(bookmark).getResource());
+    }
 }
