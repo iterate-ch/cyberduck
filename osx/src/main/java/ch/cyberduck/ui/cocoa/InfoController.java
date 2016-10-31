@@ -97,6 +97,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -111,15 +112,15 @@ public class InfoController extends ToolbarWindowController {
 
     private static NSPoint cascade = new NSPoint(0, 0);
 
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+    private final Controller controller;
 
     private final Session<?> session;
 
     private final Cache<Path> cache;
 
-    private final Controller controller;
-
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
+
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     /**
      * Selected files
@@ -301,7 +302,7 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSTextField distributionAnalyticsSetupUrlField;
 
-    public InfoController(final Controller controller, final Session<?> session, final Cache<Path> cache, final List<Path> files) {
+    public InfoController(final Controller controller, final Session session, final Cache<Path> cache, final List<Path> files) {
         this.controller = controller;
         this.session = session;
         this.cache = cache;
@@ -313,12 +314,13 @@ public class InfoController extends ToolbarWindowController {
         for(Path file : files) {
             return file;
         }
-        return null;
+        throw new IllegalArgumentException();
     }
 
     @Override
     public void setWindow(final NSWindow window) {
         window.setFrameAutosaveName("Info");
+        window.setHidesOnDeactivate(false);
         window.setShowsResizeIndicator(true);
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
@@ -550,7 +552,8 @@ public class InfoController extends ToolbarWindowController {
         if(count > 1) {
             return String.format("(%s)", LocaleFactory.localizedString("Multiple files"));
         }
-        return this.getSelected().getName();
+        final Path file = this.getSelected();
+        return file.getName();
     }
 
     public void setFilenameField(NSTextField filenameField) {
@@ -757,11 +760,12 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
+            final Path file = this.getSelected();
             controller.background(new RegistryBackgroundAction<Boolean>(controller, session, cache) {
                 @Override
                 public Boolean run() throws BackgroundException {
                     final Logging logging = session.getFeature(Logging.class);
-                    logging.setConfiguration(containerService.getContainer(getSelected()),
+                    logging.setConfiguration(file,
                             new LoggingConfiguration(
                                     bucketLoggingButton.state() == NSCell.NSOnState,
                                     null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
@@ -846,10 +850,11 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
+            final Path file = this.getSelected();
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
-                    session.getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()), prompt,
+                    session.getFeature(Versioning.class).setConfiguration(file, prompt,
                             new VersioningConfiguration(
                                     bucketVersioningButton.state() == NSCell.NSOnState,
                                     bucketMfaButton.state() == NSCell.NSOnState)
@@ -874,27 +879,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
-        if(this.toggleS3Settings(false)) {
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
-                @Override
-                public Void run() throws BackgroundException {
-                    session.getFeature(Versioning.class).setConfiguration(containerService.getContainer(getSelected()),
-                            prompt,
-                            new VersioningConfiguration(
-                                    bucketVersioningButton.state() == NSCell.NSOnState,
-                                    bucketMfaButton.state() == NSCell.NSOnState)
-                    );
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    toggleS3Settings(true);
-                    initS3();
-                }
-            });
-        }
+        this.bucketVersioningButtonClicked(sender);
     }
 
     public void setS3PublicUrlField(NSTextField t) {
@@ -947,10 +932,11 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
+            final Path file = this.getSelected();
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
-                    session.getFeature(Lifecycle.class).setConfiguration(containerService.getContainer(getSelected()),
+                    session.getFeature(Lifecycle.class).setConfiguration(file,
                             new LifecycleConfiguration(
                                     lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                                     S3Object.STORAGE_CLASS_GLACIER,
@@ -1549,7 +1535,7 @@ public class InfoController extends ToolbarWindowController {
         final int count = this.numberOfFiles();
         if(count > 0) {
             filenameField.setStringValue(this.getName());
-            final Path file = getSelected();
+            final Path file = this.getSelected();
             filenameField.setEnabled(1 == count
                     && session.getFeature(Move.class).isSupported(file));
             // Where
@@ -1608,11 +1594,11 @@ public class InfoController extends ToolbarWindowController {
                 iconImageView.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
             }
             else {
-                if(this.getSelected().isVolume()) {
+                if(file.isVolume()) {
                     iconImageView.setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 32));
                 }
                 else {
-                    iconImageView.setImage(IconCacheFactory.<NSImage>get().fileIcon(this.getSelected(), 32));
+                    iconImageView.setImage(IconCacheFactory.<NSImage>get().fileIcon(file, 32));
                 }
             }
         }
@@ -1728,13 +1714,13 @@ public class InfoController extends ToolbarWindowController {
         distributionDefaultRootPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
 
-        final Path container = containerService.getContainer(getSelected());
+        final Path file = this.getSelected();
 
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(LocaleFactory.localizedString("None"));
-        for(Distribution.Method method : cdn.getMethods(container)) {
+        for(Distribution.Method method : cdn.getMethods(file)) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
@@ -1742,7 +1728,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.selectItemWithTitle(selected);
         if(null == distributionDeliveryPopup.selectedItem()) {
             // Select first distribution option
-            Distribution.Method method = cdn.getMethods(container).iterator().next();
+            Distribution.Method method = cdn.getMethods(file).iterator().next();
             distributionDeliveryPopup.selectItemWithTitle(method.toString());
         }
 
@@ -1877,6 +1863,7 @@ public class InfoController extends ToolbarWindowController {
         encryptionPopup.selectItem(encryptionPopup.lastItem());
 
         if(this.toggleS3Settings(false)) {
+            final Path file = this.getSelected();
             if(session.getFeature(Redundancy.class) != null) {
                 for(String redundancy : session.getFeature(Redundancy.class).getClasses()) {
                     storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
@@ -1890,7 +1877,6 @@ public class InfoController extends ToolbarWindowController {
                 s3torrentUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
-                Path file = this.getSelected();
                 final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
                 if(!signed.equals(DescriptiveUrl.EMPTY)) {
                     s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
@@ -1917,36 +1903,35 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public Void run() throws BackgroundException {
-                    final Path container = containerService.getContainer(getSelected());
                     if(session.getFeature(Location.class) != null) {
-                        location = session.getFeature(Location.class).getLocation(container);
+                        location = session.getFeature(Location.class).getLocation(file);
                     }
                     if(session.getFeature(Logging.class) != null) {
-                        logging = session.getFeature(Logging.class).getConfiguration(container);
-                        for(Path c : session.list(containerService.getContainer(getSelected()).getParent(), new DisabledListProgressListener())) {
+                        logging = session.getFeature(Logging.class).getConfiguration(file);
+                        for(Path c : session.list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener())) {
                             containers.add(c.getName());
                         }
                     }
                     if(session.getFeature(Versioning.class) != null) {
-                        versioning = session.getFeature(Versioning.class).getConfiguration(container);
+                        versioning = session.getFeature(Versioning.class).getConfiguration(file);
                     }
                     if(session.getFeature(Lifecycle.class) != null) {
-                        lifecycle = session.getFeature(Lifecycle.class).getConfiguration(container);
+                        lifecycle = session.getFeature(Lifecycle.class).getConfiguration(file);
                     }
                     if(session.getFeature(AnalyticsProvider.class) != null && session.getFeature(IdentityConfiguration.class) != null) {
                         credentials = session.getFeature(IdentityConfiguration.class)
                                 .getCredentials(session.getFeature(AnalyticsProvider.class).getName());
                     }
                     if(session.getFeature(Redundancy.class) != null) {
-                        for(final Path file : files) {
-                            selectedStorageClasses.add(session.getFeature(Redundancy.class).getClass(file));
+                        for(final Path f : files) {
+                            selectedStorageClasses.add(session.getFeature(Redundancy.class).getClass(f));
                         }
                     }
                     if(session.getFeature(Encryption.class) != null) {
                         // Add additional keys stored in KMS
-                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(container, prompt);
-                        for(final Path file : files) {
-                            selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(file));
+                        managedEncryptionKeys = session.getFeature(Encryption.class).getKeys(file, prompt);
+                        for(final Path f : files) {
+                            selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(f));
                         }
                         managedEncryptionKeys.addAll(selectedEncryptionKeys);
                     }
@@ -1970,7 +1955,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                         else {
                             // Default to write log files to origin bucket
-                            bucketLoggingPopup.selectItemWithTitle(containerService.getContainer(getSelected()).getName());
+                            bucketLoggingPopup.selectItemAtIndex(bucketLoggingPopup.indexOfItemWithRepresentedObject(containerService.getContainer(file).getName()));
                         }
                     }
                     if(location != null) {
@@ -2017,8 +2002,7 @@ public class InfoController extends ToolbarWindowController {
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
-                                        session.getHost().getProtocol().getScheme(),
-                                        containerService.getContainer(getSelected()), credentials)
+                                        session.getHost().getProtocol().getScheme(), file, credentials)
                         ));
                     }
                     bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2351,7 +2335,8 @@ public class InfoController extends ToolbarWindowController {
         final Credentials credentials = session.getHost().getCredentials();
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         boolean enable = !credentials.isAnonymousLogin() && cdn != null;
-        final Path container = containerService.getContainer(getSelected());
+        final Path file = this.getSelected();
+        final Path container = containerService.getContainer(file);
         if(enable) {
             // Not enabled if multiple files selected with not same parent container
             for(Path next : files) {
@@ -2401,14 +2386,14 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
+            final Path file = this.getSelected();
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     final Purge feature = cdn.getFeature(Purge.class, method);
-                    feature.invalidate(container, method, files, prompt);
+                    feature.invalidate(file, method, files, prompt);
                     return null;
                 }
 
@@ -2422,7 +2407,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            containerService.getContainer(getSelected()).getName());
+                            file.getName());
                 }
             });
         }
@@ -2439,18 +2424,18 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
+            final Path file = this.getSelected();
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 @Override
                 public Void run() throws BackgroundException {
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final Path container = containerService.getContainer(getSelected());
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
                     configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
                     configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
                     configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
                     configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
-                    cdn.write(container, configuration, prompt);
+                    cdn.write(file, configuration, prompt);
                     return null;
                 }
 
@@ -2464,7 +2449,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            getSelected().getName());
+                            file.getName());
                 }
             });
         }
@@ -2473,7 +2458,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionStatusButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            final Path container = containerService.getContainer(getSelected());
+            final Path file = this.getSelected();
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             final List<Path> rootDocuments = new ArrayList<Path>();
@@ -2483,10 +2468,10 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public Distribution run() throws BackgroundException {
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    distribution = cdn.read(container, method, prompt);
+                    distribution = cdn.read(file, method, prompt);
                     if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                         // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(session.list(container, new DisabledListProgressListener()));
+                        rootDocuments.addAll(session.list(containerService.getContainer(file), new DisabledListProgressListener()));
                     }
                     return distribution;
                 }
@@ -2494,8 +2479,6 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     super.cleanup();
-                    final Path file = getSelected();
-                    final Path container = containerService.getContainer(file);
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
@@ -2517,8 +2500,8 @@ public class InfoController extends ToolbarWindowController {
                         distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingContainer());
                     }
                     else {
-                        if(distributionLoggingPopup.itemWithTitle(container.getName()) != null) {
-                            distributionLoggingPopup.selectItemWithTitle(container.getName());
+                        if(distributionLoggingPopup.itemWithTitle(containerService.getContainer(file).getName()) != null) {
+                            distributionLoggingPopup.selectItemWithTitle(containerService.getContainer(file).getName());
                         }
                     }
                     if(null == distributionLoggingPopup.selectedItem()) {
@@ -2532,7 +2515,7 @@ public class InfoController extends ToolbarWindowController {
                         if(credentials != null) {
                             distributionAnalyticsSetupUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getHostname(),
-                                            distribution.getMethod().getScheme(), container, credentials))
+                                            distribution.getMethod().getScheme(), file, credentials))
                             );
                         }
                     }
@@ -2605,7 +2588,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                            getSelected().getName());
+                            file.getName());
                 }
             });
         }
