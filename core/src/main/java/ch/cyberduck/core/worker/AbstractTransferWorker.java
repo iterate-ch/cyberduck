@@ -260,7 +260,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 log.info(String.format("Accepted file %s in transfer %s", file, this));
                             }
                             // Transfer
-                            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0}", "Status"), file.getName()));
+                            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
+                                    file.getName(), action.getTitle()));
                             try {
                                 // Determine transfer status
                                 final TransferStatus status = filter.prepare(file, local, parent);
