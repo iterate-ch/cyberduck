@@ -74,6 +74,9 @@ public class S3LifecycleConfiguration implements Lifecycle {
     @Override
     public LifecycleConfiguration getConfiguration(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return LifecycleConfiguration.empty();
+        }
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
             if(null != status) {

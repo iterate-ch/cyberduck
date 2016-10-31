@@ -47,6 +47,9 @@ public class S3LoggingFeature implements Logging {
     @Override
     public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
+        if(bucket.isRoot()) {
+            return LoggingConfiguration.empty();
+        }
         try {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
