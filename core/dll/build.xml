@@ -35,7 +35,7 @@
                classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="false" verbose="true">
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
-                <include name="*1.8.0*/Contents/Home/lib/ext/sunec.jar"/>
+                <include name="*.jre/Contents/Home/lib/ext/sunec.jar"/>
             </fileset>
             <fileset dir="${build}">
                 <include name="*.jar"/>
