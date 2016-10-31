@@ -105,6 +105,9 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return unknown;
+        }
         for(Acl.UserAndRole role : container.attributes().getAcl().asList()) {
             if(role.getUser().equals(new Acl.GroupUser(Acl.GroupUser.EVERYONE))) {
                 if(role.getRole().equals(new Acl.Role(Acl.Role.READ))) {
