@@ -151,6 +151,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         final Set<Algorithm> keys = super.getKeys(container, prompt);
+        if(container.isRoot()) {
+            return keys;
+        }
         try {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
