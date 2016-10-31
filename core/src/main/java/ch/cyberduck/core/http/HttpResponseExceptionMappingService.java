@@ -45,6 +45,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new AccessDeniedException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
                 return new NotfoundException(buffer.toString(), failure);
+            case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
                 return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_STORAGE:
