@@ -46,9 +46,10 @@ public class S3LoggingFeature implements Logging {
 
     @Override
     public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
         try {
             final StorageBucketLoggingStatus status
-                    = session.getClient().getBucketLoggingStatusImpl(containerService.getContainer(file).getName());
+                    = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
             return new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
         }
@@ -57,7 +58,7 @@ public class S3LoggingFeature implements Logging {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read logging configuration for %s %s", containerService.getContainer(file).getName(), e.getMessage()));
+                log.warn(String.format("Missing permission to read logging configuration for %s %s", bucket.getName(), e.getMessage()));
                 return LoggingConfiguration.empty();
             }
         }
@@ -66,14 +67,15 @@ public class S3LoggingFeature implements Logging {
 
     @Override
     public void setConfiguration(final Path file, final LoggingConfiguration configuration) throws BackgroundException {
+        // Logging target bucket
+        final Path bucket = containerService.getContainer(file);
         try {
-            // Logging target bucket
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : containerService.getContainer(file).getName(), null);
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
             if(configuration.isEnabled()) {
                 status.setLogfilePrefix(PreferencesFactory.get().getProperty("s3.logging.prefix"));
             }
-            session.getClient().setBucketLoggingStatus(containerService.getContainer(file).getName(), status, true);
+            session.getClient().setBucketLoggingStatus(bucket.getName(), status, true);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
