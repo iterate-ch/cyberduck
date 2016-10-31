@@ -2018,7 +2018,7 @@ public class InfoController extends ToolbarWindowController {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                 session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
                                         session.getHost().getProtocol().getScheme(),
-                                        containerService.getContainer(getSelected()).getName(), credentials)
+                                        containerService.getContainer(getSelected()), credentials)
                         ));
                     }
                     bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
@@ -2532,7 +2532,7 @@ public class InfoController extends ToolbarWindowController {
                         if(credentials != null) {
                             distributionAnalyticsSetupUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getHostname(),
-                                            distribution.getMethod().getScheme(), container.getName(), credentials))
+                                            distribution.getMethod().getScheme(), container, credentials))
                             );
                         }
                     }

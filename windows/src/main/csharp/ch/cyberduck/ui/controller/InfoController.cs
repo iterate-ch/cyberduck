@@ -1866,7 +1866,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.BucketAnalyticsSetupUrl =
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getSetup(
                                 s.getHost().getProtocol().getDefaultHostname(), s.getHost().getProtocol().getScheme(),
-                                _container.getName(), _credentials).getUrl();
+                                _container, _credentials).getUrl();
                     }
                     _view.BucketAnalyticsCheckbox = null != _credentials;
 
@@ -2125,7 +2125,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             _view.DistributionAnalyticsSetupUrl =
                                 analyticsFeature.getSetup(cdn.getHostname(), _distribution.getMethod().getScheme(),
-                                    container.getName(), credentials).getUrl();
+                                    container, credentials).getUrl();
                         }
                     }
                     DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
