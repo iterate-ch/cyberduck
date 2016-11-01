@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
@@ -61,7 +60,6 @@ public class AzureDirectoryFeature implements Directory {
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
             if(containerService.isContainer(file)) {
                 // Container name must be lower case.
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());

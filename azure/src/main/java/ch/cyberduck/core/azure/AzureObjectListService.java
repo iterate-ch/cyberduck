@@ -41,7 +41,6 @@ import java.util.EnumSet;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobListingDetails;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -80,7 +79,6 @@ public class AzureObjectListService implements ListService {
             }
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
-                options.setRetryPolicyFactory(new RetryNoRetry());
                 result = container.listBlobsSegmented(
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
                         PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
