@@ -34,7 +34,6 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobContainerProperties;
 import com.microsoft.azure.storage.blob.BlobProperties;
@@ -75,7 +74,6 @@ public class AzureAttributesFeature implements Attributes {
                 final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file));
                 final BlobRequestOptions options = new BlobRequestOptions();
-                options.setRetryPolicyFactory(new RetryNoRetry());
                 blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
                 final BlobProperties properties = blob.getProperties();
                 final PathAttributes attributes = new PathAttributes();
