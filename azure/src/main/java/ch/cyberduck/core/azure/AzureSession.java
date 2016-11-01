@@ -106,7 +106,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setTimeoutIntervalInMs(this.timeout());
             options.setRetryPolicyFactory(new RetryNoRetry());
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
