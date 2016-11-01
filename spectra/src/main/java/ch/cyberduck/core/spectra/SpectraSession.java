@@ -38,6 +38,8 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.jets3t.service.Jets3tProperties;
+
 public class SpectraSession extends S3Session {
 
     private final SpectraBulkService bulk = new SpectraBulkService(this);
@@ -48,6 +50,14 @@ public class SpectraSession extends S3Session {
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final ProxyFinder proxy) {
         super(host, trust, key, proxy);
+    }
+
+    @Override
+    protected Jets3tProperties configure() {
+        final Jets3tProperties configuration = super.configure();
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        return configuration;
     }
 
     @Override
