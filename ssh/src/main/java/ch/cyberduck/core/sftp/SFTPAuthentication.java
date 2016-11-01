@@ -27,6 +27,6 @@ public interface SFTPAuthentication {
     /**
      * @return True if authentication is complete
      */
-    boolean authenticate(Host host, LoginCallback controller, CancelCallback cancel)
+    boolean authenticate(Host bookmark, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException;
 }

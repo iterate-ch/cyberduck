@@ -38,13 +38,13 @@ public class SFTPNoneAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using none authentication with credentials %s", host.getCredentials()));
+            log.debug(String.format("Login using none authentication with credentials %s", bookmark.getCredentials()));
         }
         try {
-            session.getClient().auth(host.getCredentials().getUsername(), new AuthNone());
+            session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthNone());
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
