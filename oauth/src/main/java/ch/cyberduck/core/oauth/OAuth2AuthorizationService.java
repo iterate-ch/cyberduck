@@ -130,7 +130,7 @@ public class OAuth2AuthorizationService {
             }
         }
         else {
-            final Credentials token = new Credentials(bookmark.getCredentials().getUsername());
+            final Credentials token = new TokenCredentials(bookmark);
             // Start OAuth2 flow within browser
             final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
                     method,
@@ -270,6 +270,25 @@ public class OAuth2AuthorizationService {
         return this;
     }
 
+    private static final class TokenCredentials extends Credentials {
+        private final Host bookmark;
+
+        public TokenCredentials(final Host bookmark) {
+            super(bookmark.getCredentials().getUsername());
+            this.bookmark = bookmark;
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return bookmark.getCredentials().getUsernamePlaceholder();
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return bookmark.getCredentials().getPasswordPlaceholder();
+        }
+    }
+
     private final class Tokens {
         public final String accesstoken;
         public final String refreshtoken;
@@ -286,7 +305,7 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private final class OAuthExceptionMappingService extends DefaultIOExceptionMappingService {
+    private static final class OAuthExceptionMappingService extends DefaultIOExceptionMappingService {
         @Override
         public BackgroundException map(final IOException failure) {
             if(failure instanceof TokenResponseException) {
