@@ -23,6 +23,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -49,6 +50,9 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         final Purge feature = cdn.getFeature(Purge.class, method);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             feature.invalidate(file, method, files, prompt);
             break;
         }

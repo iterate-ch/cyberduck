@@ -25,6 +25,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -53,6 +54,9 @@ public class ReadDistributionWorker extends Worker<Distribution> {
     public Distribution run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             final Distribution distribution = cdn.read(file, method, prompt);
             if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                 // Make sure container items are cached for default root object.

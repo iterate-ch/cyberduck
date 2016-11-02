@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -44,6 +45,9 @@ public class WriteLifecycleWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Lifecycle feature = session.getFeature(Lifecycle.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(feature, file);
         }
         return true;

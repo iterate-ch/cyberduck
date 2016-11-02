@@ -68,6 +68,9 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;

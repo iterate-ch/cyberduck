@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 
 import java.text.MessageFormat;
@@ -47,6 +48,9 @@ public class WriteVersioningWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(feature, file);
         }
         return true;

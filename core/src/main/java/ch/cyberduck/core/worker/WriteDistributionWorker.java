@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -47,6 +48,9 @@ public class WriteDistributionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             write(feature, file);
         }
         return true;

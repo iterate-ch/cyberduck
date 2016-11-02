@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
@@ -43,6 +44,9 @@ public class WriteLoggingWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Logging feature = session.getFeature(Logging.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(feature, file);
         }
         return true;

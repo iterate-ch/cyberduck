@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
 
 import java.text.MessageFormat;
@@ -42,6 +43,9 @@ public class WriteTransferAccelerationWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final TransferAcceleration feature = session.getFeature(TransferAcceleration.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(feature, file);
         }
         return true;
