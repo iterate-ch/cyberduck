@@ -2354,34 +2354,19 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+            final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
+            configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
+            configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
+            configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
+            configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteDistributionWorker(files, prompt, configuration) {
                 @Override
-                public Void run() throws BackgroundException {
-                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
-                    configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
-                    configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
-                    configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
-                    configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
-                    cdn.write(file, configuration, prompt);
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            file.getName());
-                }
-            });
+            }));
         }
     }
 
