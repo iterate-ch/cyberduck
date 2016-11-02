@@ -79,6 +79,7 @@ import ch.cyberduck.core.worker.ReadPermissionWorker;
 import ch.cyberduck.core.worker.ReadSizeWorker;
 import ch.cyberduck.core.worker.WriteAclWorker;
 import ch.cyberduck.core.worker.WriteEncryptionWorker;
+import ch.cyberduck.core.worker.WriteLoggingConfigurationWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
 import ch.cyberduck.core.worker.WriteRedundancyWorker;
@@ -758,31 +759,16 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Boolean>(controller, session, cache) {
-                @Override
-                public Boolean run() throws BackgroundException {
-                    final Logging logging = session.getFeature(Logging.class);
-                    logging.setConfiguration(file,
-                            new LoggingConfiguration(
-                                    bucketLoggingButton.state() == NSCell.NSOnState,
-                                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
-                            )
-                    );
-                    return true;
-                }
-
+            final LoggingConfiguration configuration = new LoggingConfiguration(
+                    bucketLoggingButton.state() == NSCell.NSOnState,
+                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
+            );
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingConfigurationWorker(files, configuration)) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
                     toggleS3Settings(true);
                     initS3();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                            this.toString(files));
                 }
             });
         }
