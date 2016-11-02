@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
+    <PropertyGroup>
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <OutputPath>windows/target/</OutputPath>
+        <IntermediateOutputPath>$(OutputPath)appx/</IntermediateOutputPath>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <OutputPath>windows/target/</OutputPath>
+        <IntermediateOutputPath>$(OutputPath)appx/</IntermediateOutputPath>
+    </PropertyGroup>
+    <PropertyGroup>
+        <PackageFiles>$(IntermediateOutputPath)Cyberduck/PackageFiles/</PackageFiles>
+        <VFS>$(PackageFiles)VFS/</VFS>
+    </PropertyGroup>
+    <Target Name="Build">
+        <CallTarget Targets="ConvertInstaller" />
+        <CallTarget Targets="DeleteOldIcons" />
+        <CallTarget Targets="CopyNewIcons" />
+        <CallTarget Targets="UpdateManifest" />
+        <CallTarget Targets="RemoveObsolete" />
+        <CallTarget Targets="MakeAppx" />
+    </Target>
+
+    <Target Name="ConvertInstaller">
+        <Exec Command="DesktopAppConverter -Installer &quot;$(CyberduckInstallerPath)&quot; -InstallerArguments &quot;$(CyberduckInstallerArgs)&quot; -Destination &quot;$(IntermediateOutputPath)&quot; -PackageName &quot;Cyberduck&quot; -Publisher &quot;CN=iterate GmbH, O=iterate GmbH, L=Bern, S=Bern, C=CH&quot; -PackagePublisherDisplayName &quot;iterate GmbH&quot; -PackageArch &quot;x86&quot; -Version &quot;$(Version)&quot; -Verbose" />
+    </Target>
+    <Target Name="DeleteOldIcons">
+        <ItemGroup>
+            <ObsoleteAppxIcons Include="$(PackageFiles)Assets/Sample*.png" />
+        </ItemGroup>
+        <Attrib ReadOnly="False" Files="@(ObsoleteAppxIcons)" />
+        <Delete Files="@(ObsoleteAppxIcons)" />
+    </Target>
+    <Target Name="CopyNewIcons">
+        <ItemGroup>
+            <NewAppxIcons Include="windows/src/resources/CyberduckAppx*.png" />
+        </ItemGroup>
+        <Copy SourceFiles="@(NewAppxIcons)" DestinationFolder="$(PackageFiles)\Assets" />
+        <ItemGroup>
+            <AppxIcons Include="$(PackageFiles)Assets/Cyberduck*.png" />
+        </ItemGroup>
+        <Attrib ReadOnly="True" Archive="True" Files="@(AppxIcons)" />
+    </Target>
+    <Target Name="UpdateManifest">
+        <FileUpdate
+            Files="$(PackageFiles)AppxManifest.xml"
+            Regex="Assets\\SampleAppx"
+            ReplacementText="Assets\CyberduckAppx" />
+    </Target>
+    <Target Name="RemoveObsolete">
+        <RemoveDir Directories="$(VFS)/Common AppData;$(VFS)/Users" />
+    </Target>
+    <Target Name="MakeAppx">
+        <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputPath)Cyberduck-$(Version).appx&quot; /v" />
+    </Target>
+</Project>
