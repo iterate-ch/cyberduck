@@ -84,6 +84,7 @@ import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
 import ch.cyberduck.core.worker.WriteRedundancyWorker;
 import ch.cyberduck.core.worker.WriteTransferAccelerationWorker;
+import ch.cyberduck.core.worker.WriteVersioningWorker;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -834,18 +835,10 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
-                @Override
-                public Void run() throws BackgroundException {
-                    session.getFeature(Versioning.class).setConfiguration(file, prompt,
-                            new VersioningConfiguration(
-                                    bucketVersioningButton.state() == NSCell.NSOnState,
-                                    bucketMfaButton.state() == NSCell.NSOnState)
-                    );
-                    return null;
-                }
-
+            final VersioningConfiguration configuration = new VersioningConfiguration(
+                    bucketVersioningButton.state() == NSCell.NSOnState,
+                    bucketMfaButton.state() == NSCell.NSOnState);
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteVersioningWorker(files, prompt, configuration)) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
