@@ -60,12 +60,12 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
         listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
             if(StringUtils.equals(HttpHeaders.AUTHORIZATION, header.getName())) {
-                listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(), StringUtils.repeat("*", StringUtils.length(header.getValue()))));
+                listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
+                        StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
             }
             else {
                 listener.log(TranscriptListener.Type.request, header.toString());
             }
-
         }
         return super.doSendRequest(request, conn, context);
     }
