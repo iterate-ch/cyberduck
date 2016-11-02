@@ -71,20 +71,7 @@ import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.BooleanRecursiveCallback;
-import ch.cyberduck.core.worker.CalculateSizeWorker;
-import ch.cyberduck.core.worker.ReadAclWorker;
-import ch.cyberduck.core.worker.ReadMetadataWorker;
-import ch.cyberduck.core.worker.ReadPermissionWorker;
-import ch.cyberduck.core.worker.ReadSizeWorker;
-import ch.cyberduck.core.worker.WriteAclWorker;
-import ch.cyberduck.core.worker.WriteEncryptionWorker;
-import ch.cyberduck.core.worker.WriteLoggingWorker;
-import ch.cyberduck.core.worker.WriteMetadataWorker;
-import ch.cyberduck.core.worker.WritePermissionWorker;
-import ch.cyberduck.core.worker.WriteRedundancyWorker;
-import ch.cyberduck.core.worker.WriteTransferAccelerationWorker;
-import ch.cyberduck.core.worker.WriteVersioningWorker;
+import ch.cyberduck.core.worker.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -915,19 +902,11 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
-                @Override
-                public Void run() throws BackgroundException {
-                    session.getFeature(Lifecycle.class).setConfiguration(file,
-                            new LifecycleConfiguration(
-                                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
-                                    S3Object.STORAGE_CLASS_GLACIER,
-                                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null)
-                    );
-                    return null;
-                }
-
+            final LifecycleConfiguration configuration = new LifecycleConfiguration(
+                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                    S3Object.STORAGE_CLASS_GLACIER,
+                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLifecycleWorker(files, configuration)) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
