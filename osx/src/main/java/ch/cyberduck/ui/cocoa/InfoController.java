@@ -2335,28 +2335,13 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
-                @Override
-                public Void run() throws BackgroundException {
-                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Purge feature = cdn.getFeature(Purge.class, method);
-                    feature.invalidate(file, method, files, prompt);
-                    return null;
-                }
-
+            final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new DistributionPurgeWorker(files, prompt, method)) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            file.getName());
                 }
             });
         }
