@@ -52,7 +52,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, permission, new BooleanRecursiveCallback(recursive), listener);
+        this(files, permission, new BooleanRecursiveCallback<Permission>(recursive), listener);
     }
 
     public WritePermissionWorker(final List<Path> files,
