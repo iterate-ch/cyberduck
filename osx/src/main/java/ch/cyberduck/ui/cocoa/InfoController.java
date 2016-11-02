@@ -52,6 +52,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -81,6 +82,7 @@ import ch.cyberduck.core.worker.WriteEncryptionWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
 import ch.cyberduck.core.worker.WriteRedundancyWorker;
+import ch.cyberduck.core.worker.WriteTransferAccelerationWorker;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -215,6 +217,8 @@ public class InfoController extends ToolbarWindowController {
     private NSButton bucketAnalyticsButton;
     @Outlet
     private NSTextField bucketAnalyticsSetupUrlField;
+    @Outlet
+    private NSButton bucketTransferAccelerationButton;
     @Outlet
     private NSButton bucketVersioningButton;
     @Outlet
@@ -880,6 +884,28 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketMfaButtonClicked(final NSButton sender) {
         this.bucketVersioningButtonClicked(sender);
+    }
+
+    public void setBucketTransferAccelerationButton(final NSButton bucketTransferAccelerationButton) {
+        this.bucketTransferAccelerationButton = bucketTransferAccelerationButton;
+        this.bucketTransferAccelerationButton.setAction(Foundation.selector("bucketTransferAccelerationButtonClicked:"));
+    }
+
+    @Action
+    public void bucketTransferAccelerationButtonClicked(final NSButton sender) {
+        if(this.toggleS3Settings(false)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                            new WriteTransferAccelerationWorker(files, bucketTransferAccelerationButton.state() == NSCell.NSOnState) {
+                                @Override
+                                public void cleanup(final Boolean done) {
+                                    super.cleanup(done);
+                                    toggleS3Settings(true);
+                                    initS3();
+                                }
+                            }
+                    )
+            );
+        }
     }
 
     public void setS3PublicUrlField(NSTextField t) {
@@ -1801,6 +1827,7 @@ public class InfoController extends ToolbarWindowController {
         boolean storageclass = false;
         boolean encryption = false;
         boolean lifecycle = false;
+        boolean acceleration = false;
         if(enable) {
             logging = session.getFeature(Logging.class) != null;
             analytics = session.getFeature(AnalyticsProvider.class) != null;
@@ -1808,12 +1835,14 @@ public class InfoController extends ToolbarWindowController {
             lifecycle = session.getFeature(Lifecycle.class) != null;
             encryption = session.getFeature(Encryption.class) != null;
             storageclass = session.getFeature(Redundancy.class) != null;
+            acceleration = session.getFeature(TransferAcceleration.class) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
+        bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
         if(analytics && Objects.equals(session.getFeature(IdentityConfiguration.class).getCredentials(
@@ -1900,6 +1929,7 @@ public class InfoController extends ToolbarWindowController {
                 final Set<String> selectedStorageClasses = new HashSet<String>();
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
+                Boolean transferAcceleration;
 
                 @Override
                 public Void run() throws BackgroundException {
@@ -1934,6 +1964,9 @@ public class InfoController extends ToolbarWindowController {
                             selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(f));
                         }
                         managedEncryptionKeys.addAll(selectedEncryptionKeys);
+                    }
+                    if(session.getFeature(TransferAcceleration.class) != null) {
+                        transferAcceleration = session.getFeature(TransferAcceleration.class).getStatus(file);
                     }
                     return null;
                 }
@@ -2029,6 +2062,9 @@ public class InfoController extends ToolbarWindowController {
                             }
                             lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
                         }
+                    }
+                    if(transferAcceleration != null) {
+                        bucketTransferAccelerationButton.setState(transferAcceleration ? NSCell.NSOnState : NSCell.NSOffState);
                     }
                     toggleS3Settings(true);
                 }
