@@ -89,6 +89,7 @@ public interface BackgroundAction<T> extends Callable<T> {
 
     /**
      * @return True to retry
+     * @param e Connection failure
      */
-    boolean alert();
+    boolean alert(final Exception e);
 }

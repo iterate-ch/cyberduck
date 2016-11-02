@@ -56,7 +56,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
         catch(Exception e) {
             controller.failure(client, e);
             // If there was any failure, display the summary now
-            if(action.alert()) {
+            if(action.alert(e)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Retry background action %s", action));
                 }
