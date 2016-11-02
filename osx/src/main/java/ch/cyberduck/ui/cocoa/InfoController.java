@@ -224,12 +224,6 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSButton bucketMfaButton;
     @Outlet
-    private NSTextField s3PublicUrlField;
-    @Outlet
-    private NSTextField s3PublicUrlValidityField;
-    @Outlet
-    private NSTextField s3torrentUrlField;
-    @Outlet
     private NSButton lifecycleTransitionCheckbox;
     @Outlet
     private NSPopUpButton lifecycleTransitionPopup;
@@ -906,22 +900,6 @@ public class InfoController extends ToolbarWindowController {
                     )
             );
         }
-    }
-
-    public void setS3PublicUrlField(NSTextField t) {
-        this.s3PublicUrlField = t;
-        this.s3PublicUrlField.setAllowsEditingTextAttributes(true);
-        this.s3PublicUrlField.setSelectable(true);
-    }
-
-    public void setS3PublicUrlValidityField(NSTextField s3PublicUrlValidityField) {
-        this.s3PublicUrlValidityField = s3PublicUrlValidityField;
-    }
-
-    public void setS3torrentUrlField(NSTextField t) {
-        this.s3torrentUrlField = t;
-        this.s3torrentUrlField.setAllowsEditingTextAttributes(true);
-        this.s3torrentUrlField.setSelectable(true);
     }
 
     public void setLifecycleTransitionCheckbox(final NSButton b) {
@@ -1877,10 +1855,6 @@ public class InfoController extends ToolbarWindowController {
         bucketLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         bucketLoggingPopup.lastItem().setEnabled(false);
 
-        s3PublicUrlField.setStringValue(LocaleFactory.localizedString("None"));
-        s3PublicUrlValidityField.setStringValue(LocaleFactory.localizedString("Unknown"));
-        s3torrentUrlField.setStringValue(LocaleFactory.localizedString("None"));
-
         storageClassPopup.removeAllItems();
         storageClassPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
         storageClassPopup.lastItem().setEnabled(false);
@@ -1897,25 +1871,6 @@ public class InfoController extends ToolbarWindowController {
                 for(String redundancy : session.getFeature(Redundancy.class).getClasses()) {
                     storageClassPopup.addItemWithTitle(LocaleFactory.localizedString(redundancy, "S3"));
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
-                }
-            }
-            if(this.numberOfFiles() > 1) {
-                s3PublicUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
-                s3PublicUrlField.setToolTip(StringUtils.EMPTY);
-                s3torrentUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
-                s3torrentUrlField.setToolTip(StringUtils.EMPTY);
-            }
-            else {
-                final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
-                if(!signed.equals(DescriptiveUrl.EMPTY)) {
-                    s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
-                    s3PublicUrlField.setToolTip(signed.getHelp());
-                    s3PublicUrlValidityField.setStringValue(signed.getHelp());
-                }
-                final DescriptiveUrl torrent = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.torrent);
-                if(!torrent.equals(DescriptiveUrl.EMPTY)) {
-                    s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent));
-                    s3torrentUrlField.setToolTip(torrent.getHelp());
                 }
             }
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
