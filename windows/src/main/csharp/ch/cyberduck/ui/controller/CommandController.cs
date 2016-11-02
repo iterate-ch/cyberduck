@@ -19,6 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
 using StructureMap;
 
