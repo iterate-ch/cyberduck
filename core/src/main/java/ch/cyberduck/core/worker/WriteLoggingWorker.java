@@ -25,7 +25,7 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import java.text.MessageFormat;
 import java.util.List;
 
-public class WriteLoggingConfigurationWorker extends Worker<Boolean> {
+public class WriteLoggingWorker extends Worker<Boolean> {
 
     /**
      * Selected files.
@@ -34,7 +34,7 @@ public class WriteLoggingConfigurationWorker extends Worker<Boolean> {
 
     private final LoggingConfiguration configuration;
 
-    public WriteLoggingConfigurationWorker(final List<Path> files, final LoggingConfiguration configuration) {
+    public WriteLoggingWorker(final List<Path> files, final LoggingConfiguration configuration) {
         this.files = files;
         this.configuration = configuration;
     }
@@ -71,7 +71,7 @@ public class WriteLoggingConfigurationWorker extends Worker<Boolean> {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final WriteLoggingConfigurationWorker that = (WriteLoggingConfigurationWorker) o;
+        final WriteLoggingWorker that = (WriteLoggingWorker) o;
         if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }

@@ -79,7 +79,7 @@ import ch.cyberduck.core.worker.ReadPermissionWorker;
 import ch.cyberduck.core.worker.ReadSizeWorker;
 import ch.cyberduck.core.worker.WriteAclWorker;
 import ch.cyberduck.core.worker.WriteEncryptionWorker;
-import ch.cyberduck.core.worker.WriteLoggingConfigurationWorker;
+import ch.cyberduck.core.worker.WriteLoggingWorker;
 import ch.cyberduck.core.worker.WriteMetadataWorker;
 import ch.cyberduck.core.worker.WritePermissionWorker;
 import ch.cyberduck.core.worker.WriteRedundancyWorker;
@@ -763,7 +763,7 @@ public class InfoController extends ToolbarWindowController {
                     bucketLoggingButton.state() == NSCell.NSOnState,
                     null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
             );
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingConfigurationWorker(files, configuration)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingWorker(files, configuration)) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
