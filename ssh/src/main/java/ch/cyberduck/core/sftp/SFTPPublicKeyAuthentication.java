@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -51,18 +52,22 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
 
     private final SFTPSession session;
 
-    public SFTPPublicKeyAuthentication(final SFTPSession session) {
+    private final HostPasswordStore keychain;
+
+    public SFTPPublicKeyAuthentication(final SFTPSession session, final HostPasswordStore keychain) {
         this.session = session;
+        this.keychain = keychain;
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback prompt, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
+        final Credentials credentials = bookmark.getCredentials();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using public key authentication with credentials %s", host.getCredentials()));
+            log.debug(String.format("Login using public key authentication with credentials %s", credentials));
         }
-        if(host.getCredentials().isPublicKeyAuthentication()) {
-            final Local identity = host.getCredentials().getIdentity();
+        if(credentials.isPublicKeyAuthentication()) {
+            final Local identity = credentials.getIdentity();
             final FileKeyProvider provider;
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
@@ -92,22 +97,23 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        final Credentials credentials = host.getCredentials();
-                        if(StringUtils.isEmpty(credentials.getPassword())) {
+                        final String password = keychain.find(bookmark);
+                        if(StringUtils.isEmpty(password)) {
                             try {
-                                prompt.prompt(host, credentials,
+                                prompt.prompt(bookmark, credentials,
                                         LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                         String.format("%s (%s)",
                                                 LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                                identity.getAbbreviatedPath()), new LoginOptions(host.getProtocol())
+                                                identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
                                 );
                             }
                             catch(LoginCanceledException e) {
                                 // Return null if user cancels
                                 return null;
                             }
+                            return credentials.getPassword().toCharArray();
                         }
-                        return credentials.getPassword().toCharArray();
+                        return password.toCharArray();
                     }
 
                     @Override
@@ -115,7 +121,7 @@ public class SFTPPublicKeyAuthentication implements SFTPAuthentication {
                         return false;
                     }
                 });
-                session.getClient().authPublickey(host.getCredentials().getUsername(), provider);
+                session.getClient().authPublickey(credentials.getUsername(), provider);
                 return session.getClient().isAuthenticated();
             }
             catch(IOException e) {

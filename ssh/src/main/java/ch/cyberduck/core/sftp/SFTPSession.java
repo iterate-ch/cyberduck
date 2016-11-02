@@ -241,7 +241,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         else {
             if(credentials.isPublicKeyAuthentication()) {
-                methods.add(new SFTPPublicKeyAuthentication(this));
+                methods.add(new SFTPPublicKeyAuthentication(this, keychain));
             }
             else {
                 methods.add(new SFTPChallengeResponseAuthentication(this));
