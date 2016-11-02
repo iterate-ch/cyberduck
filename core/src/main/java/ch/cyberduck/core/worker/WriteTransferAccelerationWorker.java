@@ -15,11 +15,13 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.TransferAcceleration;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 public class WriteTransferAccelerationWorker extends Worker<Boolean> {
@@ -47,5 +49,45 @@ public class WriteTransferAccelerationWorker extends Worker<Boolean> {
 
     private void write(final TransferAcceleration feature, final Path file) throws BackgroundException {
         feature.setStatus(file, enabled);
+    }
+
+
+    @Override
+    public Boolean initialize() {
+        return false;
+    }
+
+    @Override
+    public String getActivity() {
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                this.toString(files));
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final WriteTransferAccelerationWorker that = (WriteTransferAccelerationWorker) o;
+        if(files != null ? !files.equals(that.files) : that.files != null) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return files != null ? files.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("WriteTransferAccelerationWorker{");
+        sb.append("files=").append(files);
+        sb.append('}');
+        return sb.toString();
     }
 }
