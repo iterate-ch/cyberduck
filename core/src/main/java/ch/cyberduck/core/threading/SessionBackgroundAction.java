@@ -230,7 +230,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public boolean alert(final Exception e) {
+    public boolean alert(final BackgroundException e) {
         if(this.hasFailed() && !this.isCanceled()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Display alert for failure %s", exception));

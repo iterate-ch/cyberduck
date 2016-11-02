@@ -1,6 +1,7 @@
 package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.log4j.Logger;
@@ -53,7 +54,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
             // Canceled action yields no result
             return null;
         }
-        catch(Exception e) {
+        catch(BackgroundException e) {
             controller.failure(client, e);
             // If there was any failure, display the summary now
             if(action.alert(e)) {
@@ -63,6 +64,11 @@ public final class BackgroundCallable<T> implements Callable<T> {
                 // Retry
                 return this.call();
             }
+            // Failed action yields no result
+            return null;
+        }
+        catch(Exception e) {
+            controller.failure(client, e);
             // Failed action yields no result
             return null;
         }

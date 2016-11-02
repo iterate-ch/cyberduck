@@ -117,7 +117,7 @@ public class CommandController extends SheetController implements TranscriptList
             sender.setEnabled(false);
             parent.background(new ControllerBackgroundAction<Void>(this, session, PathCache.empty()) {
                 @Override
-                public boolean alert(final Exception e) {
+                public boolean alert(final BackgroundException e) {
                     return false;
                 }
 

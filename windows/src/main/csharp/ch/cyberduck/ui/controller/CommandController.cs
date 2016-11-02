@@ -72,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _command = command;
             }
 
-            public override bool alert()
+            public override bool alert(BackgroundException failure)
             {
                 return false;
             }
