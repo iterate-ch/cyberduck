@@ -375,7 +375,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3HomeFinderService(this);
         }
         if(type == TransferAcceleration.class) {
-            return (T) new S3TransferAccelerationService(this);
+            // Only for AWS
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3TransferAccelerationService(this);
+            }
         }
         return super.getFeature(type);
     }
