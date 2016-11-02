@@ -42,7 +42,7 @@ public class WriteTransferAccelerationWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final TransferAcceleration feature = session.getFeature(TransferAcceleration.class);
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

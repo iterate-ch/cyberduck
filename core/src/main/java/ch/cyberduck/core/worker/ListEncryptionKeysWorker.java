@@ -47,7 +47,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
     public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
         final Set<Encryption.Algorithm> keys = new HashSet<>();
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

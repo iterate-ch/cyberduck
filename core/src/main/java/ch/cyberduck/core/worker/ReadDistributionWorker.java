@@ -53,7 +53,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
     @Override
     public Distribution run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

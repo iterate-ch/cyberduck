@@ -44,7 +44,7 @@ public class WriteLifecycleWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Lifecycle feature = session.getFeature(Lifecycle.class);
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

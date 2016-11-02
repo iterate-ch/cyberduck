@@ -47,7 +47,7 @@ public class WriteVersioningWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

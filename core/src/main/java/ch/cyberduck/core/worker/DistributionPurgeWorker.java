@@ -49,12 +49,11 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         final Purge feature = cdn.getFeature(Purge.class, method);
-        for(Path file : files) {
+        for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             feature.invalidate(file, method, files, prompt);
-            break;
         }
         return true;
     }
