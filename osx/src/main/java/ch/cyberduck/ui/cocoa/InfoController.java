@@ -757,7 +757,7 @@ public class InfoController extends ToolbarWindowController {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -830,7 +830,7 @@ public class InfoController extends ToolbarWindowController {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -910,7 +910,7 @@ public class InfoController extends ToolbarWindowController {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -2339,7 +2339,7 @@ public class InfoController extends ToolbarWindowController {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
-            });
+            }));
         }
     }
 
@@ -2391,24 +2391,9 @@ public class InfoController extends ToolbarWindowController {
             final Path file = this.getSelected();
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-            final List<Path> rootDocuments = new ArrayList<Path>();
-            controller.background(new RegistryBackgroundAction<Distribution>(controller, session, cache) {
-                private Distribution distribution = new Distribution(method, false);
-
+            controller.background(new WorkerBackgroundAction<Distribution>(controller, session, cache, new ReadDistributionWorker(files, prompt, method) {
                 @Override
-                public Distribution run() throws BackgroundException {
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    distribution = cdn.read(file, method, prompt);
-                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
-                        // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(session.list(containerService.getContainer(file), new DisabledListProgressListener()));
-                    }
-                    return distribution;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Distribution distribution) {
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
@@ -2486,7 +2471,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
-                        for(Path next : rootDocuments) {
+                        for(Path next : distribution.getRootDocuments()) {
                             if(next.isFile()) {
                                 distributionDefaultRootPopup.addItemWithTitle(next.getName());
                                 distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
@@ -2514,13 +2499,7 @@ public class InfoController extends ToolbarWindowController {
                     distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
                     toggleDistributionSettings(true);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                            file.getName());
-                }
-            });
+            }));
         }
     }
 
