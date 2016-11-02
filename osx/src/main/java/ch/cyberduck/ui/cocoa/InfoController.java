@@ -783,27 +783,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final boolean enabled = bucketAnalyticsButton.state() == NSCell.NSOnState;
+            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteIdentityWorker(prompt, enabled, document) {
                 @Override
-                public Void run() throws BackgroundException {
-                    final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
-                    if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-                        iam.create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
-                    }
-                    else {
-                        iam.delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
-                    }
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean done) {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -2496,26 +2484,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final boolean enabled = distributionAnalyticsButton.state() == NSCell.NSOnState;
+            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteIdentityWorker(prompt, enabled, document) {
                 @Override
-                public Void run() throws BackgroundException {
-                    if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.getFeature(IdentityConfiguration.class).create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
-                    }
-                    else {
-                        session.getFeature(IdentityConfiguration.class).delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
-                    }
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleDistributionSettings(true);
                     initDistribution();
                 }
-            });
+            }));
         }
     }
 
