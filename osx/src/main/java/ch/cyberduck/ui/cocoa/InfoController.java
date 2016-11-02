@@ -751,10 +751,9 @@ public class InfoController extends ToolbarWindowController {
                     bucketLoggingButton.state() == NSCell.NSOnState,
                     null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
             );
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingWorker(files, configuration)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingWorker(files, configuration) {
                 @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -825,10 +824,9 @@ public class InfoController extends ToolbarWindowController {
             final VersioningConfiguration configuration = new VersioningConfiguration(
                     bucketVersioningButton.state() == NSCell.NSOnState,
                     bucketMfaButton.state() == NSCell.NSOnState);
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteVersioningWorker(files, prompt, configuration)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteVersioningWorker(files, prompt, configuration) {
                 @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -906,10 +904,9 @@ public class InfoController extends ToolbarWindowController {
                     lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                     S3Object.STORAGE_CLASS_GLACIER,
                     lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLifecycleWorker(files, configuration)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLifecycleWorker(files, configuration) {
                 @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
@@ -2228,7 +2225,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
                     new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<Permission>(this) : new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
-                                public void cleanup(final Boolean v) {
+                                public void cleanup(final Boolean done) {
                                     togglePermissionSettings(true);
                                 }
                             }
@@ -2336,10 +2333,9 @@ public class InfoController extends ToolbarWindowController {
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new DistributionPurgeWorker(files, prompt, method)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new DistributionPurgeWorker(files, prompt, method) {
                 @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
