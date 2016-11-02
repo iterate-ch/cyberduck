@@ -51,7 +51,6 @@ public class WriteTransferAccelerationWorker extends Worker<Boolean> {
         feature.setStatus(file, enabled);
     }
 
-
     @Override
     public Boolean initialize() {
         return false;
