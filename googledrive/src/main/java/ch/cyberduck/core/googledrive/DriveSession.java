@@ -28,6 +28,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -112,7 +113,12 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        credential = authorizationService.authorize(host, keychain, prompt, cancel);
+        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
+        this.login(keychain, prompt, cancel, cache, tokens);
+    }
+
+    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+        credential = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
@@ -121,7 +127,12 @@ public class DriveSession extends HttpSession<Drive> {
             client.files().list().executeUsingHead();
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map(e);
+            try {
+                throw new DriveExceptionMappingService().map(e);
+            }
+            catch(LoginFailureException f) {
+                this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+            }
         }
     }
 

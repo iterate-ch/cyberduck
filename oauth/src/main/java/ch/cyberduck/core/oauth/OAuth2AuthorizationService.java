@@ -111,8 +111,7 @@ public class OAuth2AuthorizationService {
     }
 
     public Credential authorize(final Host bookmark, final HostPasswordStore keychain,
-                                final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Tokens saved = this.find(keychain, bookmark);
+                                final LoginCallback prompt, final CancelCallback cancel, final Tokens saved) throws BackgroundException {
         final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
@@ -197,7 +196,7 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private Tokens find(final HostPasswordStore keychain, final Host bookmark) {
+    public Tokens find(final HostPasswordStore keychain, final Host bookmark) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix;
         if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
@@ -289,7 +288,9 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private final class Tokens {
+    public static final class Tokens {
+        public static final Tokens EMPTY = new Tokens(null, null, Long.MAX_VALUE);
+
         public final String accesstoken;
         public final String refreshtoken;
         public final Long expiry;
