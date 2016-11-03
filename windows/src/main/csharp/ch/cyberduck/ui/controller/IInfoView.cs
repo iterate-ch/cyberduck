@@ -145,14 +145,9 @@ namespace Ch.Cyberduck.Ui.Controller
         bool StorageClassEnabled { set; }
         string BucketLoggingPopup { set; get; }
         bool BucketLoggingPopupEnabled { set; }
-        string S3PublicUrl { set; }
-        bool S3PublicUrlEnabled { set; }
-        string S3PublicUrlTooltip { set; }
-        string S3PublicUrlValidity { set; }
-        string S3TorrentUrl { set; }
-        bool S3TorrentUrlEnabled { set; }
-        string S3TorrentUrlTooltip { set; }
         bool S3AnimationActive { set; }
+        bool TransferAccelerationCheckbox { set; get; }
+        bool TransferAccelerationCheckboxEnabled { set; }
         bool BucketLoggingCheckbox { set; get; }
         bool BucketLoggingCheckboxEnabled { set; }
         string BucketLoggingTooltip { set; }
@@ -212,6 +207,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
         void PopulateEncryption(IList<KeyValuePair<string, string>> algorithms);
 
+        event VoidHandler TransferAccelerationCheckboxChanged;
         event VoidHandler BucketLoggingCheckboxChanged;
         event VoidHandler BucketAnalyticsCheckboxChanged;
         event VoidHandler BucketLoggingPopupChanged;

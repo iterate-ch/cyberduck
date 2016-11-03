@@ -771,6 +771,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AttachS3Handlers()
         {
             DetachS3Handlers();
+            View.TransferAccelerationCheckboxChanged += TransferAccelerationCheckboxChanged;
             View.BucketLoggingCheckboxChanged += BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged += BucketLoggingPopupChanged;
             View.EncryptionChanged += EncryptionChanged;
@@ -782,6 +783,14 @@ namespace Ch.Cyberduck.Ui.Controller
             View.LifecycleTransitionPopupChanged += LifecycleChanged;
             View.LifecycleDeleteCheckboxChanged += LifecycleChanged;
             View.LifecycleDeletePopupChanged += LifecycleChanged;
+        }
+
+        private void TransferAccelerationCheckboxChanged()
+        {
+            if (ToggleS3Settings(false))
+            {
+                _controller.background(new SetTransferAccelerationBackgroundAction(_controller, this));
+            }
         }
 
         private void BucketAnalyticsCheckboxChanged()
@@ -828,6 +837,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DetachS3Handlers()
         {
+            View.TransferAccelerationCheckboxChanged -= TransferAccelerationCheckboxChanged;
             View.BucketLoggingCheckboxChanged -= BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged -= BucketLoggingPopupChanged;
             View.EncryptionChanged -= EncryptionChanged;
@@ -1197,9 +1207,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             PopulateLifecycleTransitionPeriod();
             PopulateLifecycleDeletePeriod();
-
-            Session session = _controller.Session;
-
             if (ToggleS3Settings(false))
             {
                 _controller.background(new FetchS3BackgroundAction(_controller, this));
@@ -1230,6 +1237,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool storageclass = false;
             bool encryption = false;
             bool lifecycle = false;
+            bool acceleration = false;
             if (enable)
             {
                 logging = session.getFeature(typeof (Logging)) != null;
@@ -1238,14 +1246,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 lifecycle = session.getFeature(typeof (Lifecycle)) != null;
                 encryption = session.getFeature(typeof (Encryption)) != null;
                 storageclass = session.getFeature(typeof (Redundancy)) != null;
+                acceleration = session.getFeature(typeof (TransferAcceleration)) != null;
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
             View.BucketLoggingCheckboxEnabled = stop && enable && logging;
+            View.TransferAccelerationCheckboxEnabled = stop && enable && acceleration;
             View.BucketLoggingPopupEnabled = stop && enable && logging;
             View.StorageClassEnabled = stop && enable && storageclass;
             View.EncryptionEnabled = stop && enable && encryption;
-
 
             IdentityConfiguration identityFeature =
                 (IdentityConfiguration) _controller.Session.getFeature(typeof (IdentityConfiguration));
@@ -1665,6 +1674,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly IInfoView _view;
+
+            private bool _acceleration;
             private Credentials _credentials;
 
             private String _encryption;
@@ -1771,6 +1782,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         _encryption = "Multiple";
                     }
                 }
+                TransferAcceleration accelerationFeature =
+                    (TransferAcceleration) s.getFeature(typeof (TransferAcceleration));
+                if (accelerationFeature != null)
+                {
+                    _acceleration = accelerationFeature.getStatus(_container);
+                }
                 return true;
             }
 
@@ -1858,6 +1875,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                         }
                     }
+                    _view.TransferAccelerationCheckbox = _acceleration;
                 }
                 finally
                 {
@@ -2251,6 +2269,36 @@ namespace Ch.Cyberduck.Ui.Controller
                 protected override void update(long l)
                 {
                     _infoController.Invoke(() => _infoController.UpdateSize(l));
+                }
+            }
+        }
+
+        private class SetTransferAccelerationBackgroundAction : WorkerBackgroundAction
+        {
+            public SetTransferAccelerationBackgroundAction(BrowserController browserController,
+                InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteTransferAccelerationWorker(infoController,
+                        Utils.ConvertToJavaList(infoController.Files), infoController.View.TransferAccelerationCheckbox)
+                    )
+            {
+            }
+
+            private class InnerWriteTransferAccelerationWorker : WriteTransferAccelerationWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerWriteTransferAccelerationWorker(InfoController infoController, List files, bool enabled)
+                    : base(files, enabled)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
                 }
             }
         }
