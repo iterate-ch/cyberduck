@@ -53,11 +53,13 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.List;
 
+import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxRequestUtil;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
@@ -107,6 +109,16 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache)
             throws BackgroundException {
         tokens = authorizationService.authorize(host, keychain, prompt, cancel);
+        if(host.getCredentials().isPassed()) {
+            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            return;
+        }
+        try {
+            new DbxUserUsersRequests(client).getCurrentAccount();
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
     }
 
     @Override
