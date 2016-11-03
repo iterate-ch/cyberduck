@@ -111,8 +111,7 @@ public class OAuth2AuthorizationService {
     }
 
     public Credential authorize(final Host bookmark, final HostPasswordStore keychain,
-                                final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final Tokens saved = this.find(keychain, bookmark);
+                                final LoginCallback prompt, final CancelCallback cancel, final Tokens saved) throws BackgroundException {
         final Credential tokens;
         if(saved.validate()) {
             tokens = new Credential.Builder(method)
@@ -197,51 +196,51 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private Tokens find(final HostPasswordStore keychain, final Host host) {
-        final long expiry = preferences.getLong(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()));
+    public Tokens find(final HostPasswordStore keychain, final Host bookmark) {
+        final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix;
-        if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
-            prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            prefix = String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
         }
         else {
-            prefix = host.getProtocol().getDescription();
+            prefix = bookmark.getProtocol().getDescription();
         }
-        final Tokens tokens = new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
-                host.getPort(), URI.create(tokenServerUrl).getHost(),
+        final Tokens tokens = new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
+                bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                 String.format("%s OAuth2 Access Token", prefix)),
-                keychain.getPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(tokenServerUrl).getHost(),
+                keychain.getPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                         String.format("%s OAuth2 Refresh Token", prefix)),
                 expiry);
         if(!tokens.validate()) {
             if(legacyPrefix != null) {
                 // Not found
-                return new Tokens(keychain.getPassword(host.getProtocol().getScheme(),
-                        host.getPort(), URI.create(tokenServerUrl).getHost(),
+                return new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                         String.format("%s OAuth2 Access Token", legacyPrefix)),
-                        keychain.getPassword(host.getProtocol().getScheme(),
-                                host.getPort(), URI.create(tokenServerUrl).getHost(),
+                        keychain.getPassword(bookmark.getProtocol().getScheme(),
+                                bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                                 String.format("%s OAuth2 Refresh Token", legacyPrefix)), expiry);
             }
         }
         return tokens;
     }
 
-    private void save(final HostPasswordStore keychain, final Host host, final Tokens tokens) {
-        final String prefix = String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+    private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
+        final String prefix = String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
         if(StringUtils.isNotBlank(tokens.accesstoken)) {
-            keychain.addPassword(host.getProtocol().getScheme(),
-                    host.getPort(), URI.create(tokenServerUrl).getHost(),
+            keychain.addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                     String.format("%s OAuth2 Access Token", prefix), tokens.accesstoken);
         }
         if(StringUtils.isNotBlank(tokens.refreshtoken)) {
-            keychain.addPassword(host.getProtocol().getScheme(),
-                    host.getPort(), URI.create(tokenServerUrl).getHost(),
+            keychain.addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                     String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
         }
         // Save expiry
         if(tokens.expiry != null) {
-            preferences.setProperty(String.format("%s.oauth.expiry", host.getProtocol().getIdentifier()), tokens.expiry);
+            preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), tokens.expiry);
         }
     }
 
@@ -289,7 +288,9 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private final class Tokens {
+    public static final class Tokens {
+        public static final Tokens EMPTY = new Tokens(null, null, Long.MAX_VALUE);
+
         public final String accesstoken;
         public final String refreshtoken;
         public final Long expiry;
@@ -341,9 +342,9 @@ public class OAuth2AuthorizationService {
         private final Host host;
         private final HostPasswordStore keychain;
 
-        public SavingCredentialRefreshListener(final HostPasswordStore keychain, final Host host) {
+        public SavingCredentialRefreshListener(final HostPasswordStore keychain, final Host bookmark) {
             this.keychain = keychain;
-            this.host = host;
+            this.host = bookmark;
         }
 
         @Override
