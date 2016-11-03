@@ -55,9 +55,7 @@ public class SwiftCopyFeature implements Copy {
             if(StringUtils.equals(
                     containerService.getContainer(source).getName(),
                     containerService.getContainer(copy).getName())) {
-                if(!StringUtils.equals(
-                        containerService.getContainer(source).attributes().getRegion(),
-                        containerService.getContainer(copy).attributes().getRegion())) {
+                if(!regionService.lookup(source).equals(regionService.lookup(copy))) {
                     throw new InteroperabilityException("Copy between regions is not supported for containers with the same name");
                 }
             }
