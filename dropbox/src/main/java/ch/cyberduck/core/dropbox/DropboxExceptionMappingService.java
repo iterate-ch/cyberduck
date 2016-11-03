@@ -18,11 +18,19 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+
+import java.time.Duration;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.RetryException;
+import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
@@ -31,6 +39,16 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     public BackgroundException map(final DbxException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getLocalizedMessage());
+        if(failure instanceof InvalidAccessTokenException) {
+            return new LoginFailureException(buffer.toString(), failure);
+        }
+        if(failure instanceof RetryException) {
+            final Duration delay = Duration.ofMillis(((RetryException) failure).getBackoffMillis());
+            return new RetriableAccessDeniedException(buffer.toString(), delay);
+        }
+        if(failure instanceof ServerException) {
+            return new ConnectionRefusedException(buffer.toString(), failure);
+        }
         if(failure instanceof GetMetadataErrorException) {
             final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
