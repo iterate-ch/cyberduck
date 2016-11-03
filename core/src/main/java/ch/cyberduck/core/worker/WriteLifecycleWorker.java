@@ -16,55 +16,55 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Lifecycle;
+import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> {
+public class WriteLifecycleWorker extends Worker<Boolean> {
 
     /**
      * Selected files.
      */
     private final List<Path> files;
 
-    private final LoginCallback prompt;
+    private final LifecycleConfiguration configuration;
 
-    public ListEncryptionKeysWorker(final List<Path> files, final LoginCallback prompt) {
+    public WriteLifecycleWorker(final List<Path> files, final LifecycleConfiguration configuration) {
         this.files = files;
-        this.prompt = prompt;
+        this.configuration = configuration;
     }
 
+
     @Override
-    public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
-        final Encryption feature = session.getFeature(Encryption.class);
-        final Set<Encryption.Algorithm> keys = new HashSet<>();
+    public Boolean run(final Session<?> session) throws BackgroundException {
+        final Lifecycle feature = session.getFeature(Lifecycle.class);
         for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            keys.addAll(feature.getKeys(file, prompt));
+            this.write(feature, file);
         }
-        return keys;
+        return true;
     }
 
+    private void write(final Lifecycle feature, final Path file) throws BackgroundException {
+        feature.setConfiguration(file, configuration);
+    }
 
     @Override
-    public Set<Encryption.Algorithm> initialize() {
-        return Collections.emptySet();
+    public Boolean initialize() {
+        return false;
     }
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 this.toString(files));
     }
 
@@ -76,7 +76,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ListEncryptionKeysWorker that = (ListEncryptionKeysWorker) o;
+        final WriteLifecycleWorker that = (WriteLifecycleWorker) o;
         if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
@@ -90,7 +90,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ReadEncryptionKeysWorker{");
+        final StringBuilder sb = new StringBuilder("WriteLifecycleWorker{");
         sb.append("files=").append(files);
         sb.append('}');
         return sb.toString();

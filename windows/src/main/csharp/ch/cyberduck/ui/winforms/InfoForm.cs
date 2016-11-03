@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -21,10 +21,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using String = System.String;
 
@@ -39,14 +39,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Load += delegate
+            {
+                int minWidth = 10; // border etc.
+                foreach (ToolStripItem item in toolStrip.Items)
                 {
-                    int minWidth = 10; // border etc.
-                    foreach (ToolStripItem item in toolStrip.Items)
-                    {
-                        minWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
-                    }
-                    MinimumSize = new Size(minWidth, MinimumSize.Height);
-                };
+                    minWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                }
+                MinimumSize = new Size(minWidth, MinimumSize.Height);
+            };
 
             TopMost = false;
             TopLevel = true;
@@ -498,8 +498,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (row.DataBoundItem == aclEntry)
                 {
                     aclDataGridView.CurrentCell = selectRole
-                                                      ? row.Cells[AclColumnName.Role.ToString()]
-                                                      : row.Cells[AclColumnName.User.ToString()];
+                        ? row.Cells[AclColumnName.Role.ToString()]
+                        : row.Cells[AclColumnName.User.ToString()];
                     break;
                 }
             }
@@ -513,8 +513,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (row.DataBoundItem == headerEntry)
                 {
                     metadataDataGridView.CurrentCell = selectValue
-                                                           ? row.Cells[MetadataColumName.Value.ToString()]
-                                                           : row.Cells[MetadataColumName.Name.ToString()];
+                        ? row.Cells[MetadataColumName.Value.ToString()]
+                        : row.Cells[MetadataColumName.Name.ToString()];
                     break;
                 }
             }
@@ -783,6 +783,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             encryptionComboBox.ValueMember = "Value";
         }
 
+        public event VoidHandler TransferAccelerationCheckboxChanged = delegate { };
+
         public string BucketLocation
         {
             set { bucketLocationLabel.Text = value; }
@@ -790,7 +792,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Encryption
         {
-            get { return (string)encryptionComboBox.SelectedValue; }
+            get { return (string) encryptionComboBox.SelectedValue; }
             set { encryptionComboBox.SelectedValue = value; }
         }
 
@@ -822,44 +824,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bucketLoggingComboBox.Enabled = value; }
         }
 
-        public string S3PublicUrl
-        {
-            set { s3PublicUrlLinkLabel.Text = value; }
-        }
-
-        public bool S3PublicUrlEnabled
-        {
-            set { s3PublicUrlLinkLabel.Enabled = value; }
-        }
-
-        public string S3PublicUrlValidity
-        {
-            set { s3PublicUrlValidityLabel.Text = value; }
-        }
-
-        public string S3TorrentUrl
-        {
-            set { s3TorrentUrlLinkLabel.Text = value; }
-        }
-
-        public bool S3TorrentUrlEnabled
-        {
-            set { s3TorrentUrlLinkLabel.Enabled = value; }
-        }
-
-        public string S3PublicUrlTooltip
-        {
-            set { toolTip.SetToolTip(s3PublicUrlLinkLabel, value); }
-        }
-
-        public string S3TorrentUrlTooltip
-        {
-            set { toolTip.SetToolTip(s3TorrentUrlLinkLabel, value); }
-        }
-
         public bool S3AnimationActive
         {
             set { s3Animation.Visible = value; }
+        }
+
+        public bool TransferAccelerationCheckbox
+        {
+            get { return transferAccelerationCheckBox.Checked; }
+            set { transferAccelerationCheckBox.Checked = value; }
+        }
+
+        public bool TransferAccelerationCheckboxEnabled
+        {
+            set { transferAccelerationCheckBox.Enabled = value; }
         }
 
         public bool BucketLoggingCheckbox
@@ -1089,55 +1067,51 @@ namespace Ch.Cyberduck.Ui.Winforms
             aclDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
             aclDataGridView.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs args)
+            {
+                if (null != aclDataGridView.DataSource)
                 {
-                    if (null != aclDataGridView.DataSource)
+                    if (aclDataGridView.IsCurrentCellInEditMode || args.ColumnIndex != 0)
                     {
-                        if (aclDataGridView.IsCurrentCellInEditMode ||
-                            args.ColumnIndex != 0)
-                        {
-                            return;
-                        }
-                        if (String.IsNullOrEmpty(args.Value as String))
-                        {
-                            args.Value =
-                                ((InfoController.UserAndRoleEntry)
-                                 aclDataGridView.Rows[args.RowIndex].DataBoundItem).
-                                    getUser().getPlaceholder();
-                            args.CellStyle.ForeColor = Color.Gray;
-                            args.CellStyle.Font = new Font(args.CellStyle.Font,
-                                                           FontStyle.Italic);
-                        }
+                        return;
                     }
-                };
+                    if (String.IsNullOrEmpty(args.Value as String))
+                    {
+                        args.Value =
+                            ((InfoController.UserAndRoleEntry) aclDataGridView.Rows[args.RowIndex].DataBoundItem)
+                                .getUser().getPlaceholder();
+                        args.CellStyle.ForeColor = Color.Gray;
+                        args.CellStyle.Font = new Font(args.CellStyle.Font, FontStyle.Italic);
+                    }
+                }
+            };
 
 
             //make combobox directly editable without multiple clicks
             aclDataGridView.CellClick += delegate(object o, DataGridViewCellEventArgs a)
+            {
+                if (a.RowIndex < 0)
                 {
-                    if (a.RowIndex < 0)
-                    {
-                        return; // Header
-                    }
-                    if (a.ColumnIndex != 1)
-                    {
-                        return; // Filter out other columns
-                    }
+                    return; // Header
+                }
+                if (a.ColumnIndex != 1)
+                {
+                    return; // Filter out other columns
+                }
 
-                    aclDataGridView.BeginEdit(true);
-                    ComboBox comboBox = (ComboBox) aclDataGridView.EditingControl;
-                    comboBox.DroppedDown = true;
-                };
+                aclDataGridView.BeginEdit(true);
+                ComboBox comboBox = (ComboBox) aclDataGridView.EditingControl;
+                comboBox.DroppedDown = true;
+            };
 
             aclDataGridView.CellBeginEdit += delegate(object sender, DataGridViewCellCancelEventArgs args)
+            {
+                if (args.ColumnIndex == 0)
                 {
-                    if (args.ColumnIndex == 0)
-                    {
-                        args.Cancel =
-                            !((InfoController.UserAndRoleEntry)
-                              aclDataGridView.Rows[args.RowIndex].DataBoundItem).
-                                 getUser().isEditable();
-                    }
-                };
+                    args.Cancel =
+                        !((InfoController.UserAndRoleEntry) aclDataGridView.Rows[args.RowIndex].DataBoundItem).getUser()
+                            .isEditable();
+                }
+            };
 
             DataGridViewTextBoxColumn userColumn = new DataGridViewTextBoxColumn();
             userColumn.HeaderText = "Grantee";
@@ -1406,6 +1380,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void lifecycleDeleteComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             LifecycleDeletePopupChanged();
+        }
+
+        private void transferAccelerationCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            TransferAccelerationCheckboxChanged();
         }
 
         private enum AclColumnName
