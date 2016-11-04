@@ -1976,15 +1976,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    if (obj != null)
+                    IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
                     {
-                        IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
-                        {
-                            Acl.UserAndRole entry = (Acl.UserAndRole) item;
-                            return new UserAndRoleEntry(entry.getUser(), entry.getRole());
-                        });
-                        _infoController.SetAcl(entries);
-                    }
+                        Acl.UserAndRole entry = (Acl.UserAndRole) item;
+                        return new UserAndRoleEntry(entry.getUser(), entry.getRole());
+                    });
+                    _infoController.SetAcl(entries);
                     _infoController.ToggleAclSettings(true);
                 }
             }
