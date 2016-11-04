@@ -44,7 +44,7 @@ public class MountWorker extends Worker<Path> {
 
     private final ListProgressListener listener;
 
-    protected MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
+    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
         this.bookmark = bookmark;
         this.cache = cache;
         this.listener = listener;
