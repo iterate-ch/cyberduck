@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
  * Created by alive on 04.11.2016.
  */
 public class PermissionOverwrite {
-    private final Action user, group, other;
+    public final Action user, group, other;
 
     public PermissionOverwrite() {
         this((Boolean) null, (Boolean) null, (Boolean) null);
@@ -45,9 +45,9 @@ public class PermissionOverwrite {
     }
 
     public class Action {
-        private final Boolean read;
-        private final Boolean write;
-        private final Boolean execute;
+        public Boolean read;
+        public Boolean write;
+        public Boolean execute;
 
         public Action(Boolean read, Boolean write, Boolean execute) {
             this.read = read;
