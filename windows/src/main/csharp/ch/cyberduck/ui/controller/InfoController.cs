@@ -63,6 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
+		private PermissionOverwrite permissionOverwrite = new PermissionOverwrite();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
@@ -893,91 +894,64 @@ namespace Ch.Cyberduck.Ui.Controller
         private void OtherExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherExecute == CheckState.Indeterminate)
-            {
-                View.OtherExecute = CheckState.Unchecked;
-            }
+			permissionOverwrite.other.execute = View.OtherExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OtherWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherWrite == CheckState.Indeterminate)
-            {
-                View.OtherWrite = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.other.write = View.OtherWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void OtherReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherRead == CheckState.Indeterminate)
-            {
-                View.OtherRead = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.other.read = View.OtherRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void GroupExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupExecute == CheckState.Indeterminate)
-            {
-                View.GroupExecute = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.group.execute = View.GroupExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void GroupWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupWrite == CheckState.Indeterminate)
-            {
-                View.GroupWrite = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.group.write = View.GroupWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void GroupReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupRead == CheckState.Indeterminate)
-            {
-                View.GroupRead = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.group.execute = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void OwnerExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerExecute == CheckState.Indeterminate)
-            {
-                View.OwnerExecute = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.user.execute = View.OwnerExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void OwnerWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerWrite == CheckState.Indeterminate)
-            {
-                View.OwnerWrite = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.user.write = View.OwnerWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void OwnerReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerRead == CheckState.Indeterminate)
-            {
-                View.OwnerRead = CheckState.Unchecked;
-            }
-            PermissionsChanged();
+			permissionOverwrite.user.read = View.OwnerRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+			PermissionsChanged();
         }
 
         private void DetachPermissionHandlers()
@@ -997,7 +971,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void ApplyRecursivePermissions()
         {
-            ChangePermissions(GetPermissionFromCheckboxes(), true);
+            ChangePermissions(true);
         }
 
         private void OctalPermissionsChanged()
@@ -1020,7 +994,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (change)
                 {
-                    ChangePermissions(permission, false);
+                    ChangePermissions(false);
                 }
             }
         }
@@ -1042,7 +1016,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PermissionsChanged()
         {
-            ChangePermissions(GetPermissionFromCheckboxes(), false);
+            ChangePermissions(false);
         }
 
         /// <summary>
@@ -1050,60 +1024,14 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="permission">UNIX permissions to apply to files</param>
         /// <param name="recursive">Recursively apply to child of directories</param>
-        private void ChangePermissions(Permission permission, bool recursive)
+        private void ChangePermissions(bool recursive)
         {
             if (TogglePermissionSettings(false))
             {
-                _controller.background(new WritePermissionBackgroundAction(_controller, this, permission, recursive));
+                _controller.background(new WritePermissionBackgroundAction(_controller, this, recursive));
             }
         }
-
-        private Permission GetPermissionFromCheckboxes()
-        {
-            Permission.Action u = Permission.Action.none;
-            if (View.OwnerRead == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.read);
-            }
-            if (View.OwnerWrite == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.write);
-            }
-            if (View.OwnerExecute == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.execute);
-            }
-
-            Permission.Action g = Permission.Action.none;
-            if (View.GroupRead == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.read);
-            }
-            if (View.GroupWrite == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.write);
-            }
-            if (View.GroupExecute == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.execute);
-            }
-
-            Permission.Action o = Permission.Action.none;
-            if (View.OtherRead == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.read);
-            }
-            if (View.OtherWrite == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.write);
-            }
-            if (View.OtherExecute == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.execute);
-            }
-            return new Permission(u, g, o);
-        }
-
+		
         private void InitGeneral()
         {
             int count = NumberOfFiles;
@@ -1599,65 +1527,41 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController = infoController;
                 }
 
-                public override void cleanup(object obj)
-                {
-                    IInfoView view = _infoController.View;
-                    ICollection<Permission> permissions = Utils.ConvertFromJavaList<Permission>((List) obj);
-                    bool overwrite = true;
-                    foreach (Permission permission in permissions)
-                    {
-                        view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
-                            permission.getUser().implies(Permission.Action.read));
-                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
-                            permission.getUser().implies(Permission.Action.write));
-                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
-                            permission.getUser().implies(Permission.Action.execute));
-                        view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
-                            permission.getGroup().implies(Permission.Action.read));
-                        view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
-                            permission.getGroup().implies(Permission.Action.write));
-                        view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
-                            permission.getGroup().implies(Permission.Action.execute));
-                        view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
-                            permission.getOther().implies(Permission.Action.read));
-                        view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
-                            permission.getOther().implies(Permission.Action.write));
-                        view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
-                            permission.getOther().implies(Permission.Action.execute));
+				public override void cleanup(object obj)
+				{
+					IInfoView view = _infoController.View;
+					var permissionOverwrite = (PermissionOverwrite)obj;
+					_infoController.permissionOverwrite = permissionOverwrite;
 
-                        overwrite = false;
-                    }
+					view.OwnerRead = GetCheckState(permissionOverwrite.user.read);
+					view.OwnerWrite = GetCheckState(permissionOverwrite.user.write);
+					view.OwnerExecute = GetCheckState(permissionOverwrite.user.execute);
 
-                    if (permissions.Count > 1)
-                    {
-                        view.Permissions = _infoController._multipleFilesString;
-                    }
-                    else
-                    {
-                        foreach (Permission permission in permissions)
-                        {
-                            view.OctalPermissions = permission.getMode();
-                            view.Permissions = permission.toString();
-                        }
-                    }
-                    _infoController.TogglePermissionSettings(true);
-                }
+					view.GroupRead = GetCheckState(permissionOverwrite.group.read);
+					view.GroupWrite = GetCheckState(permissionOverwrite.group.write);
+					view.GroupExecute = GetCheckState(permissionOverwrite.group.execute);
 
-                private static CheckState GetCheckboxState(CheckState state, bool overwrite, bool condition)
-                {
-                    // Gets the state which can be CheckState.Checked, CheckState.Unchecked, or CheckState.Indeterminate.
-                    if ((state == CheckState.Unchecked || overwrite) && !condition)
-                    {
-                        return CheckState.Unchecked;
-                    }
-                    if ((state == CheckState.Checked || overwrite) && condition)
-                    {
-                        return CheckState.Checked;
-                    }
-                    return CheckState.Indeterminate;
-                }
-            }
-        }
+					view.OtherRead = GetCheckState(permissionOverwrite.other.read);
+					view.OtherWrite = GetCheckState(permissionOverwrite.other.write);
+					view.OtherExecute = GetCheckState(permissionOverwrite.other.execute);
+					
+					if (_infoController.NumberOfFiles> 1)
+					{
+						view.Permissions = _infoController._multipleFilesString;
+					}
+					else
+					{
+						var permission = permissionOverwrite.Resolve(Permission.EMPTY);
+						view.OctalPermissions = permission.getMode();
+						view.Permissions = permission.toString();
+					}
+					_infoController.TogglePermissionSettings(true);
+				}
+				
+				private static CheckState GetCheckState(java.lang.Boolean state) =>
+					state != null ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked : CheckState.Indeterminate; // if count = 0: unchecked, count = permission count: checked, else: indeterminate
+			}
+		}
 
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
@@ -2630,12 +2534,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class WritePermissionBackgroundAction : WorkerBackgroundAction
         {
-            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController,
-                Permission permission, bool recursive)
+            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController, bool recursive)
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        permission,
                         recursive
                             ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
                             : new BooleanRecursiveCallback(false)))
@@ -2646,8 +2548,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                    RecursiveCallback callback) : base(files, permission, callback, infoController._controller)
+                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback) : base(files, infoController.permissionOverwrite, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }
