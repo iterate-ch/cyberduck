@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ReadDistributionWorker extends Worker<Distribution> {
 
-    public final PathContainerService containerService = new PathContainerService();
+    private final PathContainerService containerService = new PathContainerService();
 
     /**
      * Selected files.

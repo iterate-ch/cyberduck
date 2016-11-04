@@ -35,7 +35,7 @@ public abstract class Worker<T> {
     private final AtomicBoolean canceled
             = new AtomicBoolean();
 
-    public final PathContainerService containerService = new PathContainerService();
+    private final PathContainerService containerService = new PathContainerService();
 
     protected String toString(final List<Path> files) {
         if(files.isEmpty()) {
