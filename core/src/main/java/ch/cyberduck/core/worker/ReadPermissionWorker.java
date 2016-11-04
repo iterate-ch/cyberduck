@@ -28,9 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class ReadPermissionWorker extends Worker<List<Permission>> {
 
@@ -45,7 +43,7 @@ public class ReadPermissionWorker extends Worker<List<Permission>> {
 
     @Override
     public List<Permission> run(final Session<?> session) throws BackgroundException {
-        final List<Permission> permissions = new ArrayList<Permission>();
+        final List<Permission> permissions = new ArrayList<>();
         for(Path next : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
