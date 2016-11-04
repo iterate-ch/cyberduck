@@ -28,6 +28,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
@@ -53,28 +54,29 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
 
         PermissionOverwrite overwrite = new PermissionOverwrite();
 
-        overwrite.user.read = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.read));
-        overwrite.user.write = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.write));
-        overwrite.user.execute = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.execute));
+        Supplier<Stream<Permission>> permissionSupplier = () -> permissions.stream();
+        overwrite.user.read = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.read));
+        overwrite.user.write = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.write));
+        overwrite.user.execute = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.execute));
 
-        overwrite.group.read = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.read));
-        overwrite.group.write = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.write));
-        overwrite.group.execute = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.execute));
+        overwrite.group.read = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.read));
+        overwrite.group.write = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.write));
+        overwrite.group.execute = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.execute));
 
-        overwrite.other.read = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.read));
-        overwrite.other.write = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.write));
-        overwrite.other.execute = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.execute));
+        overwrite.other.read = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.read));
+        overwrite.other.write = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.write));
+        overwrite.other.execute = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.execute));
 
         return overwrite;
     }
 
-    private static Boolean resolveOverwrite(Stream<Boolean> implies) {
-        Stream<Boolean> distinct = implies.distinct();
-        return distinct.count() == 1 ? distinct.findAny().get() : null;
+    private static Boolean resolveOverwrite(final Supplier<Stream<Boolean>> implies) {
+        Supplier<Stream<Boolean>> supplier = () -> implies.get().distinct();
+        return supplier.get().count() == 1 ? supplier.get().findAny().get() : null;
     }
 
-    private static Stream<Boolean> map(final List<Permission> permissions, final Function<Permission, Permission.Action> selector, final Permission.Action action) {
-        return permissions.stream().map(permission -> selector.apply(permission).implies(action));
+    private static Supplier<Stream<Boolean>> map(final Supplier<Stream<Permission>> permissions, final Function<Permission, Permission.Action> selector, final Permission.Action action) {
+        return () -> permissions.get().map(permission -> selector.apply(permission).implies(action));
     }
 
     @Override
