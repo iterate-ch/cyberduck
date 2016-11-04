@@ -44,3 +44,4 @@ Thumbs.db
 *.sdf
 *.opensdf
 *.DotSettings.user
+obj/
