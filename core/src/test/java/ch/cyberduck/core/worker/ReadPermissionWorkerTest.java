@@ -17,17 +17,12 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,13 +32,38 @@ public class ReadPermissionWorkerTest {
     @Test
     public void testRun() throws Exception {
         final ReadPermissionWorker worker = new ReadPermissionWorker(
-                Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
+                Arrays.<Path>asList(
+                        new Path("/a", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.all, Permission.Action.none)),
+                        new Path("/b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.read_write, Permission.Action.read)))) {
             @Override
-            public void cleanup(final List<Permission> result) {
+            public void cleanup(final PermissionOverwrite result) {
                 //
             }
         };
-        assertEquals(2, worker.run(new NullSession(new Host(new TestProtocol()))).size());
+
+        PermissionOverwrite overwrite = worker.run(new NullSession(new Host(new TestProtocol())));
+
+        /*
+        +-----+-----+-----+
+        | rwx | rwx | --- |
+        | rwx | rw- | r-- |
+        +=====+=====+=====+
+        | rwx | rw? | ?-- |
+        +-----+-----+-----+
+         */
+
+        assertEquals(Boolean.TRUE, overwrite.user.read);
+        assertEquals(Boolean.TRUE, overwrite.user.write);
+        assertEquals(Boolean.TRUE, overwrite.user.execute);
+
+        assertEquals(Boolean.TRUE, overwrite.group.read);
+        assertEquals(Boolean.TRUE, overwrite.group.write);
+        assertEquals(null, overwrite.group.execute);
+
+        assertEquals(null, overwrite.other.read);
+        assertEquals(Boolean.FALSE, overwrite.other.write);
+        assertEquals(Boolean.FALSE, overwrite.other.execute);
+
         assertEquals("Getting permission of a… (Multiple files) (2)", worker.getActivity());
     }
 }

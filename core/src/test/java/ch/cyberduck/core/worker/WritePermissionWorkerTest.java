@@ -18,14 +18,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
@@ -43,8 +36,12 @@ public class WritePermissionWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final Permission permission = new Permission(744);
-        final Path path = new Path("a", EnumSet.of(Path.Type.directory));
+        final PermissionOverwrite permission = new PermissionOverwrite(
+                new PermissionOverwriteAction(true, true, true),
+                new PermissionOverwriteAction(null, false, false),
+                new PermissionOverwriteAction(true, false, false)
+        );
+        final Path path = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.read));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -83,8 +80,12 @@ public class WritePermissionWorkerTest {
     @Test
     @Ignore
     public void testRunRecursiveRetainDirectoryExecute() throws Exception {
-        final Permission permission = new Permission(644);
-        final Path a = new Path("a", EnumSet.of(Path.Type.directory));
+        final PermissionOverwrite permission = new PermissionOverwrite(
+                new PermissionOverwriteAction(true, true, false),
+                new PermissionOverwriteAction(false, true, false),
+                new PermissionOverwriteAction(false, true, false)
+        );
+        final Path a = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.all));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, true, new DisabledProgressListener()
         );
         worker.run(new NullSession(new Host(new TestProtocol())) {
@@ -145,8 +146,11 @@ public class WritePermissionWorkerTest {
         a.attributes().setPermission(new Permission(774));
         final Path f = new Path("f", EnumSet.of(Path.Type.file));
         final Path d = new Path("d", EnumSet.of(Path.Type.directory));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), new Permission(775), true, new DisabledProgressListener()
-        );
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), new PermissionOverwrite(
+                new PermissionOverwriteAction(true, true, true),
+                new PermissionOverwriteAction(false, true, true),
+                new PermissionOverwriteAction(true, false, true)
+        ), true, new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -197,12 +201,15 @@ public class WritePermissionWorkerTest {
 
     @Test
     public void testRetainStickyBit() throws Exception {
-        final Permission permission = new Permission(744);
+        final PermissionOverwrite permission = new PermissionOverwrite(
+                new PermissionOverwriteAction(true, true, true),
+                new PermissionOverwriteAction(null, false, false),
+                new PermissionOverwriteAction(true, false, false)
+        );
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
         path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none,
                 true, false, false));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener()
-        );
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
