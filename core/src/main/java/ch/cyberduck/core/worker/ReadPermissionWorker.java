@@ -20,17 +20,17 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-public class ReadPermissionWorker extends Worker<List<Permission>> {
+public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
 
     /**
      * Selected files.
@@ -42,15 +42,39 @@ public class ReadPermissionWorker extends Worker<List<Permission>> {
     }
 
     @Override
-    public List<Permission> run(final Session<?> session) throws BackgroundException {
+    public PermissionOverwrite run(final Session<?> session) throws BackgroundException {
         final List<Permission> permissions = new ArrayList<>();
-        for(Path next : files) {
-            if(this.isCanceled()) {
+        for (Path next : files) {
+            if (this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             permissions.add(next.attributes().getPermission());
         }
-        return permissions;
+
+        PermissionOverwrite overwrite = new PermissionOverwrite();
+
+        overwrite.user.read = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.read));
+        overwrite.user.write = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.write));
+        overwrite.user.execute = resolveOverwrite(map(permissions, Permission::getUser, Permission.Action.execute));
+
+        overwrite.group.read = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.read));
+        overwrite.group.write = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.write));
+        overwrite.group.execute = resolveOverwrite(map(permissions, Permission::getGroup, Permission.Action.execute));
+
+        overwrite.other.read = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.read));
+        overwrite.other.write = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.write));
+        overwrite.other.execute = resolveOverwrite(map(permissions, Permission::getOther, Permission.Action.execute));
+
+        return overwrite;
+    }
+
+    private static Boolean resolveOverwrite(Stream<Boolean> implies) {
+        Stream<Boolean> distinct = implies.distinct();
+        return distinct.count() == 1 ? distinct.findAny().get() : null;
+    }
+
+    private static Stream<Boolean> map(final List<Permission> permissions, final Function<Permission, Permission.Action> selector, final Permission.Action action) {
+        return permissions.stream().map(permission -> selector.apply(permission).implies(action));
     }
 
     @Override
@@ -60,20 +84,20 @@ public class ReadPermissionWorker extends Worker<List<Permission>> {
     }
 
     @Override
-    public List<Permission> initialize() {
-        return Collections.emptyList();
+    public PermissionOverwrite initialize() {
+        return new PermissionOverwrite();
     }
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadPermissionWorker that = (ReadPermissionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
