@@ -1,22 +1,11 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -25,8 +14,7 @@ public class WriteMetadataWorkerTest {
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(files,
-                Collections.<String, String>emptyMap(), false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(new MetadataOverwrite(Collections.emptyMap(), Collections.emptyMap()), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
@@ -36,7 +24,7 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
-                if(type == Headers.class) {
+                if (type == Headers.class) {
                     return (T) new Headers() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
@@ -70,7 +58,11 @@ public class WriteMetadataWorkerTest {
         files.add(p);
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("key", "v1");
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+
+        final Map<Path, Map<String, String>> original = new HashMap<>();
+        original.put(p, previous);
+
+        WriteMetadataWorker worker = new WriteMetadataWorker(new MetadataOverwrite(original, updated), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -80,7 +72,7 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
-                if(type == Headers.class) {
+                if (type == Headers.class) {
                     return (T) new Headers() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
@@ -115,7 +107,11 @@ public class WriteMetadataWorkerTest {
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("nullified", null);
         updated.put("key", "v2");
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
+
+        final Map<Path, Map<String, String>> original = new HashMap<>();
+        original.put(p, previous);
+
+        WriteMetadataWorker worker = new WriteMetadataWorker(new MetadataOverwrite(original, updated), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -125,7 +121,7 @@ public class WriteMetadataWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
-                if(type == Headers.class) {
+                if (type == Headers.class) {
                     return (T) new Headers() {
                         @Override
                         public Map<String, String> getDefault(final Local local) {
