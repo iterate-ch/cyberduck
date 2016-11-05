@@ -68,6 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
+        private MetadataOverwrite _metadataOverwrite;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
         private InfoController(BrowserController controller, IList<Path> files)
@@ -301,6 +302,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     case ListChangedType.ItemDeleted:
                         if (ToggleMetadataSettings(false))
                         {
+                            var entry = metadata[args.OldIndex];
+                            _metadataOverwrite.metadata.remove(entry.Name);
                             Background(new WriteMetadataBackgroundAction(_controller, this));
                         }
                         break;
@@ -311,6 +314,11 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             if (ToggleMetadataSettings(false))
                             {
+                                var entry = metadata[args.NewIndex];
+                                // handle rename
+                                if (entry.OldName != entry.Name)
+                                    _metadataOverwrite.metadata.remove(entry.OldName);
+                                _metadataOverwrite.metadata.put(entry.Name, entry.ActualValue);
                                 Background(new WriteMetadataBackgroundAction(_controller, this));
                             }
                         }
@@ -1487,11 +1495,13 @@ namespace Ch.Cyberduck.Ui.Controller
         public class CustomHeaderEntry : INotifyPropertyChanged
         {
             private string _name;
+            private string _oldName;
             private string _value;
 
             public CustomHeaderEntry(string name, string value)
             {
                 _name = name;
+                _oldName = name;
                 _value = value;
             }
 
@@ -1507,6 +1517,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
+
+            public string OldName { get { return _oldName; } }
 
             public string Value
             {
@@ -2196,15 +2208,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    Map updated = (Map) obj;
-                    Iterator it = updated.entrySet().iterator();
+                    MetadataOverwrite updated = (MetadataOverwrite)obj;
+                    _infoController._metadataOverwrite = updated;
+
+                    Iterator it = updated.metadata.entrySet().iterator();
                     IList<CustomHeaderEntry> metadata = new List<CustomHeaderEntry>();
                     if (updated != null)
                     {
                         while (it.hasNext())
                         {
-                            Map.Entry pair = (Map.Entry) it.next();
-                            metadata.Add(new CustomHeaderEntry((string) pair.getKey(), (string) pair.getValue()));
+                            Map.Entry pair = (Map.Entry)it.next();
+                            metadata.Add(new CustomHeaderEntry((string)pair.getKey(), (string)pair.getValue()));
                         }
                     }
                     _infoController.ToggleMetadataSettings(true);
@@ -2603,10 +2617,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class WriteMetadataBackgroundAction : WorkerBackgroundAction
         {
             public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(
-                    controller, controller.Session,
-                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        infoController.ConvertMetadataToMap()))
+                : base(controller, controller.Session, new InnerWriteMetadataWorker(infoController))
             {
             }
 
@@ -2614,8 +2625,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, new DialogRecursiveCallback(infoController), infoController._controller)
+                public InnerWriteMetadataWorker(InfoController infoController)
+                    : base(infoController._metadataOverwrite, new DialogRecursiveCallback(infoController), infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2637,7 +2648,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
                         permission,
                         recursive
-                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
+                            ? (Worker.RecursiveCallback)new DialogRecursiveCallback(infoController)
                             : new BooleanRecursiveCallback(false)))
             {
             }
