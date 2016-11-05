@@ -26,6 +26,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
@@ -151,7 +152,7 @@ public class GoogleStorageSession extends S3Session {
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
             cache.put(root, this.list(root, new DisabledListProgressListener()));
         }
-        catch(LoginFailureException e) {
+        catch(LoginFailureException | InteroperabilityException e) {
             this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
         }
     }
