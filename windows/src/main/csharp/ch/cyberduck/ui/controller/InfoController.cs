@@ -178,7 +178,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TreeMap map = new TreeMap();
             foreach (CustomHeaderEntry header in _metadata)
             {
-                map.Add(header.Name, header.Value);
+                map.Add(header.Name, header.ActualValue);
             }
             return map;
         }
@@ -307,7 +307,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     case ListChangedType.ItemChanged:
                         if (args.NewIndex < _metadata.Count && Utils.IsNotBlank(_metadata[args.NewIndex].Name) &&
-                            Utils.IsNotBlank(_metadata[args.NewIndex].Value))
+                            Utils.IsNotBlank(_metadata[args.NewIndex].ActualValue))
                         {
                             if (ToggleMetadataSettings(false))
                             {
@@ -1516,6 +1516,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     _value = value;
                     NotifyPropertyChanged("Value");
                 }
+            }
+
+            public string ActualValue
+            {
+                get { return _value; }
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
