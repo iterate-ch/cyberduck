@@ -20,21 +20,25 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MetadataOverwrite;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
-
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ReadMetadataWorker extends Worker<Map<String, String>> {
+import static java.util.AbstractMap.Entry;
+import static java.util.AbstractMap.SimpleImmutableEntry;
+
+public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
     /**
@@ -50,50 +54,46 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
      * @return Metadata
      */
     @Override
-    public Map<String, String> run(final Session<?> session) throws BackgroundException {
+    public MetadataOverwrite run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
-        final Map<String, Integer> count = new HashMap<String, Integer>();
-        final Map<String, String> updated = new HashMap<String, String>() {
-            @Override
-            public String put(String key, String value) {
-                int n = 0;
-                if(count.containsKey(key)) {
-                    n = count.get(key);
-                }
-                count.put(key, ++n);
-                return super.put(key, value);
+
+        Map<Path, Map<String, String>> onlineMetadata = files.stream().collect(Collectors.toMap(x -> x, x -> {
+            Map<String, String> metadata = null;
+            try {
+                metadata = feature.getMetadata(x);
+            } catch (Exception e) {
+                metadata = Collections.emptyMap();
+            } finally {
+                x.attributes().setMetadata(metadata);
             }
-        };
-        for(Path next : files) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
-            }
-            // Reading HTTP headers custom metadata
-            next.attributes().setMetadata(feature.getMetadata(next));
-            final Map<String, String> metadata = next.attributes().getMetadata();
-            for(Map.Entry<String, String> entry : metadata.entrySet()) {
-                // Prune metadata from entries which are unique to a single file.
-                // For example md5-hash
-                if(updated.containsKey(entry.getKey())) {
-                    if(!entry.getValue().equals(updated.get(entry.getKey()))) {
-                        log.info(String.format("Nullify %s from metadata because value is not equal for selected files.", entry));
-                        updated.put(entry.getKey(), null);
-                        continue;
-                    }
-                }
-                updated.put(entry.getKey(), entry.getValue());
-            }
-        }
-        for(Map.Entry<String, Integer> entry : count.entrySet()) {
-            if(files.size() == entry.getValue()) {
-                // Every file has this metadata set.
-                continue;
-            }
-            // Not all files selected have this metadata. Remove for editing.
-            log.info(String.format("Remove %s from metadata not available for all selected files.", entry.getKey()));
-            updated.remove(entry.getKey());
-        }
-        return updated;
+            return metadata;
+        }));
+        Supplier<Stream<Map.Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
+                x -> x.getValue().entrySet().stream().map(
+                        y -> new SimpleImmutableEntry<>(x.getKey(), y))
+        );
+        Map<String, Map<Path, String>> metaGraph = flatMeta.get().collect(
+                Collectors.groupingBy(
+                        x -> x.getValue().getKey(),
+                        Collectors.toMap(x -> x.getKey(), x -> x.getValue().getValue()))
+        ).entrySet().stream().filter(x -> x.getValue().size() == files.size()
+        ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+
+        Map<Path, Map<String, String>> pathOriginalMeta = flatMeta.get().filter(
+                x -> metaGraph.containsKey(x.getValue().getKey())
+        ).collect(
+                Collectors.groupingBy(
+                        x -> x.getKey(),
+                        Collectors.toMap(x -> x.getValue().getKey(), x -> x.getValue().getValue())));
+
+        Map<String, String> metadata = metaGraph.entrySet().stream().collect(Collectors.toMap(
+                x -> x.getKey(),
+                x -> {
+                    Supplier<Stream<String>> valueSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue());
+                    return valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+                }));
+
+        return new MetadataOverwrite(pathOriginalMeta, metadata);
     }
 
     @Override
@@ -103,20 +103,20 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     }
 
     @Override
-    public Map<String, String> initialize() {
-        return Collections.emptyMap();
+    public MetadataOverwrite initialize() {
+        return new MetadataOverwrite(Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadMetadataWorker that = (ReadMetadataWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
