@@ -68,7 +68,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
             }
             return metadata;
         }));
-        Supplier<Stream<Map.Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
+        Supplier<Stream<Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
                 x -> x.getValue().entrySet().stream().map(
                         y -> new SimpleImmutableEntry<>(x.getKey(), y))
         );
