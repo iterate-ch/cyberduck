@@ -86,7 +86,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(!metadata.equals(file.attributes().getMetadata())) {
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file. For example md5-hash.
-                if(StringUtils.isBlank(entry.getValue())) {
+                if(entry.getValue() == null) {
                     // Reset with previous value
                     metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
                 }
