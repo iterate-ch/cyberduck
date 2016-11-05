@@ -104,10 +104,12 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
             Set<String> config = entry.getValue();
+            String value = metadata.metadata.get(entry.getKey());
+
             if (!config.contains("NEW")) {
                 originalMetadata.remove(entry.getKey());
-            } else {
-                originalMetadata.put(entry.getKey(), metadata.metadata.get(entry.getKey()));
+            } else if (value != null) {
+                originalMetadata.put(entry.getKey(), value);
             }
         }
 
