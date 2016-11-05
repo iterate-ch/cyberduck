@@ -41,13 +41,15 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwriteAction(null, false, false),
                 new PermissionOverwriteAction(true, false, false)
         );
+        // Tests all actions set to read
         final Path path = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.read));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", EnumSet.of(Path.Type.file)));
+                // test just group set to read
+                children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.none, Permission.Action.read, Permission.Action.none)));
                 return children;
             }
 
@@ -214,7 +216,8 @@ public class WritePermissionWorkerTest {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                children.add(new Path("b", EnumSet.of(Path.Type.file)));
+                // File has all set
+                children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all)));
                 return children;
             }
 
