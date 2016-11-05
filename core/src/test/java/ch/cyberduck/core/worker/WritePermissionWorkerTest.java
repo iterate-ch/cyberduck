@@ -209,7 +209,7 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwriteAction(true, false, false)
         );
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
-        path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none,
+        path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.read, Permission.Action.none,
                 true, false, false));
         final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, true, new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
