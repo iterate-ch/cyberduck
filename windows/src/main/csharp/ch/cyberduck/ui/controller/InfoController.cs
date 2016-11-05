@@ -1510,14 +1510,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public string Value
             {
-                get { return _value; }
+                get { return _value == null ? _multipleFilesString : _value; }
                 set
                 {
-                    if (Utils.IsNotBlank(value))
-                    {
-                        _value = value;
-                        NotifyPropertyChanged("Value");
-                    }
+                    _value = value;
+                    NotifyPropertyChanged("Value");
                 }
             }
 
