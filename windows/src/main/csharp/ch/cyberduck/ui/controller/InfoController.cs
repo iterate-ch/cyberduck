@@ -57,10 +57,11 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class InfoController : WindowController<IInfoView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (InfoController).FullName);
+        public static readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
+
+        private static readonly Logger Log = Logger.getLogger(typeof(InfoController).FullName);
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
-        private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
@@ -1630,7 +1631,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     if (permissions.Count > 1)
                     {
-                        view.Permissions = _infoController._multipleFilesString;
+                        view.Permissions = _multipleFilesString;
                     }
                     else
                     {
@@ -2085,9 +2086,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Concatenate URLs
                         if (_infoController.NumberOfFiles > 1)
                         {
-                            view.DistributionUrl = _infoController._multipleFilesString;
+                            view.DistributionUrl = _multipleFilesString;
                             view.DistributionUrlTooltip = null;
-                            view.DistributionCnameUrl = _infoController._multipleFilesString;
+                            view.DistributionCnameUrl = _multipleFilesString;
                         }
                         else
                         {
