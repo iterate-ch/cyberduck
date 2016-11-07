@@ -56,20 +56,20 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
             permissions.add(next.attributes().getPermission());
         }
 
-        PermissionOverwrite overwrite = new PermissionOverwrite();
+        final PermissionOverwrite overwrite = new PermissionOverwrite();
 
-        Supplier<Stream<Permission>> permissionSupplier = () -> permissions.stream();
-        overwrite.user.read = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.read));
-        overwrite.user.write = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.write));
-        overwrite.user.execute = resolveOverwrite(map(permissionSupplier, Permission::getUser, Permission.Action.execute));
+        Supplier<Stream<Permission>> supplier = permissions::stream;
+        overwrite.user.read = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.read));
+        overwrite.user.write = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.write));
+        overwrite.user.execute = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.execute));
 
-        overwrite.group.read = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.read));
-        overwrite.group.write = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.write));
-        overwrite.group.execute = resolveOverwrite(map(permissionSupplier, Permission::getGroup, Permission.Action.execute));
+        overwrite.group.read = resolveOverwrite(map(supplier, Permission::getGroup, Permission.Action.read));
+        overwrite.group.write = resolveOverwrite(map(supplier, Permission::getGroup, Permission.Action.write));
+        overwrite.group.execute = resolveOverwrite(map(supplier, Permission::getGroup, Permission.Action.execute));
 
-        overwrite.other.read = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.read));
-        overwrite.other.write = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.write));
-        overwrite.other.execute = resolveOverwrite(map(permissionSupplier, Permission::getOther, Permission.Action.execute));
+        overwrite.other.read = resolveOverwrite(map(supplier, Permission::getOther, Permission.Action.read));
+        overwrite.other.write = resolveOverwrite(map(supplier, Permission::getOther, Permission.Action.write));
+        overwrite.other.execute = resolveOverwrite(map(supplier, Permission::getOther, Permission.Action.execute));
 
         return overwrite;
     }
