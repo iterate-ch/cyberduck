@@ -71,14 +71,98 @@ import java.util.TimeZone;
 public class BookmarkController extends WindowController {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
 
+    /**
+     * Calculate timezone
+     */
+    private static final String AUTO = LocaleFactory.localizedString("Auto");
+
+    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+
+    private static final String TIMEZONE_CONTINENT_PREFIXES =
+            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+
+    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
+
+    private static NSPoint cascade = new NSPoint(0, 0);
+
     private final Preferences preferences = PreferencesFactory.get();
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     private final BookmarkCollection collection = BookmarkCollection.defaultCollection();
-
+    /**
+     * The bookmark
+     */
+    private final Host host;
+    private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
+        @Override
+        public void collectionItemRemoved(Host item) {
+            if(item.equals(host)) {
+                final NSWindow window = window();
+                if(null != window) {
+                    window.close();
+                }
+            }
+        }
+    };
     @Outlet
     private NSPopUpButton protocolPopup;
+    @Outlet
+    private NSPopUpButton encodingPopup;
+    @Outlet
+    private NSTextField nicknameField;
+    @Outlet
+    private NSTextField hostField;
+    @Outlet
+    private NSButton alertIcon;
+    @Outlet
+    private NSTextField portField;
+    @Outlet
+    private NSTextField pathField;
+    @Outlet
+    private NSTextField urlField;
+    @Outlet
+    private NSTextField usernameField;
+    @Outlet
+    private NSTextField usernameLabel;
+    @Outlet
+    private NSButton anonymousCheckbox;
+    @Outlet
+    private NSTextField webURLField;
+    @Outlet
+    private NSButton webUrlImage;
+    @Outlet
+    private NSImage favicon;
+    @Outlet
+    private NSTextView commentField;
+    @Outlet
+    private NSPopUpButton timezonePopup;
+    @Outlet
+    private NSPopUpButton connectmodePopup;
+    @Outlet
+    private NSPopUpButton transferPopup;
+    @Outlet
+    private NSPopUpButton downloadPathPopup;
+    @Outlet
+    private NSOpenPanel downloadPathPanel;
+    @Outlet
+    private NSButton toggleOptionsButton;
+    @Outlet
+    private NSTextField pkLabel;
+    @Outlet
+    private NSButton pkCheckbox;
+    @Outlet
+    private NSOpenPanel publicKeyPanel;
+
+    /**
+     * @param host The bookmark to edit
+     */
+    public BookmarkController(final Host host) {
+        this.host = host;
+        // Register for bookmark delete event. Will close this window.
+        collection.addListener(bookmarkCollectionListener);
+        this.loadBundle();
+    }
 
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
@@ -121,9 +205,6 @@ public class BookmarkController extends WindowController {
         this.reachable();
     }
 
-    @Outlet
-    private NSPopUpButton encodingPopup;
-
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
@@ -153,9 +234,6 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    @Outlet
-    private NSTextField nicknameField;
-
     public void setNicknameField(NSTextField nicknameField) {
         this.nicknameField = nicknameField;
         notificationCenter.addObserver(this.id(),
@@ -164,9 +242,6 @@ public class BookmarkController extends WindowController {
                 this.nicknameField);
     }
 
-    @Outlet
-    private NSTextField hostField;
-
     public void setHostField(NSTextField hostField) {
         this.hostField = hostField;
         notificationCenter.addObserver(this.id(),
@@ -174,9 +249,6 @@ public class BookmarkController extends WindowController {
                 NSControl.NSControlTextDidChangeNotification,
                 hostField);
     }
-
-    @Outlet
-    private NSButton alertIcon;
 
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
@@ -191,9 +263,6 @@ public class BookmarkController extends WindowController {
         ReachabilityFactory.get().diagnose(host);
     }
 
-    @Outlet
-    private NSTextField portField;
-
     public void setPortField(NSTextField portField) {
         this.portField = portField;
         notificationCenter.addObserver(this.id(),
@@ -201,9 +270,6 @@ public class BookmarkController extends WindowController {
                 NSControl.NSControlTextDidChangeNotification,
                 this.portField);
     }
-
-    @Outlet
-    private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
@@ -213,17 +279,11 @@ public class BookmarkController extends WindowController {
                 this.pathField);
     }
 
-    @Outlet
-    private NSTextField urlField;
-
     public void setUrlField(NSTextField urlField) {
         this.urlField = urlField;
         this.urlField.setAllowsEditingTextAttributes(true);
         this.urlField.setSelectable(true);
     }
-
-    @Outlet
-    private NSTextField usernameField;
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
@@ -233,15 +293,9 @@ public class BookmarkController extends WindowController {
                 this.usernameField);
     }
 
-    @Outlet
-    private NSTextField usernameLabel;
-
     public void setUsernameLabel(NSTextField usernameLabel) {
         this.usernameLabel = usernameLabel;
     }
-
-    @Outlet
-    private NSButton anonymousCheckbox;
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
@@ -249,9 +303,6 @@ public class BookmarkController extends WindowController {
         this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
         this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
-
-    @Outlet
-    private NSTextField webURLField;
 
     public void setWebURLField(NSTextField webURLField) {
         this.webURLField = webURLField;
@@ -263,17 +314,12 @@ public class BookmarkController extends WindowController {
                 this.webURLField);
     }
 
-    @Outlet
-    private NSButton webUrlImage;
-
     public void setWebUrlImage(NSButton b) {
         this.webUrlImage = b;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
         this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
     }
-
-    private NSImage favicon;
 
     /**
      *
@@ -322,9 +368,6 @@ public class BookmarkController extends WindowController {
         BrowserLauncherFactory.get().open(host.getWebURL());
     }
 
-    @Outlet
-    private NSTextView commentField;
-
     public void setCommentField(NSTextView commentField) {
         this.commentField = commentField;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
@@ -333,19 +376,6 @@ public class BookmarkController extends WindowController {
                 NSText.TextDidChangeNotification,
                 this.commentField);
     }
-
-    /**
-     * Calculate timezone
-     */
-    protected static final String AUTO = LocaleFactory.localizedString("Auto");
-
-    @Outlet
-    private NSPopUpButton timezonePopup;
-
-    private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
-
-    private static final String TIMEZONE_CONTINENT_PREFIXES =
-            "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
     public void setTimezonePopup(NSPopUpButton timezonePopup) {
         this.timezonePopup = timezonePopup;
@@ -389,9 +419,6 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    @Outlet
-    private NSPopUpButton connectmodePopup;
-
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
         this.connectmodePopup.setTarget(this.id());
@@ -411,9 +438,6 @@ public class BookmarkController extends WindowController {
         host.setFTPConnectMode(FTPConnectMode.valueOf(sender.selectedItem().representedObject()));
         this.itemChanged();
     }
-
-    @Outlet
-    private NSPopUpButton transferPopup;
 
     public void setTransferPopup(NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
@@ -436,11 +460,6 @@ public class BookmarkController extends WindowController {
         host.setTransfer(Host.TransferType.valueOf(sender.selectedItem().representedObject()));
         this.itemChanged();
     }
-
-    @Outlet
-    private NSPopUpButton downloadPathPopup;
-
-    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
@@ -479,8 +498,6 @@ public class BookmarkController extends WindowController {
         }
     }
 
-    private NSOpenPanel downloadPathPanel;
-
     @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
         if(sender.title().equals(CHOOSE)) {
@@ -516,39 +533,9 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    @Outlet
-    private NSButton toggleOptionsButton;
-
     public void setToggleOptionsButton(NSButton toggleOptionsButton) {
         this.toggleOptionsButton = toggleOptionsButton;
     }
-
-    /**
-     * The bookmark
-     */
-    private final Host host;
-
-    /**
-     * @param host The bookmark to edit
-     */
-    public BookmarkController(final Host host) {
-        this.host = host;
-        // Register for bookmark delete event. Will close this window.
-        collection.addListener(bookmarkCollectionListener);
-        this.loadBundle();
-    }
-
-    private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
-        @Override
-        public void collectionItemRemoved(Host item) {
-            if(item.equals(host)) {
-                final NSWindow window = window();
-                if(null != window) {
-                    window.close();
-                }
-            }
-        }
-    };
 
     @Override
     public void invalidate() {
@@ -574,8 +561,6 @@ public class BookmarkController extends WindowController {
         super.awakeFromNib();
     }
 
-    private static NSPoint cascade = new NSPoint(0, 0);
-
     @Override
     public void setWindow(NSWindow window) {
         window.setContentMinSize(window.frame().size);
@@ -591,23 +576,15 @@ public class BookmarkController extends WindowController {
         super.windowWillClose(notification);
     }
 
-    @Outlet
-    private NSTextField pkLabel;
-
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
     }
-
-    @Outlet
-    private NSButton pkCheckbox;
 
     public void setPkCheckbox(NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
         this.pkCheckbox.setTarget(this.id());
         this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
     }
-
-    private NSOpenPanel publicKeyPanel;
 
     @Action
     public void pkCheckboxSelectionChanged(final NSButton sender) {
@@ -802,24 +779,24 @@ public class BookmarkController extends WindowController {
         webUrlImage.setToolTip(webURL);
         this.updateField(webURLField, host.getDefaultWebURL().equals(webURL) ? null : webURL);
         this.updateField(commentField, host.getComment());
-        this.timezonePopup.setEnabled(!host.getProtocol().isUTCTimezone());
+        timezonePopup.setEnabled(!host.getProtocol().isUTCTimezone());
         if(null == host.getTimezone()) {
             if(host.getProtocol().isUTCTimezone()) {
-                this.timezonePopup.setTitle(UTC.getID());
+                timezonePopup.setTitle(UTC.getID());
             }
             else {
                 if(preferences.getBoolean("ftp.timezone.auto")) {
-                    this.timezonePopup.setTitle(AUTO);
+                    timezonePopup.setTitle(AUTO);
                 }
                 else {
-                    this.timezonePopup.setTitle(
+                    timezonePopup.setTitle(
                             TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID()
                     );
                 }
             }
         }
         else {
-            this.timezonePopup.setTitle(host.getTimezone().getID());
+            timezonePopup.setTitle(host.getTimezone().getID());
         }
     }
 }
