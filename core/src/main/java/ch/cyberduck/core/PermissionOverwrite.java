@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import org.apache.commons.lang3.CharUtils;
+
 public class PermissionOverwrite {
     public final Action user, group, other;
 
@@ -28,6 +30,26 @@ public class PermissionOverwrite {
         this.user = user;
         this.group = group;
         this.other = other;
+    }
+
+    public String mode() {
+        StringBuilder builder = new StringBuilder(3);
+
+        builder.append(user.mode());
+        builder.append(group.mode());
+        builder.append(other.mode());
+
+        return builder.toString();
+    }
+
+    public void parse(String octalValue) {
+        if (octalValue == null)
+            return; // throw exception?
+        if (octalValue.length() != 3)
+            return; // throw exception?
+        this.user.parse(octalValue.charAt(0));
+        this.group.parse(octalValue.charAt(1));
+        this.other.parse(octalValue.charAt(2));
     }
 
     public Permission resolve(final Permission original) {
@@ -60,6 +82,39 @@ public class PermissionOverwrite {
             this.execute = execute;
         }
 
+        private static Permission.Action solve(Permission.Action base, Permission.Action permission, boolean value) {
+            return value ? base.or(permission) : base.and(permission.not());
+        }
+
+        public char mode() {
+            final char intermediate = '?';
+            int value = 0;
+
+            if (this.read == null)
+                return intermediate;
+            value += this.read ? 4 : 0;
+
+            if (this.write == null)
+                return intermediate;
+            value += this.write ? 2 : 0;
+
+            if (this.execute == null)
+                return intermediate;
+            value += this.execute ? 1 : 0;
+
+            return Character.forDigit(value, 8);
+        }
+
+        public void parse(char c) {
+            if (CharUtils.isAsciiNumeric(c)) {
+                int intValue = CharUtils.toIntValue(c);
+                this.read = (intValue & 4) > 0;
+                this.write = (intValue & 2) > 0;
+                this.execute = (intValue & 1) > 0;
+            } else if (c == '?')
+                this.read = this.write = this.execute = null;
+        }
+
         public Permission.Action resolve(Permission.Action original) {
             Permission.Action result = Permission.Action.none;
 
@@ -81,8 +136,5 @@ public class PermissionOverwrite {
             return symbolic.toString();
         }
 
-        private static Permission.Action solve(Permission.Action base, Permission.Action permission, boolean value) {
-            return value ? base.or(permission) : base.and(permission.not());
-        }
     }
 }
