@@ -1551,7 +1551,7 @@ namespace Ch.Cyberduck.Ui.Controller
 					}
 					else
 					{
-						var permission = permissionOverwrite.Resolve(Permission.EMPTY);
+						var permission = permissionOverwrite.resolve(Permission.EMPTY);
 						view.OctalPermissions = permission.getMode();
 						view.Permissions = permission.toString();
 					}
