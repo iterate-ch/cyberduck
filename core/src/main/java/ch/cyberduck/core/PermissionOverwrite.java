@@ -16,6 +16,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class PermissionOverwrite {
     public final Action user, group, other;
@@ -32,7 +33,7 @@ public class PermissionOverwrite {
         this.other = other;
     }
 
-    public String mode() {
+    public String toMode() {
         StringBuilder builder = new StringBuilder(3);
 
         builder.append(user.mode());
@@ -42,14 +43,20 @@ public class PermissionOverwrite {
         return builder.toString();
     }
 
-    public void parse(String octalValue) {
-        if (octalValue == null)
-            return; // throw exception?
-        if (octalValue.length() != 3)
-            return; // throw exception?
-        this.user.parse(octalValue.charAt(0));
-        this.group.parse(octalValue.charAt(1));
-        this.other.parse(octalValue.charAt(2));
+    public PermissionOverwrite fromOctal(final String input) {
+        if(StringUtils.isBlank(input)) {
+            return null;
+        }
+        if(StringUtils.length(input) != 3) {
+            return null;
+        }
+        if(!StringUtils.isNumeric(input)) {
+            return null;
+        }
+        this.user.parse(input.charAt(0));
+        this.group.parse(input.charAt(1));
+        this.other.parse(input.charAt(2));
+        return this;
     }
 
     public Permission resolve(final Permission original) {
@@ -90,29 +97,33 @@ public class PermissionOverwrite {
             final char intermediate = '?';
             int value = 0;
 
-            if (this.read == null)
+            if(this.read == null) {
                 return intermediate;
+            }
             value += this.read ? 4 : 0;
 
-            if (this.write == null)
+            if(this.write == null) {
                 return intermediate;
+            }
             value += this.write ? 2 : 0;
 
-            if (this.execute == null)
+            if(this.execute == null) {
                 return intermediate;
+            }
             value += this.execute ? 1 : 0;
-
             return Character.forDigit(value, 8);
         }
 
         public void parse(char c) {
-            if (CharUtils.isAsciiNumeric(c)) {
+            if(CharUtils.isAsciiNumeric(c)) {
                 int intValue = CharUtils.toIntValue(c);
                 this.read = (intValue & 4) > 0;
                 this.write = (intValue & 2) > 0;
                 this.execute = (intValue & 1) > 0;
-            } else if (c == '?')
+            }
+            else if(c == '?') {
                 this.read = this.write = this.execute = null;
+            }
         }
 
         public Permission.Action resolve(Permission.Action original) {

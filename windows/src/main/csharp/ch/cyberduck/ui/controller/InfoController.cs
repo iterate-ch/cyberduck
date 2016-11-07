@@ -976,7 +976,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void OctalPermissionsChanged()
         {
-            permissions.parse(View.OctalPermissions);
+            permissions.fromOctal(View.OctalPermissions);
             ChangePermissions(true);
         }
 
@@ -1511,7 +1511,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     view.OtherWrite = GetCheckState(permission.other.write);
                     view.OtherExecute = GetCheckState(permission.other.execute);
 
-                    view.OctalPermissions = permission.mode();
+                    view.OctalPermissions = permission.toMode();
                     view.Permissions = permission.toString();
 
                     _infoController.TogglePermissionSettings(true);
