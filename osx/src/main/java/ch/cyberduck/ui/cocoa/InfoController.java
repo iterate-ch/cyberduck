@@ -1593,17 +1593,17 @@ public class InfoController extends ToolbarWindowController {
     }
 
     private void setPermissions(final PermissionOverwrite permissions) {
-        updateCheckbox(ownerr, permissions.user.read);
-        updateCheckbox(ownerw, permissions.user.write);
-        updateCheckbox(ownerx, permissions.user.execute);
+        this.updateCheckbox(ownerr, permissions.user.read);
+        this.updateCheckbox(ownerw, permissions.user.write);
+        this.updateCheckbox(ownerx, permissions.user.execute);
 
-        updateCheckbox(groupr, permissions.group.read);
-        updateCheckbox(groupw, permissions.group.write);
-        updateCheckbox(groupx, permissions.group.execute);
+        this.updateCheckbox(groupr, permissions.group.read);
+        this.updateCheckbox(groupw, permissions.group.write);
+        this.updateCheckbox(groupx, permissions.group.execute);
 
-        updateCheckbox(otherr, permissions.other.read);
-        updateCheckbox(otherw, permissions.other.write);
-        updateCheckbox(otherx, permissions.other.execute);
+        this.updateCheckbox(otherr, permissions.other.read);
+        this.updateCheckbox(otherw, permissions.other.write);
+        this.updateCheckbox(otherx, permissions.other.execute);
 
         if(this.numberOfFiles() > 1) {
             permissionsField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
@@ -1682,7 +1682,7 @@ public class InfoController extends ToolbarWindowController {
                     new ReadSizeWorker(files) {
                         @Override
                         public void cleanup(final Long size) {
-                            updateSize(size);
+                            setSize(size);
                             toggleSizeSettings(true);
                         }
                     }
@@ -1690,7 +1690,7 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
-    private void updateSize(long size) {
+    private void setSize(final Long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 SizeFormatterFactory.get().format(size, true),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -2449,7 +2449,7 @@ public class InfoController extends ToolbarWindowController {
                     new CalculateSizeWorker(files, controller) {
                         @Override
                         public void cleanup(final Long size) {
-                            updateSize(size);
+                            setSize(size);
                             toggleSizeSettings(true);
                         }
 
@@ -2458,7 +2458,7 @@ public class InfoController extends ToolbarWindowController {
                             invoke(new WindowMainAction(InfoController.this) {
                                 @Override
                                 public void run() {
-                                    updateSize(size);
+                                    setSize(size);
                                 }
                             });
                         }
