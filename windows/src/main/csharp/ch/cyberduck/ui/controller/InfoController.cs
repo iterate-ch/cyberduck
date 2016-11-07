@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
-		private PermissionOverwrite permissionOverwrite = new PermissionOverwrite();
+        private PermissionOverwrite permissions = new PermissionOverwrite();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
@@ -894,64 +894,64 @@ namespace Ch.Cyberduck.Ui.Controller
         private void OtherExecuteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.other.execute = View.OtherExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            permissions.other.execute = View.OtherExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OtherWriteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.other.write = View.OtherWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.other.write = View.OtherWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void OtherReadChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.other.read = View.OtherRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.other.read = View.OtherRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void GroupExecuteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.group.execute = View.GroupExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.group.execute = View.GroupExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void GroupWriteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.group.write = View.GroupWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.group.write = View.GroupWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void GroupReadChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.group.execute = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.group.execute = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void OwnerExecuteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.user.execute = View.OwnerExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.user.execute = View.OwnerExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void OwnerWriteChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.user.write = View.OwnerWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.user.write = View.OwnerWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void OwnerReadChanged()
         {
             DetachPermissionHandlers();
-			permissionOverwrite.user.read = View.OwnerRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
-			PermissionsChanged();
+            permissions.user.read = View.OwnerRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
+            PermissionsChanged();
         }
 
         private void DetachPermissionHandlers()
@@ -976,42 +976,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void OctalPermissionsChanged()
         {
-            Permission permission = GetPermissionsFromOctalField();
-            if (null == permission)
-            {
-                SystemSounds.Beep.Play();
-                InitPermissions();
-            }
-            else
-            {
-                bool change = false;
-                foreach (Path path in _files)
-                {
-                    if (!path.attributes().getPermission().Equals(permission))
-                    {
-                        change = true;
-                    }
-                }
-                if (change)
-                {
-                    ChangePermissions(false);
-                }
-            }
-        }
-
-        private Permission GetPermissionsFromOctalField()
-        {
-            if (!String.IsNullOrEmpty(View.OctalPermissions))
-            {
-                if (View.OctalPermissions.Length >= 3)
-                {
-                    if (Utils.IsInt(View.OctalPermissions))
-                    {
-                        return new Permission(int.Parse(View.OctalPermissions));
-                    }
-                }
-            }
-            return null;
+            permissions.parse(View.OctalPermissions);
+            ChangePermissions(true);
         }
 
         private void PermissionsChanged()
