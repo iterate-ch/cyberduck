@@ -85,10 +85,11 @@ public class WritePermissionWorker extends Worker<Boolean> {
         }
 
         final Permission merged = permissions.resolve(file.attributes().getPermission());
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), merged));
-        feature.setUnixPermission(file, merged);
-
+        if(!merged.equals(file.attributes().getPermission())) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                    file.getName(), merged));
+            feature.setUnixPermission(file, merged);
+        }
         if(file.isDirectory()) {
             if(callback.recurse(file, permissions)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
