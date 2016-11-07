@@ -17,7 +17,16 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.PermissionOverwrite;
+import ch.cyberduck.core.TestPermissionAttributes;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
 import org.junit.Test;
 
@@ -41,7 +50,36 @@ public class ReadPermissionWorkerTest {
             }
         };
 
-        PermissionOverwrite overwrite = worker.run(new NullSession(new Host(new TestProtocol())));
+        PermissionOverwrite overwrite = worker.run(new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T getFeature(final Class<T> type) {
+                if(type == UnixPermission.class) {
+                    return (T) new DefaultUnixPermissionFeature() {
+                        @Override
+                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                            return file.attributes().getPermission();
+                        }
+
+                        @Override
+                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+                    };
+                }
+                return super.getFeature(type);
+            }
+        });
 
         /*
         +-----+-----+-----+

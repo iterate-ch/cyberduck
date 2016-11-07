@@ -78,6 +78,11 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
                         public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
                             assertEquals(new Permission(744), permission);
                         }
@@ -125,6 +130,11 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();
                         }
 
@@ -192,6 +202,11 @@ public class WritePermissionWorkerTest {
                         }
 
                         @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
                         public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
                             if(file.equals(a)) {
                                 assertEquals(file.toString(), new Permission(775), permission);
@@ -242,6 +257,11 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
                             throw new UnsupportedOperationException();
                         }
 

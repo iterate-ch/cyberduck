@@ -27,6 +27,7 @@ import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.UnixPermission;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -48,12 +49,13 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
 
     @Override
     public PermissionOverwrite run(final Session<?> session) throws BackgroundException {
+        final UnixPermission feature = session.getFeature(UnixPermission.class);
         final List<Permission> permissions = new ArrayList<>();
         for(Path next : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            permissions.add(next.attributes().getPermission());
+            permissions.add(feature.getUnixPermission(next));
         }
 
         final PermissionOverwrite overwrite = new PermissionOverwrite();
