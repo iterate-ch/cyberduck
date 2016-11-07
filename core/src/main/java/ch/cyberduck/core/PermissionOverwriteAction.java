@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-/**
- * Created by alive on 04.11.2016.
- */
 public class PermissionOverwriteAction {
     public Boolean read;
     public Boolean write;

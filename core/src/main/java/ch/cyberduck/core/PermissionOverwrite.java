@@ -1,11 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.threading.ActionOperationBatcher;
-import org.apache.commons.lang3.StringUtils;
-
-/**
- * Created by alive on 04.11.2016.
- */
 public class PermissionOverwrite {
     public final PermissionOverwriteAction user, group, other;
 
