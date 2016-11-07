@@ -20,14 +20,18 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.PermissionOverwrite;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -45,8 +49,8 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
     @Override
     public PermissionOverwrite run(final Session<?> session) throws BackgroundException {
         final List<Permission> permissions = new ArrayList<>();
-        for (Path next : files) {
-            if (this.isCanceled()) {
+        for(Path next : files) {
+            if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             permissions.add(next.attributes().getPermission());
@@ -92,14 +96,14 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadPermissionWorker that = (ReadPermissionWorker) o;
-        if (files != null ? !files.equals(that.files) : that.files != null) {
+        if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;

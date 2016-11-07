@@ -19,13 +19,9 @@ public class PermissionOverwrite {
     public final Action user, group, other;
 
     public PermissionOverwrite() {
-        this((Boolean) null, (Boolean) null, (Boolean) null);
-    }
-
-    public PermissionOverwrite(Boolean read, Boolean write, Boolean execute) {
-        this.user = new Action(read, write, execute);
-        this.group = new Action(read, write, execute);
-        this.other = new Action(read, write, execute);
+        this.user = new Action(null, null, null);
+        this.group = new Action(null, null, null);
+        this.other = new Action(null, null, null);
     }
 
     public PermissionOverwrite(Action user, Action group, Action other) {
@@ -34,11 +30,11 @@ public class PermissionOverwrite {
         this.other = other;
     }
 
-    public Permission Resolve(final Permission original) {
+    public Permission resolve(final Permission original) {
         return new Permission(
-                user.Resolve(original.getUser()),
-                group.Resolve(original.getGroup()),
-                other.Resolve(original.getOther()),
+                user.resolve(original.getUser()),
+                group.resolve(original.getGroup()),
+                other.resolve(original.getOther()),
                 original.isSticky(), original.isSetuid(), original.isSetgid());
     }
 
@@ -64,12 +60,12 @@ public class PermissionOverwrite {
             this.execute = execute;
         }
 
-        public Permission.Action Resolve(Permission.Action original) {
+        public Permission.Action resolve(Permission.Action original) {
             Permission.Action result = Permission.Action.none;
 
-            result = SolvePermission(result, Permission.Action.read, read == null ? original.implies(Permission.Action.read) : read);
-            result = SolvePermission(result, Permission.Action.write, write == null ? original.implies(Permission.Action.write) : write);
-            result = SolvePermission(result, Permission.Action.execute, execute == null ? original.implies(Permission.Action.execute) : execute);
+            result = solve(result, Permission.Action.read, read == null ? original.implies(Permission.Action.read) : read);
+            result = solve(result, Permission.Action.write, write == null ? original.implies(Permission.Action.write) : write);
+            result = solve(result, Permission.Action.execute, execute == null ? original.implies(Permission.Action.execute) : execute);
 
             return result;
         }
@@ -85,7 +81,7 @@ public class PermissionOverwrite {
             return symbolic.toString();
         }
 
-        private static Permission.Action SolvePermission(Permission.Action base, Permission.Action permission, boolean value) {
+        private static Permission.Action solve(Permission.Action base, Permission.Action permission, boolean value) {
             return value ? base.or(permission) : base.and(permission.not());
         }
     }

@@ -18,7 +18,12 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.PermissionOverwrite;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
@@ -65,8 +70,8 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
-        for (Path file : files) {
-            if (this.isCanceled()) {
+        for(Path file : files) {
+            if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             write(session, feature, file);
@@ -75,18 +80,18 @@ public class WritePermissionWorker extends Worker<Boolean> {
     }
 
     protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
-        if (this.isCanceled()) {
+        if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
 
-        final Permission merged = permissionOverwrite.Resolve(file.attributes().getPermission());
+        final Permission merged = permissionOverwrite.resolve(file.attributes().getPermission());
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
                 file.getName(), merged));
         feature.setUnixPermission(file, merged);
 
-        if (file.isDirectory()) {
-            if (callback.recurse(file, permissionOverwrite)) {
-                for (Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+        if(file.isDirectory()) {
+            if(callback.recurse(file, permissionOverwrite)) {
+                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }
@@ -106,14 +111,14 @@ public class WritePermissionWorker extends Worker<Boolean> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final WritePermissionWorker that = (WritePermissionWorker) o;
-        if (files != null ? !files.equals(that.files) : that.files != null) {
+        if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
