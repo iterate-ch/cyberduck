@@ -76,6 +76,8 @@ public final class PromptLoginController implements LoginCallback {
 
     private final WindowController parent;
 
+    private NSOpenPanel select;
+
     public PromptLoginController(final WindowController parent) {
         this.parent = parent;
     }
@@ -118,6 +120,29 @@ public final class PromptLoginController implements LoginCallback {
             log.debug(String.format("Prompt for credentials for %s", bookmark));
         }
         final SheetController sheet = new SheetController(parent) {
+            @Outlet
+            private NSImageView iconView;
+            @Outlet
+            private NSTextField usernameLabel;
+            @Outlet
+            private NSTextField passwordLabel;
+            @Outlet
+            private NSTextField titleField;
+            @Outlet
+            private NSTextField usernameField;
+            @Outlet
+            private NSTextField textField;
+            @Outlet
+            private NSSecureTextField passwordField;
+            @Outlet
+            private NSButton keychainCheckbox;
+            @Outlet
+            private NSButton anonymousCheckbox;
+            @Outlet
+            private NSTextField pkLabel;
+            @Outlet
+            private NSButton pkCheckbox;
+
             @Override
             protected String getBundleName() {
                 return "Login";
@@ -142,38 +167,23 @@ public final class PromptLoginController implements LoginCallback {
                 new DefaultProviderHelpService().help(bookmark.getProtocol());
             }
 
-            @Outlet
-            protected NSImageView iconView;
-
             public void setIconView(NSImageView iconView) {
                 this.iconView = iconView;
                 this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().disk()));
             }
 
-            @Outlet
-            private NSTextField usernameLabel;
-
             public void setUsernameLabel(NSTextField usernameLabel) {
                 this.usernameLabel = usernameLabel;
             }
-
-            @Outlet
-            private NSTextField passwordLabel;
 
             public void setPasswordLabel(NSTextField passwordLabel) {
                 this.passwordLabel = passwordLabel;
             }
 
-            @Outlet
-            private NSTextField titleField;
-
             public void setTitleField(NSTextField titleField) {
                 this.titleField = titleField;
                 this.updateField(this.titleField, LocaleFactory.localizedString(title, "Credentials"));
             }
-
-            @Outlet
-            private NSTextField usernameField;
 
             public void setUsernameField(NSTextField usernameField) {
                 this.usernameField = usernameField;
@@ -197,9 +207,6 @@ public final class PromptLoginController implements LoginCallback {
                 this.update();
             }
 
-            @Outlet
-            private NSTextField textField;
-
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
                 this.textField.setSelectable(true);
@@ -214,9 +221,6 @@ public final class PromptLoginController implements LoginCallback {
                 }
             }
 
-            @Outlet
-            private NSSecureTextField passwordField;
-
             public void setPasswordField(NSSecureTextField passwordField) {
                 this.passwordField = passwordField;
                 this.updateField(this.passwordField, credentials.getPassword());
@@ -230,9 +234,6 @@ public final class PromptLoginController implements LoginCallback {
                 credentials.setPassword(passwordField.stringValue());
             }
 
-            @Outlet
-            private NSButton keychainCheckbox;
-
             public void setKeychainCheckbox(NSButton keychainCheckbox) {
                 this.keychainCheckbox = keychainCheckbox;
                 this.keychainCheckbox.setTarget(this.id());
@@ -245,9 +246,6 @@ public final class PromptLoginController implements LoginCallback {
                 final boolean enabled = sender.state() == NSCell.NSOnState;
                 preferences.setProperty("connection.login.addKeychain", enabled);
             }
-
-            @Outlet
-            private NSButton anonymousCheckbox;
 
             public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
                 this.anonymousCheckbox = anonymousCheckbox;
@@ -270,15 +268,9 @@ public final class PromptLoginController implements LoginCallback {
                 this.update();
             }
 
-            @Outlet
-            private NSTextField pkLabel;
-
             public void setPkLabel(NSTextField pkLabel) {
                 this.pkLabel = pkLabel;
             }
-
-            @Outlet
-            private NSButton pkCheckbox;
 
             public void setPkCheckbox(NSButton pkCheckbox) {
                 this.pkCheckbox = pkCheckbox;
@@ -369,8 +361,6 @@ public final class PromptLoginController implements LoginCallback {
             throw new LoginCanceledException();
         }
     }
-
-    private NSOpenPanel select;
 
     public Local select(final Local identity) throws LoginCanceledException {
         final Local selected = this.select(parent, new SheetCallback() {
