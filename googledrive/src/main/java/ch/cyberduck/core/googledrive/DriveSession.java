@@ -96,8 +96,7 @@ public class DriveSession extends HttpSession<Drive> {
                 preferences.getProperty("googledrive.oauth.clientid"),
                 preferences.getProperty("googledrive.oauth.clientsecret"),
                 Collections.singletonList(DriveScopes.DRIVE))
-                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"))
-                .withLegacyPrefix(host.getProtocol().getDescription());
+                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) throws IOException {

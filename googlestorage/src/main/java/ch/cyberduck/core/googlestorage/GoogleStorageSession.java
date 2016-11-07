@@ -88,7 +88,7 @@ public class GoogleStorageSession extends S3Session {
             preferences.getProperty("googlestorage.oauth.clientid"),
             preferences.getProperty("googlestorage.oauth.secret"),
             Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-    ).withLegacyPrefix("Google").withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
+    ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
 
     public GoogleStorageSession(final Host h) {
         super(h);
