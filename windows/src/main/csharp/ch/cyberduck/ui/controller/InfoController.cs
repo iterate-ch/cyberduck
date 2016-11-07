@@ -1493,41 +1493,34 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController = infoController;
                 }
 
-				public override void cleanup(object obj)
-				{
-					IInfoView view = _infoController.View;
-					var permissionOverwrite = (PermissionOverwrite)obj;
-					_infoController.permissionOverwrite = permissionOverwrite;
+                public override void cleanup(object obj)
+                {
+                    IInfoView view = _infoController.View;
+                    var permission = (PermissionOverwrite)obj;
+                    _infoController.permissions = permission;
 
-					view.OwnerRead = GetCheckState(permissionOverwrite.user.read);
-					view.OwnerWrite = GetCheckState(permissionOverwrite.user.write);
-					view.OwnerExecute = GetCheckState(permissionOverwrite.user.execute);
+                    view.OwnerRead = GetCheckState(permission.user.read);
+                    view.OwnerWrite = GetCheckState(permission.user.write);
+                    view.OwnerExecute = GetCheckState(permission.user.execute);
 
-					view.GroupRead = GetCheckState(permissionOverwrite.group.read);
-					view.GroupWrite = GetCheckState(permissionOverwrite.group.write);
-					view.GroupExecute = GetCheckState(permissionOverwrite.group.execute);
+                    view.GroupRead = GetCheckState(permission.group.read);
+                    view.GroupWrite = GetCheckState(permission.group.write);
+                    view.GroupExecute = GetCheckState(permission.group.execute);
 
-					view.OtherRead = GetCheckState(permissionOverwrite.other.read);
-					view.OtherWrite = GetCheckState(permissionOverwrite.other.write);
-					view.OtherExecute = GetCheckState(permissionOverwrite.other.execute);
-					
-					if (_infoController.NumberOfFiles> 1)
-					{
-						view.Permissions = _infoController._multipleFilesString;
-					}
-					else
-					{
-						var permission = permissionOverwrite.resolve(Permission.EMPTY);
-						view.OctalPermissions = permission.getMode();
-						view.Permissions = permission.toString();
-					}
-					_infoController.TogglePermissionSettings(true);
-				}
-				
-				private static CheckState GetCheckState(java.lang.Boolean state) =>
-					state != null ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked : CheckState.Indeterminate; // if count = 0: unchecked, count = permission count: checked, else: indeterminate
-			}
-		}
+                    view.OtherRead = GetCheckState(permission.other.read);
+                    view.OtherWrite = GetCheckState(permission.other.write);
+                    view.OtherExecute = GetCheckState(permission.other.execute);
+
+                    view.OctalPermissions = permission.mode();
+                    view.Permissions = permission.toString();
+
+                    _infoController.TogglePermissionSettings(true);
+                }
+
+                private static CheckState GetCheckState(java.lang.Boolean state) =>
+                    state != null ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked : CheckState.Indeterminate; // if count = 0: unchecked, count = permission count: checked, else: indeterminate
+            }
+        }
 
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
@@ -2514,7 +2507,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback) : base(files, infoController.permissionOverwrite, callback, infoController._controller)
+                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback) : base(files, infoController.permissions, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }
