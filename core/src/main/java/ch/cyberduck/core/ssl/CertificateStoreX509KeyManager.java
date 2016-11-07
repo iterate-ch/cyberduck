@@ -52,6 +52,8 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     private final CertificateStore callback;
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     public CertificateStoreX509KeyManager(final CertificateStore callback) {
         this(callback, null);
     }
@@ -217,8 +219,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             final X509Certificate selected;
+            final String hostname = socket.getInetAddress().getHostName();
             try {
-                final String hostname = socket.getInetAddress().getHostName();
+                final String alias = preferences.getProperty(String.format("connection.ssl.keystore.alias.%s", hostname));
+                if(StringUtils.isNotBlank(alias)) {
+                    log.info(String.format("Return saved certificate alias %s for hostname %s", alias, hostname));
+                    return alias;
+                }
                 selected = callback.choose(keyTypes,
                         issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
                                 "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
@@ -251,6 +258,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
                         }
+                        preferences.setProperty(String.format("connection.ssl.keystore.alias.%s", hostname), alias);
                         return alias;
                     }
                 }
