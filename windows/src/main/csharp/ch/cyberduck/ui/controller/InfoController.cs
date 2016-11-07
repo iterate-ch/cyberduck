@@ -2556,7 +2556,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.TogglePermissionSettings(true);
-                    _infoController.InitPermissions()
+                    _infoController.InitPermissions();
                 }
             }
         }
