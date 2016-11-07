@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -36,6 +37,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
 public class DAVListService implements ListService {
+    private static final Logger log = Logger.getLogger(DAVReadFeature.class);
 
     private final DAVSession session;
 
@@ -51,7 +53,8 @@ public class DAVListService implements ListService {
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
-                if(href.equals(directory.getAbsolute())) {
+                if(!StringUtils.equals(PathNormalizer.parent(href, Path.DELIMITER), directory.getAbsolute())) {
+                    log.warn(String.format("Ignore resource %s", href));
                     continue;
                 }
                 final PathAttributes attributes = new PathAttributes();
