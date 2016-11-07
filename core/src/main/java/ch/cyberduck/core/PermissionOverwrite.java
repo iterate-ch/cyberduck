@@ -79,6 +79,8 @@ public class PermissionOverwrite {
     }
 
     public static final class Action {
+        private final char MULTIPLE_VALUES = '\u2022';
+
         public Boolean read;
         public Boolean write;
         public Boolean execute;
@@ -94,7 +96,7 @@ public class PermissionOverwrite {
         }
 
         public char mode() {
-            final char intermediate = '?';
+            final char intermediate = MULTIPLE_VALUES;
             int value = 0;
 
             if(this.read == null) {
@@ -121,8 +123,10 @@ public class PermissionOverwrite {
                 this.write = (intValue & 2) > 0;
                 this.execute = (intValue & 1) > 0;
             }
-            else if(c == '?') {
-                this.read = this.write = this.execute = null;
+            else {
+                if(c == MULTIPLE_VALUES) {
+                    this.read = this.write = this.execute = null;
+                }
             }
         }
 
@@ -140,9 +144,9 @@ public class PermissionOverwrite {
         public String toString() {
             final StringBuilder symbolic = new StringBuilder();
 
-            symbolic.append(read != null ? read ? 'r' : '-' : '?');
-            symbolic.append(write != null ? write ? 'w' : '-' : '?');
-            symbolic.append(execute != null ? execute ? 'x' : '-' : '?');
+            symbolic.append(read != null ? read ? 'r' : '-' : MULTIPLE_VALUES);
+            symbolic.append(write != null ? write ? 'w' : '-' : MULTIPLE_VALUES);
+            symbolic.append(execute != null ? execute ? 'x' : '-' : MULTIPLE_VALUES);
 
             return symbolic.toString();
         }
