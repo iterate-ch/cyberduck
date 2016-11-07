@@ -2107,20 +2107,7 @@ public class InfoController extends ToolbarWindowController {
      * @return Null if invalid string has been entered entered,
      */
     private PermissionOverwrite getPermissionFromOctalField() {
-        if(StringUtils.isNotBlank(octalField.stringValue())) {
-            if(StringUtils.length(octalField.stringValue()) >= 3) {
-                if(StringUtils.isNumeric(octalField.stringValue())) {
-                    final Permission permission = new Permission(Integer.valueOf(octalField.stringValue()).intValue());
-                    return new PermissionOverwrite(
-                            new PermissionOverwrite.Action(permission.getUser().implies(Permission.Action.read), permission.getUser().implies(Permission.Action.write), permission.getUser().implies(Permission.Action.execute)),
-                            new PermissionOverwrite.Action(permission.getGroup().implies(Permission.Action.read), permission.getGroup().implies(Permission.Action.write), permission.getGroup().implies(Permission.Action.execute)),
-                            new PermissionOverwrite.Action(permission.getOther().implies(Permission.Action.read), permission.getOther().implies(Permission.Action.write), permission.getOther().implies(Permission.Action.execute))
-                    );
-                }
-            }
-        }
-        log.warn(String.format("Invalid octal field input %s", octalField.stringValue()));
-        return null;
+        return new PermissionOverwrite().fromOctal(octalField.stringValue());
     }
 
     @Action
