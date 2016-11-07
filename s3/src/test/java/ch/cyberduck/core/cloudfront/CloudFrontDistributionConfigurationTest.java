@@ -149,7 +149,7 @@ public class CloudFrontDistributionConfigurationTest {
     }
 
     @Test
-    public void testWriteExists() throws Exception {
+    public void testWriteNewStreaming() throws Exception {
         final AtomicBoolean set = new AtomicBoolean();
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
@@ -158,32 +158,7 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
-            protected void updateDownloadDistribution(final Distribution current, final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
-                set.set(true);
-            }
-
-            @Override
-            protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
-                fail();
-                return null;
-            }
-        };
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
-        assertTrue(set.get());
-    }
-
-    @Test
-    public void testWriteNew() throws Exception {
-        final AtomicBoolean set = new AtomicBoolean();
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
-        final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            @Override
-            protected void updateStreamingDistribution(final Distribution current, final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+            protected void updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
             }
 
@@ -195,6 +170,31 @@ public class CloudFrontDistributionConfigurationTest {
         };
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.write(container, new Distribution(Distribution.STREAMING, true), new DisabledLoginCallback());
+        assertTrue(set.get());
+    }
+
+    @Test
+    public void testWriteNewDownload() throws Exception {
+        final AtomicBoolean set = new AtomicBoolean();
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
+        host.setCredentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            @Override
+            protected void updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+                fail();
+            }
+
+            @Override
+            protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
+                set.set(true);
+                return null;
+            }
+        };
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(set.get());
     }
 
