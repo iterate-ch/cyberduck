@@ -1606,10 +1606,11 @@ public class InfoController extends ToolbarWindowController {
         this.updateCheckbox(otherx, permissions.other.execute);
 
         if(this.numberOfFiles() > 1) {
-            permissionsField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
+            permissionsField.setStringValue(permissions.toString());
+            octalField.setStringValue(permissions.toMode());
         }
         else {
-            Permission permission = permissions.resolve(Permission.EMPTY);
+            final Permission permission = permissions.resolve(Permission.EMPTY);
             permissionsField.setStringValue(permission.toString());
             octalField.setStringValue(permission.getMode());
         }
