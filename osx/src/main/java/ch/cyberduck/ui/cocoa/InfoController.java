@@ -1607,7 +1607,7 @@ public class InfoController extends ToolbarWindowController {
 
         if(this.numberOfFiles() > 1) {
             permissionsField.setStringValue(permissions.toString());
-            octalField.setStringValue(permissions.toMode());
+            octalField.setStringValue(permissions.getMode());
         }
         else {
             final Permission permission = permissions.resolve(Permission.EMPTY);

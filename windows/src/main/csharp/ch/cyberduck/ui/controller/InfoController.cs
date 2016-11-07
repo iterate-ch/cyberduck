@@ -1511,9 +1511,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     view.OtherWrite = GetCheckState(permission.other.write);
                     view.OtherExecute = GetCheckState(permission.other.execute);
 
-                    view.OctalPermissions = permission.toMode();
-                    view.Permissions = permission.toString();
-
+                    if (_infoController.NumberOfFiles > 1)
+                    {
+                        view.OctalPermissions = permission.getMode();
+                        view.Permissions = permission.toString();
+                    }
+                    else
+                    {
+                        view.OctalPermissions = permission.resolve(Permission.EMPTY).getMode();
+                        view.Permissions = permission.resolve(Permission.EMPTY).toString();
+                    }
                     _infoController.TogglePermissionSettings(true);
                 }
 

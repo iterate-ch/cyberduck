@@ -33,7 +33,7 @@ public class PermissionOverwrite {
         this.other = other;
     }
 
-    public String toMode() {
+    public String getMode() {
         StringBuilder builder = new StringBuilder(3);
 
         builder.append(user.mode());
