@@ -14,9 +14,9 @@ public class PermissionOverwriteAction {
     public Permission.Action Resolve(Permission.Action original) {
         Permission.Action result = Permission.Action.none;
 
-        result = SolvePermission(result, Permission.Action.read, read == null ? original.implies(Permission.Action.read) : read.booleanValue());
-        result = SolvePermission(result, Permission.Action.write, write == null ? original.implies(Permission.Action.write) : write.booleanValue());
-        result = SolvePermission(result, Permission.Action.execute, execute == null ? original.implies(Permission.Action.execute) : execute.booleanValue());
+        result = SolvePermission(result, Permission.Action.read, read == null ? original.implies(Permission.Action.read) : read);
+        result = SolvePermission(result, Permission.Action.write, write == null ? original.implies(Permission.Action.write) : write);
+        result = SolvePermission(result, Permission.Action.execute, execute == null ? original.implies(Permission.Action.execute) : execute);
 
         return result;
     }
