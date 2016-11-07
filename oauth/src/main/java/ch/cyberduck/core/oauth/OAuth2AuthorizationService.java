@@ -85,11 +85,6 @@ public class OAuth2AuthorizationService {
 
     private String redirectUri = OOB_REDIRECT_URI;
 
-    /**
-     * Prefix for saved entries in keychain.
-     */
-    private String legacyPrefix;
-
     private final HttpTransport transport;
 
     public OAuth2AuthorizationService(final HttpSession<?> session,
@@ -205,25 +200,13 @@ public class OAuth2AuthorizationService {
         else {
             prefix = bookmark.getProtocol().getDescription();
         }
-        final Tokens tokens = new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
+        return new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
                 bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                 String.format("%s OAuth2 Access Token", prefix)),
                 keychain.getPassword(bookmark.getProtocol().getScheme(),
                         bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                         String.format("%s OAuth2 Refresh Token", prefix)),
                 expiry);
-        if(!tokens.validate()) {
-            if(legacyPrefix != null) {
-                // Not found
-                return new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
-                        String.format("%s OAuth2 Access Token", legacyPrefix)),
-                        keychain.getPassword(bookmark.getProtocol().getScheme(),
-                                bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
-                                String.format("%s OAuth2 Refresh Token", legacyPrefix)), expiry);
-            }
-        }
-        return tokens;
     }
 
     private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
@@ -245,10 +228,7 @@ public class OAuth2AuthorizationService {
     }
 
     private String getPrefix(final Host host) {
-        if(null == legacyPrefix) {
-            return String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
-        }
-        return legacyPrefix;
+        return String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
     }
 
     public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
@@ -258,14 +238,6 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
         this.redirectUri = redirectUri;
-        return this;
-    }
-
-    /**
-     * @param identifier Prefix in saved keychain entries
-     */
-    public OAuth2AuthorizationService withLegacyPrefix(final String identifier) {
-        this.legacyPrefix = identifier;
         return this;
     }
 
