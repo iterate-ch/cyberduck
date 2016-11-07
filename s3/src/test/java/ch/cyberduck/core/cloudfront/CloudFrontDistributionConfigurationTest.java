@@ -25,23 +25,24 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
-import org.jets3t.service.CloudFrontService;
-import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.model.cloudfront.LoggingStatus;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.amazonaws.services.cloudfront.model.StreamingDistribution;
 
 import static org.junit.Assert.*;
 
-@Ignore
+@Category(IntegrationTest.class)
 public class CloudFrontDistributionConfigurationTest {
 
     @Test
@@ -157,12 +158,12 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
-            protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+            protected void updateDownloadDistribution(final Distribution current, final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 set.set(true);
             }
 
             @Override
-            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws ConnectionCanceledException, CloudFrontServiceException {
+            protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
                 fail();
                 return null;
             }
@@ -182,17 +183,17 @@ public class CloudFrontDistributionConfigurationTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
-            protected void updateDistribution(final Distribution current, final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws CloudFrontServiceException, IOException, ConnectionCanceledException {
+            protected void updateStreamingDistribution(final Distribution current, final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
             }
 
             @Override
-            protected org.jets3t.service.model.cloudfront.Distribution createDistribution(final CloudFrontService client, final Path container, final Distribution distribution, final LoggingStatus logging) throws ConnectionCanceledException, CloudFrontServiceException {
+            protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
                 set.set(true);
                 return null;
             }
         };
-        final Path container = new Path("test2.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         configuration.write(container, new Distribution(Distribution.STREAMING, true), new DisabledLoginCallback());
         assertTrue(set.get());
     }
