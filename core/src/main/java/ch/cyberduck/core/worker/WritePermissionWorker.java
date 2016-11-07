@@ -74,16 +74,12 @@ public class WritePermissionWorker extends Worker<Boolean> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            write(session, feature, file);
+            this.write(session, feature, file);
         }
         return true;
     }
 
     protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-
         final Permission merged = permissions.resolve(file.attributes().getPermission());
         if(!merged.equals(file.attributes().getPermission())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
