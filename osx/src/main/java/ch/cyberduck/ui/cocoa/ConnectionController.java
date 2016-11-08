@@ -26,16 +26,15 @@ import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSComboBox;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
-import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -45,10 +44,10 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +55,14 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
 public class ConnectionController extends SheetController {
     private static final Logger log = Logger.getLogger(ConnectionController.class);
+
+    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
@@ -92,21 +94,17 @@ public class ConnectionController extends SheetController {
     @Outlet
     private NSTextField passwordLabel;
     @Outlet
-    private NSTextField pkLabel;
-    @Outlet
     private NSButton keychainCheckbox;
     @Outlet
     private NSButton anonymousCheckbox;
     @Outlet
-    private NSButton pkCheckbox;
+    private NSPopUpButton privateKeyPopup;
     @Outlet
-    private NSOpenPanel publicKeyPanel;
+    private NSOpenPanel privateKeyOpenPanel;
     @Outlet
     private NSTextField urlLabel;
     @Outlet
     private NSPopUpButton encodingPopup;
-    @Outlet
-    private NSPopUpButton connectmodePopup;
     @Outlet
     private NSButton toggleOptionsButton;
 
@@ -216,7 +214,6 @@ public class ConnectionController extends SheetController {
                         protocol.getPasswordPlaceholder()) : StringUtils.EMPTY,
                 LABEL_ATTRIBUTES
         ));
-        connectmodePopup.setEnabled(protocol.getType() == Protocol.Type.ftp);
         if(!protocol.isEncodingConfigurable()) {
             encodingPopup.selectItemWithTitle(DEFAULT);
         }
@@ -229,22 +226,78 @@ public class ConnectionController extends SheetController {
         this.reachable();
     }
 
+    public void setPrivateKeyPopup(final NSPopUpButton button) {
+        this.privateKeyPopup = button;
+        this.privateKeyPopup.setTarget(this.id());
+        final Selector action = Foundation.selector("privateKeyPopupClicked:");
+        this.privateKeyPopup.setAction(action);
+        this.privateKeyPopup.removeAllItems();
+        this.privateKeyPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Local certificate : new OpenSSHPrivateKeyConfigurator().list()) {
+            this.privateKeyPopup.addItemWithTitle(certificate.getAbbreviatedPath());
+            this.privateKeyPopup.lastItem().setRepresentedObject(certificate.getAbsolute());
+        }
+        // Choose another folder
+        this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.privateKeyPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
+        this.privateKeyPopup.lastItem().setTarget(this.id());
+    }
+
+    @Action
+    public void privateKeyPopupClicked(final NSMenuItem sender) {
+        if(sender.title().equals(CHOOSE)) {
+            privateKeyOpenPanel = NSOpenPanel.openPanel();
+            privateKeyOpenPanel.setCanChooseDirectories(false);
+            privateKeyOpenPanel.setCanChooseFiles(true);
+            privateKeyOpenPanel.setAllowsMultipleSelection(false);
+            privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            privateKeyOpenPanel.setPrompt(CHOOSE);
+            privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
+                    Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
+        }
+        else {
+            passField.setEnabled(null == sender.representedObject());
+        }
+    }
+
+    public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+        switch(returncode) {
+            case SheetCallback.DEFAULT_OPTION:
+                final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
+                if(selected != null) {
+                    passField.setEnabled(false);
+                    final Local key = LocalFactory.get(selected.toString());
+                    if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                        privateKeyPopup.addItemWithTitle(key.getAbbreviatedPath());
+                        privateKeyPopup.lastItem().setRepresentedObject(key.getAbsolute());
+                        privateKeyPopup.selectItem(privateKeyPopup.lastItem());
+                    }
+                    else {
+                        privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()));
+                    }
+                }
+                break;
+            case SheetCallback.ALTERNATE_OPTION:
+                passField.setEnabled(true);
+                privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+                break;
+        }
+    }
+
     /**
      * Update Private Key selection
      */
     private void updateIdentity() {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-        pkCheckbox.setEnabled(protocol.getType() == Protocol.Type.sftp);
+        privateKeyPopup.setEnabled(protocol.getType() == Protocol.Type.sftp);
         if(StringUtils.isNotEmpty(hostField.stringValue())) {
             final Credentials credentials = CredentialsConfiguratorFactory.get(protocol).configure(new Host(protocol, hostField.stringValue()));
             if(credentials.isPublicKeyAuthentication()) {
-                // No previously manually selected key
-                pkLabel.setStringValue(credentials.getIdentity().getAbbreviatedPath());
-                pkCheckbox.setState(NSCell.NSOnState);
+                privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
             }
             else {
-                pkCheckbox.setState(NSCell.NSOffState);
-                pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
+                privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
             }
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 usernameField.setStringValue(credentials.getUsername());
@@ -410,12 +463,6 @@ public class ConnectionController extends SheetController {
         this.passwordLabel = passwordLabel;
     }
 
-    public void setPkLabel(NSTextField pkLabel) {
-        this.pkLabel = pkLabel;
-        this.pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
-        this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
-    }
-
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain")
@@ -452,54 +499,6 @@ public class ConnectionController extends SheetController {
         this.updateURLLabel();
     }
 
-    public void setPkCheckbox(NSButton pkCheckbox) {
-        this.pkCheckbox = pkCheckbox;
-        this.pkCheckbox.setTarget(this.id());
-        this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionDidChange:"));
-        this.pkCheckbox.setState(NSCell.NSOffState);
-    }
-
-    @Action
-    public void pkCheckboxSelectionDidChange(final NSButton sender) {
-        log.debug("pkCheckboxSelectionDidChange");
-        if(sender.state() == NSCell.NSOnState) {
-            publicKeyPanel = NSOpenPanel.openPanel();
-            publicKeyPanel.setCanChooseDirectories(false);
-            publicKeyPanel.setCanChooseFiles(true);
-            publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            publicKeyPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
-                    null, this.window(), this.id(),
-                    Foundation.selector("pkSelectionPanelDidEnd:returnCode:contextInfo:"), null);
-        }
-        else {
-            passField.setEnabled(true);
-            pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
-            pkLabel.setTextColor(NSColor.disabledControlTextColor());
-        }
-    }
-
-    public void pkSelectionPanelDidEnd_returnCode_contextInfo(NSOpenPanel window, int returncode, ID contextInfo) {
-        if(NSPanel.NSOKButton == returncode) {
-            final NSObject selected = window.filenames().lastObject();
-            if(selected != null) {
-                pkLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        LocalFactory.get(selected.toString()).getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                pkLabel.setTextColor(NSColor.textColor());
-            }
-            passField.setEnabled(false);
-        }
-        if(NSPanel.NSCancelButton == returncode) {
-            passField.setEnabled(true);
-            pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
-            pkLabel.setTextColor(NSColor.disabledControlTextColor());
-        }
-        publicKeyPanel = null;
-    }
-
     public void setUrlLabel(NSTextField urlLabel) {
         this.urlLabel = urlLabel;
         this.urlLabel.setAllowsEditingTextAttributes(true);
@@ -514,19 +513,6 @@ public class ConnectionController extends SheetController {
         this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
         this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingPopup.selectItemWithTitle(DEFAULT);
-    }
-
-    public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
-        this.connectmodePopup = connectmodePopup;
-        this.connectmodePopup.removeAllItems();
-        for(FTPConnectMode m : FTPConnectMode.values()) {
-            this.connectmodePopup.addItemWithTitle(m.toString());
-            this.connectmodePopup.lastItem().setRepresentedObject(m.name());
-            if(m.equals(FTPConnectMode.unknown)) {
-                this.connectmodePopup.selectItem(this.connectmodePopup.lastItem());
-                this.connectmodePopup.menu().addItem(NSMenuItem.separatorItem());
-            }
-        }
     }
 
     public void setToggleOptionsButton(NSButton b) {
@@ -601,16 +587,13 @@ public class ConnectionController extends SheetController {
                     hostField.stringValue(),
                     NumberUtils.toInt(portField.stringValue(), -1),
                     pathField.stringValue());
-            if(protocol.getType() == Protocol.Type.ftp) {
-                host.setFTPConnectMode(FTPConnectMode.valueOf(connectmodePopup.selectedItem().representedObject()));
-            }
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(usernameField.stringValue());
             credentials.setPassword(passField.stringValue());
             credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
             if(protocol.getScheme().equals(Scheme.sftp)) {
-                if(pkCheckbox.state() == NSCell.NSOnState) {
-                    credentials.setIdentity(LocalFactory.get(pkLabel.stringValue()));
+                if(StringUtils.isNotBlank(privateKeyPopup.selectedItem().representedObject())) {
+                    credentials.setIdentity(LocalFactory.get(privateKeyPopup.selectedItem().representedObject()));
                 }
             }
             if(encodingPopup.titleOfSelectedItem().equals(DEFAULT)) {

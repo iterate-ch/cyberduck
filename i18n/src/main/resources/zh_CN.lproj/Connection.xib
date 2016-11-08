@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <development version="7000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ConnectionController">
             <connections>
                 <outlet property="alertIcon" destination="36" id="69"/>
                 <outlet property="anonymousCheckbox" destination="34" id="70"/>
-                <outlet property="connectmodePopup" destination="50" id="71"/>
                 <outlet property="encodingPopup" destination="46" id="72"/>
                 <outlet property="hostPopup" destination="28" id="73"/>
                 <outlet property="keychainCheckbox" destination="30" id="74"/>
                 <outlet property="passField" destination="18" id="75"/>
                 <outlet property="passwordLabel" destination="12" id="97"/>
                 <outlet property="pathField" destination="58" id="76"/>
-                <outlet property="pkCheckbox" destination="56" id="77"/>
                 <outlet property="pkLabel" destination="54" id="78"/>
                 <outlet property="portField" destination="5" id="79"/>
+                <outlet property="privateKeyPopup" destination="oki-7U-5wp" id="71"/>
                 <outlet property="protocolPopup" destination="24" id="80"/>
                 <outlet property="toggleOptionsButton" destination="62" id="81"/>
                 <outlet property="urlLabel" destination="32" id="82"/>
@@ -32,14 +32,14 @@
         <window title="新建连接" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Connection" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="460" y="215" width="499" height="390"/>
+            <rect key="contentRect" x="460" y="215" width="499" height="350"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
-            <view key="contentView" id="4">
-                <rect key="frame" x="0.0" y="0.0" width="499" height="390"/>
+            <view key="contentView" misplaced="YES" id="4">
+                <rect key="frame" x="0.0" y="0.0" width="499" height="350"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" id="5">
-                        <rect key="frame" x="437" y="314" width="42" height="19"/>
+                        <rect key="frame" x="437" y="274" width="42" height="19"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="6">
                             <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="0" negativeFormat="-0" localizesFormat="NO" hasThousandSeparators="NO" thousandSeparator="," id="7">
@@ -58,7 +58,7 @@
                         </connections>
                     </textField>
                     <textField verticalHuggingPriority="750" id="8">
-                        <rect key="frame" x="386" y="316" width="46" height="14"/>
+                        <rect key="frame" x="386" y="276" width="46" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="端口:" id="9">
                             <font key="font" metaFont="smallSystem"/>
@@ -66,22 +66,8 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button verticalHuggingPriority="750" id="10">
-                        <rect key="frame" x="297" y="152" width="84" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="取消" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeSheet:" target="-2" id="91"/>
-                        </connections>
-                    </button>
                     <textField verticalHuggingPriority="750" id="12">
-                        <rect key="frame" x="18" y="240" width="131" height="14"/>
+                        <rect key="frame" x="18" y="200" width="131" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="密码:" id="13">
                             <font key="font" metaFont="smallSystem"/>
@@ -89,22 +75,8 @@ Gw
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button verticalHuggingPriority="750" tag="1" id="14">
-                        <rect key="frame" x="381" y="152" width="104" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="push" title="连接" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-DQ
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeSheet:" target="-2" id="92"/>
-                        </connections>
-                    </button>
                     <textField verticalHuggingPriority="750" id="16">
-                        <rect key="frame" x="18" y="316" width="131" height="14"/>
+                        <rect key="frame" x="18" y="276" width="131" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="服务器:" id="17">
                             <font key="font" metaFont="smallSystem"/>
@@ -113,7 +85,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <secureTextField verticalHuggingPriority="750" id="18">
-                        <rect key="frame" x="154" y="238" width="325" height="19"/>
+                        <rect key="frame" x="154" y="198" width="325" height="19"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <secureTextFieldCell key="cell" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" id="19">
                             <font key="font" metaFont="smallSystem"/>
@@ -128,7 +100,7 @@ DQ
                         </connections>
                     </secureTextField>
                     <textField verticalHuggingPriority="750" id="22">
-                        <rect key="frame" x="154" y="265" width="325" height="19"/>
+                        <rect key="frame" x="154" y="225" width="325" height="19"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="23">
                             <font key="font" metaFont="smallSystem"/>
@@ -140,7 +112,7 @@ DQ
                         </connections>
                     </textField>
                     <popUpButton verticalHuggingPriority="750" id="24">
-                        <rect key="frame" x="18" y="348" width="464" height="26"/>
+                        <rect key="frame" x="18" y="308" width="464" height="26"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" enabled="NO" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="27" id="25">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -153,7 +125,7 @@ DQ
                         </popUpButtonCell>
                     </popUpButton>
                     <comboBox verticalHuggingPriority="750" id="28">
-                        <rect key="frame" x="154" y="310" width="230" height="22"/>
+                        <rect key="frame" x="154" y="270" width="230" height="22"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <comboBoxCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" numberOfVisibleItems="5" id="29">
                             <font key="font" metaFont="smallSystem"/>
@@ -165,7 +137,7 @@ DQ
                         </connections>
                     </comboBox>
                     <button id="30">
-                        <rect key="frame" x="151" y="196" width="330" height="18"/>
+                        <rect key="frame" x="151" y="156" width="330" height="18"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="添加到钥匙串" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -173,7 +145,7 @@ DQ
                         </buttonCell>
                     </button>
                     <textField verticalHuggingPriority="750" id="32">
-                        <rect key="frame" x="151" y="292" width="305" height="14"/>
+                        <rect key="frame" x="151" y="252" width="305" height="14"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="33">
                             <font key="font" metaFont="smallSystem"/>
@@ -182,7 +154,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <button id="34">
-                        <rect key="frame" x="151" y="214" width="330" height="18"/>
+                        <rect key="frame" x="151" y="174" width="330" height="18"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="匿名登录" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="35">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -190,7 +162,7 @@ DQ
                         </buttonCell>
                     </button>
                     <button id="36">
-                        <rect key="frame" x="461" y="291" width="18" height="18"/>
+                        <rect key="frame" x="461" y="251" width="18" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" imagePosition="only" alignment="left" id="37">
                             <behavior key="behavior" lightByContents="YES"/>
@@ -198,7 +170,7 @@ DQ
                         </buttonCell>
                     </button>
                     <textField verticalHuggingPriority="750" id="38">
-                        <rect key="frame" x="18" y="292" width="131" height="14"/>
+                        <rect key="frame" x="18" y="252" width="131" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="URL:" id="39">
                             <font key="font" metaFont="smallSystem"/>
@@ -206,19 +178,87 @@ DQ
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <box verticalHuggingPriority="750" title="Box" boxType="separator" titlePosition="noTitle" id="40">
-                        <rect key="frame" x="20" y="137" width="459" height="5"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <font key="titleFont" metaFont="system"/>
+                    <textField verticalHuggingPriority="750" id="20">
+                        <rect key="frame" x="18" y="227" width="131" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="用户名:" id="21">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="10">
+                        <rect key="frame" x="297" y="123" width="84" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="取消" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeSheet:" target="-2" id="91"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" misplaced="YES" tag="1" id="14">
+                        <rect key="frame" x="381" y="123" width="104" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="连接" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeSheet:" target="-2" id="92"/>
+                        </connections>
+                    </button>
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="66">
+                        <rect key="frame" x="270" y="128" width="21" height="23"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="helpButtonClicked:" target="-2" id="95"/>
+                        </connections>
+                    </button>
+                    <box verticalHuggingPriority="750" misplaced="YES" boxType="separator" id="40">
+                        <rect key="frame" x="21" y="99" width="459" height="5"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     </box>
-                    <customView id="41" customClass="SNDisclosableView">
-                        <rect key="frame" x="0.0" y="20" width="500" height="111"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" id="62">
+                        <rect key="frame" x="21" y="105" width="13" height="13"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" imagePosition="above" alignment="left" state="on" borderStyle="border" inset="2" id="63">
+                            <behavior key="behavior" pushIn="YES" changeBackground="YES" changeGray="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="toggleDisclosure:" target="41" id="93"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" misplaced="YES" id="64">
+                        <rect key="frame" x="36" y="105" width="446" height="14"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="更多选项" id="65">
+                            <font key="font" metaFont="smallSystemBold"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <action selector="performClick:" target="62" id="94"/>
+                        </connections>
+                    </textField>
+                    <customView misplaced="YES" id="41" customClass="SNDisclosableView">
+                        <rect key="frame" x="0.0" y="0.0" width="500" height="93"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" id="42">
-                                <rect key="frame" x="18" y="42" width="141" height="14"/>
+                            <textField verticalHuggingPriority="750" misplaced="YES" id="42">
+                                <rect key="frame" x="18" y="22" width="131" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="编码:" id="43">
                                     <font key="font" metaFont="smallSystem"/>
@@ -226,10 +266,10 @@ DQ
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" id="46">
-                                <rect key="frame" x="160" y="37" width="322" height="22"/>
+                            <popUpButton verticalHuggingPriority="750" misplaced="YES" id="46">
+                                <rect key="frame" x="152" y="17" width="330" height="22"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" enabled="NO" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="49" id="47">
+                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="49" id="47">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                     <menu key="menu" title="OtherViews" id="48">
@@ -239,21 +279,8 @@ DQ
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <popUpButton verticalHuggingPriority="750" id="50">
-                                <rect key="frame" x="160" y="62" width="322" height="22"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" enabled="NO" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="53" id="51">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <menu key="menu" title="OtherViews" id="52">
-                                        <items>
-                                            <menuItem title=" " state="on" id="53"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
                             <textField verticalHuggingPriority="750" id="54">
-                                <rect key="frame" x="180" y="0.0" width="302" height="14"/>
+                                <rect key="frame" x="180" y="-18" width="302" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="55">
                                     <font key="font" metaFont="smallSystem"/>
@@ -261,16 +288,8 @@ DQ
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button id="56">
-                                <rect key="frame" x="160" y="17" width="321" height="18"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="使用公钥认证" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" enabled="NO" inset="2" id="57">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="smallSystem"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" id="58">
-                                <rect key="frame" x="164" y="91" width="315" height="19"/>
+                            <textField verticalHuggingPriority="750" misplaced="YES" id="58">
+                                <rect key="frame" x="155" y="73" width="324" height="19"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="59">
                                     <font key="font" metaFont="smallSystem"/>
@@ -281,8 +300,8 @@ DQ
                                     <outlet property="nextKeyView" destination="28" id="90"/>
                                 </connections>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="60">
-                                <rect key="frame" x="18" y="93" width="141" height="14"/>
+                            <textField verticalHuggingPriority="750" misplaced="YES" id="60">
+                                <rect key="frame" x="18" y="75" width="131" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="路径:" id="61">
                                     <font key="font" metaFont="smallSystem"/>
@@ -290,66 +309,32 @@ DQ
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField verticalHuggingPriority="750" id="44">
-                                <rect key="frame" x="18" y="67" width="141" height="14"/>
+                            <textField verticalHuggingPriority="750" misplaced="YES" id="bkG-38-Odh">
+                                <rect key="frame" x="18" y="48" width="131" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="连接模式:" id="45">
+                                <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="SSH Private Key:" id="583-6A-Dfi">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <popUpButton verticalHuggingPriority="750" misplaced="YES" id="oki-7U-5wp">
+                                <rect key="frame" x="152" y="43" width="330" height="22"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Whz-3b-ByL">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <menu key="menu" title="OtherViews" id="ubn-VG-6TR"/>
+                                </popUpButtonCell>
+                            </popUpButton>
                         </subviews>
                     </customView>
-                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="62">
-                        <rect key="frame" x="20" y="143" width="13" height="13"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="disclosureTriangle" bezelStyle="disclosure" imagePosition="above" alignment="left" state="on" borderStyle="border" inset="2" id="63">
-                            <behavior key="behavior" pushIn="YES" changeBackground="YES" changeGray="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="toggleDisclosure:" target="41" id="93"/>
-                        </connections>
-                    </button>
-                    <textField verticalHuggingPriority="750" id="64">
-                        <rect key="frame" x="35" y="143" width="446" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
-                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="更多选项" id="65">
-                            <font key="font" metaFont="smallSystemBold"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                        <connections>
-                            <action selector="performClick:" target="62" id="94"/>
-                        </connections>
-                    </textField>
-                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="66">
-                        <rect key="frame" x="270" y="157" width="21" height="23"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="helpButtonClicked:" target="-2" id="95"/>
-                        </connections>
-                    </button>
-                    <textField verticalHuggingPriority="750" id="20">
-                        <rect key="frame" x="18" y="267" width="131" height="14"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="用户名:" id="21">
-                            <font key="font" metaFont="smallSystem"/>
-                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                    </textField>
                 </subviews>
             </view>
             <connections>
                 <outlet property="initialFirstResponder" destination="28" id="86"/>
             </connections>
-            <point key="canvasLocation" x="323.5" y="491"/>
+            <point key="canvasLocation" x="323.5" y="471"/>
         </window>
         <view id="68">
             <rect key="frame" x="0.0" y="0.0" width="125" height="1"/>
