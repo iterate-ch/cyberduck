@@ -22,6 +22,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.stream.ExtendedCollectors;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -70,20 +71,10 @@ public class ReadAclWorker extends Worker<AclOverwrite> {
                 x -> x.getKey(),
                 Collectors.mapping(x -> x.getValue(), Collectors.toList())));
 
-        Map<Acl.User, Acl.Role> acl = aclGraph.entrySet().stream().collect(Collectors.toMap(
+        Map<Acl.User, Acl.Role> acl = aclGraph.entrySet().stream().collect(ExtendedCollectors.toMap(
                 x -> x.getKey(),
                 x -> {
-                    Map<Path, Acl.Role> roleMap = x.getValue();
-                    Set<Map.Entry<Path, Acl.Role>> entrySet = roleMap.entrySet();
-                    Supplier<Stream<Map.Entry<Path, Acl.Role>>> streamSupplier = () -> entrySet.stream();
-                    Supplier<Stream<Acl.Role>> roleSupplier = () -> streamSupplier.get().map(y -> y.getValue()).distinct();
-
-                    try {
-                        roleSupplier.get().count();
-                    } catch (Exception e) {
-                        ; // empty
-                    }
-
+                    Supplier<Stream<Acl.Role>> roleSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
                     return roleSupplier.get().count() == 1 ? roleSupplier.get().findAny().get() : null;
                 }));
 
