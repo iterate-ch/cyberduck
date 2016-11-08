@@ -17,11 +17,7 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
@@ -40,7 +36,7 @@ public class ReadAclWorkerTest {
     public void testRun() throws Exception {
         final ReadAclWorker worker = new ReadAclWorker(Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
             @Override
-            public void cleanup(final List<Acl.UserAndRole> result) {
+            public void cleanup(final AclOverwrite result) {
                 throw new UnsupportedOperationException();
             }
         };
@@ -73,7 +69,7 @@ public class ReadAclWorkerTest {
                         }
                         return super.getFeature(type);
                     }
-                }).size()
+                }).acl.size()
         );
     }
 }

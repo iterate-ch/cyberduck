@@ -19,20 +19,18 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
+public class ReadAclWorker extends Worker<AclOverwrite> {
 
     private final List<Path> files;
 
@@ -41,22 +39,47 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     }
 
     @Override
-    public List<Acl.UserAndRole> run(final Session<?> session) throws BackgroundException {
+    public AclOverwrite run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
-        final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
-        for(Path next : files) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
+
+        Map<Path, List<Acl.UserAndRole>> onlineAcl = files.stream().collect(Collectors.toMap(x -> x, x -> {
+            List<Acl.UserAndRole> acl = null;
+            try {
+                Acl tempAcl = feature.getPermission(x);
+                x.attributes().setAcl(tempAcl);
+                acl = tempAcl.asList();
+            } catch (BackgroundException e) {
+                acl = Collections.emptyList();
             }
-            next.attributes().setAcl(feature.getPermission(next));
-            for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
-                if(updated.contains(acl)) {
-                    continue;
-                }
-                updated.add(acl);
-            }
-        }
-        return updated;
+            return acl;
+        }));
+
+        Supplier<Stream<Map.Entry<Path, Acl.UserAndRole>>> flatAcl = () -> onlineAcl.entrySet().stream().flatMap(
+                x -> x.getValue().stream().map(
+                        y -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), y)));
+
+        Map<Acl.User, Map<Path, Acl.Role>> aclGraph = flatAcl.get().collect(
+                Collectors.groupingBy(
+                        x -> x.getValue().getUser(),
+                        Collectors.toMap(x -> x.getKey(), x -> x.getValue().getRole()))
+        ).entrySet().stream().filter(x -> x.getValue().size() == files.size()
+        ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+
+        Map<Path, List<Acl.UserAndRole>> pathOriginalAcl = flatAcl.get().filter(
+                x -> aclGraph.containsKey(x.getValue().getUser())
+        ).collect(Collectors.groupingBy(
+                x -> x.getKey(),
+                Collectors.mapping(x -> x.getValue(), Collectors.toList())));
+
+        List<Acl.UserAndRole> acl = aclGraph.entrySet().stream().collect(Collectors.mapping(
+                x -> {
+                    Acl.User user = x.getKey();
+                    Supplier<Stream<Acl.Role>> roles = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
+                    Acl.Role role = roles.get().count() == 1 ? roles.get().findAny().get() : null;
+                    return new Acl.UserAndRole(user, role);
+                }, Collectors.toList()));
+
+        return new AclOverwrite(pathOriginalAcl, acl);
     }
 
     @Override
@@ -66,20 +89,20 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     }
 
     @Override
-    public List<Acl.UserAndRole> initialize() {
-        return Collections.emptyList();
+    public AclOverwrite initialize() {
+        return new AclOverwrite(Collections.emptyMap(), Collections.emptyList());
     }
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadAclWorker that = (ReadAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
