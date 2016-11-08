@@ -19,29 +19,21 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WriteAclWorker extends Worker<Boolean> {
-
-    /**
-     * Selected files.
-     */
-    private final List<Path> files;
-
     /**
      * Permissions to apply to files.
      */
-    private final Acl acl;
+    private final AclOverwrite acl;
 
     /**
      * Descend into directories
@@ -50,16 +42,13 @@ public class WriteAclWorker extends Worker<Boolean> {
 
     private final ProgressListener listener;
 
-    public WriteAclWorker(final List<Path> files,
-                          final Acl acl, final boolean recursive,
+    public WriteAclWorker(final AclOverwrite acl, final boolean recursive,
                           final ProgressListener listener) {
-        this(files, acl, new BooleanRecursiveCallback<Acl>(recursive), listener);
+        this(acl, new BooleanRecursiveCallback<Acl>(recursive), listener);
     }
 
-    public WriteAclWorker(final List<Path> files,
-                          final Acl acl, final RecursiveCallback<Acl> callback,
+    public WriteAclWorker(final AclOverwrite acl, final RecursiveCallback<Acl> callback,
                           final ProgressListener listener) {
-        this.files = files;
         this.acl = acl;
         this.callback = callback;
         this.listener = listener;
@@ -68,26 +57,45 @@ public class WriteAclWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
-        for(Path file : files) {
+        for (Map.Entry<Path, List<Acl.UserAndRole>> file : acl.originalAcl.entrySet()) {
             this.write(session, feature, file);
         }
         return true;
     }
 
-    protected void write(final Session<?> session, final AclPermission feature, final Path file) throws BackgroundException {
-        if(this.isCanceled()) {
+    protected void write(final Session<?> session, final AclPermission feature, final Map.Entry<Path, List<Acl.UserAndRole>> aclEntry) throws BackgroundException {
+        Map<Acl.User, Set<String>> configMap = Stream.concat(
+                aclEntry.getValue().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getUser(), "OLD")),
+                acl.acl.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
+        ).collect(Collectors.groupingBy(x -> x.getKey(), Collectors.mapping(x -> x.getValue(), Collectors.toSet())));
+
+        this.write(session, feature, aclEntry.getKey(), configMap);
+    }
+
+    protected void write(final Session<?> session, final AclPermission feature, final Path file, Map<Acl.User, Set<String>> configMap) throws BackgroundException {
+        if (this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), acl));
-        feature.setPermission(file, acl);
-        if(file.isVolume()) {
-            // No recursion when changing container ACL
+
+        Acl originalAcl = file.attributes().getAcl();
+        for (Map.Entry<Acl.User, Set<String>> entry : configMap.entrySet()) {
+            Set<String> config = entry.getValue();
+            Acl.Role value = acl.acl.get(entry.getKey());
+
+            if (!config.contains("NEW"))
+                originalAcl.remove(entry.getKey());
+            else if (value != null)
+                originalAcl.put(entry.getKey(), new HashSet<>(Collections.singletonList(value))); // discard any existing values
         }
-        else if(file.isDirectory()) {
-            if(callback.recurse(file, acl)) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(session, feature, child);
+
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                file.getName(), originalAcl));
+        feature.setPermission(file, originalAcl);
+
+        if (file.isDirectory() && !file.isVolume()) {
+            if (callback.recurse(file, originalAcl)) {
+                for (Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                    this.write(session, feature, child, configMap);
                 }
             }
         }
@@ -98,36 +106,47 @@ public class WriteAclWorker extends Worker<Boolean> {
         return false;
     }
 
+    protected String toString(final Set<Path> files) {
+        if (files.isEmpty()) {
+            return LocaleFactory.localizedString("None");
+        }
+        final String name = files.stream().findAny().get().getName();
+        if (files.size() > 1) {
+            return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
+        }
+        return String.format("%s…", name);
+    }
+
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                this.toString(files), acl);
+                this.toString(acl.originalAcl.keySet()), acl);
     }
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        Set<Path> files = acl.originalAcl.keySet();
         final WriteAclWorker that = (WriteAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
-            return false;
-        }
-        return true;
+        Set<Path> thatFiles = that.acl.originalAcl.keySet();
+        return files != null ? files.equals(thatFiles) : thatFiles == null;
     }
 
     @Override
     public int hashCode() {
+        Set<Path> files = acl.originalAcl.keySet();
         return files != null ? files.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteAclWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(acl.originalAcl.keySet());
         sb.append('}');
         return sb.toString();
     }
