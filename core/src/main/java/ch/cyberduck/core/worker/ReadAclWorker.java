@@ -71,13 +71,12 @@ public class ReadAclWorker extends Worker<AclOverwrite> {
                 x -> x.getKey(),
                 Collectors.mapping(x -> x.getValue(), Collectors.toList())));
 
-        List<Acl.UserAndRole> acl = aclGraph.entrySet().stream().collect(Collectors.mapping(
+        Map<Acl.User, Acl.Role> acl = aclGraph.entrySet().stream().collect(Collectors.toMap(
+                x -> x.getKey(),
                 x -> {
-                    Acl.User user = x.getKey();
                     Supplier<Stream<Acl.Role>> roles = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
-                    Acl.Role role = roles.get().count() == 1 ? roles.get().findAny().get() : null;
-                    return new Acl.UserAndRole(user, role);
-                }, Collectors.toList()));
+                    return roles.get().count() == 1 ? roles.get().findAny().get() : null;
+                }));
 
         return new AclOverwrite(pathOriginalAcl, acl);
     }
@@ -90,7 +89,7 @@ public class ReadAclWorker extends Worker<AclOverwrite> {
 
     @Override
     public AclOverwrite initialize() {
-        return new AclOverwrite(Collections.emptyMap(), Collections.emptyList());
+        return new AclOverwrite(Collections.emptyMap(), Collections.emptyMap());
     }
 
     @Override

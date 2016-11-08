@@ -8,9 +8,9 @@ import java.util.Map;
  */
 public class AclOverwrite {
     public final Map<Path, List<Acl.UserAndRole>> originalAcl;
-    public final List<Acl.UserAndRole> acl;
+    public final Map<Acl.User, Acl.Role> acl;
 
-    public AclOverwrite(Map<Path, List<Acl.UserAndRole>> originalAcl, List<Acl.UserAndRole> acl) {
+    public AclOverwrite(Map<Path, List<Acl.UserAndRole>> originalAcl, Map<Acl.User, Acl.Role> acl) {
         this.originalAcl = originalAcl;
         this.acl = acl;
     }
