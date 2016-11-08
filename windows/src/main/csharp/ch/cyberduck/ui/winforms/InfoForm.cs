@@ -1124,6 +1124,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             rolesColumn.DataPropertyName = AclColumnName.Role.ToString();
             rolesColumn.HeaderText = "Permission";
             rolesColumn.Name = AclColumnName.Role.ToString();
+            rolesColumn.DefaultCellStyle.NullValue = InfoController._multipleFilesString;
 
             aclDataGridView.Columns.Add(userColumn);
             aclDataGridView.Columns.Add(rolesColumn);
