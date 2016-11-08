@@ -2028,13 +2028,13 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
-            controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, session, cache,
+            controller.background(new WorkerBackgroundAction<MetadataOverwrite>(controller, session, cache,
                     new ReadMetadataWorker(files) {
                         @Override
-                        public void cleanup(final Map<String, String> updated) {
+                        public void cleanup(final MetadataOverwrite updated) {
                             final List<Header> m = new ArrayList<Header>();
                             if(updated != null) {
-                                for(Map.Entry<String, String> key : updated.entrySet()) {
+                                for(Map.Entry<String, String> key : updated.metadata.entrySet()) {
                                     m.add(new Header(key.getKey(), key.getValue()));
                                 }
                             }
