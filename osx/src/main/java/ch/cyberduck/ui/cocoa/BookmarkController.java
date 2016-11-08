@@ -634,14 +634,14 @@ public class BookmarkController extends WindowController {
             privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
             privateKeyOpenPanel.setPrompt(CHOOSE);
             privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
-                    Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
+                    Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
             host.getCredentials().setIdentity(LocalFactory.get(sender.representedObject()));
         }
     }
 
-    public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+    public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
                 final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
