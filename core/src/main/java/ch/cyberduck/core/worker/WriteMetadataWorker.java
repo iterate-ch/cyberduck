@@ -19,13 +19,20 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MetadataOverwrite;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,7 +94,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         }
         Map<String, Set<String>> configMap = Stream.concat(
                 pathMapEntry.getValue().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
-                metadata.updated.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
+                metadata.metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
         ).collect(Collectors.groupingBy(x -> x.getKey(), Collectors.mapping(x -> x.getValue(), Collectors.toSet())));
 
         this.write(session, feature, pathMapEntry.getKey(), configMap);
@@ -104,7 +111,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
             Set<String> config = entry.getValue();
-            String value = metadata.updated.get(entry.getKey());
+            String value = metadata.metadata.get(entry.getKey());
 
             if (!config.contains("NEW")) {
                 originalMetadata.remove(entry.getKey());

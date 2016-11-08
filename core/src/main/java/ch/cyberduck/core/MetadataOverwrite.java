@@ -19,10 +19,10 @@ import java.util.Map;
 
 public class MetadataOverwrite {
     public final Map<Path, Map<String, String>> original;
-    public final Map<String, String> updated;
+    public final Map<String, String> metadata;
 
     public MetadataOverwrite(Map<Path, Map<String, String>> original, Map<String, String> updated) {
         this.original = original;
-        this.updated = updated;
+        this.metadata = updated;
     }
 }

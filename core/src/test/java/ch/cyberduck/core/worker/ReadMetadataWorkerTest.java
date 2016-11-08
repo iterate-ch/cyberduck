@@ -1,6 +1,11 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.MetadataOverwrite;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
@@ -50,7 +55,7 @@ public class ReadMetadataWorkerTest {
                 }
                 return super.getFeature(type);
             }
-        }).updated.isEmpty());
+        }).metadata.isEmpty());
     }
 
     @Test
@@ -102,8 +107,8 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.updated.containsKey("key1"));
-        assertFalse(map.updated.containsKey("key2"));
+        assertFalse(map.metadata.containsKey("key1"));
+        assertFalse(map.metadata.containsKey("key2"));
     }
 
     @Test
@@ -163,9 +168,9 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.updated.containsKey("key1"));
-        assertTrue(map.updated.containsKey("key2"));
-        assertNull(map.updated.get("key2"));
-        assertNotNull(map.updated.get("key3"));
+        assertFalse(map.metadata.containsKey("key1"));
+        assertTrue(map.metadata.containsKey("key2"));
+        assertNull(map.metadata.get("key2"));
+        assertNotNull(map.metadata.get("key3"));
     }
 }
