@@ -89,6 +89,7 @@ public class BookmarkController extends WindowController {
      * The bookmark
      */
     private final Host host;
+
     private final AbstractCollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
         @Override
         public void collectionItemRemoved(Host item) {
@@ -159,7 +160,7 @@ public class BookmarkController extends WindowController {
         this.loadBundle();
     }
 
-    public void setProtocolPopup(NSPopUpButton protocolPopup) {
+    public void setProtocolPopup(final NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.setTarget(this.id());
@@ -200,7 +201,7 @@ public class BookmarkController extends WindowController {
         this.reachable();
     }
 
-    public void setEncodingPopup(NSPopUpButton encodingPopup) {
+    public void setEncodingPopup(final NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
@@ -229,7 +230,7 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setNicknameField(NSTextField nicknameField) {
+    public void setNicknameField(final NSTextField nicknameField) {
         this.nicknameField = nicknameField;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("nicknameInputDidChange:"),
@@ -237,7 +238,7 @@ public class BookmarkController extends WindowController {
                 this.nicknameField);
     }
 
-    public void setHostField(NSTextField hostField) {
+    public void setHostField(final NSTextField hostField) {
         this.hostField = hostField;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
@@ -245,7 +246,7 @@ public class BookmarkController extends WindowController {
                 hostField);
     }
 
-    public void setAlertIcon(NSButton alertIcon) {
+    public void setAlertIcon(final NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
@@ -258,7 +259,7 @@ public class BookmarkController extends WindowController {
         ReachabilityFactory.get().diagnose(host);
     }
 
-    public void setPortField(NSTextField portField) {
+    public void setPortField(final NSTextField portField) {
         this.portField = portField;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("portInputDidEndEditing:"),
@@ -274,13 +275,13 @@ public class BookmarkController extends WindowController {
                 this.pathField);
     }
 
-    public void setUrlField(NSTextField urlField) {
+    public void setUrlField(final NSTextField urlField) {
         this.urlField = urlField;
         this.urlField.setAllowsEditingTextAttributes(true);
         this.urlField.setSelectable(true);
     }
 
-    public void setUsernameField(NSTextField usernameField) {
+    public void setUsernameField(final NSTextField usernameField) {
         this.usernameField = usernameField;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameInputDidChange:"),
@@ -288,18 +289,18 @@ public class BookmarkController extends WindowController {
                 this.usernameField);
     }
 
-    public void setUsernameLabel(NSTextField usernameLabel) {
+    public void setUsernameLabel(final NSTextField usernameLabel) {
         this.usernameLabel = usernameLabel;
     }
 
-    public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
+    public void setAnonymousCheckbox(final NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
         this.anonymousCheckbox.setTarget(this.id());
         this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
         this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
 
-    public void setWebURLField(NSTextField webURLField) {
+    public void setWebURLField(final NSTextField webURLField) {
         this.webURLField = webURLField;
         final NSTextFieldCell cell = this.webURLField.cell();
         cell.setPlaceholderString(host.getDefaultWebURL());
@@ -309,7 +310,7 @@ public class BookmarkController extends WindowController {
                 this.webURLField);
     }
 
-    public void setWebUrlImage(NSButton b) {
+    public void setWebUrlImage(final NSButton b) {
         this.webUrlImage = b;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
@@ -363,7 +364,7 @@ public class BookmarkController extends WindowController {
         BrowserLauncherFactory.get().open(host.getWebURL());
     }
 
-    public void setCommentField(NSTextView commentField) {
+    public void setCommentField(final NSTextView commentField) {
         this.commentField = commentField;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
         notificationCenter.addObserver(this.id(),
@@ -372,7 +373,7 @@ public class BookmarkController extends WindowController {
                 this.commentField);
     }
 
-    public void setTimezonePopup(NSPopUpButton timezonePopup) {
+    public void setTimezonePopup(final NSPopUpButton timezonePopup) {
         this.timezonePopup = timezonePopup;
         this.timezonePopup.setTarget(this.id());
         this.timezonePopup.setAction(Foundation.selector("timezonePopupClicked:"));
@@ -396,7 +397,7 @@ public class BookmarkController extends WindowController {
     }
 
     @Action
-    public void timezonePopupClicked(NSPopUpButton sender) {
+    public void timezonePopupClicked(final NSPopUpButton sender) {
         String selected = sender.selectedItem().representedObject();
         String[] ids = TimeZone.getAvailableIDs();
         for(String id : ids) {
@@ -429,7 +430,7 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setTransferPopup(NSPopUpButton transferPopup) {
+    public void setTransferPopup(final NSPopUpButton transferPopup) {
         this.transferPopup = transferPopup;
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
@@ -451,7 +452,7 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setDownloadPathPopup(NSPopUpButton downloadPathPopup) {
+    public void setDownloadPathPopup(final NSPopUpButton downloadPathPopup) {
         this.downloadPathPopup = downloadPathPopup;
         this.downloadPathPopup.setTarget(this.id());
         final Selector action = Foundation.selector("downloadPathPopupClicked:");
@@ -523,7 +524,7 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setToggleOptionsButton(NSButton toggleOptionsButton) {
+    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
         this.toggleOptionsButton = toggleOptionsButton;
     }
 
@@ -552,7 +553,7 @@ public class BookmarkController extends WindowController {
     }
 
     @Override
-    public void setWindow(NSWindow window) {
+    public void setWindow(final NSWindow window) {
         window.setContentMinSize(window.frame().size);
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
@@ -566,11 +567,11 @@ public class BookmarkController extends WindowController {
         super.windowWillClose(notification);
     }
 
-    public void setPkLabel(NSTextField pkLabel) {
+    public void setPkLabel(final NSTextField pkLabel) {
         this.pkLabel = pkLabel;
     }
 
-    public void setPkCheckbox(NSButton pkCheckbox) {
+    public void setPkCheckbox(final NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
         this.pkCheckbox.setTarget(this.id());
         this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
