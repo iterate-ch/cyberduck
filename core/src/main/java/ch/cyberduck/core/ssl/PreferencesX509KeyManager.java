@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -29,12 +30,12 @@ public class PreferencesX509KeyManager extends KeychainX509KeyManager {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    public PreferencesX509KeyManager(final CertificateStore callback) {
-        super(callback);
+    public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback) {
+        super(bookmark, callback);
     }
 
-    public PreferencesX509KeyManager(final CertificateStore callback, final KeyStore store) {
-        super(callback, store);
+    public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
+        super(bookmark, callback, store);
     }
 
     @Override
