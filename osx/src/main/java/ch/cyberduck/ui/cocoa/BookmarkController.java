@@ -50,6 +50,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
@@ -140,6 +141,8 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
     @Outlet
+    private NSPopUpButton certificatePopup;
+    @Outlet
     private NSOpenPanel downloadPathPanel;
     @Outlet
     private NSButton toggleOptionsButton;
@@ -203,7 +206,6 @@ public class BookmarkController extends WindowController {
 
     public void setEncodingPopup(final NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
-        this.encodingPopup.setEnabled(true);
         this.encodingPopup.removeAllItems();
         this.encodingPopup.addItemWithTitle(DEFAULT);
         this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -291,6 +293,33 @@ public class BookmarkController extends WindowController {
 
     public void setUsernameLabel(final NSTextField usernameLabel) {
         this.usernameLabel = usernameLabel;
+    }
+
+    public void setCertificatePopup(final NSPopUpButton certificatePopup) {
+        this.certificatePopup = certificatePopup;
+        this.certificatePopup.setTarget(this.id());
+        final Selector action = Foundation.selector("certificateSelectionChanged:");
+        this.certificatePopup.setAction(action);
+        this.certificatePopup.removeAllItems();
+        this.certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.certificatePopup.menu().addItem(NSMenuItem.separatorItem());
+        for(String certificate : new KeychainX509KeyManager(host).list()) {
+            this.certificatePopup.addItemWithTitle(certificate);
+            this.certificatePopup.lastItem().setRepresentedObject(certificate);
+        }
+        if(null == host.getCredentials().getCertificate()) {
+            this.certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        }
+        else {
+            final String certificate = host.getCredentials().getCertificate();
+            this.certificatePopup.selectItemWithTitle(certificate);
+        }
+    }
+
+    @Action
+    public void certificateSelectionChanged(final NSPopUpButton sender) {
+        host.getCredentials().setCertificate(sender.selectedItem().representedObject());
+        this.itemChanged();
     }
 
     public void setAnonymousCheckbox(final NSButton anonymousCheckbox) {
@@ -754,6 +783,10 @@ public class BookmarkController extends WindowController {
         connectmodePopup.setEnabled(host.getProtocol().getType() == Protocol.Type.ftp);
         if(host.getProtocol().getType() == Protocol.Type.ftp) {
             connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(host.getFTPConnectMode().name()));
+        }
+        certificatePopup.setEnabled(host.getProtocol().getScheme() == Scheme.https);
+        if(host.getProtocol().getScheme() == Scheme.https) {
+            certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(host.getCredentials().getCertificate()));
         }
         pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.sftp);
         if(host.getCredentials().isPublicKeyAuthentication()) {
