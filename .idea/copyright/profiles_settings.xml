@@ -1,0 +1,11 @@
+<component name="CopyrightManager">
+  <settings default="cyberduck">
+    <module2copyright>
+      <element module="Project Files" copyright="cyberduck" />
+    </module2copyright>
+    <LanguageOptions name="JAVA">
+      <option name="fileTypeOverride" value="3" />
+      <option name="fileLocation" value="2" />
+    </LanguageOptions>
+  </settings>
+</component>
