@@ -71,11 +71,6 @@ import java.util.TimeZone;
 public class BookmarkController extends WindowController {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
 
-    /**
-     * Calculate timezone
-     */
-    private static final String AUTO = LocaleFactory.localizedString("Auto");
-
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
@@ -403,17 +398,12 @@ public class BookmarkController extends WindowController {
     @Action
     public void timezonePopupClicked(NSPopUpButton sender) {
         String selected = sender.selectedItem().representedObject();
-        if(selected.equals(AUTO)) {
-            host.setTimezone(null);
-        }
-        else {
-            String[] ids = TimeZone.getAvailableIDs();
-            for(String id : ids) {
-                TimeZone tz;
-                if((tz = TimeZone.getTimeZone(id)).getID().equals(selected)) {
-                    host.setTimezone(tz);
-                    break;
-                }
+        String[] ids = TimeZone.getAvailableIDs();
+        for(String id : ids) {
+            TimeZone tz;
+            if((tz = TimeZone.getTimeZone(id)).getID().equals(selected)) {
+                host.setTimezone(tz);
+                break;
             }
         }
         this.itemChanged();
@@ -785,14 +775,7 @@ public class BookmarkController extends WindowController {
                 timezonePopup.setTitle(UTC.getID());
             }
             else {
-                if(preferences.getBoolean("ftp.timezone.auto")) {
-                    timezonePopup.setTitle(AUTO);
-                }
-                else {
-                    timezonePopup.setTitle(
-                            TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID()
-                    );
-                }
+                timezonePopup.setTitle(TimeZone.getTimeZone(preferences.getProperty("ftp.timezone.default")).getID());
             }
         }
         else {

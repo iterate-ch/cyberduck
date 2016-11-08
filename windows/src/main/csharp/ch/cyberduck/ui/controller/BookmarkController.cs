@@ -45,7 +45,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public const int SmallBookmarkSize = 16;
         public const int MediumBookmarkSize = 32;
         public const int LargeBookmarkSize = 64;
-        private static readonly string Auto = LocaleFactory.localizedString("Auto");
         private static readonly string Default = LocaleFactory.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
@@ -192,21 +191,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedTimezoneEvent()
         {
             string selected = View.SelectedTimezone;
-            if (selected.Equals(Auto))
+            string[] ids = TimeZone.getAvailableIDs();
+            foreach (string id in ids)
             {
-                _host.setTimezone(null);
-            }
-            else
-            {
-                string[] ids = TimeZone.getAvailableIDs();
-                foreach (string id in ids)
+                TimeZone tz;
+                if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
                 {
-                    TimeZone tz;
-                    if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
-                    {
-                        _host.setTimezone(tz);
-                        break;
-                    }
+                    _host.setTimezone(tz);
+                    break;
                 }
             }
             ItemChanged();
@@ -520,15 +512,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (PreferencesFactory.get().getBoolean("ftp.timezone.auto"))
-                    {
-                        View.SelectedTimezone = Auto;
-                    }
-                    else
-                    {
-                        View.SelectedTimezone =
-                            TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID();
-                    }
+                    View.SelectedTimezone =
+                        TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID();
                 }
             }
             else
