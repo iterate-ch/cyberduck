@@ -58,10 +58,10 @@ public class GoogleStorageSessionTest {
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
@@ -83,10 +83,10 @@ public class GoogleStorageSessionTest {
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return "a";
                 }
                 return null;
@@ -106,12 +106,12 @@ public class GoogleStorageSessionTest {
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     // Mark as not expired
                     PreferencesFactory.get().setProperty("googlestorage.oauth.expiry", System.currentTimeMillis() + 60 * 1000);
                     return "a";
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
@@ -129,10 +129,10 @@ public class GoogleStorageSessionTest {
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
