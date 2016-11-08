@@ -62,6 +62,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -158,6 +159,8 @@ public class BookmarkController extends WindowController {
     private NSOpenPanel downloadPathPanel;
     @Outlet
     private NSButton toggleOptionsButton;
+    @Outlet
+    private NSPopUpButton privateKeyPopup;
     @Outlet
     private NSOpenPanel publicKeyPanel;
 
@@ -595,6 +598,49 @@ public class BookmarkController extends WindowController {
         super.windowWillClose(notification);
     }
 
+    public void setPrivateKeyPopup(final NSPopUpButton button) {
+        this.privateKeyPopup = button;
+        this.privateKeyPopup.setTarget(this.id());
+        final Selector action = Foundation.selector("privateKeyPopupClicked:");
+        this.privateKeyPopup.setAction(action);
+        this.privateKeyPopup.removeAllItems();
+        this.privateKeyPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(Local certificate : new OpenSSHPrivateKeyConfigurator().list()) {
+            this.privateKeyPopup.addItemWithTitle(certificate.getAbbreviatedPath());
+            this.privateKeyPopup.lastItem().setRepresentedObject(certificate.getAbsolute());
+        }
+        if(host.getCredentials().isPublicKeyAuthentication()) {
+            final Local key = host.getCredentials().getIdentity();
+            if(-1 == this.privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+                this.privateKeyPopup.addItemWithTitle(key.getAbbreviatedPath());
+                this.privateKeyPopup.lastItem().setRepresentedObject(key.getAbsolute());
+            }
+        }
+        // Choose another folder
+        this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+        this.privateKeyPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
+        this.privateKeyPopup.lastItem().setTarget(this.id());
+    }
+
+    @Action
+    public void privateKeyPopupClicked(final NSMenuItem sender) {
+        if(sender.title().equals(CHOOSE)) {
+            publicKeyPanel = NSOpenPanel.openPanel();
+            publicKeyPanel.setCanChooseDirectories(false);
+            publicKeyPanel.setCanChooseFiles(true);
+            publicKeyPanel.setAllowsMultipleSelection(false);
+            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            publicKeyPanel.setPrompt(CHOOSE);
+            publicKeyPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
+                    Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
+        }
+        else {
+            host.getCredentials().setIdentity(LocalFactory.get(sender.representedObject()));
+        }
+    }
+
     public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
@@ -768,6 +814,13 @@ public class BookmarkController extends WindowController {
         }
         else {
             certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        }
+        privateKeyPopup.setEnabled(host.getProtocol().getType() == Protocol.Type.sftp);
+        if(host.getCredentials().isPublicKeyAuthentication()) {
+            privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(host.getCredentials().getIdentity().getAbsolute()));
+        }
+        else {
+            privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
         }
         final String webURL = host.getWebURL();
         webUrlImage.setToolTip(webURL);
