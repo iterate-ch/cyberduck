@@ -1,5 +1,7 @@
 target
-.idea
+.idea/*
+!.idea/codeStyleSettings.xml
+!.idea/copyright
 *.iml
 
 # Compiled source #
