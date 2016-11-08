@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.stream.ExtendedCollectors;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -86,7 +87,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
                         x -> x.getKey(),
                         Collectors.toMap(x -> x.getValue().getKey(), x -> x.getValue().getValue())));
 
-        Map<String, String> metadata = metaGraph.entrySet().stream().collect(Collectors.toMap(
+        Map<String, String> metadata = metaGraph.entrySet().stream().collect(ExtendedCollectors.toMap(
                 x -> x.getKey(),
                 x -> {
                     Supplier<Stream<String>> valueSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();

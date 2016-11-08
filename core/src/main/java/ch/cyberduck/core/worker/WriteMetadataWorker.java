@@ -109,20 +109,28 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             throw new ConnectionCanceledException();
         }
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
+        boolean anyChanged = false;
         for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
             Set<String> config = entry.getValue();
             String value = metadata.metadata.get(entry.getKey());
 
             if (!config.contains("NEW")) {
+                anyChanged = true;
                 originalMetadata.remove(entry.getKey());
             } else if (value != null) {
-                originalMetadata.put(entry.getKey(), value);
+                String oldValue = config.contains("OLD") ? originalMetadata.get(entry.getKey()) : null;
+                if (value != oldValue) {
+                    anyChanged = true;
+                    originalMetadata.put(entry.getKey(), value);
+                }
             }
         }
 
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                file.getName()));
-        feature.setMetadata(file, originalMetadata);
+        if (anyChanged) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                    file.getName()));
+            feature.setMetadata(file, originalMetadata);
+        }
 
         if (file.isDirectory()) {
             if (callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
