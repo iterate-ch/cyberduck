@@ -89,7 +89,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
         Map<String, String> metadata = metaGraph.entrySet().stream().collect(Collectors.toMap(
                 x -> x.getKey(),
                 x -> {
-                    Supplier<Stream<String>> valueSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue());
+                    Supplier<Stream<String>> valueSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
                     return valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
                 }));
 
