@@ -50,7 +50,7 @@ public class ReadMetadataWorkerTest {
                 }
                 return super.getFeature(type);
             }
-        }).metadata.isEmpty());
+        }).updated.isEmpty());
     }
 
     @Test
@@ -102,8 +102,8 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.metadata.containsKey("key1"));
-        assertFalse(map.metadata.containsKey("key2"));
+        assertFalse(map.updated.containsKey("key1"));
+        assertFalse(map.updated.containsKey("key2"));
     }
 
     @Test
@@ -163,9 +163,9 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.metadata.containsKey("key1"));
-        assertTrue(map.metadata.containsKey("key2"));
-        assertNull(map.metadata.get("key2"));
-        assertNotNull(map.metadata.get("key3"));
+        assertFalse(map.updated.containsKey("key1"));
+        assertTrue(map.updated.containsKey("key2"));
+        assertNull(map.updated.get("key2"));
+        assertNotNull(map.updated.get("key3"));
     }
 }

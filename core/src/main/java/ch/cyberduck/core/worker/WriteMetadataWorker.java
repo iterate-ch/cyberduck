@@ -61,7 +61,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        for (Map.Entry<Path, Map<String, String>> file : metadata.originalMetadata.entrySet()) {
+        for (Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
             if (this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
@@ -87,7 +87,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         }
         Map<String, Set<String>> configMap = Stream.concat(
                 pathMapEntry.getValue().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
-                metadata.metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
+                metadata.updated.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
         ).collect(Collectors.groupingBy(x -> x.getKey(), Collectors.mapping(x -> x.getValue(), Collectors.toSet())));
 
         this.write(session, feature, pathMapEntry.getKey(), configMap);
@@ -104,7 +104,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
             Set<String> config = entry.getValue();
-            String value = metadata.metadata.get(entry.getKey());
+            String value = metadata.updated.get(entry.getKey());
 
             if (!config.contains("NEW")) {
                 originalMetadata.remove(entry.getKey());
@@ -129,7 +129,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                this.toString(metadata.originalMetadata.keySet()));
+                this.toString(metadata.original.keySet()));
     }
 
     @Override
@@ -146,22 +146,22 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
 
-        Set<Path> files = metadata.originalMetadata.keySet();
+        Set<Path> files = metadata.original.keySet();
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        Set<Path> thatFiles = that.metadata.originalMetadata.keySet();
+        Set<Path> thatFiles = that.metadata.original.keySet();
         return files != null ? files.equals(thatFiles) : thatFiles == null;
     }
 
     @Override
     public int hashCode() {
-        Set<Path> files = metadata.originalMetadata.keySet();
+        Set<Path> files = metadata.original.keySet();
         return files != null ? files.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteMetadataWorker{");
-        sb.append("files=").append(metadata.originalMetadata.keySet());
+        sb.append("files=").append(metadata.original.keySet());
         sb.append('}');
         return sb.toString();
     }

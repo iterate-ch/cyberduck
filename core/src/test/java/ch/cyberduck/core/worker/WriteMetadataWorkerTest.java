@@ -97,13 +97,11 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         final Map<String, String> previous = new HashMap<String, String>();
         previous.put("nullified", "hash");
         previous.put("key", "v1");
         p.attributes().setMetadata(previous);
-        files.add(p);
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("nullified", null);
         updated.put("key", "v2");
