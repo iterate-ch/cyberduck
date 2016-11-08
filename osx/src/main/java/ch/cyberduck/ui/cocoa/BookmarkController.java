@@ -156,13 +156,13 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSPopUpButton certificatePopup;
     @Outlet
-    private NSOpenPanel downloadPathPanel;
+    private NSOpenPanel downloadFolderOpenPanel;
     @Outlet
     private NSButton toggleOptionsButton;
     @Outlet
     private NSPopUpButton privateKeyPopup;
     @Outlet
-    private NSOpenPanel publicKeyPanel;
+    private NSOpenPanel privateKeyOpenPanel;
 
     /**
      * @param host The bookmark to edit
@@ -521,12 +521,12 @@ public class BookmarkController extends WindowController {
     @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
         if(sender.title().equals(CHOOSE)) {
-            downloadPathPanel = NSOpenPanel.openPanel();
-            downloadPathPanel.setCanChooseFiles(false);
-            downloadPathPanel.setCanChooseDirectories(true);
-            downloadPathPanel.setAllowsMultipleSelection(false);
-            downloadPathPanel.setCanCreateDirectories(true);
-            downloadPathPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+            downloadFolderOpenPanel = NSOpenPanel.openPanel();
+            downloadFolderOpenPanel.setCanChooseFiles(false);
+            downloadFolderOpenPanel.setCanChooseDirectories(true);
+            downloadFolderOpenPanel.setAllowsMultipleSelection(false);
+            downloadFolderOpenPanel.setCanCreateDirectories(true);
+            downloadFolderOpenPanel.beginSheetForDirectory(null, null, this.window, this.id(),
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
@@ -551,7 +551,7 @@ public class BookmarkController extends WindowController {
         item.setRepresentedObject(folder.getAbsolute());
         item.setImage(IconCacheFactory.<NSImage>get().fileIcon(folder, 16));
         downloadPathPopup.selectItem(item);
-        downloadPathPanel = null;
+        downloadFolderOpenPanel = null;
         this.itemChanged();
     }
 
@@ -627,13 +627,13 @@ public class BookmarkController extends WindowController {
     @Action
     public void privateKeyPopupClicked(final NSMenuItem sender) {
         if(sender.title().equals(CHOOSE)) {
-            publicKeyPanel = NSOpenPanel.openPanel();
-            publicKeyPanel.setCanChooseDirectories(false);
-            publicKeyPanel.setCanChooseFiles(true);
-            publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            publicKeyPanel.setPrompt(CHOOSE);
-            publicKeyPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
+            privateKeyOpenPanel = NSOpenPanel.openPanel();
+            privateKeyOpenPanel.setCanChooseDirectories(false);
+            privateKeyOpenPanel.setCanChooseFiles(true);
+            privateKeyOpenPanel.setAllowsMultipleSelection(false);
+            privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            privateKeyOpenPanel.setPrompt(CHOOSE);
+            privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
@@ -644,7 +644,7 @@ public class BookmarkController extends WindowController {
     public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
-                final NSObject selected = publicKeyPanel.filenames().lastObject();
+                final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
                 if(selected != null) {
                     final Local key = LocalFactory.get(selected.toString());
                     host.getCredentials().setIdentity(key);
