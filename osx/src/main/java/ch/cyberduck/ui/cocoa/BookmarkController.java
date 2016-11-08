@@ -22,8 +22,20 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.*;
-import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSControl;
+import ch.cyberduck.binding.application.NSFont;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSText;
+import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextFieldCell;
+import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -147,10 +159,6 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSButton toggleOptionsButton;
     @Outlet
-    private NSTextField pkLabel;
-    @Outlet
-    private NSButton pkCheckbox;
-    @Outlet
     private NSOpenPanel publicKeyPanel;
 
     /**
@@ -163,8 +171,8 @@ public class BookmarkController extends WindowController {
         this.loadBundle();
     }
 
-    public void setProtocolPopup(final NSPopUpButton protocolPopup) {
-        this.protocolPopup = protocolPopup;
+    public void setProtocolPopup(final NSPopUpButton button) {
+        this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
@@ -172,9 +180,8 @@ public class BookmarkController extends WindowController {
         for(Protocol protocol : ProtocolFactory.getEnabledProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
-            final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(String.valueOf(protocol.hashCode()));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+            this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
+            this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
         }
     }
 
@@ -204,21 +211,18 @@ public class BookmarkController extends WindowController {
         this.reachable();
     }
 
-    public void setEncodingPopup(final NSPopUpButton encodingPopup) {
-        this.encodingPopup = encodingPopup;
-        this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemWithTitle(DEFAULT);
-        this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
-        if(null == host.getEncoding()) {
-            this.encodingPopup.selectItemWithTitle(DEFAULT);
-        }
-        else {
-            this.encodingPopup.selectItemWithTitle(host.getEncoding());
-        }
+    public void setEncodingPopup(final NSPopUpButton button) {
+        this.encodingPopup = button;
         this.encodingPopup.setTarget(this.id());
         final Selector action = Foundation.selector("encodingSelectionChanged:");
         this.encodingPopup.setAction(action);
+        this.encodingPopup.removeAllItems();
+        this.encodingPopup.addItemWithTitle(DEFAULT);
+        this.encodingPopup.menu().addItem(NSMenuItem.separatorItem());
+        for(String encoding : new DefaultCharsetProvider().availableCharsets()) {
+            this.encodingPopup.addItemWithTitle(encoding);
+            this.encodingPopup.lastItem().setRepresentedObject(encoding);
+        }
     }
 
     @Action
@@ -232,24 +236,24 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setNicknameField(final NSTextField nicknameField) {
-        this.nicknameField = nicknameField;
+    public void setNicknameField(final NSTextField field) {
+        this.nicknameField = field;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("nicknameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.nicknameField);
     }
 
-    public void setHostField(final NSTextField hostField) {
-        this.hostField = hostField;
+    public void setHostField(final NSTextField field) {
+        this.hostField = field;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                hostField);
+                field);
     }
 
-    public void setAlertIcon(final NSButton alertIcon) {
-        this.alertIcon = alertIcon;
+    public void setAlertIcon(final NSButton button) {
+        this.alertIcon = button;
         this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
         this.alertIcon.setTarget(this.id());
@@ -261,30 +265,30 @@ public class BookmarkController extends WindowController {
         ReachabilityFactory.get().diagnose(host);
     }
 
-    public void setPortField(final NSTextField portField) {
-        this.portField = portField;
+    public void setPortField(final NSTextField field) {
+        this.portField = field;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("portInputDidEndEditing:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.portField);
     }
 
-    public void setPathField(NSTextField pathField) {
-        this.pathField = pathField;
+    public void setPathField(NSTextField field) {
+        this.pathField = field;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("pathInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.pathField);
     }
 
-    public void setUrlField(final NSTextField urlField) {
-        this.urlField = urlField;
+    public void setUrlField(final NSTextField field) {
+        this.urlField = field;
         this.urlField.setAllowsEditingTextAttributes(true);
         this.urlField.setSelectable(true);
     }
 
-    public void setUsernameField(final NSTextField usernameField) {
-        this.usernameField = usernameField;
+    public void setUsernameField(final NSTextField field) {
+        this.usernameField = field;
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -295,8 +299,8 @@ public class BookmarkController extends WindowController {
         this.usernameLabel = usernameLabel;
     }
 
-    public void setCertificatePopup(final NSPopUpButton certificatePopup) {
-        this.certificatePopup = certificatePopup;
+    public void setCertificatePopup(final NSPopUpButton button) {
+        this.certificatePopup = button;
         this.certificatePopup.setTarget(this.id());
         final Selector action = Foundation.selector("certificateSelectionChanged:");
         this.certificatePopup.setAction(action);
@@ -307,13 +311,6 @@ public class BookmarkController extends WindowController {
             this.certificatePopup.addItemWithTitle(certificate);
             this.certificatePopup.lastItem().setRepresentedObject(certificate);
         }
-        if(null == host.getCredentials().getCertificate()) {
-            this.certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
-        }
-        else {
-            final String certificate = host.getCredentials().getCertificate();
-            this.certificatePopup.selectItemWithTitle(certificate);
-        }
     }
 
     @Action
@@ -322,15 +319,15 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setAnonymousCheckbox(final NSButton anonymousCheckbox) {
-        this.anonymousCheckbox = anonymousCheckbox;
+    public void setAnonymousCheckbox(final NSButton button) {
+        this.anonymousCheckbox = button;
         this.anonymousCheckbox.setTarget(this.id());
         this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
         this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
 
-    public void setWebURLField(final NSTextField webURLField) {
-        this.webURLField = webURLField;
+    public void setWebURLField(final NSTextField field) {
+        this.webURLField = field;
         final NSTextFieldCell cell = this.webURLField.cell();
         cell.setPlaceholderString(host.getDefaultWebURL());
         notificationCenter.addObserver(this.id(),
@@ -339,8 +336,8 @@ public class BookmarkController extends WindowController {
                 this.webURLField);
     }
 
-    public void setWebUrlImage(final NSButton b) {
-        this.webUrlImage = b;
+    public void setWebUrlImage(final NSButton button) {
+        this.webUrlImage = button;
         this.webUrlImage.setTarget(this.id());
         this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
         this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
@@ -393,8 +390,8 @@ public class BookmarkController extends WindowController {
         BrowserLauncherFactory.get().open(host.getWebURL());
     }
 
-    public void setCommentField(final NSTextView commentField) {
-        this.commentField = commentField;
+    public void setCommentField(final NSTextView field) {
+        this.commentField = field;
         this.commentField.setFont(NSFont.userFixedPitchFontOfSize(11f));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("commentInputDidChange:"),
@@ -402,8 +399,8 @@ public class BookmarkController extends WindowController {
                 this.commentField);
     }
 
-    public void setTimezonePopup(final NSPopUpButton timezonePopup) {
-        this.timezonePopup = timezonePopup;
+    public void setTimezonePopup(final NSPopUpButton button) {
+        this.timezonePopup = button;
         this.timezonePopup.setTarget(this.id());
         this.timezonePopup.setAction(Foundation.selector("timezonePopupClicked:"));
         this.timezonePopup.removeAllItems();
@@ -439,8 +436,8 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
-        this.connectmodePopup = connectmodePopup;
+    public void setConnectmodePopup(NSPopUpButton button) {
+        this.connectmodePopup = button;
         this.connectmodePopup.setTarget(this.id());
         this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
         this.connectmodePopup.removeAllItems();
@@ -459,8 +456,8 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setTransferPopup(final NSPopUpButton transferPopup) {
-        this.transferPopup = transferPopup;
+    public void setTransferPopup(final NSPopUpButton button) {
+        this.transferPopup = button;
         this.transferPopup.setTarget(this.id());
         this.transferPopup.setAction(Foundation.selector("transferPopupClicked:"));
         this.transferPopup.removeAllItems();
@@ -481,8 +478,8 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setDownloadPathPopup(final NSPopUpButton downloadPathPopup) {
-        this.downloadPathPopup = downloadPathPopup;
+    public void setDownloadPathPopup(final NSPopUpButton button) {
+        this.downloadPathPopup = button;
         this.downloadPathPopup.setTarget(this.id());
         final Selector action = Foundation.selector("downloadPathPopupClicked:");
         this.downloadPathPopup.setAction(action);
@@ -536,12 +533,14 @@ public class BookmarkController extends WindowController {
         }
     }
 
-    public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-        if(returncode == SheetCallback.DEFAULT_OPTION) {
-            final NSObject selected = sheet.filenames().lastObject();
-            if(selected != null) {
-                host.setDownloadFolder(LocalFactory.get(selected.toString()));
-            }
+    public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+        switch(returncode) {
+            case SheetCallback.DEFAULT_OPTION:
+                final NSObject selected = sheet.filenames().lastObject();
+                if(selected != null) {
+                    host.setDownloadFolder(LocalFactory.get(selected.toString()));
+                }
+                break;
         }
         final NSMenuItem item = downloadPathPopup.itemAtIndex(new NSInteger(0));
         final Local folder = new DownloadDirectoryFinder().find(host);
@@ -596,43 +595,18 @@ public class BookmarkController extends WindowController {
         super.windowWillClose(notification);
     }
 
-    public void setPkLabel(final NSTextField pkLabel) {
-        this.pkLabel = pkLabel;
-    }
-
-    public void setPkCheckbox(final NSButton pkCheckbox) {
-        this.pkCheckbox = pkCheckbox;
-        this.pkCheckbox.setTarget(this.id());
-        this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
-    }
-
-    @Action
-    public void pkCheckboxSelectionChanged(final NSButton sender) {
-        if(sender.state() == NSCell.NSOnState) {
-            publicKeyPanel = NSOpenPanel.openPanel();
-            publicKeyPanel.setCanChooseDirectories(false);
-            publicKeyPanel.setCanChooseFiles(true);
-            publicKeyPanel.setAllowsMultipleSelection(false);
-            publicKeyPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            publicKeyPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-            publicKeyPanel.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(), null, this.window(), this.id(),
-                    Foundation.selector("publicKeyPanelDidEnd:returnCode:contextInfo:"), null);
-        }
-        else {
-            this.publicKeyPanelDidEnd_returnCode_contextInfo(publicKeyPanel, NSPanel.NSCancelButton, null);
-        }
-    }
-
-    public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
-        if(returncode == NSPanel.NSOKButton) {
-            final NSObject selected = publicKeyPanel.filenames().lastObject();
-            if(selected != null) {
-                final Local key = LocalFactory.get(selected.toString());
-                host.getCredentials().setIdentity(key);
-            }
-        }
-        if(returncode == NSPanel.NSCancelButton) {
-            host.getCredentials().setIdentity(null);
+    public void publicKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+        switch(returncode) {
+            case SheetCallback.DEFAULT_OPTION:
+                final NSObject selected = publicKeyPanel.filenames().lastObject();
+                if(selected != null) {
+                    final Local key = LocalFactory.get(selected.toString());
+                    host.getCredentials().setIdentity(key);
+                }
+                break;
+            case SheetCallback.ALTERNATE_OPTION:
+                host.getCredentials().setIdentity(null);
+                break;
         }
         this.init();
         this.itemChanged();
@@ -775,29 +749,25 @@ public class BookmarkController extends WindowController {
         ));
         anonymousCheckbox.setEnabled(host.getProtocol().isAnonymousConfigurable());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-        protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode()))
-        );
+        protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode())));
         transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(host.getTransfer().name()));
         encodingPopup.setEnabled(host.getProtocol().isEncodingConfigurable());
+        if(null == host.getEncoding()) {
+            encodingPopup.selectItemWithTitle(DEFAULT);
+        }
+        else {
+            encodingPopup.selectItemAtIndex(encodingPopup.indexOfItemWithRepresentedObject(host.getEncoding()));
+        }
         connectmodePopup.setEnabled(host.getProtocol().getType() == Protocol.Type.ftp);
         if(host.getProtocol().getType() == Protocol.Type.ftp) {
             connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(host.getFTPConnectMode().name()));
         }
         certificatePopup.setEnabled(host.getProtocol().getScheme() == Scheme.https);
-        if(host.getProtocol().getScheme() == Scheme.https) {
+        if(host.getCredentials().isCertificateAuthentication()) {
             certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(host.getCredentials().getCertificate()));
         }
-        pkCheckbox.setEnabled(host.getProtocol().getType() == Protocol.Type.sftp);
-        if(host.getCredentials().isPublicKeyAuthentication()) {
-            pkCheckbox.setState(NSCell.NSOnState);
-            this.updateField(pkLabel, host.getCredentials().getIdentity().getAbbreviatedPath(), TRUNCATE_MIDDLE_ATTRIBUTES);
-            pkLabel.setTextColor(NSColor.textColor());
-        }
         else {
-            pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
-            pkLabel.setTextColor(NSColor.disabledControlTextColor());
+            certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
         }
         final String webURL = host.getWebURL();
         webUrlImage.setToolTip(webURL);
