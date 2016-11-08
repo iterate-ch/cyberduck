@@ -2504,7 +2504,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public string Role
             {
-                get { return getRole().getName(); }
+                get { return getRole()?.getName(); }
                 set
                 {
                     getRole().setName(value);
