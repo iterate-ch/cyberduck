@@ -159,18 +159,21 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        return Objects.equals(metadata, that.metadata);
+        if(files != null ? !files.equals(that.files) : that.files != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metadata);
+        return files != null ? files.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteMetadataWorker{");
-        sb.append("files=").append(metadata.original.keySet());
+        sb.append("files=").append(files);
         sb.append('}');
         return sb.toString();
     }
