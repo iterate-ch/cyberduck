@@ -816,4 +816,12 @@ public class BookmarkController extends WindowController {
             timezonePopup.setTitle(host.getTimezone().getID());
         }
     }
+
+    @Override
+    @Action
+    public void helpButtonClicked(final NSButton sender) {
+        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
+        site.append("/howto/bookmarks");
+        BrowserLauncherFactory.get().open(site.toString());
+    }
 }
