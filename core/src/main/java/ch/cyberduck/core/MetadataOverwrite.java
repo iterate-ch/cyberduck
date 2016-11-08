@@ -16,6 +16,7 @@ package ch.cyberduck.core;
  */
 
 import java.util.Map;
+import java.util.Objects;
 
 public class MetadataOverwrite {
     public final Map<Path, Map<String, String>> original;
@@ -24,5 +25,22 @@ public class MetadataOverwrite {
     public MetadataOverwrite(Map<Path, Map<String, String>> original, Map<String, String> updated) {
         this.original = original;
         this.metadata = updated;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MetadataOverwrite that = (MetadataOverwrite) o;
+        return Objects.equals(metadata, that.metadata);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metadata);
     }
 }

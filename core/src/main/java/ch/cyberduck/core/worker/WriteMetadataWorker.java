@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,8 +69,8 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        for (Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
-            if (this.isCanceled()) {
+        for(Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
+            if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             this.write(session, feature, file);
@@ -78,18 +79,18 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     }
 
     protected String toString(final Set<Path> files) {
-        if (files.isEmpty()) {
+        if(files.isEmpty()) {
             return LocaleFactory.localizedString("None");
         }
         final String name = files.stream().findAny().get().getName();
-        if (files.size() > 1) {
+        if(files.size() > 1) {
             return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
         }
         return String.format("%s…", name);
     }
 
     protected void write(final Session<?> session, final Headers feature, final Map.Entry<Path, Map<String, String>> pathMapEntry) throws BackgroundException {
-        if (this.isCanceled()) {
+        if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
         Map<String, Set<String>> configMap = Stream.concat(
@@ -105,36 +106,37 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             final Headers feature,
             final Path file,
             final Map<String, Set<String>> configMap) throws BackgroundException {
-        if (this.isCanceled()) {
+        if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         boolean anyChanged = false;
-        for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
+        for(Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
             Set<String> config = entry.getValue();
             String value = metadata.metadata.get(entry.getKey());
 
-            if (!config.contains("NEW")) {
+            if(!config.contains("NEW")) {
                 anyChanged = true;
                 originalMetadata.remove(entry.getKey());
-            } else if (value != null) {
+            }
+            else if(value != null) {
                 String oldValue = config.contains("OLD") ? originalMetadata.get(entry.getKey()) : null;
-                if (value != oldValue) {
+                if(!Objects.equals(value, oldValue)) {
                     anyChanged = true;
                     originalMetadata.put(entry.getKey(), value);
                 }
             }
         }
 
-        if (anyChanged) {
+        if(anyChanged) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setMetadata(file, originalMetadata);
         }
 
-        if (file.isDirectory()) {
-            if (callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
-                for (Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+        if(file.isDirectory()) {
+            if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
+                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child, configMap);
                 }
             }
@@ -154,23 +156,19 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        Set<Path> files = metadata.original.keySet();
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        Set<Path> thatFiles = that.metadata.original.keySet();
-        return files != null ? files.equals(thatFiles) : thatFiles == null;
+        return Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        Set<Path> files = metadata.original.keySet();
-        return files != null ? files.hashCode() : 0;
+        return Objects.hash(metadata);
     }
 
     @Override
