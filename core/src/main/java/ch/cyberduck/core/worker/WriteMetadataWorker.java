@@ -30,7 +30,9 @@ import ch.cyberduck.core.features.Headers;
 
 import java.text.MessageFormat;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -38,6 +40,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
+
+    /**
+     * Selected files.
+     */
+    private final List<Path> files;
 
     /**
      * The updated metadata to apply
@@ -60,6 +67,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public WriteMetadataWorker(final MetadataOverwrite metadata,
                                final RecursiveCallback<String> callback,
                                final ProgressListener listener) {
+        this.files = new ArrayList<Path>(metadata.original.keySet());
         this.metadata = metadata;
         this.callback = callback;
         this.listener = listener;
@@ -76,17 +84,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             this.write(session, feature, file);
         }
         return true;
-    }
-
-    protected String toString(final Set<Path> files) {
-        if(files.isEmpty()) {
-            return LocaleFactory.localizedString("None");
-        }
-        final String name = files.stream().findAny().get().getName();
-        if(files.size() > 1) {
-            return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
-        }
-        return String.format("%s…", name);
     }
 
     protected void write(final Session<?> session, final Headers feature, final Map.Entry<Path, Map<String, String>> pathMapEntry) throws BackgroundException {
@@ -145,8 +142,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                this.toString(metadata.original.keySet()));
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"), this.toString(files));
     }
 
     @Override
