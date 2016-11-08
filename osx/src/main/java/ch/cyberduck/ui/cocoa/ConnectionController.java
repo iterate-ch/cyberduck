@@ -71,6 +71,50 @@ public class ConnectionController extends SheetController {
     private final Preferences preferences
             = PreferencesFactory.get();
 
+    private final ProxyController hostFieldModel = new HostFieldModel();
+
+    @Outlet
+    private NSPopUpButton protocolPopup;
+    @Outlet
+    private NSComboBox hostField;
+    @Outlet
+    private NSButton alertIcon;
+    @Outlet
+    private NSTextField pathField;
+    @Outlet
+    private NSTextField portField;
+    @Outlet
+    private NSTextField usernameField;
+    @Outlet
+    private NSTextField passField;
+    @Outlet
+    private NSTextField usernameLabel;
+    @Outlet
+    private NSTextField passwordLabel;
+    @Outlet
+    private NSTextField pkLabel;
+    @Outlet
+    private NSButton keychainCheckbox;
+    @Outlet
+    private NSButton anonymousCheckbox;
+    @Outlet
+    private NSButton pkCheckbox;
+    @Outlet
+    private NSOpenPanel publicKeyPanel;
+    @Outlet
+    private NSTextField urlLabel;
+    @Outlet
+    private NSPopUpButton encodingPopup;
+    @Outlet
+    private NSPopUpButton connectmodePopup;
+    @Outlet
+    private NSButton toggleOptionsButton;
+
+    public ConnectionController(final WindowController parent) {
+        super(parent);
+        this.loadBundle();
+    }
+
     @Override
     public void invalidate() {
         hostField.setDelegate(null);
@@ -82,11 +126,6 @@ public class ConnectionController extends SheetController {
     @Override
     public boolean isSingleton() {
         return true;
-    }
-
-    public ConnectionController(final WindowController parent) {
-        super(parent);
-        this.loadBundle();
     }
 
     @Override
@@ -114,9 +153,6 @@ public class ConnectionController extends SheetController {
         window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
         super.setWindow(window);
     }
-
-    @Outlet
-    private NSPopUpButton protocolPopup;
 
     public void setProtocolPopup(NSPopUpButton protocolPopup) {
         this.protocolPopup = protocolPopup;
@@ -216,9 +252,6 @@ public class ConnectionController extends SheetController {
         }
     }
 
-    private NSComboBox hostField;
-    private final ProxyController hostFieldModel = new HostFieldModel();
-
     public void setHostPopup(NSComboBox hostPopup) {
         this.hostField = hostPopup;
         this.hostField.setTarget(this.id());
@@ -229,20 +262,6 @@ public class ConnectionController extends SheetController {
                 Foundation.selector("hostFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.hostField);
-    }
-
-    private static class HostFieldModel extends ProxyController implements NSComboBox.DataSource {
-        @Override
-        public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
-            return new NSInteger(BookmarkCollection.defaultCollection().size());
-        }
-
-        @Override
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(
-                    BookmarkNameProvider.toString(BookmarkCollection.defaultCollection().get(row.intValue()))
-            );
-        }
     }
 
     @Action
@@ -318,9 +337,6 @@ public class ConnectionController extends SheetController {
         }
     }
 
-    @Outlet
-    private NSButton alertIcon;
-
     public void setAlertIcon(NSButton alertIcon) {
         this.alertIcon = alertIcon;
         this.alertIcon.setTarget(this.id());
@@ -331,9 +347,6 @@ public class ConnectionController extends SheetController {
     public void launchNetworkAssistant(final NSButton sender) {
         ReachabilityFactory.get().diagnose(HostParser.parse(urlLabel.stringValue()));
     }
-
-    @Outlet
-    private NSTextField pathField;
 
     public void setPathField(NSTextField pathField) {
         this.pathField = pathField;
@@ -346,9 +359,6 @@ public class ConnectionController extends SheetController {
     public void pathInputDidEndEditing(final NSNotification sender) {
         this.updateURLLabel();
     }
-
-    @Outlet
-    private NSTextField portField;
 
     public void setPortField(NSTextField portField) {
         this.portField = portField;
@@ -366,9 +376,6 @@ public class ConnectionController extends SheetController {
         this.updateURLLabel();
         this.reachable();
     }
-
-    @Outlet
-    private NSTextField usernameField;
 
     public void setUsernameField(NSTextField usernameField) {
         this.usernameField = usernameField;
@@ -391,38 +398,23 @@ public class ConnectionController extends SheetController {
         this.readPasswordFromKeychain();
     }
 
-    @Outlet
-    private NSTextField passField;
-
     public void setPassField(NSTextField passField) {
         this.passField = passField;
     }
-
-    @Outlet
-    private NSTextField usernameLabel;
 
     public void setUsernameLabel(NSTextField usernameLabel) {
         this.usernameLabel = usernameLabel;
     }
 
-    @Outlet
-    private NSTextField passwordLabel;
-
     public void setPasswordLabel(NSTextField passwordLabel) {
         this.passwordLabel = passwordLabel;
     }
-
-    @Outlet
-    private NSTextField pkLabel;
 
     public void setPkLabel(NSTextField pkLabel) {
         this.pkLabel = pkLabel;
         this.pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
         this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
     }
-
-    @Outlet
-    private NSButton keychainCheckbox;
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
@@ -436,9 +428,6 @@ public class ConnectionController extends SheetController {
         final boolean enabled = sender.state() == NSCell.NSOnState;
         preferences.setProperty("connection.login.addKeychain", enabled);
     }
-
-    @Outlet
-    private NSButton anonymousCheckbox;
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
         this.anonymousCheckbox = anonymousCheckbox;
@@ -463,17 +452,12 @@ public class ConnectionController extends SheetController {
         this.updateURLLabel();
     }
 
-    @Outlet
-    private NSButton pkCheckbox;
-
     public void setPkCheckbox(NSButton pkCheckbox) {
         this.pkCheckbox = pkCheckbox;
         this.pkCheckbox.setTarget(this.id());
         this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionDidChange:"));
         this.pkCheckbox.setState(NSCell.NSOffState);
     }
-
-    private NSOpenPanel publicKeyPanel;
 
     @Action
     public void pkCheckboxSelectionDidChange(final NSButton sender) {
@@ -516,17 +500,11 @@ public class ConnectionController extends SheetController {
         publicKeyPanel = null;
     }
 
-    @Outlet
-    private NSTextField urlLabel;
-
     public void setUrlLabel(NSTextField urlLabel) {
         this.urlLabel = urlLabel;
         this.urlLabel.setAllowsEditingTextAttributes(true);
         this.urlLabel.setSelectable(true);
     }
-
-    @Outlet
-    private NSPopUpButton encodingPopup;
 
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
@@ -537,9 +515,6 @@ public class ConnectionController extends SheetController {
         this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingPopup.selectItemWithTitle(DEFAULT);
     }
-
-    @Outlet
-    private NSPopUpButton connectmodePopup;
 
     public void setConnectmodePopup(NSPopUpButton connectmodePopup) {
         this.connectmodePopup = connectmodePopup;
@@ -553,9 +528,6 @@ public class ConnectionController extends SheetController {
             }
         }
     }
-
-    @Outlet
-    private NSButton toggleOptionsButton;
 
     public void setToggleOptionsButton(NSButton b) {
         this.toggleOptionsButton = b;
@@ -650,5 +622,19 @@ public class ConnectionController extends SheetController {
             ((BrowserController) parent).mount(host);
         }
         preferences.setProperty("connection.toggle.options", this.toggleOptionsButton.state());
+    }
+
+    private static class HostFieldModel extends ProxyController implements NSComboBox.DataSource {
+        @Override
+        public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
+            return new NSInteger(BookmarkCollection.defaultCollection().size());
+        }
+
+        @Override
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(
+                    BookmarkNameProvider.toString(BookmarkCollection.defaultCollection().get(row.intValue()))
+            );
+        }
     }
 }
