@@ -88,6 +88,11 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if (this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
+        // this does several things,
+        // first: Maps all entries from pathMapEntry (from MetadataOverwrite.originalMetadata) to their Metadata Key and the value "OLD"
+        // second: Maps all entries from MetadataOverwrite.metadata to their Metadata Key and the value "NEW"
+        // last: Group everything by Metadata Key and creating a set of NEW/OLD Values. i.e.:
+        // {{Key1, {NEW}}, {Key2, {NEW, OLD}}, {Key3, {OLD}}}
         Map<String, Set<String>> configMap = Stream.concat(
                 pathMapEntry.getValue().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
                 metadata.metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
@@ -104,17 +109,24 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if (this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
+        // read online metadata (storing non-edited metadata entries)
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         boolean anyChanged = false;
+        // iterate through all configMap entries (created above)
         for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
+            // get set of OLD/NEW Values for current metadata key
             Set<String> config = entry.getValue();
+            // retrieve value of current metadata key in metadataoverwrite.
             String value = metadata.metadata.get(entry.getKey());
 
+            // if map does not contain a "NEW" value it is considered REMOVED
             if (!config.contains("NEW")) {
                 anyChanged = true;
                 originalMetadata.remove(entry.getKey());
             } else if (value != null) {
+                // otherwise and if value is not null it is considered CHANGED
                 String oldValue = config.contains("OLD") ? originalMetadata.get(entry.getKey()) : null;
+                // if new value and old value are equal it is considered UNCHANGED
                 if (value != oldValue) {
                     anyChanged = true;
                     originalMetadata.put(entry.getKey(), value);
@@ -122,6 +134,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             }
         }
 
+        // if anything has changed save metadata, otherwise continue and do for everything underneath this directory
         if (anyChanged) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
