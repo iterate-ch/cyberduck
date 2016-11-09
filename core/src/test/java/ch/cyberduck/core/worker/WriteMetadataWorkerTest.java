@@ -92,7 +92,7 @@ public class WriteMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                            throw new UnsupportedOperationException();
+                            return file.attributes().getMetadata();
                         }
 
                         @Override
@@ -141,7 +141,7 @@ public class WriteMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                            throw new UnsupportedOperationException();
+                            return file.attributes().getMetadata();
                         }
 
                         @Override
