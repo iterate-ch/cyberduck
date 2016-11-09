@@ -52,7 +52,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public WritePermissionWorker(final List<Path> files,
                                  final Permission permission, final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, permission, new BooleanRecursiveCallback(recursive), listener);
+        this(files, permission, new BooleanRecursiveCallback<Permission>(recursive), listener);
     }
 
     public WritePermissionWorker(final List<Path> files,
@@ -68,6 +68,9 @@ public class WritePermissionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;

@@ -58,7 +58,6 @@ import com.amazonaws.services.kms.model.KeyListEntry;
 public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
-    private final Host host;
     private final S3Session session;
 
     private final Preferences preferences = PreferencesFactory.get();
@@ -74,7 +73,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
-        host = session.getHost();
         this.session = session;
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
@@ -84,7 +82,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(host);
+        final Proxy proxy = ProxyFactory.get().find(session.getHost());
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
@@ -101,11 +99,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         final LoginOptions options = new LoginOptions();
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(host, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            login.validate(session.getHost(), LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(host, host.getCredentials(),
+            prompt.prompt(session.getHost(), session.getHost().getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
         }
@@ -163,12 +161,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                             new com.amazonaws.auth.AWSCredentials() {
                                 @Override
                                 public String getAWSAccessKeyId() {
-                                    return host.getCredentials().getUsername();
+                                    return session.getHost().getCredentials().getUsername();
                                 }
 
                                 @Override
                                 public String getAWSSecretKey() {
-                                    return host.getCredentials().getPassword();
+                                    return session.getHost().getCredentials().getPassword();
                                 }
                             }, configuration
                     );

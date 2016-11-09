@@ -65,6 +65,9 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;

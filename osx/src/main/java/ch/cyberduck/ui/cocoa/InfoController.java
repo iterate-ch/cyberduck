@@ -52,6 +52,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -70,17 +71,7 @@ import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.BooleanRecursiveCallback;
-import ch.cyberduck.core.worker.CalculateSizeWorker;
-import ch.cyberduck.core.worker.ReadAclWorker;
-import ch.cyberduck.core.worker.ReadMetadataWorker;
-import ch.cyberduck.core.worker.ReadPermissionWorker;
-import ch.cyberduck.core.worker.ReadSizeWorker;
-import ch.cyberduck.core.worker.WriteAclWorker;
-import ch.cyberduck.core.worker.WriteEncryptionWorker;
-import ch.cyberduck.core.worker.WriteMetadataWorker;
-import ch.cyberduck.core.worker.WritePermissionWorker;
-import ch.cyberduck.core.worker.WriteRedundancyWorker;
+import ch.cyberduck.core.worker.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -216,15 +207,11 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSTextField bucketAnalyticsSetupUrlField;
     @Outlet
+    private NSButton bucketTransferAccelerationButton;
+    @Outlet
     private NSButton bucketVersioningButton;
     @Outlet
     private NSButton bucketMfaButton;
-    @Outlet
-    private NSTextField s3PublicUrlField;
-    @Outlet
-    private NSTextField s3PublicUrlValidityField;
-    @Outlet
-    private NSTextField s3torrentUrlField;
     @Outlet
     private NSButton lifecycleTransitionCheckbox;
     @Outlet
@@ -760,33 +747,17 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Boolean>(controller, session, cache) {
+            final LoggingConfiguration configuration = new LoggingConfiguration(
+                    bucketLoggingButton.state() == NSCell.NSOnState,
+                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
+            );
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLoggingWorker(files, configuration) {
                 @Override
-                public Boolean run() throws BackgroundException {
-                    final Logging logging = session.getFeature(Logging.class);
-                    logging.setConfiguration(file,
-                            new LoggingConfiguration(
-                                    bucketLoggingButton.state() == NSCell.NSOnState,
-                                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
-                            )
-                    );
-                    return true;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                            this.toString(files));
-                }
-            });
+            }));
         }
     }
 
@@ -812,27 +783,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final boolean enabled = bucketAnalyticsButton.state() == NSCell.NSOnState;
+            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteIdentityWorker(prompt, enabled, document) {
                 @Override
-                public Void run() throws BackgroundException {
-                    final IdentityConfiguration iam = session.getFeature(IdentityConfiguration.class);
-                    if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-                        iam.create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
-                    }
-                    else {
-                        iam.delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
-                    }
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean done) {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -850,25 +809,16 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final VersioningConfiguration configuration = new VersioningConfiguration(
+                    bucketVersioningButton.state() == NSCell.NSOnState,
+                    bucketMfaButton.state() == NSCell.NSOnState);
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteVersioningWorker(files, prompt, configuration) {
                 @Override
-                public Void run() throws BackgroundException {
-                    session.getFeature(Versioning.class).setConfiguration(file, prompt,
-                            new VersioningConfiguration(
-                                    bucketVersioningButton.state() == NSCell.NSOnState,
-                                    bucketMfaButton.state() == NSCell.NSOnState)
-                    );
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -882,20 +832,26 @@ public class InfoController extends ToolbarWindowController {
         this.bucketVersioningButtonClicked(sender);
     }
 
-    public void setS3PublicUrlField(NSTextField t) {
-        this.s3PublicUrlField = t;
-        this.s3PublicUrlField.setAllowsEditingTextAttributes(true);
-        this.s3PublicUrlField.setSelectable(true);
+    public void setBucketTransferAccelerationButton(final NSButton bucketTransferAccelerationButton) {
+        this.bucketTransferAccelerationButton = bucketTransferAccelerationButton;
+        this.bucketTransferAccelerationButton.setAction(Foundation.selector("bucketTransferAccelerationButtonClicked:"));
     }
 
-    public void setS3PublicUrlValidityField(NSTextField s3PublicUrlValidityField) {
-        this.s3PublicUrlValidityField = s3PublicUrlValidityField;
-    }
-
-    public void setS3torrentUrlField(NSTextField t) {
-        this.s3torrentUrlField = t;
-        this.s3torrentUrlField.setAllowsEditingTextAttributes(true);
-        this.s3torrentUrlField.setSelectable(true);
+    @Action
+    public void bucketTransferAccelerationButtonClicked(final NSButton sender) {
+        if(this.toggleS3Settings(false)) {
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                            new WriteTransferAccelerationWorker(files, bucketTransferAccelerationButton.state() == NSCell.NSOnState) {
+                                @Override
+                                public void cleanup(final Boolean done) {
+                                    super.cleanup(done);
+                                    toggleS3Settings(true);
+                                    initS3();
+                                }
+                            }
+                    )
+            );
+        }
     }
 
     public void setLifecycleTransitionCheckbox(final NSButton b) {
@@ -932,26 +888,17 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final LifecycleConfiguration configuration = new LifecycleConfiguration(
+                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                    S3Object.STORAGE_CLASS_GLACIER,
+                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteLifecycleWorker(files, configuration) {
                 @Override
-                public Void run() throws BackgroundException {
-                    session.getFeature(Lifecycle.class).setConfiguration(file,
-                            new LifecycleConfiguration(
-                                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
-                                    S3Object.STORAGE_CLASS_GLACIER,
-                                    lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null)
-                    );
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleS3Settings(true);
                     initS3();
                 }
-            });
+            }));
         }
     }
 
@@ -1801,6 +1748,7 @@ public class InfoController extends ToolbarWindowController {
         boolean storageclass = false;
         boolean encryption = false;
         boolean lifecycle = false;
+        boolean acceleration = false;
         if(enable) {
             logging = session.getFeature(Logging.class) != null;
             analytics = session.getFeature(AnalyticsProvider.class) != null;
@@ -1808,12 +1756,14 @@ public class InfoController extends ToolbarWindowController {
             lifecycle = session.getFeature(Lifecycle.class) != null;
             encryption = session.getFeature(Encryption.class) != null;
             storageclass = session.getFeature(Redundancy.class) != null;
+            acceleration = session.getFeature(TransferAcceleration.class) != null;
         }
         storageClassPopup.setEnabled(stop && enable && storageclass);
         encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
+        bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
         if(analytics && Objects.equals(session.getFeature(IdentityConfiguration.class).getCredentials(
@@ -1848,10 +1798,6 @@ public class InfoController extends ToolbarWindowController {
         bucketLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         bucketLoggingPopup.lastItem().setEnabled(false);
 
-        s3PublicUrlField.setStringValue(LocaleFactory.localizedString("None"));
-        s3PublicUrlValidityField.setStringValue(LocaleFactory.localizedString("Unknown"));
-        s3torrentUrlField.setStringValue(LocaleFactory.localizedString("None"));
-
         storageClassPopup.removeAllItems();
         storageClassPopup.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
         storageClassPopup.lastItem().setEnabled(false);
@@ -1870,25 +1816,6 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.lastItem().setRepresentedObject(redundancy);
                 }
             }
-            if(this.numberOfFiles() > 1) {
-                s3PublicUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
-                s3PublicUrlField.setToolTip(StringUtils.EMPTY);
-                s3torrentUrlField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
-                s3torrentUrlField.setToolTip(StringUtils.EMPTY);
-            }
-            else {
-                final DescriptiveUrl signed = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.signed);
-                if(!signed.equals(DescriptiveUrl.EMPTY)) {
-                    s3PublicUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(signed));
-                    s3PublicUrlField.setToolTip(signed.getHelp());
-                    s3PublicUrlValidityField.setStringValue(signed.getHelp());
-                }
-                final DescriptiveUrl torrent = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.torrent);
-                if(!torrent.equals(DescriptiveUrl.EMPTY)) {
-                    s3torrentUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(torrent));
-                    s3torrentUrlField.setToolTip(torrent.getHelp());
-                }
-            }
             controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
                 Location.Name location;
                 LoggingConfiguration logging;
@@ -1900,6 +1827,7 @@ public class InfoController extends ToolbarWindowController {
                 final Set<String> selectedStorageClasses = new HashSet<String>();
                 LifecycleConfiguration lifecycle;
                 Credentials credentials;
+                Boolean transferAcceleration;
 
                 @Override
                 public Void run() throws BackgroundException {
@@ -1934,6 +1862,9 @@ public class InfoController extends ToolbarWindowController {
                             selectedEncryptionKeys.add(session.getFeature(Encryption.class).getEncryption(f));
                         }
                         managedEncryptionKeys.addAll(selectedEncryptionKeys);
+                    }
+                    if(session.getFeature(TransferAcceleration.class) != null) {
+                        transferAcceleration = session.getFeature(TransferAcceleration.class).getStatus(file);
                     }
                     return null;
                 }
@@ -2029,6 +1960,9 @@ public class InfoController extends ToolbarWindowController {
                             }
                             lifecycleTransitionPopup.selectItemAtIndex(lifecycleTransitionPopup.indexOfItemWithRepresentedObject(String.valueOf(lifecycle.getTransition())));
                         }
+                    }
+                    if(transferAcceleration != null) {
+                        bucketTransferAccelerationButton.setState(transferAcceleration ? NSCell.NSOnState : NSCell.NSOffState);
                     }
                     toggleS3Settings(true);
                 }
@@ -2279,7 +2213,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
                     new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<Permission>(this) : new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
-                                public void cleanup(final Boolean v) {
+                                public void cleanup(final Boolean done) {
                                     togglePermissionSettings(true);
                                 }
                             }
@@ -2386,30 +2320,14 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new DistributionPurgeWorker(files, prompt, method) {
                 @Override
-                public Void run() throws BackgroundException {
-                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Purge feature = cdn.getFeature(Purge.class, method);
-                    feature.invalidate(file, method, files, prompt);
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            file.getName());
-                }
-            });
+            }));
         }
     }
 
@@ -2424,34 +2342,19 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
-            final Path file = this.getSelected();
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+            final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
+            configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
+            configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
+            configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
+            configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteDistributionWorker(files, prompt, configuration) {
                 @Override
-                public Void run() throws BackgroundException {
-                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    final Distribution configuration = new Distribution(method, distributionEnableButton.state() == NSCell.NSOnState);
-                    configuration.setIndexDocument(distributionDefaultRootPopup.selectedItem().representedObject());
-                    configuration.setLogging(distributionLoggingButton.state() == NSCell.NSOnState);
-                    configuration.setLoggingContainer(distributionLoggingPopup.selectedItem().representedObject());
-                    configuration.setCNAMEs(StringUtils.split(distributionCnameField.stringValue()));
-                    cdn.write(file, configuration, prompt);
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     // Refresh the current distribution status
                     distributionStatusButtonClicked(sender);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                            file.getName());
-                }
-            });
+            }));
         }
     }
 
@@ -2461,24 +2364,9 @@ public class InfoController extends ToolbarWindowController {
             final Path file = this.getSelected();
             final Distribution.Method method
                     = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
-            final List<Path> rootDocuments = new ArrayList<Path>();
-            controller.background(new RegistryBackgroundAction<Distribution>(controller, session, cache) {
-                private Distribution distribution = new Distribution(method, false);
-
+            controller.background(new WorkerBackgroundAction<Distribution>(controller, session, cache, new ReadDistributionWorker(files, prompt, method) {
                 @Override
-                public Distribution run() throws BackgroundException {
-                    final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-                    distribution = cdn.read(file, method, prompt);
-                    if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
-                        // Make sure container items are cached for default root object.
-                        rootDocuments.addAll(session.list(containerService.getContainer(file), new DisabledListProgressListener()));
-                    }
-                    return distribution;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Distribution distribution) {
                     final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             cdn.getName(distribution.getMethod())));
@@ -2556,7 +2444,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
-                        for(Path next : rootDocuments) {
+                        for(Path next : distribution.getRootDocuments()) {
                             if(next.isFile()) {
                                 distributionDefaultRootPopup.addItemWithTitle(next.getName());
                                 distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
@@ -2584,13 +2472,7 @@ public class InfoController extends ToolbarWindowController {
                     distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
                     toggleDistributionSettings(true);
                 }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                            file.getName());
-                }
-            });
+            }));
         }
     }
 
@@ -2602,26 +2484,15 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void distributionAnalyticsButtonClicked(final NSButton sender) {
         if(this.toggleDistributionSettings(false)) {
-            controller.background(new RegistryBackgroundAction<Void>(controller, session, cache) {
+            final boolean enabled = distributionAnalyticsButton.state() == NSCell.NSOnState;
+            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
+            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache, new WriteIdentityWorker(prompt, enabled, document) {
                 @Override
-                public Void run() throws BackgroundException {
-                    if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-                        session.getFeature(IdentityConfiguration.class).create(session.getFeature(AnalyticsProvider.class).getName(), document, prompt);
-                    }
-                    else {
-                        session.getFeature(IdentityConfiguration.class).delete(session.getFeature(AnalyticsProvider.class).getName(), prompt);
-                    }
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
+                public void cleanup(final Boolean result) {
                     toggleDistributionSettings(true);
                     initDistribution();
                 }
-            });
+            }));
         }
     }
 

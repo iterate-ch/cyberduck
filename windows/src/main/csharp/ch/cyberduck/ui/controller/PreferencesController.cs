@@ -142,16 +142,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #endregion
 
-            #region Google Docs
-
-            View.DocumentExportFormatChanged += View_DocumentExportFormatChanged;
-            View.PresentationExportFormatChanged += View_PresentationExportFormatChanged;
-            View.SpreadsheetExportFormatChanged += View_SpreadsheetExportFormatChanged;
-            View.ConvertUploadsChanged += View_ConvertUploadsChanged;
-            View.OcrUploadsChanged += View_OcrUploadsChanged;
-
-            #endregion
-
             #region Language
 
             View.LocaleChanged += View_LocaleChanged;
@@ -301,31 +291,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 PreferencesFactory.get().setProperty("application.language", View.CurrentLocale);
                 PreferencesFactory.get().setProperty("application.language.custom", true.ToString());
             }
-        }
-
-        private void View_OcrUploadsChanged()
-        {
-            PreferencesFactory.get().setProperty("google.docs.upload.ocr", View.OcrUploads);
-        }
-
-        private void View_ConvertUploadsChanged()
-        {
-            PreferencesFactory.get().setProperty("google.docs.upload.convert", View.ConvertUploads);
-        }
-
-        private void View_SpreadsheetExportFormatChanged()
-        {
-            PreferencesFactory.get().setProperty("google.docs.export.spreadsheet", View.SpreadsheetExportFormat);
-        }
-
-        private void View_PresentationExportFormatChanged()
-        {
-            PreferencesFactory.get().setProperty("google.docs.export.presentation", View.PresentationExportFormat);
-        }
-
-        private void View_DocumentExportFormatChanged()
-        {
-            PreferencesFactory.get().setProperty("google.docs.export.document", View.DocumentExportFormat);
         }
 
         private void View_DefaultStorageClassChangedEvent()
@@ -997,19 +962,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #endregion
 
-            #region Google Docs
-
-            PopulateDocumentExportFormats();
-            View.DocumentExportFormat = PreferencesFactory.get().getProperty("google.docs.export.document");
-            PopulatePresentationExportFormats();
-            View.PresentationExportFormat = PreferencesFactory.get().getProperty("google.docs.export.presentation");
-            PopulateSpreadsheetExportFormats();
-            View.SpreadsheetExportFormat = PreferencesFactory.get().getProperty("google.docs.export.spreadsheet");
-            View.ConvertUploads = PreferencesFactory.get().getBoolean("google.docs.upload.convert");
-            View.OcrUploads = PreferencesFactory.get().getBoolean("google.docs.upload.ocr");
-
-            #endregion
-
             #region Update
 
             View.UpdateEnabled = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
@@ -1086,45 +1038,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 locales.Add(new KeyValuePair<string, string>(locale, PreferencesFactory.get().getDisplayName(locale)));
             }
             View.PopulateLocales(locales);
-        }
-
-        private void PopulateSpreadsheetExportFormats()
-        {
-            IList<KeyValuePair<string, string>> f = new List<KeyValuePair<string, string>>();
-            string formats = PreferencesFactory.get().getProperty("google.docs.export.spreadsheet.formats");
-            foreach (string s in formats.Split(','))
-            {
-                string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s,
-                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
-            }
-            View.PopulateSpreadsheetExportFormats(f);
-        }
-
-        private void PopulatePresentationExportFormats()
-        {
-            IList<KeyValuePair<string, string>> f = new List<KeyValuePair<string, string>>();
-            string formats = PreferencesFactory.get().getProperty("google.docs.export.presentation.formats");
-            foreach (string s in formats.Split(','))
-            {
-                string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s,
-                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
-            }
-            View.PopulatePresentationExportFormats(f);
-        }
-
-        private void PopulateDocumentExportFormats()
-        {
-            IList<KeyValuePair<string, string>> f = new List<KeyValuePair<string, string>>();
-            string formats = PreferencesFactory.get().getProperty("google.docs.export.document.formats");
-            foreach (string s in formats.Split(','))
-            {
-                string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s,
-                    String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
-            }
-            View.PopulateDocumentExportFormats(f);
         }
 
         private void PopulateDefaultUploadThrottleList()

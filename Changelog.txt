@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 5.2.2 [https://trac.cyberduck.io/milestone/5.2.2]
+- [Feature] Toggle transfer acceleration for bucket in Info panel (S3)
 - [Feature] Support OpenSSH unencrypted private key format for ed25519 keys (SFTP) (#8548)
 
 5.2.1 [https://trac.cyberduck.io/milestone/5.2.1]

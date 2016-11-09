@@ -52,7 +52,6 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -114,8 +113,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSView panelS3;
     @Outlet
-    private NSView panelGoogle;
-    @Outlet
     private NSView panelBandwidth;
     @Outlet
     private NSView panelAdvanced;
@@ -146,10 +143,6 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setPanelS3(NSView v) {
         this.panelS3 = v;
-    }
-
-    public void setPanelGoogle(NSView v) {
-        this.panelGoogle = v;
     }
 
     public void setPanelTransfer(NSView v) {
@@ -1964,122 +1957,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultEncryptionPopupClicked(NSPopUpButton sender) {
         preferences.setProperty("s3.encryption.algorithm", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton documentExportFormatPopup;
-
-    public void setDocumentExportFormatPopup(NSPopUpButton b) {
-        this.documentExportFormatPopup = b;
-        this.documentExportFormatPopup.setAutoenablesItems(false);
-        this.documentExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.document.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String description = FileDescriptorFactory.get().getKind(format);
-            final String suffix = String.format(" (.%s)", format);
-            final StringBuilder title = new StringBuilder(description);
-            if(!description.endsWith(suffix)) {
-                title.append(suffix);
-            }
-            this.documentExportFormatPopup.addItemWithTitle(title.toString());
-            this.documentExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.document"))) {
-                this.documentExportFormatPopup.selectItemWithTitle(title.toString());
-            }
-        }
-        this.documentExportFormatPopup.setTarget(this.id());
-        this.documentExportFormatPopup.setAction(Foundation.selector("documentExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void documentExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.document", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton spreadsheetExportFormatPopup;
-
-    public void setSpreadsheetExportFormatPopup(NSPopUpButton b) {
-        this.spreadsheetExportFormatPopup = b;
-        this.spreadsheetExportFormatPopup.setAutoenablesItems(false);
-        this.spreadsheetExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.spreadsheet.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
-            this.spreadsheetExportFormatPopup.addItemWithTitle(title);
-            this.spreadsheetExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.spreadsheet"))) {
-                this.spreadsheetExportFormatPopup.selectItemWithTitle(title);
-            }
-        }
-        this.spreadsheetExportFormatPopup.setTarget(this.id());
-        this.spreadsheetExportFormatPopup.setAction(Foundation.selector("spreadsheetExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void spreadsheetExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.spreadsheet", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton presentationExportFormatPopup;
-
-    public void setPresentationExportFormatPopup(NSPopUpButton b) {
-        this.presentationExportFormatPopup = b;
-        this.presentationExportFormatPopup.setAutoenablesItems(false);
-        this.presentationExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.presentation.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
-            this.presentationExportFormatPopup.addItemWithTitle(title);
-            this.presentationExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.presentation"))) {
-                this.presentationExportFormatPopup.selectItemWithTitle(title);
-            }
-        }
-        this.presentationExportFormatPopup.setTarget(this.id());
-        this.presentationExportFormatPopup.setAction(Foundation.selector("presentationExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void presentationExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.presentation", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSButton convertUploadsCheckbox;
-
-    public void setConvertUploadsCheckbox(NSButton b) {
-        this.convertUploadsCheckbox = b;
-        this.convertUploadsCheckbox.setTarget(this.id());
-        this.convertUploadsCheckbox.setAction(Foundation.selector("convertUploadsCheckboxClicked:"));
-        this.convertUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.convert") ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Action
-    public void convertUploadsCheckboxClicked(NSButton sender) {
-        preferences.setProperty("google.docs.upload.convert", sender.state() == NSCell.NSOnState);
-    }
-
-    @Outlet
-    private NSButton ocrUploadsCheckbox;
-
-    public void setOcrUploadsCheckbox(NSButton b) {
-        this.ocrUploadsCheckbox = b;
-        this.ocrUploadsCheckbox.setTarget(this.id());
-        this.ocrUploadsCheckbox.setAction(Foundation.selector("ocrUploadsCheckboxClicked:"));
-        this.ocrUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.ocr") ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Action
-    public void ocrUploadsCheckboxClicked(NSButton sender) {
-        preferences.setProperty("google.docs.upload.ocr", sender.state() == NSCell.NSOnState);
     }
 
     @Outlet
