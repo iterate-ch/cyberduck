@@ -2626,7 +2626,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly InfoController _infoController;
 
                 public InnerWriteMetadataWorker(InfoController infoController)
-                    : base(infoController._metadataOverwrite, new DialogRecursiveCallback(infoController), infoController._controller)
+                    : base(Utils.ConvertToJavaList(infoController._files), infoController._metadataOverwrite, new DialogRecursiveCallback(infoController), infoController._controller)
                 {
                     _infoController = infoController;
                 }
