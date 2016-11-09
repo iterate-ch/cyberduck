@@ -3,7 +3,6 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.MetadataOverwrite;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -26,7 +25,7 @@ public class WriteMetadataWorkerTest {
     @Test
     public void testEmpty() throws Exception {
         final List<Path> files = new ArrayList<Path>();
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, new MetadataOverwrite(Collections.emptyMap(), Collections.emptyMap()), false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.emptyMap(), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
@@ -74,7 +73,7 @@ public class WriteMetadataWorkerTest {
         final Map<Path, Map<String, String>> original = new HashMap<>();
         original.put(p, previous);
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, new MetadataOverwrite(original, updated), false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();
@@ -123,7 +122,7 @@ public class WriteMetadataWorkerTest {
         final Map<Path, Map<String, String>> original = new HashMap<>();
         original.put(p, previous);
 
-        WriteMetadataWorker worker = new WriteMetadataWorker(files, new MetadataOverwrite(original, updated), false, new DisabledProgressListener()) {
+        WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
                 fail();

@@ -20,7 +20,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MetadataOverwrite;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,7 +40,7 @@ import java.util.stream.Stream;
 import static java.util.AbstractMap.Entry;
 import static java.util.AbstractMap.SimpleImmutableEntry;
 
-public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
+public class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
     /**
@@ -54,13 +53,14 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
     }
 
     @Override
-    public MetadataOverwrite run(final Session<?> session) throws BackgroundException {
+    public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
         Map<Path, Map<String, String>> onlineMetadata = new HashMap<>();
         // reading all online metadata and storing it in map above
         for(Path file : files) {
             Map<String, String> metadata = feature.getMetadata(file);
+            file.attributes().setMetadata(metadata);
             onlineMetadata.put(file, metadata);
         }
 
@@ -98,7 +98,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
                     return valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
                 }));
 
-        return new MetadataOverwrite(pathOriginalMeta, metadata);
+        return metadata;
     }
 
     @Override
@@ -108,8 +108,8 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
     }
 
     @Override
-    public MetadataOverwrite initialize() {
-        return new MetadataOverwrite(Collections.emptyMap(), Collections.emptyMap());
+    public Map<String, String> initialize() {
+        return Collections.emptyMap();
     }
 
     @Override

@@ -20,7 +20,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MetadataOverwrite;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -48,7 +47,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     /**
      * The updated metadata to apply
      */
-    private final MetadataOverwrite metadata;
+    private final Map<String, String> metadata;
 
     /**
      * Descend into directories
@@ -57,13 +56,13 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     private final ProgressListener listener;
 
-    public WriteMetadataWorker(List<Path> files, final MetadataOverwrite metadata,
+    public WriteMetadataWorker(List<Path> files, final Map<String, String> metadata,
                                final boolean recursive,
                                final ProgressListener listener) {
         this(files, metadata, new BooleanRecursiveCallback<String>(recursive), listener);
     }
 
-    public WriteMetadataWorker(final List<Path> files, final MetadataOverwrite metadata,
+    public WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
                                final RecursiveCallback<String> callback,
                                final ProgressListener listener) {
         this.files = files;
@@ -75,8 +74,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
-
-        for(Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
+        for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
@@ -85,7 +83,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         return true;
     }
 
-    protected void write(final Session<?> session, final Headers feature, final Map.Entry<Path, Map<String, String>> pathMapEntry) throws BackgroundException {
+    protected void write(final Session<?> session, final Headers feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -94,19 +92,15 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         // second: Maps all entries from MetadataOverwrite.metadata to their Metadata Key and the value "NEW"
         // last: Group everything by Metadata Key and creating a set of NEW/OLD Values. i.e.:
         // {{Key1, {NEW}}, {Key2, {NEW, OLD}}, {Key3, {OLD}}}
-        Map<String, Set<String>> configMap = Stream.concat(
-                pathMapEntry.getValue().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
-                metadata.metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
+        Map<String, Set<String>> merged = Stream.concat(
+                file.attributes().getMetadata().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
+                metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
         ).collect(Collectors.groupingBy(x -> x.getKey(), Collectors.mapping(x -> x.getValue(), Collectors.toSet())));
 
-        this.write(session, feature, pathMapEntry.getKey(), configMap);
+        this.write(session, feature, file, merged);
     }
 
-    protected void write(
-            final Session<?> session,
-            final Headers feature,
-            final Path file,
-            final Map<String, Set<String>> configMap) throws BackgroundException {
+    protected void write(final Session<?> session, final Headers feature, final Path file, final Map<String, Set<String>> configMap) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -118,7 +112,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             // get set of OLD/NEW Values for current metadata key
             Set<String> config = entry.getValue();
             // retrieve value of current metadata key in metadataoverwrite.
-            String value = metadata.metadata.get(entry.getKey());
+            String value = metadata.get(entry.getKey());
 
             // if map does not contain a "NEW" value it is considered REMOVED
             if(!config.contains("NEW")) {

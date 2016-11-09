@@ -2,7 +2,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.MetadataOverwrite;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
@@ -27,7 +26,7 @@ public class ReadMetadataWorkerTest {
         final List<Path> files = new ArrayList<Path>();
         ReadMetadataWorker worker = new ReadMetadataWorker(files) {
             @Override
-            public void cleanup(final MetadataOverwrite result) {
+            public void cleanup(final Map<String, String> result) {
                 fail();
             }
         };
@@ -55,7 +54,7 @@ public class ReadMetadataWorkerTest {
                 }
                 return super.getFeature(type);
             }
-        }).metadata.isEmpty());
+        }).isEmpty());
     }
 
     @Test
@@ -66,11 +65,11 @@ public class ReadMetadataWorkerTest {
         files.add(new Path("c", EnumSet.of(Path.Type.file)));
         ReadMetadataWorker worker = new ReadMetadataWorker(files) {
             @Override
-            public void cleanup(final MetadataOverwrite result) {
+            public void cleanup(final Map<String, String> result) {
                 fail();
             }
         };
-        final MetadataOverwrite map = worker.run(new NullSession(new Host(new TestProtocol())) {
+        final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
@@ -107,8 +106,8 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.metadata.containsKey("key1"));
-        assertFalse(map.metadata.containsKey("key2"));
+        assertFalse(map.containsKey("key1"));
+        assertFalse(map.containsKey("key2"));
     }
 
     @Test
@@ -119,11 +118,11 @@ public class ReadMetadataWorkerTest {
         files.add(new Path("c", EnumSet.of(Path.Type.file)));
         ReadMetadataWorker worker = new ReadMetadataWorker(files) {
             @Override
-            public void cleanup(final MetadataOverwrite result) {
+            public void cleanup(final Map<String, String> result) {
                 fail();
             }
         };
-        final MetadataOverwrite map = worker.run(new NullSession(new Host(new TestProtocol())) {
+        final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
@@ -168,9 +167,9 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.metadata.containsKey("key1"));
-        assertTrue(map.metadata.containsKey("key2"));
-        assertNull(map.metadata.get("key2"));
-        assertNotNull(map.metadata.get("key3"));
+        assertFalse(map.containsKey("key1"));
+        assertTrue(map.containsKey("key2"));
+        assertNull(map.get("key2"));
+        assertNotNull(map.get("key3"));
     }
 }
