@@ -19,7 +19,11 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MetadataOverwrite;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
@@ -64,7 +68,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        for (Map.Entry<Path, Map<String, String>> file : metadata.originalMetadata.entrySet()) {
+        for(Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
             if (this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
@@ -153,7 +157,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                this.toString(metadata.originalMetadata.keySet()));
+                this.toString(metadata.original.keySet()));
     }
 
     @Override
@@ -170,22 +174,22 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
 
-        Set<Path> files = metadata.originalMetadata.keySet();
+        Set<Path> files = metadata.original.keySet();
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        Set<Path> thatFiles = that.metadata.originalMetadata.keySet();
+        Set<Path> thatFiles = that.metadata.original.keySet();
         return files != null ? files.equals(thatFiles) : thatFiles == null;
     }
 
     @Override
     public int hashCode() {
-        Set<Path> files = metadata.originalMetadata.keySet();
+        Set<Path> files = metadata.original.keySet();
         return files != null ? files.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteMetadataWorker{");
-        sb.append("files=").append(metadata.originalMetadata.keySet());
+        sb.append("files=").append(metadata.original.keySet());
         sb.append('}');
         return sb.toString();
     }

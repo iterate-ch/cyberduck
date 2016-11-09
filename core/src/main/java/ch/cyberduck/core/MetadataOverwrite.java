@@ -23,7 +23,7 @@ public class MetadataOverwrite {
      * Stores original key/values per path. Used in WriteMetadataWorker.
      * DO NOT CHANGE
      */
-    public final Map<Path, Map<String, String>> originalMetadata;
+    public final Map<Path, Map<String, String>> original;
     /**
      * Used as replacement for previous Map&lt;String, String&gt; used in Read-/WriteMetadataWorker.
      */
