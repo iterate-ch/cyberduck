@@ -2075,7 +2075,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
@@ -2129,7 +2129,7 @@ public class BrowserController extends WindowController
         final NSInteger index = new NSInteger(row);
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
-        final BookmarkController c = BookmarkControllerFactory.create(item);
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
         c.window().makeKeyAndOrderFront(null);
     }
 
