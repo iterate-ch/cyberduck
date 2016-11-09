@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core</RootNamespace>
     <AssemblyName>Cyberduck.Core.Native</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>1</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>core\native\target</OutputPath>
@@ -30,6 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="core">
@@ -121,7 +124,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RegistryApplicationFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\SystemLocal.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\Win32FileDescriptor.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsApplicationLauncher.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsProcessApplicationLauncher.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsTemporaryFileService.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeConstants.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeListEnumerator.cs" />
