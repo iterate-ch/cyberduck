@@ -105,7 +105,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             throw new ConnectionCanceledException();
         }
         // read online metadata (storing non-edited metadata entries)
-        Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
+        Map<String, String> originalMetadata = new HashMap<>(feature.getMetadata(file));
         boolean anyChanged = false;
         // iterate through all configMap entries (created above)
         for(Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
