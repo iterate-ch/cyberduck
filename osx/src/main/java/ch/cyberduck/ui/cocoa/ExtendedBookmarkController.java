@@ -17,23 +17,32 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSText;
+import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,9 +50,12 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 
 public class ExtendedBookmarkController extends BookmarkController {
 
+    @Outlet
+    private NSButton toggleOptionsButton;
     @Outlet
     private NSPopUpButton transferPopup;
     @Outlet
@@ -54,6 +66,12 @@ public class ExtendedBookmarkController extends BookmarkController {
     private NSTextView commentField;
     @Outlet
     private NSPopUpButton connectmodePopup;
+    @Outlet
+    private NSImage favicon;
+    @Outlet
+    private NSTextField webURLField;
+    @Outlet
+    private NSButton webUrlImage;
 
     public ExtendedBookmarkController(BookmarkCollection collection, Host bookmark) {
         super(collection, bookmark);
@@ -61,6 +79,10 @@ public class ExtendedBookmarkController extends BookmarkController {
 
     public ExtendedBookmarkController(Host host) {
         super(host);
+    }
+
+    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
+        this.toggleOptionsButton = toggleOptionsButton;
     }
 
     public void setCommentField(final NSTextView field) {
@@ -194,6 +216,87 @@ public class ExtendedBookmarkController extends BookmarkController {
         this.itemChanged();
     }
 
+    public void setWebURLField(final NSTextField field) {
+        this.webURLField = field;
+        final NSTextFieldCell cell = this.webURLField.cell();
+        cell.setPlaceholderString(bookmark.getDefaultWebURL());
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("webURLInputDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                this.webURLField);
+    }
+
+    @Action
+    public void webURLInputDidChange(final NSNotification sender) {
+        bookmark.setWebURL(webURLField.stringValue());
+        this.updateFavicon();
+        this.itemChanged();
+    }
+
+    public void setWebUrlImage(final NSButton button) {
+        this.webUrlImage = button;
+        this.webUrlImage.setTarget(this.id());
+        this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
+        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
+    }
+
+    @Action
+    public void openWebUrl(final NSButton sender) {
+        BrowserLauncherFactory.get().open(bookmark.getWebURL());
+    }
+
+    private void updateFavicon() {
+        if(preferences.getBoolean("bookmark.favicon.download")) {
+            this.background(new AbstractBackgroundAction<Void>() {
+                @Override
+                public Void run() throws BackgroundException {
+                    final String f = bookmark.getProtocol().favicon();
+                    if(StringUtils.isNotBlank(f)) {
+                        favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
+                    }
+                    else {
+                        String url = bookmark.getWebURL() + "/favicon.ico";
+                        // Default favicon location
+                        final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
+                        if(null == data) {
+                            return null;
+                        }
+                        favicon = NSImage.imageWithData(data);
+                    }
+                    if(null != favicon) {
+                        favicon.setSize(new NSSize(16, 16));
+                    }
+                    return null;
+                }
+
+                @Override
+                public void cleanup() {
+                    if(null != favicon) {
+                        webUrlImage.setImage(favicon);
+                    }
+                }
+
+                @Override
+                public Object lock() {
+                    return bookmark;
+                }
+            });
+        }
+    }
+
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
+        this.updateFavicon();
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        preferences.setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -203,5 +306,8 @@ public class ExtendedBookmarkController extends BookmarkController {
             connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
         }
         this.updateField(commentField, bookmark.getComment());
+        final String webURL = bookmark.getWebURL();
+        webUrlImage.setToolTip(webURL);
+        this.updateField(webURLField, bookmark.getDefaultWebURL().equals(webURL) ? null : webURL);
     }
 }

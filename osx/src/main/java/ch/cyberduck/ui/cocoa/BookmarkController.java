@@ -30,15 +30,12 @@ import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -132,17 +129,9 @@ public class BookmarkController extends WindowController {
     @Outlet
     private NSButton anonymousCheckbox;
     @Outlet
-    private NSTextField webURLField;
-    @Outlet
-    private NSButton webUrlImage;
-    @Outlet
-    private NSImage favicon;
-    @Outlet
     private NSPopUpButton timezonePopup;
     @Outlet
     private NSPopUpButton certificatePopup;
-    @Outlet
-    private NSButton toggleOptionsButton;
     @Outlet
     private NSPopUpButton privateKeyPopup;
     @Outlet
@@ -317,70 +306,6 @@ public class BookmarkController extends WindowController {
         this.anonymousCheckbox.setState(NSCell.NSOffState);
     }
 
-    public void setWebURLField(final NSTextField field) {
-        this.webURLField = field;
-        final NSTextFieldCell cell = this.webURLField.cell();
-        cell.setPlaceholderString(bookmark.getDefaultWebURL());
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("webURLInputDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.webURLField);
-    }
-
-    public void setWebUrlImage(final NSButton button) {
-        this.webUrlImage = button;
-        this.webUrlImage.setTarget(this.id());
-        this.webUrlImage.setAction(Foundation.selector("openWebUrl:"));
-        this.webUrlImage.setImage(IconCacheFactory.<NSImage>get().iconNamed("site.tiff", 16));
-    }
-
-    /**
-     *
-     */
-    private void updateFavicon() {
-        if(preferences.getBoolean("bookmark.favicon.download")) {
-            this.background(new AbstractBackgroundAction<Void>() {
-                @Override
-                public Void run() throws BackgroundException {
-                    final String f = bookmark.getProtocol().favicon();
-                    if(StringUtils.isNotBlank(f)) {
-                        favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);
-                    }
-                    else {
-                        String url = bookmark.getWebURL() + "/favicon.ico";
-                        // Default favicon location
-                        final NSData data = NSData.dataWithContentsOfURL(NSURL.URLWithString(url));
-                        if(null == data) {
-                            return null;
-                        }
-                        favicon = NSImage.imageWithData(data);
-                    }
-                    if(null != favicon) {
-                        favicon.setSize(new NSSize(16, 16));
-                    }
-                    return null;
-                }
-
-                @Override
-                public void cleanup() {
-                    if(null != favicon) {
-                        webUrlImage.setImage(favicon);
-                    }
-                }
-
-                @Override
-                public Object lock() {
-                    return bookmark;
-                }
-            });
-        }
-    }
-
-    @Action
-    public void openWebUrl(final NSButton sender) {
-        BrowserLauncherFactory.get().open(bookmark.getWebURL());
-    }
-
     public void setTimezonePopup(final NSPopUpButton button) {
         this.timezonePopup = button;
         this.timezonePopup.setTarget(this.id());
@@ -418,13 +343,8 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
-    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
-        this.toggleOptionsButton = toggleOptionsButton;
-    }
-
     @Override
     public void invalidate() {
-        preferences.setProperty("bookmark.toggle.options", this.toggleOptionsButton.state());
         collection.removeListener(bookmarkCollectionListener);
         notificationCenter.removeObserver(this.id());
         super.invalidate();
@@ -437,13 +357,10 @@ public class BookmarkController extends WindowController {
 
     @Override
     public void awakeFromNib() {
-        this.init();
-        this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
-        this.reachable();
-        this.updateFavicon();
-        window.makeFirstResponder(hostField);
-
         super.awakeFromNib();
+        this.init();
+        this.reachable();
+        window.makeFirstResponder(hostField);
     }
 
     @Override
@@ -617,13 +534,6 @@ public class BookmarkController extends WindowController {
         this.init();
     }
 
-    @Action
-    public void webURLInputDidChange(final NSNotification sender) {
-        bookmark.setWebURL(webURLField.stringValue());
-        this.updateFavicon();
-        this.itemChanged();
-    }
-
     /**
      * Updates the window title and url label with the properties of this bookmark
      * Propagates all fields with the properties of this bookmark
@@ -674,9 +584,6 @@ public class BookmarkController extends WindowController {
         else {
             privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
         }
-        final String webURL = bookmark.getWebURL();
-        webUrlImage.setToolTip(webURL);
-        this.updateField(webURLField, bookmark.getDefaultWebURL().equals(webURL) ? null : webURL);
         timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
         if(null == bookmark.getTimezone()) {
             if(bookmark.getProtocol().isUTCTimezone()) {
