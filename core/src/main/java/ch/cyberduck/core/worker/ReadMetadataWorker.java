@@ -59,8 +59,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
 
         Map<Path, Map<String, String>> onlineMetadata = new HashMap<>();
         // reading all online metadata and storing it in map above
-        for(Path file : files)
-        {
+        for(Path file : files) {
             Map<String, String> metadata = feature.getMetadata(file);
             onlineMetadata.put(file, metadata);
         }
@@ -115,14 +114,14 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadMetadataWorker that = (ReadMetadataWorker) o;
-        if (files != null ? !files.equals(that.files) : that.files != null) {
+        if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
