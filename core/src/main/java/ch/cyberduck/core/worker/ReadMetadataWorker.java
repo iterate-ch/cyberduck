@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -58,17 +59,14 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
     public MetadataOverwrite run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        Map<Path, Map<String, String>> onlineMetadata = files.stream().collect(Collectors.toMap(x -> x, x -> {
-            Map<String, String> metadata = null;
-            try {
-                metadata = feature.getMetadata(x);
-            } catch (Exception e) {
-                metadata = Collections.emptyMap();
-            } finally {
-                x.attributes().setMetadata(metadata);
-            }
-            return metadata;
-        }));
+        Map<Path, Map<String, String>> onlineMetadata = new HashMap<>();
+        for(Path file : files)
+        {
+            Map<String, String> metadata = feature.getMetadata(file);
+            file.attributes().setMetadata(metadata);
+            onlineMetadata.put(file, metadata);
+        }
+
         Supplier<Stream<Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
                 x -> x.getValue().entrySet().stream().map(
                         y -> new SimpleImmutableEntry<>(x.getKey(), y))
