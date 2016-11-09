@@ -42,6 +42,7 @@ public final class ConnectionControllerFactory {
                         super.invalidate();
                     }
                 };
+                c.loadBundle();
                 open.put(parent, c);
             }
             return open.get(parent);

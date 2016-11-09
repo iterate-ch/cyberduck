@@ -110,7 +110,6 @@ public class ConnectionController extends SheetController {
 
     public ConnectionController(final WindowController parent) {
         super(parent);
-        this.loadBundle();
     }
 
     @Override
