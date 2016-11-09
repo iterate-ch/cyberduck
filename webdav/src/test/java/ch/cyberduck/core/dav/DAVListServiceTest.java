@@ -27,7 +27,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
@@ -81,7 +80,7 @@ public class DAVListServiceTest {
         session.close();
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = NotfoundException.class)
     public void testListFileException() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
