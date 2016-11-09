@@ -63,7 +63,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
             // read online metadata
             Map<String, String> metadata = feature.getMetadata(file);
             // put it into onlineMetadata (do nothing with it)
-            onlineMetadata.put(file, metadata);
+            onlineMetadata.put(file, new HashMap<>(metadata));
             // take every entry of current metadata and store it in metaGraph
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
                 if (metaGraph.containsKey(entry.getKey())) {
