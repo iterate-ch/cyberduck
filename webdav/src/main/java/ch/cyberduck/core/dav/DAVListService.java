@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
@@ -55,6 +56,9 @@ public class DAVListService implements ListService {
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
                 if(!StringUtils.equals(PathNormalizer.parent(href, Path.DELIMITER), directory.getAbsolute())) {
                     log.warn(String.format("Ignore resource %s", href));
+                    if(1 == resources.size()) {
+                        throw new AccessDeniedException();
+                    }
                     continue;
                 }
                 final PathAttributes attributes = new PathAttributes();
