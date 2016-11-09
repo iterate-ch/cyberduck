@@ -89,10 +89,6 @@ public class PreferencesController extends ToolbarWindowController {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    public PreferencesController() {
-        this.loadBundle();
-    }
-
     @Override
     protected String getBundleName() {
         return "Preferences";
