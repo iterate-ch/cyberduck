@@ -68,7 +68,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
-        private MetadataOverwrite _metadataOverwrite;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
         private InfoController(BrowserController controller, IList<Path> files)
@@ -2604,7 +2603,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private class WriteMetadataBackgroundAction : WorkerBackgroundAction
         {
             public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(controller, controller.Session, new InnerWriteMetadataWorker(infoController))
+                : base(
+                    controller, controller.Session,
+                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
+                        infoController.ConvertMetadataToMap()))
             {
             }
 
@@ -2612,8 +2614,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteMetadataWorker(InfoController infoController)
-                    : base(Utils.ConvertToJavaList(infoController._files), infoController._metadataOverwrite, new DialogRecursiveCallback(infoController), infoController._controller)
+                public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
+                    : base(files, metadata, new DialogRecursiveCallback(infoController), infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2635,7 +2637,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
                         permission,
                         recursive
-                            ? (Worker.RecursiveCallback)new DialogRecursiveCallback(infoController)
+                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
                             : new BooleanRecursiveCallback(false)))
             {
             }
