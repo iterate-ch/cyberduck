@@ -82,4 +82,18 @@ public class SFTPListServiceTest {
         final SFTPListService service = new SFTPListService(session);
         service.list(f, new DisabledListProgressListener());
     }
+
+    @Test(expected = NotfoundException.class)
+    public void testListFile() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
+        final SFTPListService service = new SFTPListService(session);
+        service.list(f, new DisabledListProgressListener());
+    }
 }
