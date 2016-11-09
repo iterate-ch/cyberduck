@@ -85,10 +85,7 @@ namespace Ch.Cyberduck.Core
         Vista,
         Win2008,
         Win2008R2,
-        Win7,
-        Win8,
-        Win81,
-        Win10
+        Win7
     }
 
     public enum OSArchitecture
@@ -134,12 +131,6 @@ namespace Ch.Cyberduck.Core
 
         private static readonly OSVersionInfo _Win32s = new OSVersionInfo(OSPlatformId.Win32s, MajorVersionConst.Win32s,
                                                                           MinorVersionConst.Win32s, true);
-
-        private static readonly OSVersionInfo _Win10 = new OSVersionInfo(OSPlatformId.Win32NT, MajorVersionConst.Win10, 0, true);
-
-        private static readonly OSVersionInfo _Win81 = new OSVersionInfo(OSPlatformId.Win32NT, MajorVersionConst.Win7, MinorVersionConst.Win81, true);
-
-        private static readonly OSVersionInfo _Win8 = new OSVersionInfo(OSPlatformId.Win32NT, MajorVersionConst.Win7, MinorVersionConst.Win8, true);
 
         private static readonly OSVersionInfo _Win7 = new OSVersionInfo(OSPlatformId.Win32NT, MajorVersionConst.Win7,
                                                                         MinorVersionConst.Win7,
@@ -330,21 +321,6 @@ namespace Ch.Cyberduck.Core
         public static OSVersionInfo Win7
         {
             get { return _Win7; }
-        }
-
-        public static OSVersionInfo Win8
-        {
-            get { return _Win8; }
-        }
-
-        public static OSVersionInfo Win81
-        {
-            get { return _Win81; }
-        }
-
-        public static OSVersionInfo Win10
-        {
-            get { return _Win10; }
         }
 
         //-----------------------------------------------------------------------------
@@ -726,9 +702,6 @@ namespace Ch.Cyberduck.Core
                             case OSVersion.Win2008:
                             case OSVersion.Win2008R2:
                             case OSVersion.Win7:
-                            case OSVersion.Win8:
-                            case OSVersion.Win81:
-                            case OSVersion.Win10:
 
                                 switch (OSArchitecture)
                                 {
@@ -993,10 +966,6 @@ namespace Ch.Cyberduck.Core
                     return Win2008R2;
                 case OSVersion.Win7:
                     return Win7;
-                case OSVersion.Win8:
-                    return Win81;
-                case OSVersion.Win10:
-                    return Win10;
 
                 default:
                     throw new InvalidOperationException();

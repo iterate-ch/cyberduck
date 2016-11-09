@@ -24,6 +24,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using java.util;
@@ -39,6 +41,9 @@ namespace Ch.Cyberduck.Core
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern int GetCurrentPackageFullName(ref int packageFullNameLength, ref StringBuilder packageFullName);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
         {
@@ -68,7 +73,25 @@ namespace Ch.Cyberduck.Core
 
         public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
-        public static readonly bool IsUWPSupported = OperatingSystemVersion.Current >= OSVersionInfo.Win8;
+
+        // Original by Matteo Pagani (https://github.com/qmatteoq/DesktopBridgeHelpers) licensed under MIT
+        // modified by Jöran Malek for iterate GmbH
+        public static bool IsUWPSupported
+        {
+            get
+            {
+                if ((Environment.OSVersion.Version.Major + Environment.OSVersion.Version.Minor/100.0) <= 6.1)
+                    return false;
+                else
+                {
+                    StringBuilder sb = new StringBuilder(1024);
+                    int length = 0;
+                    int result = GetCurrentPackageFullName(ref length, ref sb);
+
+                    return result != 15700;
+                }
+            }
+        }
 
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
 
