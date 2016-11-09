@@ -57,6 +57,9 @@ public class DAVListService implements ListService {
                 if(!StringUtils.equals(PathNormalizer.parent(href, Path.DELIMITER), directory.getAbsolute())) {
                     log.warn(String.format("Ignore resource %s", href));
                     if(1 == resources.size()) {
+                        if(StringUtils.equals(href, directory.getAbsolute())) {
+                            continue;
+                        }
                         throw new NotfoundException(directory.getAbsolute());
                     }
                     continue;
