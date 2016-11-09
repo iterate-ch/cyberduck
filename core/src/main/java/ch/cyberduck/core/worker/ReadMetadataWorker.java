@@ -25,14 +25,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.stream.ExtendedCollectors;
-
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,47 +52,70 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
+        // create a list for temporarily storing entries
+        List<String> removedEntries = new ArrayList<>();
+        // create two maps, one for Map->Meta, and one for Key->Path:Value
         Map<Path, Map<String, String>> onlineMetadata = new HashMap<>();
-        // reading all online metadata and storing it in map above
-        for(Path file : files) {
+        Map<String, Map<Path, String>> metaGraph = new HashMap<>();
+
+        // iterate through all files
+        for (Path file : files) {
+            // read online metadata
             Map<String, String> metadata = feature.getMetadata(file);
-            file.attributes().setMetadata(metadata);
+            // put it into onlineMetadata (do nothing with it)
             onlineMetadata.put(file, metadata);
+            // take every entry of current metadata and store it in metaGraph
+            for (Map.Entry<String, String> entry : metadata.entrySet()) {
+                if (metaGraph.containsKey(entry.getKey())) {
+                    // if existing, get map, put value
+                    metaGraph.get(entry.getKey()).put(file, entry.getValue());
+                } else {
+                    // if not existent create hashmap and put it back
+                    Map<Path, String> map = new HashMap<>();
+                    metaGraph.put(entry.getKey(), map);
+                    map.put(file, entry.getValue());
+                }
+            }
         }
 
-        // building Map<Path, Entry<String Key, String Value>>
-        // {{Path1, {{Key1, Value1}, {Key2, Value2}}}, {Path2, {{Key1, Value2}}}}
-        // becomes
-        // {{Path1, {Key1, Value1}}, {Path1, {Key2, Value2}}, {Path2, {Key1, Value}}}
-        Supplier<Stream<Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
-                x -> x.getValue().entrySet().stream().map(
-                        y -> new SimpleImmutableEntry<>(x.getKey(), y))
-        );
-        // map flatMeta from {Path, Entry{Key, Value}} to Map of {Header, {Path, Value}}
-        // filters all values not existing in both
-        Map<String, Map<Path, String>> metaGraph = flatMeta.get().collect(
-                Collectors.groupingBy(
-                        x -> x.getValue().getKey(),
-                        Collectors.toMap(x -> x.getKey(), x -> x.getValue().getValue()))
-        ).entrySet().stream().filter(x -> x.getValue().size() == files.size()
-        ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
+        for (Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
+            // if current key does not have equal to files amount items remove it
+            if (entry.getValue().size() != files.size()) {
+                removedEntries.add(entry.getKey());
+            }
+        }
+        // deferred removing of files due to InvalidOperationException if changed while iteration
+        for (String key : removedEntries) {
+            metaGraph.remove(key);
+        }
+        // iterate all Path->Meta values
+        for (Map.Entry<Path, Map<String, String>> entry : onlineMetadata.entrySet()) {
+            // before continue, clear removedEntries
+            removedEntries.clear();
+            for (Map.Entry<String, String> metaPair : entry.getValue().entrySet()) {
+                // if filtered metaGraph does not contain this key, remove it
+                if (!metaGraph.containsKey(metaPair.getKey())) {
+                    removedEntries.add(metaPair.getKey());
+                }
+            }
+            // deferred removing of entries due to InvalidOperationException on change while iteration
+            for (String key : removedEntries) {
+                entry.getValue().remove(key);
+            }
+            // put filtered metadata to file attributes
+            entry.getKey().attributes().setMetadata(entry.getValue());
+        }
 
-        // stores original metadata for later use (WriteMetadataWorker)
-        // groups everything by Metadata Key and stores Map for Path->Value
-        Map<Path, Map<String, String>> pathOriginalMeta = flatMeta.get().filter(
-                x -> metaGraph.containsKey(x.getValue().getKey())
-        ).collect(
-                Collectors.groupingBy(
-                        x -> x.getKey(),
-                        Collectors.toMap(x -> x.getValue().getKey(), x -> x.getValue().getValue())));
-
-        // creates a distinct map of Metadata Key-Value Pairs
-        Map<String, String> metadata = metaGraph.entrySet().stream().collect(ExtendedCollectors.toMap(
-                x -> x.getKey(),
-                x -> {
-                    Supplier<Stream<String>> valueSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
-                    return valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
-                }));
+        // store result metadata in hashmap
+        Map<String, String> metadata = new HashMap<>();
+        for (Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
+            // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
+            Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
+            // check count against 1, if it is use that value, otherwise use null
+            String value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+            // store it
+            metadata.put(entry.getKey(), value);
+        }
 
         return metadata;
     }
@@ -114,14 +133,14 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadMetadataWorker that = (ReadMetadataWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
