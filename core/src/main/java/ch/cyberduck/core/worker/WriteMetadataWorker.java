@@ -19,32 +19,20 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MetadataOverwrite;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import java.text.MessageFormat;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
-
-    /**
-     * Selected files.
-     */
-    private final List<Path> files;
 
     /**
      * The updated metadata to apply
@@ -67,7 +55,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public WriteMetadataWorker(final MetadataOverwrite metadata,
                                final RecursiveCallback<String> callback,
                                final ProgressListener listener) {
-        this.files = new ArrayList<Path>(metadata.original.keySet());
         this.metadata = metadata;
         this.callback = callback;
         this.listener = listener;
@@ -77,8 +64,8 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        for(Map.Entry<Path, Map<String, String>> file : metadata.original.entrySet()) {
-            if(this.isCanceled()) {
+        for (Map.Entry<Path, Map<String, String>> file : metadata.originalMetadata.entrySet()) {
+            if (this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             this.write(session, feature, file);
@@ -86,10 +73,26 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         return true;
     }
 
+    protected String toString(final Set<Path> files) {
+        if (files.isEmpty()) {
+            return LocaleFactory.localizedString("None");
+        }
+        final String name = files.stream().findAny().get().getName();
+        if (files.size() > 1) {
+            return String.format("%s… (%s) (%d)", name, LocaleFactory.localizedString("Multiple files"), files.size());
+        }
+        return String.format("%s…", name);
+    }
+
     protected void write(final Session<?> session, final Headers feature, final Map.Entry<Path, Map<String, String>> pathMapEntry) throws BackgroundException {
-        if(this.isCanceled()) {
+        if (this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
+        // this does several things,
+        // first: Maps all entries from pathMapEntry (from MetadataOverwrite.originalMetadata) to their Metadata Key and the value "OLD"
+        // second: Maps all entries from MetadataOverwrite.metadata to their Metadata Key and the value "NEW"
+        // last: Group everything by Metadata Key and creating a set of NEW/OLD Values. i.e.:
+        // {{Key1, {NEW}}, {Key2, {NEW, OLD}}, {Key3, {OLD}}}
         Map<String, Set<String>> configMap = Stream.concat(
                 pathMapEntry.getValue().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
                 metadata.metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
@@ -103,37 +106,44 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             final Headers feature,
             final Path file,
             final Map<String, Set<String>> configMap) throws BackgroundException {
-        if(this.isCanceled()) {
+        if (this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
+        // read online metadata (storing non-edited metadata entries)
         Map<String, String> originalMetadata = new HashMap<>(file.attributes().getMetadata());
         boolean anyChanged = false;
-        for(Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
+        // iterate through all configMap entries (created above)
+        for (Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
+            // get set of OLD/NEW Values for current metadata key
             Set<String> config = entry.getValue();
+            // retrieve value of current metadata key in metadataoverwrite.
             String value = metadata.metadata.get(entry.getKey());
 
-            if(!config.contains("NEW")) {
+            // if map does not contain a "NEW" value it is considered REMOVED
+            if (!config.contains("NEW")) {
                 anyChanged = true;
                 originalMetadata.remove(entry.getKey());
-            }
-            else if(value != null) {
+            } else if (value != null) {
+                // otherwise and if value is not null it is considered CHANGED
                 String oldValue = config.contains("OLD") ? originalMetadata.get(entry.getKey()) : null;
-                if(!Objects.equals(value, oldValue)) {
+                // if new value and old value are equal it is considered UNCHANGED
+                if (value != oldValue) {
                     anyChanged = true;
                     originalMetadata.put(entry.getKey(), value);
                 }
             }
         }
 
-        if(anyChanged) {
+        // if anything has changed save metadata, otherwise continue and do for everything underneath this directory
+        if (anyChanged) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setMetadata(file, originalMetadata);
         }
 
-        if(file.isDirectory()) {
-            if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+        if (file.isDirectory()) {
+            if (callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
+                for (Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child, configMap);
                 }
             }
@@ -142,7 +152,8 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"), this.toString(files));
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
+                this.toString(metadata.originalMetadata.keySet()));
     }
 
     @Override
@@ -152,28 +163,29 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
+        Set<Path> files = metadata.originalMetadata.keySet();
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
-            return false;
-        }
-        return true;
+        Set<Path> thatFiles = that.metadata.originalMetadata.keySet();
+        return files != null ? files.equals(thatFiles) : thatFiles == null;
     }
 
     @Override
     public int hashCode() {
+        Set<Path> files = metadata.originalMetadata.keySet();
         return files != null ? files.hashCode() : 0;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("WriteMetadataWorker{");
-        sb.append("files=").append(files);
+        sb.append("files=").append(metadata.originalMetadata.keySet());
         sb.append('}');
         return sb.toString();
     }

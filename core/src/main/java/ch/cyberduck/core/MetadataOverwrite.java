@@ -19,7 +19,14 @@ import java.util.Map;
 import java.util.Objects;
 
 public class MetadataOverwrite {
-    public final Map<Path, Map<String, String>> original;
+    /**
+     * Stores original key/values per path. Used in WriteMetadataWorker.
+     * DO NOT CHANGE
+     */
+    public final Map<Path, Map<String, String>> originalMetadata;
+    /**
+     * Used as replacement for previous Map&lt;String, String&gt; used in Read-/WriteMetadataWorker.
+     */
     public final Map<String, String> metadata;
 
     public MetadataOverwrite(Map<Path, Map<String, String>> original, Map<String, String> updated) {

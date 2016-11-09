@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -58,21 +59,25 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
     public MetadataOverwrite run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
 
-        Map<Path, Map<String, String>> onlineMetadata = files.stream().collect(Collectors.toMap(x -> x, x -> {
-            Map<String, String> metadata = null;
-            try {
-                metadata = feature.getMetadata(x);
-            } catch (Exception e) {
-                metadata = Collections.emptyMap();
-            } finally {
-                x.attributes().setMetadata(metadata);
-            }
-            return metadata;
-        }));
+        Map<Path, Map<String, String>> onlineMetadata = new HashMap<>();
+        // reading all online metadata and storing it in map above
+        for(Path file : files)
+        {
+            Map<String, String> metadata = feature.getMetadata(file);
+            file.attributes().setMetadata(metadata);
+            onlineMetadata.put(file, metadata);
+        }
+
+        // building Map<Path, Entry<String Key, String Value>>
+        // {{Path1, {{Key1, Value1}, {Key2, Value2}}}, {Path2, {{Key1, Value2}}}}
+        // becomes
+        // {{Path1, {Key1, Value1}}, {Path1, {Key2, Value2}}, {Path2, {Key1, Value}}}
         Supplier<Stream<Entry<Path, Entry<String, String>>>> flatMeta = () -> onlineMetadata.entrySet().stream().flatMap(
                 x -> x.getValue().entrySet().stream().map(
                         y -> new SimpleImmutableEntry<>(x.getKey(), y))
         );
+        // map flatMeta from {Path, Entry{Key, Value}} to Map of {Header, {Path, Value}}
+        // filters all values not existing in both
         Map<String, Map<Path, String>> metaGraph = flatMeta.get().collect(
                 Collectors.groupingBy(
                         x -> x.getValue().getKey(),
@@ -80,6 +85,8 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
         ).entrySet().stream().filter(x -> x.getValue().size() == files.size()
         ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
 
+        // stores original metadata for later use (WriteMetadataWorker)
+        // groups everything by Metadata Key and stores Map for Path->Value
         Map<Path, Map<String, String>> pathOriginalMeta = flatMeta.get().filter(
                 x -> metaGraph.containsKey(x.getValue().getKey())
         ).collect(
@@ -87,6 +94,7 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
                         x -> x.getKey(),
                         Collectors.toMap(x -> x.getValue().getKey(), x -> x.getValue().getValue())));
 
+        // creates a distinct map of Metadata Key-Value Pairs
         Map<String, String> metadata = metaGraph.entrySet().stream().collect(ExtendedCollectors.toMap(
                 x -> x.getKey(),
                 x -> {
