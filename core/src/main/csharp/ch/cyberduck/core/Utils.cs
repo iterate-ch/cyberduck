@@ -68,6 +68,8 @@ namespace Ch.Cyberduck.Core
 
         public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
+        public static readonly bool IsUWPSupported = OperatingSystemVersion.Current >= OSVersionInfo.Win8;
+
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
 
         public static bool IsBlank(string value)
