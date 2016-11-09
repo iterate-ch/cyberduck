@@ -26,6 +26,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.stream.ExtendedCollectors;
+
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -52,9 +53,6 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
         this.files = files;
     }
 
-    /**
-     * @return Metadata
-     */
     @Override
     public MetadataOverwrite run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
@@ -64,7 +62,6 @@ public class ReadMetadataWorker extends Worker<MetadataOverwrite> {
         for(Path file : files)
         {
             Map<String, String> metadata = feature.getMetadata(file);
-            file.attributes().setMetadata(metadata);
             onlineMetadata.put(file, metadata);
         }
 
