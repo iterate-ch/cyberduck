@@ -70,9 +70,6 @@ public class WriteMetadataWorkerTest {
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("key", "v1");
 
-        final Map<Path, Map<String, String>> original = new HashMap<>();
-        original.put(p, previous);
-
         WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
