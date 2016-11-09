@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+5.3 [https://trac.cyberduck.io/milestone/5.3]
+- [Feature] Choose certificate in bookmark panel for mutual authentication with TLS
+- [Bugfix] Repeated prompt for client certificate (WebDAV) (#9746)
+
 5.2.2 [https://trac.cyberduck.io/milestone/5.2.2]
 - [Feature] Toggle transfer acceleration for bucket in Info panel (S3)
 - [Feature] Support OpenSSH unencrypted private key format for ed25519 keys (SFTP) (#8548)
