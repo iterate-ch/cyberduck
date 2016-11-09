@@ -22,9 +22,9 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public sealed class WindowsApplicationLauncher : ApplicationLauncher
+    public sealed class WindowsProcessApplicationLauncher : ApplicationLauncher
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WindowsApplicationLauncher).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (WindowsProcessApplicationLauncher).Name);
 
         public void bounce(ch.cyberduck.core.Local local)
         {

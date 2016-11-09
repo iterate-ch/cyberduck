@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (!applicationNameCache.ContainsKey(application))
             {
-                string path = WindowsApplicationLauncher.GetExecutableCommand(application);
+                string path = WindowsProcessApplicationLauncher.GetExecutableCommand(application);
                 if (File.Exists(path))
                 {
                     FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);

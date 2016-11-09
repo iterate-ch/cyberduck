@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.rendezvous.class", typeof (Rendezvous).AssemblyQualifiedName);
 
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);
-            defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
+            defaults.put("factory.applicationlauncher.class", typeof (WindowsProcessApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.temporaryfiles.class", typeof (WindowsTemporaryFileService).AssemblyQualifiedName);
             defaults.put("factory.browserlauncher.class", typeof (DefaultBrowserLauncher).AssemblyQualifiedName);
             defaults.put("factory.reveal.class", typeof (ExplorerRevealService).AssemblyQualifiedName);
