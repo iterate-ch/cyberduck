@@ -398,8 +398,8 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public boolean equals(Object obj) {
-            if(obj instanceof Role) {
-                return name.equals(((Role) obj).getName());
+            if (obj instanceof Role) {
+                return StringUtils.equals(name, ((Role)obj).name);
             }
             return false;
         }
