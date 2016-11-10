@@ -463,15 +463,8 @@ public class ConnectionController extends SheetController {
 
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
-        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain")
-                && preferences.getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
         this.keychainCheckbox.setTarget(this.id());
-        this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-    }
-
-    public void keychainCheckboxClicked(final NSButton sender) {
-        final boolean enabled = sender.state() == NSCell.NSOnState;
-        preferences.setProperty("connection.login.addKeychain", enabled);
     }
 
     public void setAnonymousCheckbox(NSButton anonymousCheckbox) {

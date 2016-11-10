@@ -235,13 +235,11 @@ public final class PromptLoginController implements LoginCallback {
                 this.keychainCheckbox = keychainCheckbox;
                 this.keychainCheckbox.setTarget(this.id());
                 this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-                this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain")
-                        && preferences.getBoolean("connection.login.addKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+                this.keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
             }
 
             public void keychainCheckboxClicked(final NSButton sender) {
-                final boolean enabled = sender.state() == NSCell.NSOnState;
-                preferences.setProperty("connection.login.addKeychain", enabled);
+                credentials.setSaved(sender.state() == NSCell.NSOnState);
             }
 
             public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
@@ -371,7 +369,6 @@ public final class PromptLoginController implements LoginCallback {
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingFor(null);
-                    credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
                     credentials.setUsername(usernameField.stringValue());
                     credentials.setPassword(passwordField.stringValue());
                 }

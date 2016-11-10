@@ -85,8 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = credentials.getUsername();
-            View.SavePasswordState = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
-                                     PreferencesFactory.get().getBoolean("connection.login.addKeychain");
+            View.SavePasswordState = credentials.isSaved();
             View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
 
             Update();
@@ -97,9 +96,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     throw new LoginCanceledException();
                 }
-                credentials.setSaved(View.SavePasswordState);
-                credentials.setUsername(Utils.SafeString(View.Username));
-                credentials.setPassword(Utils.SafeString(View.Password));
             };
             _browser.Invoke(d);
         }
@@ -146,17 +142,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            PreferencesFactory.get().setProperty("connection.login.addKeychain", View.SavePasswordState);
+            _credentials.setSaved(View.SavePasswordState);
         }
 
         private void View_ChangedPasswordEvent()
         {
-            _credentials.setPassword(View.Password);
+            _credentials.setPassword(Utils.SafeString(View.Password));
         }
 
         private void View_ChangedUsernameEvent()
         {
-            _credentials.setUsername(View.Username);
+            _credentials.setUsername(Utils.SafeString(View.Username));
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
                 String password = keychain.getPassword(_bookmark.getProtocol().getScheme(), _bookmark.getPort(),

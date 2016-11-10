@@ -143,8 +143,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.Username = PreferencesFactory.get().getProperty("connection.login.name");
             View.PkLabel = LocaleFactory.localizedString("No private key selected");
-            View.SavePasswordChecked = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
-                                       PreferencesFactory.get().getBoolean("connection.login.addKeychain");
+            View.SavePasswordChecked = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
             View.AnonymousChecked = false;
             View.PkCheckboxState = false;
             View.SelectedEncoding = Default;
@@ -179,7 +178,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            PreferencesFactory.get().setProperty("connection.login.addKeychain", View.SavePasswordChecked);
         }
 
         private void View_OpenUrl()
