@@ -17,9 +17,12 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
@@ -64,6 +67,21 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot change group", e, file);
         }
+    }
+
+    @Override
+    public Permission getUnixPermission(final Path file) throws BackgroundException {
+        try {
+            return new FTPAttributesFeature(session).find(file).getPermission();
+        }
+        catch(InteroperabilityException e) {
+            for(Path f : session.list(file.getParent(), new DisabledListProgressListener())) {
+                if(f.equals(file)) {
+                    return f.attributes().getPermission();
+                }
+            }
+        }
+        throw new NotfoundException(file.getAbsolute());
     }
 
     @Override
