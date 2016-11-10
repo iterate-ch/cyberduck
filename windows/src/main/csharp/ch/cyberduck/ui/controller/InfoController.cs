@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
-        private AclOverwrite _aclPermissions;
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
@@ -325,7 +324,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.debug("AddAclItem:" + user.getDisplayName());
             UserAndRoleEntry entry = new UserAndRoleEntry(user, role);
             _acl.Add(entry);
-            _aclPermissions.acl.put(user, role);
             View.EditAclRow(entry, !user.isEditable());
         }
 
@@ -1979,9 +1977,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    AclOverwrite aclPermissions = (AclOverwrite)obj;
-                    _infoController._aclPermissions = aclPermissions;
-                    _infoController.SetAcl(Utils.ConvertFromJavaMap<Acl.User, Acl.Role>(aclPermissions.acl).Select(x => new UserAndRoleEntry(x.Key, x.Value)).ToList());
+                    IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
+                    {
+                        Acl.UserAndRole entry = (Acl.UserAndRole) item;
+                        return new UserAndRoleEntry(entry.getUser(), entry.getRole());
+                    });
+                    _infoController.SetAcl(entries);
                     _infoController.ToggleAclSettings(true);
                 }
             }
@@ -2483,11 +2484,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public class UserAndRoleEntry : Acl.UserAndRole, INotifyPropertyChanged
         {
-            private string originalUser;
-
             public UserAndRoleEntry(Acl.User user, Acl.Role role) : base(user, role)
             {
-                originalUser = user.getIdentifier();
             }
 
             public string User
@@ -2500,11 +2498,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
 
-            public string OriginalUser { get { return originalUser; } }
-
             public string Role
             {
-                get { return getRole()?.getName(); }
+                get { return getRole().getName(); }
                 set
                 {
                     getRole().setName(value);
@@ -2528,7 +2524,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public WriteAclBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
                     browserController, browserController.Session,
-                    new InnerWriteAclWorker(browserController, infoController, infoController._aclPermissions))
+                    new InnerWriteAclWorker(browserController, infoController,
+                        Utils.ConvertToJavaList(infoController._files), GetAcl(infoController)))
             {
             }
 
@@ -2548,7 +2545,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWriteAclWorker(BrowserController controller, InfoController infoController, AclOverwrite acl) : base(acl, new DialogRecursiveCallback(infoController), controller)
+                public InnerWriteAclWorker(BrowserController controller, InfoController infoController, List files,
+                    Acl acl) : base(files, acl, new DialogRecursiveCallback(infoController), controller)
                 {
                     _infoController = infoController;
                 }
@@ -2661,4 +2659,3 @@ namespace Ch.Cyberduck.Ui.Controller
         }
     }
 }
- 
