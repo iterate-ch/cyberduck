@@ -404,7 +404,8 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void privateKeyPopupClicked(final NSMenuItem sender) {
-        if(null == sender.representedObject()) {
+        final String selected = sender.representedObject();
+        if(null == selected) {
             privateKeyOpenPanel = NSOpenPanel.openPanel();
             privateKeyOpenPanel.setCanChooseDirectories(false);
             privateKeyOpenPanel.setCanChooseFiles(true);
@@ -415,7 +416,7 @@ public class BookmarkController extends WindowController {
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            bookmark.getCredentials().setIdentity(LocalFactory.get(sender.representedObject()));
+            bookmark.getCredentials().setIdentity(StringUtils.isBlank(selected) ? null : LocalFactory.get(selected));
         }
     }
 

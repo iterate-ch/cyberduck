@@ -243,7 +243,8 @@ public class ConnectionController extends SheetController {
 
     @Action
     public void privateKeyPopupClicked(final NSMenuItem sender) {
-        if(null == sender.representedObject()) {
+        final String selected = sender.representedObject();
+        if(null == selected) {
             privateKeyOpenPanel = NSOpenPanel.openPanel();
             privateKeyOpenPanel.setCanChooseDirectories(false);
             privateKeyOpenPanel.setCanChooseFiles(true);
@@ -254,7 +255,7 @@ public class ConnectionController extends SheetController {
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            passField.setEnabled(null == sender.representedObject());
+            passField.setEnabled(StringUtils.isNotBlank(selected));
         }
     }
 
