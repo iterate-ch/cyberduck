@@ -57,7 +57,7 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
             Map<Acl.User, Acl.Role> filteredAcl = new HashMap<>();
             for (Map.Entry<Acl.User, Set<Acl.Role>> entry : acl.entrySet()) {
                 Supplier<Stream<Acl.Role>> roleSupplier = () -> entry.getValue().stream().distinct();
-                Acl.Role role = roleSupplier.get().count() == 1 ? roleSupplier.get().findAny().get() : null;
+                Acl.Role role = roleSupplier.get().count() == 1 ? roleSupplier.get().findAny().get() : new Acl.Role(null);
                 filteredAcl.put(entry.getKey(), role);
             }
             onlineAcl.put(file, filteredAcl);
@@ -101,9 +101,9 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
         for (Map.Entry<Acl.User, Map<Path, Acl.Role>> entry : aclGraph.entrySet())
         {
             // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
-            Supplier<Stream<Acl.Role>> valueSupplier = () -> entry.getValue().entrySet().stream().filter(y -> y.getValue() != null).map(y -> y.getValue()).distinct();
+            Supplier<Stream<Acl.Role>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
             // check count against 1, if it is use that value, otherwise use null
-            Acl.Role value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+            Acl.Role value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : new Acl.Role(null);
             // store it
             userAndRoles.add(new Acl.UserAndRole(entry.getKey(), value));
         }
