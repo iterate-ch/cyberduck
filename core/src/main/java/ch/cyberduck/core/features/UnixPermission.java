@@ -26,6 +26,8 @@ public interface UnixPermission {
 
     void setUnixGroup(Path file, String group) throws BackgroundException;
 
+    Permission getUnixPermission(Path file) throws BackgroundException;
+
     void setUnixPermission(Path file, Permission permission) throws BackgroundException;
 
     Permission getDefault(Local file);

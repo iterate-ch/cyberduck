@@ -21,6 +21,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,26 +41,28 @@ public class WritePermissionWorker extends Worker<Boolean> {
     /**
      * Permissions to apply to files.
      */
-    private final Permission permission;
+    private final PermissionOverwrite permissions;
 
     /**
      * Descend into directories
      */
-    private final RecursiveCallback<Permission> callback;
+    private final RecursiveCallback<PermissionOverwrite> callback;
 
     private final ProgressListener listener;
 
     public WritePermissionWorker(final List<Path> files,
-                                 final Permission permission, final boolean recursive,
+                                 final PermissionOverwrite permissions,
+                                 final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, permission, new BooleanRecursiveCallback<Permission>(recursive), listener);
+        this(files, permissions, new BooleanRecursiveCallback<>(recursive), listener);
     }
 
     public WritePermissionWorker(final List<Path> files,
-                                 final Permission permission, final RecursiveCallback<Permission> callback,
+                                 final PermissionOverwrite permissions,
+                                 final RecursiveCallback<PermissionOverwrite> callback,
                                  final ProgressListener listener) {
         this.files = files;
-        this.permission = permission;
+        this.permissions = permissions;
         this.callback = callback;
         this.listener = listener;
     }
@@ -77,19 +80,12 @@ public class WritePermissionWorker extends Worker<Boolean> {
     }
 
     protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-        final Permission previous = file.attributes().getPermission();
-        if(!permission.equals(previous)) {
-            final Permission merged = new Permission(permission.getUser(), permission.getGroup(), permission.getOther(),
-                    previous.isSticky(), previous.isSetuid(), previous.isSetgid());
-            listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                    file.getName(), merged));
-            feature.setUnixPermission(file, merged);
-        }
+        final Permission merged = permissions.resolve(file.attributes().getPermission());
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
+                file.getName(), merged));
+        feature.setUnixPermission(file, merged);
         if(file.isDirectory()) {
-            if(callback.recurse(file, permission)) {
+            if(callback.recurse(file, permissions)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
@@ -100,7 +96,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                this.toString(files), permission);
+                this.toString(files), permissions);
     }
 
     @Override
