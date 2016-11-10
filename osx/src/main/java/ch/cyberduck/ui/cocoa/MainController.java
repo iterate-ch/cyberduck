@@ -467,11 +467,6 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     @Action
-    public void forumMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(preferences.getProperty("website.forum"));
-    }
-
-    @Action
     public void donateMenuClicked(final ID sender) {
         BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
     }

@@ -42,7 +42,6 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3WebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -50,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
@@ -160,9 +161,9 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    protected CustomOrigin.OriginProtocolPolicy getPolicy(final Distribution.Method method) {
+    protected OriginProtocolPolicy getPolicy(final Distribution.Method method) {
         if(method.equals(Distribution.WEBSITE_CDN)) {
-            return CustomOrigin.OriginProtocolPolicy.HTTP_ONLY;
+            return OriginProtocolPolicy.HttpOnly;
         }
         return super.getPolicy(method);
     }

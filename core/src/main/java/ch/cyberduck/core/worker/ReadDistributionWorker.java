@@ -19,7 +19,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -32,9 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReadDistributionWorker extends Worker<Distribution> {
-
-    private final PathContainerService containerService = new PathContainerService();
-
     /**
      * Selected files.
      */

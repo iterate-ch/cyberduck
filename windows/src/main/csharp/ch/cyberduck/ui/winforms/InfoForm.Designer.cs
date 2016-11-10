@@ -1603,7 +1603,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ownerrCheckBox.Size = new System.Drawing.Size(1, 19);
             this.ownerrCheckBox.TabIndex = 1;
             this.ownerrCheckBox.Text = "Read";
-            this.ownerrCheckBox.ThreeState = true;
+            this.ownerrCheckBox.ThreeState = false;
             this.ownerrCheckBox.UseVisualStyleBackColor = true;
             this.ownerrCheckBox.CheckStateChanged += new System.EventHandler(this.ownerrCheckBox_CheckStateChanged);
             // 
@@ -1615,7 +1615,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ownerwCheckBox.Size = new System.Drawing.Size(1, 19);
             this.ownerwCheckBox.TabIndex = 2;
             this.ownerwCheckBox.Text = "Write";
-            this.ownerwCheckBox.ThreeState = true;
+            this.ownerwCheckBox.ThreeState = false;
             this.ownerwCheckBox.UseVisualStyleBackColor = true;
             this.ownerwCheckBox.CheckStateChanged += new System.EventHandler(this.ownerwCheckBox_CheckStateChanged);
             // 
@@ -1627,7 +1627,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ownerxCheckBox.Size = new System.Drawing.Size(1, 19);
             this.ownerxCheckBox.TabIndex = 3;
             this.ownerxCheckBox.Text = "Execute";
-            this.ownerxCheckBox.ThreeState = true;
+            this.ownerxCheckBox.ThreeState = false;
             this.ownerxCheckBox.UseVisualStyleBackColor = true;
             this.ownerxCheckBox.CheckStateChanged += new System.EventHandler(this.ownerxCheckBox_CheckStateChanged);
             // 
@@ -1649,7 +1649,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.grouprCheckbox.Size = new System.Drawing.Size(1, 19);
             this.grouprCheckbox.TabIndex = 5;
             this.grouprCheckbox.Text = "Read";
-            this.grouprCheckbox.ThreeState = true;
+            this.grouprCheckbox.ThreeState = false;
             this.grouprCheckbox.UseVisualStyleBackColor = true;
             this.grouprCheckbox.CheckStateChanged += new System.EventHandler(this.grouprCheckbox_CheckStateChanged);
             // 
@@ -1661,7 +1661,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupwCheckbox.Size = new System.Drawing.Size(1, 19);
             this.groupwCheckbox.TabIndex = 6;
             this.groupwCheckbox.Text = "Write";
-            this.groupwCheckbox.ThreeState = true;
+            this.groupwCheckbox.ThreeState = false;
             this.groupwCheckbox.UseVisualStyleBackColor = true;
             this.groupwCheckbox.CheckStateChanged += new System.EventHandler(this.groupwCheckbox_CheckStateChanged);
             // 
@@ -1673,7 +1673,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupxCheckbox.Size = new System.Drawing.Size(1, 19);
             this.groupxCheckbox.TabIndex = 7;
             this.groupxCheckbox.Text = "Execute";
-            this.groupxCheckbox.ThreeState = true;
+            this.groupxCheckbox.ThreeState = false;
             this.groupxCheckbox.UseVisualStyleBackColor = true;
             this.groupxCheckbox.CheckStateChanged += new System.EventHandler(this.groupxCheckbox_CheckStateChanged);
             // 
@@ -1695,7 +1695,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.otherwCheckbox.Size = new System.Drawing.Size(1, 19);
             this.otherwCheckbox.TabIndex = 10;
             this.otherwCheckbox.Text = "Write";
-            this.otherwCheckbox.ThreeState = true;
+            this.otherwCheckbox.ThreeState = false;
             this.otherwCheckbox.UseVisualStyleBackColor = true;
             this.otherwCheckbox.CheckStateChanged += new System.EventHandler(this.otherwCheckbox_CheckStateChanged);
             // 
@@ -1707,7 +1707,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.otherxCheckbox.Size = new System.Drawing.Size(1, 19);
             this.otherxCheckbox.TabIndex = 11;
             this.otherxCheckbox.Text = "Execute";
-            this.otherxCheckbox.ThreeState = true;
+            this.otherxCheckbox.ThreeState = false;
             this.otherxCheckbox.UseVisualStyleBackColor = true;
             this.otherxCheckbox.CheckStateChanged += new System.EventHandler(this.otherxCheckbox_CheckStateChanged);
             // 
@@ -1730,7 +1730,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.otherrCheckbox.Size = new System.Drawing.Size(1, 19);
             this.otherrCheckbox.TabIndex = 9;
             this.otherrCheckbox.Text = "Read";
-            this.otherrCheckbox.ThreeState = true;
+            this.otherrCheckbox.ThreeState = false;
             this.otherrCheckbox.UseVisualStyleBackColor = true;
             this.otherrCheckbox.CheckStateChanged += new System.EventHandler(this.otherrCheckbox_CheckStateChanged);
             // 

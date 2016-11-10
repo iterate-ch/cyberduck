@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1050" identifier="macosx"/>
+        <deployment version="1070" identifier="macosx"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -24,7 +24,6 @@
                 <outlet property="chmodUploadTypePopup" destination="216" id="437"/>
                 <outlet property="configureProxiesButton" destination="289" id="438"/>
                 <outlet property="confirmDisconnectCheckbox" destination="55" id="439"/>
-                <outlet property="convertUploadsCheckbox" destination="382" id="440"/>
                 <outlet property="defaultBookmarkCombobox" destination="32" id="441"/>
                 <outlet property="defaultBucketLocation" destination="357" id="442"/>
                 <outlet property="defaultDownloadThrottleCombobox" destination="335" id="443"/>
@@ -37,7 +36,6 @@
                 <outlet property="dgroupr" destination="188" id="450"/>
                 <outlet property="dgroupw" destination="192" id="451"/>
                 <outlet property="dgroupx" destination="184" id="452"/>
-                <outlet property="documentExportFormatPopup" destination="389" id="453"/>
                 <outlet property="dotherr" destination="186" id="454"/>
                 <outlet property="dotherw" destination="194" id="455"/>
                 <outlet property="dotherx" destination="180" id="456"/>
@@ -59,7 +57,6 @@
                 <outlet property="infoWindowAsInspectorCheckbox" destination="83" id="472"/>
                 <outlet property="keychainCheckbox" destination="53" id="473"/>
                 <outlet property="languagePopup" destination="412" id="474"/>
-                <outlet property="ocrUploadsCheckbox" destination="386" id="475"/>
                 <outlet property="openAfterDownloadCheckbox" destination="103" id="476"/>
                 <outlet property="openUntitledBrowserCheckbox" destination="36" id="477"/>
                 <outlet property="panelAdvanced" destination="280" id="478"/>
@@ -68,20 +65,17 @@
                 <outlet property="panelEditor" destination="368" id="481"/>
                 <outlet property="panelFTP" destination="264" id="482"/>
                 <outlet property="panelGeneral" destination="30" id="483"/>
-                <outlet property="panelGoogle" destination="378" id="484"/>
                 <outlet property="panelLanguage" destination="408" id="485"/>
                 <outlet property="panelS3" destination="349" id="486"/>
                 <outlet property="panelSFTP" destination="272" id="487"/>
                 <outlet property="panelTransfer" destination="99" id="488"/>
                 <outlet property="panelUpdate" destination="315" id="489"/>
-                <outlet property="presentationExportFormatPopup" destination="400" id="490"/>
                 <outlet property="preserveModificationDownloadCheckbox" destination="230" id="491"/>
                 <outlet property="preserveModificationUploadCheckbox" destination="228" id="492"/>
                 <outlet property="protocolCombobox" destination="49" id="493"/>
                 <outlet property="removeFromQueueCheckbox" destination="105" id="494"/>
                 <outlet property="returnKeyCheckbox" destination="97" id="495"/>
                 <outlet property="showHiddenCheckbox" destination="79" id="496"/>
-                <outlet property="spreadsheetExportFormatPopup" destination="404" id="497"/>
                 <outlet property="tabView" destination="5" id="498"/>
                 <outlet property="transferPopup" destination="141" id="499"/>
                 <outlet property="ugroupr" destination="172" id="500"/>
@@ -125,7 +119,7 @@
                             <tabViewItem label="Vispārējs" identifier="general" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Pārlūks" identifier="browser" id="8">
@@ -206,7 +200,7 @@
                 <box title="Pārlūks" id="31">
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="eor-YB-7gO">
+                    <view key="contentView" id="nXa-rF-OQT">
                         <rect key="frame" x="2" y="2" width="469" height="158"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -272,7 +266,7 @@
                 <box title="Savienojums" id="46">
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="ycP-TH-0PQ">
+                    <view key="contentView" id="jTZ-Rs-0Ac">
                         <rect key="frame" x="2" y="2" width="469" height="185"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -344,7 +338,7 @@
                 <box title="Grāmatzīmes" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="6AZ-gL-Gvr">
+                    <view key="contentView" id="h51-aZ-jAv">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -378,7 +372,7 @@
                 <box title="Parādīšanās" id="71">
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="MDw-2Y-IIj">
+                    <view key="contentView" id="PyB-9Z-fc6">
                         <rect key="frame" x="2" y="2" width="469" height="78"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -412,7 +406,7 @@
                 <box title="Vispārējs" id="78">
                     <rect key="frame" x="17" y="216" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="A9u-Lx-Yhg">
+                    <view key="contentView" id="zSl-Q7-PPX">
                         <rect key="frame" x="2" y="2" width="469" height="169"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1191,7 +1185,7 @@
                 <box title="Sākotnējāis protokola uzturētājs" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="gnX-Bh-a9Y">
+                    <view key="contentView" id="XGo-5u-0m0">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1229,7 +1223,7 @@
                 <box title="Sākotnējāis protokola uzturētājs" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="LJc-8F-LeC">
+                    <view key="contentView" id="QDL-re-aeA">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1267,7 +1261,7 @@
                 <box title="Raksta kodējums" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="h7l-1M-sS3">
+                    <view key="contentView" id="N8s-vX-pXb">
                         <rect key="frame" x="2" y="2" width="468" height="94"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1300,7 +1294,7 @@
                 <box title="Starpniekserveris" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="qkQ-bT-UCx">
+                    <view key="contentView" id="nIK-94-OGK">
                         <rect key="frame" x="2" y="2" width="469" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1326,7 +1320,7 @@
                 <box title="Laiks ir beidzies" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="CS4-Vd-huU">
+                    <view key="contentView" id="Tuf-VX-07Q">
                         <rect key="frame" x="2" y="2" width="469" height="117"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1441,7 +1435,7 @@
                 <box title="Atjauninājumi" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="afW-0b-uky">
+                    <view key="contentView" id="V20-wh-cwb">
                         <rect key="frame" x="2" y="2" width="469" height="112"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1495,7 +1489,7 @@
                 <box title="Apspiest pārsūtīšanu" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="ghI-Ju-aaj">
+                    <view key="contentView" id="9Em-Vf-Pix">
                         <rect key="frame" x="2" y="2" width="469" height="130"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1587,7 +1581,7 @@
                 <box title="Šifrēšana" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="Pv3-q0-dL2">
+                    <view key="contentView" id="aiV-b9-PJY">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1615,7 +1609,7 @@
                 <box title="Sākotnējā groza atrašanās vieta" id="356">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="Cll-xF-2gE">
+                    <view key="contentView" id="aDe-7a-zvt">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1643,7 +1637,7 @@
                 <box title="Sākotnējā glabāšanas klase" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="njU-IG-55a">
+                    <view key="contentView" id="wk5-XB-g4g">
                         <rect key="frame" x="2" y="2" width="469" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1678,7 +1672,7 @@
                 <box title="Redaktors" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="gKQ-Co-Dqv">
+                    <view key="contentView" id="HTA-ik-z0B">
                         <rect key="frame" x="2" y="2" width="469" height="115"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -1717,139 +1711,6 @@
                 </box>
             </subviews>
         </customView>
-        <customView id="378">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="376"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <box title="Augšuplāde" id="379">
-                    <rect key="frame" x="17" y="16" width="473" height="178"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="p5h-hv-ZYp">
-                        <rect key="frame" x="2" y="2" width="469" height="161"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField verticalHuggingPriority="750" id="380">
-                                <rect key="frame" x="9" y="71" width="451" height="56"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="381">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Jūs varat glabāt augšuplādētās datnes iekš Google Dokumentiem vai pārveidot teksta dokumentus, slaidrādes un rēķintabulas Google Dokumentu formātā, pēc tam tos rediģēt tiešsaistē.</string>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button id="382">
-                                <rect key="frame" x="10" y="133" width="444" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Pārveidot Google dokumentu formātā" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="383">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" id="384">
-                                <rect key="frame" x="9" y="13" width="451" height="28"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Mēģināt ekstraktēt tekstu un izveidot jaunu dokumentu, no PNG, JPEG un GIF attēlu augšupielādes." id="385">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <button id="386">
-                                <rect key="frame" x="10" y="47" width="444" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Optiskā zīmju atpazīšana (OCR)" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="387">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                        </subviews>
-                    </view>
-                </box>
-                <box title="Lejuplādes" id="388">
-                    <rect key="frame" x="17" y="198" width="473" height="158"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="fFV-in-Xec">
-                        <rect key="frame" x="2" y="2" width="469" height="141"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <popUpButton verticalHuggingPriority="750" id="389">
-                                <rect key="frame" x="235" y="69" width="225" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="390">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="Citi skatījumi" id="391"/>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <textField verticalHuggingPriority="750" id="392">
-                                <rect key="frame" x="9" y="101" width="451" height="28"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="393">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Google dokumenti piedāvā eksportēt dokumentus dažādos veida formātos. Izvēlieties sākotnējo eksporta formātu lejuplādējamiem dokumentiem.</string>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" id="394">
-                                <rect key="frame" x="9" y="75" width="225" height="17"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dokumenti:" id="395">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" id="396">
-                                <rect key="frame" x="9" y="46" width="225" height="17"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Uzrādīšana:" id="397">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" id="398">
-                                <rect key="frame" x="9" y="15" width="225" height="17"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Rēķintabulas:" id="399">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <popUpButton verticalHuggingPriority="750" id="400">
-                                <rect key="frame" x="235" y="39" width="225" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="403" id="401">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="Citi skatījumi" id="402">
-                                        <items>
-                                            <menuItem title=" " state="on" id="403"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <popUpButton verticalHuggingPriority="750" id="404">
-                                <rect key="frame" x="235" y="9" width="225" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="407" id="405">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="Citi skatījumi" id="406">
-                                        <items>
-                                            <menuItem title=" " state="on" id="407"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                        </subviews>
-                    </view>
-                </box>
-            </subviews>
-        </customView>
         <customView id="408">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
@@ -1857,7 +1718,7 @@
                 <box title="Valoda" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="Y4e-Wz-wlH">
+                    <view key="contentView" id="mcs-pM-Cfr">
                         <rect key="frame" x="2" y="2" width="469" height="81"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
