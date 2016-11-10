@@ -366,11 +366,9 @@ public class PreferencesController extends ToolbarWindowController {
             }
         }
         editorCombobox.setTarget(this.id());
-        final Selector action = Foundation.selector("editorComboboxClicked:");
-        editorCombobox.setAction(action);
+        editorCombobox.setAction(Foundation.selector("editorComboboxClicked:"));
         editorCombobox.menu().addItem(NSMenuItem.separatorItem());
-        editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        editorCombobox.lastItem().setTarget(this.id());
+        editorCombobox.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
     @Outlet
@@ -378,8 +376,8 @@ public class PreferencesController extends ToolbarWindowController {
     private final ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
 
     @Action
-    public void editorComboboxClicked(NSPopUpButton sender) {
-        if(sender.title().equals(CHOOSE)) {
+    public void editorComboboxClicked(NSMenuItem sender) {
+        if(null == sender.representedObject()) {
             editorPathPanel = NSOpenPanel.openPanel();
             editorPathPanel.setDelegate(editorPathPanelDelegate.id());
             editorPathPanel.setAllowsMultipleSelection(false);
@@ -388,7 +386,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            preferences.setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
+            preferences.setProperty("editor.bundleIdentifier", sender.representedObject());
             for(BrowserController controller : MainController.getBrowsers()) {
                 controller.validateToolbar();
             }
@@ -1139,35 +1137,30 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
-
     // The currently set download folder
     private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
         this.downloadPathPopup.setTarget(this.id());
-        final Selector action = Foundation.selector("downloadPathPopupClicked:");
-        this.downloadPathPopup.setAction(action);
+        this.downloadPathPopup.setAction(Foundation.selector("downloadPathPopupClicked:"));
         this.downloadPathPopup.removeAllItems();
         // Default download folder
-        this.addDownloadPath(action, DEFAULT_DOWNLOAD_FOLDER);
+        this.addDownloadPath(DEFAULT_DOWNLOAD_FOLDER);
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
-        this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
+        this.addDownloadPath(LocalFactory.get("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, LocalFactory.get("~"));
+        this.addDownloadPath(LocalFactory.get("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, LocalFactory.get("~/Downloads"));
+        this.addDownloadPath(LocalFactory.get("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        this.downloadPathPopup.lastItem().setTarget(this.id());
+        this.downloadPathPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
-    private void addDownloadPath(Selector action, Local f) {
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
-        this.downloadPathPopup.lastItem().setTarget(this.id());
+    private void addDownloadPath(final Local f) {
+        this.downloadPathPopup.addItemWithTitle(f.getDisplayName());
         this.downloadPathPopup.lastItem().setImage(
                 IconCacheFactory.<NSImage>get().fileIcon(f, 16)
         );
@@ -1181,7 +1174,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
-        if(sender.title().equals(CHOOSE)) {
+        if(sender.title().equals(String.format("%s…", LocaleFactory.localizedString("Choose")))) {
             downloadPathPanel = NSOpenPanel.openPanel();
             downloadPathPanel.setCanChooseFiles(false);
             downloadPathPanel.setCanChooseDirectories(true);

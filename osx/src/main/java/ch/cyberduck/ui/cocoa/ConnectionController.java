@@ -62,8 +62,6 @@ import org.rococoa.cocoa.foundation.NSSize;
 public class ConnectionController extends SheetController {
     private static final Logger log = Logger.getLogger(ConnectionController.class);
 
-    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
-
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
 
@@ -232,6 +230,7 @@ public class ConnectionController extends SheetController {
         this.privateKeyPopup.setAction(action);
         this.privateKeyPopup.removeAllItems();
         this.privateKeyPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.privateKeyPopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
         this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Local certificate : new OpenSSHPrivateKeyConfigurator().list()) {
             this.privateKeyPopup.addItemWithTitle(certificate.getAbbreviatedPath());
@@ -239,19 +238,18 @@ public class ConnectionController extends SheetController {
         }
         // Choose another folder
         this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.privateKeyPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        this.privateKeyPopup.lastItem().setTarget(this.id());
+        this.privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
     @Action
     public void privateKeyPopupClicked(final NSMenuItem sender) {
-        if(sender.title().equals(CHOOSE)) {
+        if(null == sender.representedObject()) {
             privateKeyOpenPanel = NSOpenPanel.openPanel();
             privateKeyOpenPanel.setCanChooseDirectories(false);
             privateKeyOpenPanel.setCanChooseFiles(true);
             privateKeyOpenPanel.setAllowsMultipleSelection(false);
             privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            privateKeyOpenPanel.setPrompt(CHOOSE);
+            privateKeyOpenPanel.setPrompt(String.format("%s…", LocaleFactory.localizedString("Choose")));
             privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }

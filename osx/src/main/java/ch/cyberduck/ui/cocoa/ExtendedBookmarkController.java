@@ -37,6 +37,7 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
@@ -48,7 +49,6 @@ import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
-import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
@@ -145,32 +145,29 @@ public class ExtendedBookmarkController extends BookmarkController {
     public void setDownloadPathPopup(final NSPopUpButton button) {
         this.downloadPathPopup = button;
         this.downloadPathPopup.setTarget(this.id());
-        final Selector action = Foundation.selector("downloadPathPopupClicked:");
-        this.downloadPathPopup.setAction(action);
+        this.downloadPathPopup.setAction(Foundation.selector("downloadPathPopupClicked:"));
         this.downloadPathPopup.removeAllItems();
 
         // Default download folder
-        this.addDownloadPath(action, new DownloadDirectoryFinder().find(bookmark));
+        this.addDownloadPath(new DownloadDirectoryFinder().find(bookmark));
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.addDownloadPath(action, LocalFactory.get(preferences.getProperty("queue.download.folder")));
+        this.addDownloadPath(LocalFactory.get(preferences.getProperty("queue.download.folder")));
         // Shortcut to the Desktop
-        this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
+        this.addDownloadPath(LocalFactory.get("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, LocalFactory.get("~"));
+        this.addDownloadPath(LocalFactory.get("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, LocalFactory.get("~/Downloads"));
+        this.addDownloadPath(LocalFactory.get("~/Downloads"));
         // Choose another folder
 
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        this.downloadPathPopup.lastItem().setTarget(this.id());
+        this.downloadPathPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
-    private void addDownloadPath(Selector action, Local f) {
+    private void addDownloadPath(final Local f) {
         if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
-            downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
-            downloadPathPopup.lastItem().setTarget(this.id());
+            downloadPathPopup.addItemWithTitle(f.getDisplayName());
             downloadPathPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(f, 16));
             downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
             if(new DownloadDirectoryFinder().find(bookmark).equals(f)) {
@@ -181,7 +178,7 @@ public class ExtendedBookmarkController extends BookmarkController {
 
     @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
-        if(sender.title().equals(CHOOSE)) {
+        if(null == sender.representedObject()) {
             downloadFolderOpenPanel = NSOpenPanel.openPanel();
             downloadFolderOpenPanel.setCanChooseFiles(false);
             downloadFolderOpenPanel.setCanChooseDirectories(true);
