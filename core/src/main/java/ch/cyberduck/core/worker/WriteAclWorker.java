@@ -25,7 +25,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,8 +69,8 @@ public class WriteAclWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
-        for(Path file : files) {
-            if(this.isCanceled()) {
+        for (Path file : files) {
+            if (this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
             this.write(session, feature, file);
@@ -96,9 +99,7 @@ public class WriteAclWorker extends Worker<Boolean> {
 
             if (!config.contains("NEW")) {
                 originalAcl.remove(entry.getKey());
-            }
-            else if (value != null) {
-                Set<Acl.Role> original = originalAcl.get(entry.getKey());
+            } else if (value != null && value.stream().noneMatch(x -> x.getName() == null)) {
                 originalAcl.put(entry.getKey(), acl.get(entry.getKey())); // discard any existing values
             }
         }
@@ -129,14 +130,14 @@ public class WriteAclWorker extends Worker<Boolean> {
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final WriteAclWorker that = (WriteAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
