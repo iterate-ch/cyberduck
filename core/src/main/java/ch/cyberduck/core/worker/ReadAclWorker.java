@@ -20,26 +20,19 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AclOverwrite;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.stream.ExtendedCollectors;
 
 import java.text.MessageFormat;
-import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ReadAclWorker extends Worker<AclOverwrite> {
+public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private final List<Path> files;
 
@@ -48,41 +41,73 @@ public class ReadAclWorker extends Worker<AclOverwrite> {
     }
 
     @Override
-    public AclOverwrite run(final Session<?> session) throws BackgroundException {
+    public List<Acl.UserAndRole> run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
 
-        Map<Path, List<Acl.UserAndRole>> onlineAcl = new HashMap<>();
-        for(Path file : files) {
-            Acl tempAcl = feature.getPermission(file);
-            file.attributes().setAcl(tempAcl);
-            onlineAcl.put(file, tempAcl.asList());
+        List<Acl.User> removedEntries = new ArrayList<>();
+        Map<Path, Map<Acl.User, Acl.Role>> onlineAcl = new HashMap<>();
+        Map<Acl.User, Map<Path, Acl.Role>> aclGraph = new HashMap<>();
+
+        for (Path file : files) {
+            if (this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
+
+            Acl acl = feature.getPermission(file);
+            Map<Acl.User, Acl.Role> filteredAcl = new HashMap<>();
+            for (Map.Entry<Acl.User, Set<Acl.Role>> entry : acl.entrySet()) {
+                Supplier<Stream<Acl.Role>> roleSupplier = () -> entry.getValue().stream().distinct();
+                Acl.Role role = roleSupplier.get().count() == 1 ? roleSupplier.get().findAny().get() : null;
+                filteredAcl.put(entry.getKey(), role);
+            }
+            onlineAcl.put(file, filteredAcl);
+
+            for (Map.Entry<Acl.User, Acl.Role> entry : filteredAcl.entrySet()) {
+                if (aclGraph.containsKey(entry.getKey())) {
+                    aclGraph.get(entry.getKey()).put(file, entry.getValue());
+                } else {
+                    Map<Path, Acl.Role> map = new HashMap<>();
+                    aclGraph.put(entry.getKey(), map);
+                    map.put(file, entry.getValue());
+                }
+            }
         }
 
-        Supplier<Stream<Map.Entry<Path, Acl.UserAndRole>>> flatAcl = () -> onlineAcl.entrySet().stream().flatMap(
-                x -> x.getValue().stream().map(
-                        y -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), y)));
+        for (Map.Entry<Acl.User, Map<Path, Acl.Role>> entry : aclGraph.entrySet()) {
+            if (entry.getValue().size() != files.size()) {
+                removedEntries.add(entry.getKey());
+            }
+        }
+        for (Acl.User user : removedEntries) {
+            aclGraph.remove(user);
+        }
+        for (Map.Entry<Path, Map<Acl.User, Acl.Role>> entry : onlineAcl.entrySet()) {
+            Acl acl = new Acl();
+            removedEntries.clear();
+            for (Map.Entry<Acl.User, Acl.Role> aclPair : entry.getValue().entrySet()) {
+                if (!aclGraph.containsKey(aclPair.getKey())) {
+                    removedEntries.add(aclPair.getKey());
+                } else {
+                    acl.addAll(aclPair.getKey(), aclPair.getValue());
+                }
+            }
+            for (Acl.User removedEntry : removedEntries) {
+                entry.getValue().remove(removedEntry);
+            }
+            entry.getKey().attributes().setAcl(acl);
+        }
 
-        Map<Acl.User, Map<Path, Acl.Role>> aclGraph = flatAcl.get().collect(
-                Collectors.groupingBy(
-                        x -> x.getValue().getUser(),
-                        Collectors.toMap(x -> x.getKey(), x -> x.getValue().getRole()))
-        ).entrySet().stream().filter(x -> x.getValue().size() == files.size()
-        ).collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue()));
-
-        Map<Path, List<Acl.UserAndRole>> pathOriginalAcl = flatAcl.get().filter(
-                x -> aclGraph.containsKey(x.getValue().getUser())
-        ).collect(Collectors.groupingBy(
-                x -> x.getKey(),
-                Collectors.mapping(x -> x.getValue(), Collectors.toList())));
-
-        Map<Acl.User, Acl.Role> acl = aclGraph.entrySet().stream().collect(ExtendedCollectors.toMap(
-                x -> x.getKey(),
-                x -> {
-                    Supplier<Stream<Acl.Role>> roleSupplier = () -> x.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
-                    return roleSupplier.get().count() == 1 ? roleSupplier.get().findAny().get() : null;
-                }));
-
-        return new AclOverwrite(pathOriginalAcl, acl);
+        List<Acl.UserAndRole> userAndRoles = new ArrayList<>();
+        for (Map.Entry<Acl.User, Map<Path, Acl.Role>> entry : aclGraph.entrySet())
+        {
+            // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
+            Supplier<Stream<Acl.Role>> valueSupplier = () -> entry.getValue().entrySet().stream().filter(y -> y.getValue() != null).map(y -> y.getValue()).distinct();
+            // check count against 1, if it is use that value, otherwise use null
+            Acl.Role value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+            // store it
+            userAndRoles.add(new Acl.UserAndRole(entry.getKey(), value));
+        }
+        return userAndRoles;
     }
 
     @Override
@@ -92,20 +117,20 @@ public class ReadAclWorker extends Worker<AclOverwrite> {
     }
 
     @Override
-    public AclOverwrite initialize() {
-        return new AclOverwrite(Collections.emptyMap(), Collections.emptyMap());
+    public List<Acl.UserAndRole> initialize() {
+        return Collections.emptyList();
     }
 
     @Override
     public boolean equals(final Object o) {
-        if(this == o) {
+        if (this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadAclWorker that = (ReadAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if (files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
