@@ -26,11 +26,12 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
@@ -56,11 +57,13 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.sftp.openssh.OpenSSHPrivateKeyConfigurator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
-import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.ID;
+import org.rococoa.Selector;
 
 public final class PromptLoginController implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginController.class);
@@ -139,9 +142,10 @@ public final class PromptLoginController implements LoginCallback {
             @Outlet
             private NSButton anonymousCheckbox;
             @Outlet
-            private NSTextField pkLabel;
+            private NSPopUpButton privateKeyPopup;
             @Outlet
-            private NSButton pkCheckbox;
+            private NSOpenPanel privateKeyOpenPanel;
+
 
             @Override
             protected String getBundleName() {
@@ -153,13 +157,6 @@ public final class PromptLoginController implements LoginCallback {
                 this.update();
                 window.makeFirstResponder(usernameField);
                 super.awakeFromNib();
-            }
-
-            @Override
-            public void setWindow(final NSWindow window) {
-                super.setWindow(window);
-                window.setContentMinSize(window.frame().size);
-                window.setContentMaxSize(new NSSize(600, window.frame().size.height.doubleValue()));
             }
 
             @Override
@@ -268,36 +265,65 @@ public final class PromptLoginController implements LoginCallback {
                 this.update();
             }
 
-            public void setPkLabel(NSTextField pkLabel) {
-                this.pkLabel = pkLabel;
-            }
-
-            public void setPkCheckbox(NSButton pkCheckbox) {
-                this.pkCheckbox = pkCheckbox;
-                this.pkCheckbox.setTarget(this.id());
-                this.pkCheckbox.setAction(Foundation.selector("pkCheckboxSelectionChanged:"));
+            public void setPrivateKeyPopup(final NSPopUpButton button) {
+                this.privateKeyPopup = button;
+                this.privateKeyPopup.setTarget(this.id());
+                final Selector action = Foundation.selector("privateKeyPopupClicked:");
+                this.privateKeyPopup.setAction(action);
+                this.privateKeyPopup.removeAllItems();
+                this.privateKeyPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+                this.privateKeyPopup.lastItem().setRepresentedObject(StringUtils.EMPTY);
+                this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+                for(Local certificate : new OpenSSHPrivateKeyConfigurator().list()) {
+                    this.privateKeyPopup.addItemWithTitle(certificate.getAbbreviatedPath());
+                    this.privateKeyPopup.lastItem().setRepresentedObject(certificate.getAbsolute());
+                }
+                if(credentials.isPublicKeyAuthentication()) {
+                    final Local key = credentials.getIdentity();
+                    if(-1 == this.privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                        this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+                        this.privateKeyPopup.addItemWithTitle(key.getAbbreviatedPath());
+                        this.privateKeyPopup.lastItem().setRepresentedObject(key.getAbsolute());
+                    }
+                }
+                // Choose another folder
+                this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
+                this.privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
             }
 
             @Action
-            public void pkCheckboxSelectionChanged(final NSButton sender) {
-                if(sender.state() == NSCell.NSOnState) {
-                    select(this, new SheetCallback() {
-                        @Override
-                        public void callback(final int returncode) {
-                            if(returncode == SheetCallback.DEFAULT_OPTION) {
-                                final NSObject selected = select.filenames().lastObject();
-                                if(selected != null) {
-                                    credentials.setIdentity(LocalFactory.get(selected.toString()));
-                                    update();
-                                }
-                            }
-                        }
-                    });
+            public void privateKeyPopupClicked(final NSMenuItem sender) {
+                final String selected = sender.representedObject();
+                if(null == selected) {
+                    privateKeyOpenPanel = NSOpenPanel.openPanel();
+                    privateKeyOpenPanel.setCanChooseDirectories(false);
+                    privateKeyOpenPanel.setCanChooseFiles(true);
+                    privateKeyOpenPanel.setAllowsMultipleSelection(false);
+                    privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+                    privateKeyOpenPanel.setPrompt(String.format("%s…", LocaleFactory.localizedString("Choose")));
+                    privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
+                            Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
                 }
                 else {
-                    credentials.setIdentity(null);
+                    credentials.setIdentity(StringUtils.isBlank(selected) ? null : LocalFactory.get(selected));
+                    this.update();
                 }
-                update();
+            }
+
+            public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
+                switch(returncode) {
+                    case SheetCallback.DEFAULT_OPTION:
+                        final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
+                        if(selected != null) {
+                            final Local key = LocalFactory.get(selected.toString());
+                            credentials.setIdentity(key);
+                        }
+                        break;
+                    case SheetCallback.ALTERNATE_OPTION:
+                        credentials.setIdentity(null);
+                        break;
+                }
+                this.update();
             }
 
             private void update() {
@@ -325,17 +351,12 @@ public final class PromptLoginController implements LoginCallback {
                 this.anonymousCheckbox.setEnabled(options.anonymous);
                 this.anonymousCheckbox.setState(options.anonymous && credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
 
-                this.pkCheckbox.setEnabled(options.publickey);
+                this.privateKeyPopup.setEnabled(options.publickey);
                 if(options.publickey && credentials.isPublicKeyAuthentication()) {
-                    this.pkCheckbox.setState(NSCell.NSOnState);
-                    this.updateField(this.pkLabel, credentials.getIdentity().getAbbreviatedPath(),
-                            TRUNCATE_MIDDLE_ATTRIBUTES);
-                    this.pkLabel.setTextColor(NSColor.textColor());
+                    privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
                 }
                 else {
-                    this.pkCheckbox.setState(NSCell.NSOffState);
-                    this.pkLabel.setStringValue(LocaleFactory.localizedString("No private key selected"));
-                    this.pkLabel.setTextColor(NSColor.disabledControlTextColor());
+                    this.privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                 }
             }
 
