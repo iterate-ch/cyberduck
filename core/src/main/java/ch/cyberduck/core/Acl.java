@@ -21,14 +21,7 @@ package ch.cyberduck.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     private static final long serialVersionUID = 372192161904802600L;
@@ -406,7 +399,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         @Override
         public int hashCode() {
-            return this.getName().hashCode();
+            return Objects.hash(getName());
         }
 
         @Override
