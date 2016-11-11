@@ -46,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format",
                 "Credentials");
 
-            openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
+            openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk;*)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 
             SetMinMaxSize(Height);
@@ -63,7 +63,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool SavePasswordEnabled
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string PasswordLabel
@@ -74,18 +77,27 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string Password
         {
             get { return string.Empty; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool PasswordEnabled
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool SavePasswordChecked
         {
             get { return true; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool HostFieldEnabled
@@ -112,6 +124,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             protocol.ValueMember = "Key";
             protocol.DisplayMember = "Value";
             protocol.IconMember = "IconKey";
+        }
+
+        public void PopulatePrivateKeys(List<string> keys)
+        {
+            comboBoxPrivateKey.DataSource = null;
+            comboBoxPrivateKey.DataSource = keys;
+        }
+
+        public void PopulateClientCertificates(List<string> certificates)
+        {
+            comboBoxClientCertificate.DataSource = certificates;
         }
 
         public void PopulateConnectModes(List<KeyValuePair<string, FTPConnectMode>> modes)
@@ -150,17 +173,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             openFileDialog.FileName = String.Empty;
             if (DialogResult.OK == openFileDialog.ShowDialog())
             {
-                ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
-            }
-            else
-            {
-                ChangedPrivateKey(this, new PrivateKeyArgs(null));
+                ChangedPrivateKeyEvent(this, new PrivateKeyArgs(openFileDialog.FileName));
             }
         }
 
         public void PopulateTimezones(List<string> timezones)
         {
             comboBoxTimezone.DataSource = timezones;
+        }
+
+        public bool ClientCertificateFieldEnabled
+        {
+            set { comboBoxClientCertificate.Enabled = value; }
         }
 
         public string UsernameLabel
@@ -181,19 +205,20 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedNicknameEvent = delegate { };
         public event VoidHandler ChangedPathEvent = delegate { };
         public event VoidHandler ChangedAnonymousCheckboxEvent = delegate { };
+        public event VoidHandler ChangedClientCertificateEvent = delegate { };
         public event VoidHandler ChangedTimezoneEvent = delegate { };
         public event VoidHandler ChangedConnectModeEvent = delegate { };
         public event VoidHandler ChangedTransferEvent = delegate { };
-        public event VoidHandler ChangedPublicKeyCheckboxEvent = delegate { };
         public event VoidHandler ChangedWebURLEvent = delegate { };
         public event VoidHandler ChangedCommentEvent = delegate { };
         public event VoidHandler ChangedBrowserDownloadPathEvent = delegate { };
         public event VoidHandler OpenWebUrl = delegate { };
+        public event VoidHandler OpenPrivateKeyBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderEvent = delegate { };
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
-        public event EventHandler<PrivateKeyArgs> ChangedPrivateKey = delegate { };
+        public event EventHandler<PrivateKeyArgs> ChangedPrivateKeyEvent = delegate { };
 
         public bool PortFieldEnabled
         {
@@ -210,25 +235,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxEncoding.Enabled = value; }
         }
 
-        public bool PkCheckboxEnabled
+        public string SelectedClientCertificate
         {
-            set { checkBoxPKA.Enabled = value; }
+            get { return comboBoxClientCertificate.Text; }
+            set { comboBoxClientCertificate.Text = value; }
         }
 
-        public bool PkCheckboxState
-        {
-            get { return checkBoxPKA.Checked; }
-            set { checkBoxPKA.Checked = value; }
-        }
-
-        public string PkLabel
+        public bool PrivateKeyFieldEnabled
         {
             set
             {
-                pkLabel.Text = value;
-                pkLabel.ForeColor = checkBoxPKA.Checked ? Color.FromKnownColor(KnownColor.ControlText) : Color.Gray;
+                comboBoxPrivateKey.Enabled = value;
+                choosePkButton.Enabled = value;
             }
-            get { return pkLabel.Text; }
         }
 
         public bool WebUrlFieldEnabled
@@ -382,6 +401,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxTimezone.Text = value; }
         }
 
+        public string SelectedPrivateKey
+        {
+            get { return comboBoxPrivateKey.Text; }
+            set { comboBoxPrivateKey.Text = value; }
+        }
+
         public string WindowTitle
         {
             set { Text = value; }
@@ -468,11 +493,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             ChangedCommentEvent();
         }
 
-        private void checkBoxPKA_CheckedChanged(object sender, EventArgs e)
-        {
-            ChangedPublicKeyCheckboxEvent();
-        }
-
         private void downloadFolderButton_Click(object sender, EventArgs e)
         {
             OpenDownloadFolderBrowserEvent();
@@ -506,6 +526,21 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void checkBoxAnonymous_CheckedChanged(object sender, EventArgs e)
         {
             ChangedAnonymousCheckboxEvent();
+        }
+
+        private void comboBoxPrivateKey_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            ChangedPrivateKeyEvent(sender, new PrivateKeyArgs(SelectedPrivateKey));
+        }
+
+        private void choosePkButton_Click(object sender, EventArgs e)
+        {
+            OpenPrivateKeyBrowserEvent();
+        }
+
+        private void comboBoxClientCertificate_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            ChangedClientCertificateEvent();
         }
     }
 }

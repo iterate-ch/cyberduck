@@ -67,6 +67,6 @@ public final class SessionFactory {
 
     public static Session create(final Host target) {
         return create(target, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
-                new KeychainX509KeyManager());
+                new KeychainX509KeyManager(target));
     }
 }

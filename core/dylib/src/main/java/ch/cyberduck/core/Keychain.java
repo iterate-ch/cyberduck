@@ -166,12 +166,12 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
-                                  final String hostname, final String prompt)
+                                  final Host bookmark, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
         final CertificateStoreX509KeyManager manager;
         try {
-            manager = new KeychainX509KeyManager().init();
+            manager = new KeychainX509KeyManager(bookmark).init();
         }
         catch(IOException e) {
             throw new ConnectionCanceledException(e);
@@ -189,7 +189,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             final DefaultMainAction action = new DefaultMainAction() {
                 @Override
                 public void run() {
-                    select.set(chooseCertificateNative(encoded, hostname, prompt));
+                    select.set(chooseCertificateNative(encoded, bookmark.getHostname(), prompt));
                 }
             };
             proxy.invoke(action, action.lock(), true);

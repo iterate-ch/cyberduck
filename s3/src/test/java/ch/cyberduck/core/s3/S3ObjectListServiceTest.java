@@ -353,7 +353,7 @@ public class S3ObjectListServiceTest {
                     }
                 });
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(),
-                new KeychainX509KeyManager(new DisabledCertificateStore()), new DisabledProxyFinder());
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()), new DisabledProxyFinder());
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         new S3ObjectListService(session).list(
                 new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());

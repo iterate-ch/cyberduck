@@ -36,6 +36,7 @@ public final class PreferencesControllerFactory {
                         shared = null;
                     }
                 };
+                shared.loadBundle();
             }
             return shared;
         }

@@ -57,7 +57,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-                new CertificateStoreX509KeyManager(new DefaultCertificateStore()));
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore(), host));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
@@ -76,7 +76,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "localhost", 2121);
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-                new CertificateStoreX509KeyManager(new DefaultCertificateStore()));
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore(), host));
         try {
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -92,7 +92,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore(), host),
                 new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
                         new DefaultSocketConfigurator(), new ProxyFinder() {
                     @Override
@@ -116,7 +116,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore(), host),
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final Host target) {
@@ -151,7 +151,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-                new CertificateStoreX509KeyManager(new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DefaultCertificateStore(), host),
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final Host target) {
@@ -429,11 +429,11 @@ public class DAVSessionTest {
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                new KeychainX509KeyManager(host, new DisabledCertificateStore() {
                     @Override
-                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("auth.startssl.com", hostname);
+                        assertEquals("auth.startssl.com", bookmark);
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to auth.startssl.com.",
                                 prompt);
                         assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
@@ -471,11 +471,11 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                new KeychainX509KeyManager(host, new DisabledCertificateStore() {
                     @Override
-                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("test.cyberduck.ch", bookmark);
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
                                 prompt);
                         throw new ConnectionCanceledException(prompt);
@@ -507,11 +507,11 @@ public class DAVSessionTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                new KeychainX509KeyManager(host, new DisabledCertificateStore() {
                     @Override
-                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("test.cyberduck.ch", bookmark);
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
                                 prompt);
                         throw new ConnectionCanceledException(prompt);
@@ -548,7 +548,7 @@ public class DAVSessionTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-                new KeychainX509KeyManager(new DisabledCertificateStore()));
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
@@ -586,7 +586,7 @@ public class DAVSessionTest {
         final Host host = new Host(new DAVProtocol(), "svn.cyberduck.io");
         final AtomicBoolean warning = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-                new KeychainX509KeyManager(new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback() {

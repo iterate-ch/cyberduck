@@ -36,7 +36,7 @@ public class KeychainStoreTest {
 
     @Test
     public void testGetAliasesForIssuerDN() throws Exception {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(),
+        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
                 KeyStore.getInstance("KeychainStore", "Apple")).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
                 new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
