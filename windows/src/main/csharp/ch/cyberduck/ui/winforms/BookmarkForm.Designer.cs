@@ -52,6 +52,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelPort = new System.Windows.Forms.Label();
             this.checkBoxAnonymous = new System.Windows.Forms.CheckBox();
             this.numericUpDownPort = new System.Windows.Forms.NumericUpDown();
+            this.labelPrivateKey = new System.Windows.Forms.Label();
+            this.labelClientCertificate = new System.Windows.Forms.Label();
+            this.comboBoxPrivateKey = new System.Windows.Forms.ComboBox();
+            this.comboBoxClientCertificate = new System.Windows.Forms.ComboBox();
+            this.choosePkButton = new System.Windows.Forms.Button();
             this.optionsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxPath = new System.Windows.Forms.TextBox();
@@ -64,14 +69,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label3 = new System.Windows.Forms.Label();
             this.buttonWebURL = new System.Windows.Forms.Button();
             this.comboBoxEncoding = new System.Windows.Forms.ComboBox();
-            this.checkBoxPKA = new System.Windows.Forms.CheckBox();
             this.labelDownloadFolder = new System.Windows.Forms.Label();
             this.textBoxWebUrl = new System.Windows.Forms.TextBox();
             this.linkLabelDownloadFolder = new System.Windows.Forms.LinkLabel();
             this.labelWebURL = new System.Windows.Forms.Label();
             this.labelTransferFiles = new System.Windows.Forms.Label();
             this.comboBoxTransferFiles = new System.Windows.Forms.ComboBox();
-            this.pkLabel = new Ch.Cyberduck.Ui.Winforms.Controls.EllipsisLabel();
             this.downloadFolderButton = new System.Windows.Forms.Button();
             this.separatorLine = new System.Windows.Forms.Label();
             this.toggleOptionsLabel = new System.Windows.Forms.Label();
@@ -131,18 +134,25 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.labelPort, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.checkBoxAnonymous, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDownPort, 3, 3);
+            this.tableLayoutPanel1.Controls.Add(this.labelPrivateKey, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.labelClientCertificate, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxPrivateKey, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxClientCertificate, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.choosePkButton, 3, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 8;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(482, 179);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(482, 239);
             this.tableLayoutPanel1.TabIndex = 36;
             // 
             // protocol
@@ -167,7 +177,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelNickname.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelNickname.AutoSize = true;
-            this.labelNickname.Location = new System.Drawing.Point(13, 48);
+            this.labelNickname.Location = new System.Drawing.Point(47, 48);
             this.labelNickname.Name = "labelNickname";
             this.labelNickname.Size = new System.Drawing.Size(64, 15);
             this.labelNickname.TabIndex = 1;
@@ -177,7 +187,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // alertIcon
             // 
             this.alertIcon.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.alertIcon.Image = global::Ch.Cyberduck.ResourcesBundle.alert;
+            this.alertIcon.Image = ((System.Drawing.Image)(resources.GetObject("alertIcon.Image")));
             this.alertIcon.Location = new System.Drawing.Point(448, 73);
             this.alertIcon.Name = "alertIcon";
             this.alertIcon.Padding = new System.Windows.Forms.Padding(0, 2, 0, 0);
@@ -191,9 +201,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxUsername, 3);
-            this.textBoxUsername.Location = new System.Drawing.Point(83, 129);
+            this.textBoxUsername.Location = new System.Drawing.Point(117, 129);
             this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(386, 23);
+            this.textBoxUsername.Size = new System.Drawing.Size(352, 23);
             this.textBoxUsername.TabIndex = 6;
             this.textBoxUsername.TextChanged += new System.EventHandler(this.textBoxUsername_TextChanged);
             // 
@@ -202,9 +212,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxNickname.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxNickname, 3);
-            this.textBoxNickname.Location = new System.Drawing.Point(83, 45);
+            this.textBoxNickname.Location = new System.Drawing.Point(117, 45);
             this.textBoxNickname.Name = "textBoxNickname";
-            this.textBoxNickname.Size = new System.Drawing.Size(386, 23);
+            this.textBoxNickname.Size = new System.Drawing.Size(352, 23);
             this.textBoxNickname.TabIndex = 2;
             this.textBoxNickname.TextChanged += new System.EventHandler(this.textBoxNickname_TextChanged);
             // 
@@ -212,7 +222,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelUsername.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelUsername.AutoSize = true;
-            this.labelUsername.Location = new System.Drawing.Point(14, 132);
+            this.labelUsername.Location = new System.Drawing.Point(48, 132);
             this.labelUsername.Name = "labelUsername";
             this.labelUsername.Size = new System.Drawing.Size(63, 15);
             this.labelUsername.TabIndex = 29;
@@ -223,7 +233,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelURL.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelURL.AutoSize = true;
-            this.labelURL.Location = new System.Drawing.Point(46, 76);
+            this.labelURL.Location = new System.Drawing.Point(80, 76);
             this.labelURL.Name = "labelURL";
             this.labelURL.Size = new System.Drawing.Size(31, 15);
             this.labelURL.TabIndex = 3;
@@ -235,10 +245,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.linkLabelURL.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelURL.AutoEllipsis = true;
             this.tableLayoutPanel1.SetColumnSpan(this.linkLabelURL, 2);
-            this.linkLabelURL.Location = new System.Drawing.Point(83, 76);
+            this.linkLabelURL.Location = new System.Drawing.Point(117, 76);
             this.linkLabelURL.Margin = new System.Windows.Forms.Padding(3);
             this.linkLabelURL.Name = "linkLabelURL";
-            this.linkLabelURL.Size = new System.Drawing.Size(310, 15);
+            this.linkLabelURL.Size = new System.Drawing.Size(272, 15);
             this.linkLabelURL.TabIndex = 3;
             this.linkLabelURL.Click += new System.EventHandler(this.linkLabelURL_Click);
             // 
@@ -246,7 +256,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelServer.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelServer.AutoSize = true;
-            this.labelServer.Location = new System.Drawing.Point(35, 104);
+            this.labelServer.Location = new System.Drawing.Point(69, 104);
             this.labelServer.Name = "labelServer";
             this.labelServer.Size = new System.Drawing.Size(42, 15);
             this.labelServer.TabIndex = 5;
@@ -257,9 +267,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.textBoxServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxServer.Location = new System.Drawing.Point(83, 101);
+            this.textBoxServer.Location = new System.Drawing.Point(117, 101);
             this.textBoxServer.Name = "textBoxServer";
-            this.textBoxServer.Size = new System.Drawing.Size(260, 23);
+            this.textBoxServer.Size = new System.Drawing.Size(222, 23);
             this.textBoxServer.TabIndex = 4;
             this.textBoxServer.TextChanged += new System.EventHandler(this.textBoxServer_TextChanged);
             // 
@@ -267,7 +277,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelPort.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelPort.AutoSize = true;
-            this.labelPort.Location = new System.Drawing.Point(361, 104);
+            this.labelPort.Location = new System.Drawing.Point(357, 104);
             this.labelPort.Name = "labelPort";
             this.labelPort.Size = new System.Drawing.Size(32, 15);
             this.labelPort.TabIndex = 7;
@@ -278,7 +288,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.checkBoxAnonymous.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.checkBoxAnonymous, 3);
-            this.checkBoxAnonymous.Location = new System.Drawing.Point(83, 157);
+            this.checkBoxAnonymous.Location = new System.Drawing.Point(117, 157);
             this.checkBoxAnonymous.Name = "checkBoxAnonymous";
             this.checkBoxAnonymous.Size = new System.Drawing.Size(124, 19);
             this.checkBoxAnonymous.TabIndex = 7;
@@ -288,7 +298,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // numericUpDownPort
             // 
-            this.numericUpDownPort.Location = new System.Drawing.Point(399, 101);
+            this.numericUpDownPort.Location = new System.Drawing.Point(395, 101);
             this.numericUpDownPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -299,6 +309,66 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.numericUpDownPort.TabIndex = 5;
             this.numericUpDownPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericUpDownPort.ValueChanged += new System.EventHandler(this.numericUpDownPort_TextChanged);
+            // 
+            // labelPrivateKey
+            // 
+            this.labelPrivateKey.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPrivateKey.AutoSize = true;
+            this.labelPrivateKey.Location = new System.Drawing.Point(19, 188);
+            this.labelPrivateKey.Name = "labelPrivateKey";
+            this.labelPrivateKey.Size = new System.Drawing.Size(92, 15);
+            this.labelPrivateKey.TabIndex = 34;
+            this.labelPrivateKey.Text = "SSH Private Key:";
+            this.labelPrivateKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // labelClientCertificate
+            // 
+            this.labelClientCertificate.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelClientCertificate.AutoSize = true;
+            this.labelClientCertificate.Location = new System.Drawing.Point(13, 217);
+            this.labelClientCertificate.Name = "labelClientCertificate";
+            this.labelClientCertificate.Size = new System.Drawing.Size(98, 15);
+            this.labelClientCertificate.TabIndex = 35;
+            this.labelClientCertificate.Text = "Client Certificate:";
+            this.labelClientCertificate.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // comboBoxPrivateKey
+            // 
+            this.comboBoxPrivateKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.SetColumnSpan(this.comboBoxPrivateKey, 2);
+            this.comboBoxPrivateKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxPrivateKey.FormattingEnabled = true;
+            this.comboBoxPrivateKey.Location = new System.Drawing.Point(117, 185);
+            this.comboBoxPrivateKey.Name = "comboBoxPrivateKey";
+            this.comboBoxPrivateKey.Size = new System.Drawing.Size(272, 23);
+            this.comboBoxPrivateKey.TabIndex = 8;
+            this.comboBoxPrivateKey.SelectionChangeCommitted += new System.EventHandler(this.comboBoxPrivateKey_SelectionChangeCommitted);
+            // 
+            // comboBoxClientCertificate
+            // 
+            this.comboBoxClientCertificate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.SetColumnSpan(this.comboBoxClientCertificate, 3);
+            this.comboBoxClientCertificate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxClientCertificate.FormattingEnabled = true;
+            this.comboBoxClientCertificate.Location = new System.Drawing.Point(117, 213);
+            this.comboBoxClientCertificate.Name = "comboBoxClientCertificate";
+            this.comboBoxClientCertificate.Size = new System.Drawing.Size(352, 23);
+            this.comboBoxClientCertificate.TabIndex = 9;
+            this.comboBoxClientCertificate.SelectionChangeCommitted += new System.EventHandler(this.comboBoxClientCertificate_SelectionChangeCommitted);
+            // 
+            // choosePkButton
+            // 
+            this.choosePkButton.AutoSize = true;
+            this.choosePkButton.Location = new System.Drawing.Point(395, 184);
+            this.choosePkButton.Margin = new System.Windows.Forms.Padding(3, 2, 2, 1);
+            this.choosePkButton.Name = "choosePkButton";
+            this.choosePkButton.Size = new System.Drawing.Size(75, 25);
+            this.choosePkButton.TabIndex = 9;
+            this.choosePkButton.Text = "Choose…";
+            this.choosePkButton.UseVisualStyleBackColor = true;
+            this.choosePkButton.Click += new System.EventHandler(this.choosePkButton_Click);
             // 
             // optionsPanel
             // 
@@ -318,17 +388,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.Controls.Add(this.label3, 0, 2);
             this.optionsPanel.Controls.Add(this.buttonWebURL, 3, 8);
             this.optionsPanel.Controls.Add(this.comboBoxEncoding, 1, 2);
-            this.optionsPanel.Controls.Add(this.checkBoxPKA, 1, 3);
             this.optionsPanel.Controls.Add(this.labelDownloadFolder, 0, 5);
             this.optionsPanel.Controls.Add(this.textBoxWebUrl, 1, 8);
             this.optionsPanel.Controls.Add(this.linkLabelDownloadFolder, 1, 5);
             this.optionsPanel.Controls.Add(this.labelWebURL, 0, 8);
             this.optionsPanel.Controls.Add(this.labelTransferFiles, 0, 6);
             this.optionsPanel.Controls.Add(this.comboBoxTransferFiles, 1, 6);
-            this.optionsPanel.Controls.Add(this.pkLabel, 1, 4);
             this.optionsPanel.Controls.Add(this.downloadFolderButton, 2, 5);
             this.optionsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.optionsPanel.Location = new System.Drawing.Point(0, 219);
+            this.optionsPanel.Location = new System.Drawing.Point(0, 288);
             this.optionsPanel.Name = "optionsPanel";
             this.optionsPanel.Padding = new System.Windows.Forms.Padding(10, 0, 10, 10);
             this.optionsPanel.RowCount = 11;
@@ -375,7 +443,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxTimezone, 3);
             this.comboBoxTimezone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTimezone.FormattingEnabled = true;
-            this.comboBoxTimezone.Location = new System.Drawing.Point(119, 302);
+            this.comboBoxTimezone.Location = new System.Drawing.Point(119, 300);
             this.comboBoxTimezone.Name = "comboBoxTimezone";
             this.comboBoxTimezone.Size = new System.Drawing.Size(350, 23);
             this.comboBoxTimezone.TabIndex = 17;
@@ -385,7 +453,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(51, 305);
+            this.label8.Location = new System.Drawing.Point(51, 304);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(62, 15);
             this.label8.TabIndex = 27;
@@ -407,9 +475,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.optionsPanel.SetColumnSpan(this.richTextBoxNotes, 3);
             this.richTextBoxNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxNotes.Location = new System.Drawing.Point(119, 232);
+            this.richTextBoxNotes.Location = new System.Drawing.Point(119, 179);
             this.richTextBoxNotes.Name = "richTextBoxNotes";
-            this.richTextBoxNotes.Size = new System.Drawing.Size(350, 64);
+            this.richTextBoxNotes.Size = new System.Drawing.Size(350, 115);
             this.richTextBoxNotes.TabIndex = 16;
             this.richTextBoxNotes.Text = "";
             this.richTextBoxNotes.TextChanged += new System.EventHandler(this.richTextBoxNotes_TextChanged);
@@ -418,7 +486,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelNotes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelNotes.AutoSize = true;
-            this.labelNotes.Location = new System.Drawing.Point(72, 256);
+            this.labelNotes.Location = new System.Drawing.Point(72, 229);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(41, 15);
             this.labelNotes.TabIndex = 26;
@@ -455,8 +523,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonWebURL.FlatAppearance.BorderSize = 0;
             this.buttonWebURL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonWebURL.Image = global::Ch.Cyberduck.ResourcesBundle.site;
-            this.buttonWebURL.Location = new System.Drawing.Point(446, 203);
+            this.buttonWebURL.Image = ((System.Drawing.Image)(resources.GetObject("buttonWebURL.Image")));
+            this.buttonWebURL.Location = new System.Drawing.Point(446, 150);
             this.buttonWebURL.MaximumSize = new System.Drawing.Size(23, 23);
             this.buttonWebURL.Name = "buttonWebURL";
             this.buttonWebURL.Size = new System.Drawing.Size(23, 23);
@@ -477,24 +545,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.comboBoxEncoding.TabIndex = 10;
             this.comboBoxEncoding.SelectionChangeCommitted += new System.EventHandler(this.comboBoxEncoding_SelectionChangeCommitted);
             // 
-            // checkBoxPKA
-            // 
-            this.checkBoxPKA.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBoxPKA.AutoSize = true;
-            this.optionsPanel.SetColumnSpan(this.checkBoxPKA, 3);
-            this.checkBoxPKA.Location = new System.Drawing.Point(119, 90);
-            this.checkBoxPKA.Name = "checkBoxPKA";
-            this.checkBoxPKA.Size = new System.Drawing.Size(185, 19);
-            this.checkBoxPKA.TabIndex = 11;
-            this.checkBoxPKA.Text = "Use Public Key Authentication";
-            this.checkBoxPKA.UseVisualStyleBackColor = true;
-            this.checkBoxPKA.CheckedChanged += new System.EventHandler(this.checkBoxPKA_CheckedChanged);
-            // 
             // labelDownloadFolder
             // 
             this.labelDownloadFolder.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelDownloadFolder.AutoSize = true;
-            this.labelDownloadFolder.Location = new System.Drawing.Point(13, 148);
+            this.labelDownloadFolder.Location = new System.Drawing.Point(13, 95);
             this.labelDownloadFolder.Name = "labelDownloadFolder";
             this.labelDownloadFolder.Size = new System.Drawing.Size(100, 15);
             this.labelDownloadFolder.TabIndex = 18;
@@ -506,7 +561,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxWebUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.textBoxWebUrl, 2);
-            this.textBoxWebUrl.Location = new System.Drawing.Point(119, 203);
+            this.textBoxWebUrl.Location = new System.Drawing.Point(119, 150);
             this.textBoxWebUrl.Name = "textBoxWebUrl";
             this.textBoxWebUrl.Size = new System.Drawing.Size(312, 23);
             this.textBoxWebUrl.TabIndex = 14;
@@ -516,7 +571,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.linkLabelDownloadFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.linkLabelDownloadFolder.AutoEllipsis = true;
-            this.linkLabelDownloadFolder.Location = new System.Drawing.Point(119, 148);
+            this.linkLabelDownloadFolder.Location = new System.Drawing.Point(119, 95);
             this.linkLabelDownloadFolder.Margin = new System.Windows.Forms.Padding(3);
             this.linkLabelDownloadFolder.Name = "linkLabelDownloadFolder";
             this.linkLabelDownloadFolder.Size = new System.Drawing.Size(278, 15);
@@ -527,7 +582,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelWebURL.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelWebURL.AutoSize = true;
-            this.labelWebURL.Location = new System.Drawing.Point(55, 207);
+            this.labelWebURL.Location = new System.Drawing.Point(55, 154);
             this.labelWebURL.Name = "labelWebURL";
             this.labelWebURL.Size = new System.Drawing.Size(58, 15);
             this.labelWebURL.TabIndex = 22;
@@ -538,7 +593,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelTransferFiles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelTransferFiles.AutoSize = true;
-            this.labelTransferFiles.Location = new System.Drawing.Point(35, 178);
+            this.labelTransferFiles.Location = new System.Drawing.Point(35, 125);
             this.labelTransferFiles.Name = "labelTransferFiles";
             this.labelTransferFiles.Size = new System.Drawing.Size(78, 15);
             this.labelTransferFiles.TabIndex = 20;
@@ -552,31 +607,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxTransferFiles, 3);
             this.comboBoxTransferFiles.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTransferFiles.FormattingEnabled = true;
-            this.comboBoxTransferFiles.Location = new System.Drawing.Point(119, 174);
+            this.comboBoxTransferFiles.Location = new System.Drawing.Point(119, 121);
             this.comboBoxTransferFiles.Name = "comboBoxTransferFiles";
             this.comboBoxTransferFiles.Size = new System.Drawing.Size(350, 23);
             this.comboBoxTransferFiles.TabIndex = 13;
             this.comboBoxTransferFiles.SelectionChangeCommitted += new System.EventHandler(this.comboBoxTransferFiles_SelectionChangeCommitted);
             // 
-            // pkLabel
-            // 
-            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pkLabel.AutoEllipsis = true;
-            this.pkLabel.AutoSize = true;
-            this.optionsPanel.SetColumnSpan(this.pkLabel, 3);
-            this.pkLabel.Location = new System.Drawing.Point(136, 112);
-            this.pkLabel.Margin = new System.Windows.Forms.Padding(20, 0, 3, 0);
-            this.pkLabel.MinimumSize = new System.Drawing.Size(0, 28);
-            this.pkLabel.Name = "pkLabel";
-            this.pkLabel.Size = new System.Drawing.Size(333, 28);
-            this.pkLabel.TabIndex = 33;
-            // 
             // downloadFolderButton
             // 
             this.downloadFolderButton.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.downloadFolderButton, 2);
-            this.downloadFolderButton.Location = new System.Drawing.Point(403, 143);
+            this.downloadFolderButton.Location = new System.Drawing.Point(403, 90);
             this.downloadFolderButton.Name = "downloadFolderButton";
             this.downloadFolderButton.Size = new System.Drawing.Size(66, 25);
             this.downloadFolderButton.TabIndex = 12;
@@ -589,7 +630,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.separatorLine.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.separatorLine.Location = new System.Drawing.Point(17, 211);
+            this.separatorLine.Location = new System.Drawing.Point(17, 269);
             this.separatorLine.Name = "separatorLine";
             this.separatorLine.Size = new System.Drawing.Size(452, 2);
             this.separatorLine.TabIndex = 40;
@@ -599,7 +640,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toggleOptionsLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toggleOptionsLabel.ImageIndex = 3;
             this.toggleOptionsLabel.ImageList = this.imageList;
-            this.toggleOptionsLabel.Location = new System.Drawing.Point(13, 182);
+            this.toggleOptionsLabel.Location = new System.Drawing.Point(13, 240);
             this.toggleOptionsLabel.Name = "toggleOptionsLabel";
             this.toggleOptionsLabel.Size = new System.Drawing.Size(168, 27);
             this.toggleOptionsLabel.TabIndex = 7;
@@ -611,7 +652,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(482, 555);
+            this.ClientSize = new System.Drawing.Size(482, 624);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.optionsPanel);
@@ -661,7 +702,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button buttonWebURL;
         private System.Windows.Forms.ComboBox comboBoxEncoding;
-        private System.Windows.Forms.CheckBox checkBoxPKA;
         private System.Windows.Forms.Label labelDownloadFolder;
         private System.Windows.Forms.TextBox textBoxWebUrl;
         private System.Windows.Forms.LinkLabel linkLabelDownloadFolder;
@@ -670,11 +710,14 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox comboBoxTransferFiles;
         private System.Windows.Forms.Button downloadFolderButton;
         private System.Windows.Forms.ToolTip toolTip;
-        private EllipsisLabel pkLabel;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.CheckBox checkBoxAnonymous;
         private System.Windows.Forms.NumericUpDown numericUpDownPort;
-
+        private System.Windows.Forms.Label labelPrivateKey;
+        private System.Windows.Forms.Label labelClientCertificate;
+        private System.Windows.Forms.ComboBox comboBoxPrivateKey;
+        private System.Windows.Forms.ComboBox comboBoxClientCertificate;
+        private System.Windows.Forms.Button choosePkButton;
     }
 }

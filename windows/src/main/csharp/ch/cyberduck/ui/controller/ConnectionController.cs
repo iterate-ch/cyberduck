@@ -11,7 +11,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//  
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
@@ -25,6 +25,7 @@ using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -32,6 +33,7 @@ using java.lang;
 using org.apache.log4j;
 using StructureMap;
 using Object = System.Object;
+using Path = System.IO.Path;
 using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -42,7 +44,8 @@ namespace Ch.Cyberduck.Ui.Controller
             new Dictionary<WindowController, ConnectionController>();
 
         private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(ConnectionController).FullName);
+        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerReachability;
 
@@ -87,10 +90,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 credentials.setSaved(View.SavePasswordChecked);
                 if (protocol.getType() == Protocol.Type.sftp)
                 {
-                    if (View.PkCheckboxState)
-                    {
-                        credentials.setIdentity(LocalFactory.get(View.PkLabel));
-                    }
+                    credentials.setIdentity(View.SelectedPrivateKey.Equals(LocaleFactory.localizedString("None"))
+                        ? null
+                        : LocalFactory.get(View.SelectedPrivateKey));
                 }
                 if (View.SelectedEncoding.Equals(Default))
                 {
@@ -135,17 +137,29 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
+        private void InitPrivateKeys()
+        {
+            foreach (
+                Local key in
+                Utils.ConvertFromJavaList<Local>(
+                    new OpenSSHPrivateKeyConfigurator(
+                        LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
+            {
+                _keys.Add(key.getAbsolute());
+            }
+            View.PopulatePrivateKeys(_keys);
+        }
+
         private void Init()
         {
             InitProtocols();
+            InitPrivateKeys();
             InitConnectModes();
             InitEncodings();
 
             View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-            View.PkLabel = LocaleFactory.localizedString("No private key selected");
             View.SavePasswordChecked = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
             View.AnonymousChecked = false;
-            View.PkCheckboxState = false;
             View.SelectedEncoding = Default;
             View.SelectedConnectMode = FTPConnectMode.unknown;
             View.ChangedProtocolEvent += View_ChangedProtocolEvent;
@@ -154,30 +168,29 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedServerEvent += View_ChangedServerEvent;
             View.ChangedEncodingEvent += View_ChangedEncodingEvent;
             View.ChangedPathEvent += View_ChangedPathEvent;
-            View.ChangedPublicKeyCheckboxEvent += View_ChangedPublicKeyCheckboxEvent;
+            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
-            View.ChangedPrivateKey += View_ChangedPrivateKey;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
             View.OpenUrl += View_OpenUrl;
 
             View_ChangedProtocolEvent();
         }
 
-        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
+        private void View_OpenPrivateKeyBrowserEvent()
         {
-            if (null != e.KeyFile)
+            string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
+            if (!LocaleFactory.localizedString("None").Equals(View.SelectedPrivateKey))
             {
-                View.PkLabel = e.KeyFile;
-                View.PasswordEnabled = false;
+                selectedKeyFile = Path.GetDirectoryName(View.SelectedPrivateKey);
             }
-            else
-            {
-                View.PkLabel = LocaleFactory.localizedString("No private key selected");
-            }
+            View.PasswordEnabled = true;
+            View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
+            ;
         }
 
         private void View_OpenUrl()
@@ -203,24 +216,14 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateUrlLabel();
         }
 
-        private void View_ChangedPublicKeyCheckboxEvent()
+        private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
         {
-            string s = LocaleFactory.localizedString("No private key selected");
-            if (View.PkCheckboxState)
+            if (!_keys.Contains(e.KeyFile))
             {
-                string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-                if (!s.Equals(View.PkLabel))
-                {
-                    selectedKeyFile = View.PkLabel;
-                }
-
-                View.PasswordEnabled = true;
-                View.ShowPrivateKeyBrowser(selectedKeyFile);
+                _keys.Add(e.KeyFile);
+                View.PopulatePrivateKeys(_keys);
             }
-            else
-            {
-                View_ChangedPrivateKey(this, new PrivateKeyArgs(null));
-            }
+            View.SelectedPrivateKey = e.KeyFile;
         }
 
         private void View_ChangedPathEvent()
@@ -377,22 +380,23 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void UpdateIdentity()
         {
-            View.PkCheckboxEnabled = View.SelectedProtocol.Equals(new SFTPProtocol());
+            View.PrivateKeyFieldEnabled = View.SelectedProtocol.Equals(new SFTPProtocol());
             if (Utils.IsNotBlank(View.Hostname))
             {
                 Credentials credentials =
                     CredentialsConfiguratorFactory.get(View.SelectedProtocol)
-                        .configure(new Host(new SFTPProtocol(), View.Hostname));
+                        .configure(new Host(View.SelectedProtocol, View.Hostname));
                 if (credentials.isPublicKeyAuthentication())
                 {
-                    // No previously manually selected key
-                    View.PkCheckboxState = true;
-                    View.PkLabel = credentials.getIdentity().getAbbreviatedPath();
+                    View.SelectedPrivateKey = credentials.getIdentity().getAbsolute();
                 }
                 else
                 {
-                    View.PkCheckboxState = false;
-                    View.PkLabel = LocaleFactory.localizedString("No private key selected");
+                    View.SelectedPrivateKey = LocaleFactory.localizedString("None");
+                }
+                if (Utils.IsNotBlank(credentials.getUsername()))
+                {
+                    View.Username = credentials.getUsername();
                 }
                 if (Utils.IsNotBlank(credentials.getUsername()))
                 {

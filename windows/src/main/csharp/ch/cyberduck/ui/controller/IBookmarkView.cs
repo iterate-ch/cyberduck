@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,15 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -50,9 +50,10 @@ namespace Ch.Cyberduck.Ui.Controller
         string Notes { get; set; }
         string SelectedTimezone { get; set; }
         string WindowTitle { set; }
-        bool PkCheckboxState { get; set; }
-        bool PkCheckboxEnabled { set; }
-        string PkLabel { get; set; }
+        string SelectedPrivateKey { get; set; }
+        string SelectedClientCertificate { get; set; }
+        bool PrivateKeyFieldEnabled { set; }
+        bool ClientCertificateFieldEnabled { set; }
         string UsernameLabel { set; }
         bool HostFieldEnabled { get; set; }
         bool PortFieldEnabled { set; }
@@ -68,6 +69,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ToggleOptions;
 
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
+        void PopulatePrivateKeys(List<string> keys);
+        void PopulateClientCertificates(List<string> keys);
         void PopulateEncodings(List<string> encodings);
         void PopulateTimezones(List<string> timezones);
         void PopulateConnectModes(List<KeyValuePair<string, FTPConnectMode>> connectModes);
@@ -90,13 +93,14 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedUsernameEvent;
         event VoidHandler ChangedPathEvent;
         event VoidHandler ChangedAnonymousCheckboxEvent;
-        event VoidHandler ChangedPublicKeyCheckboxEvent;
+        event VoidHandler ChangedClientCertificateEvent;
         event VoidHandler OpenUrl;
         event VoidHandler OpenWebUrl;
+        event VoidHandler OpenPrivateKeyBrowserEvent;
         event VoidHandler OpenDownloadFolderBrowserEvent;
         event VoidHandler OpenDownloadFolderEvent;
 
-        event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
+        event EventHandler<PrivateKeyArgs> ChangedPrivateKeyEvent;
 
         //todo
         event VoidHandler LaunchNetworkAssistantEvent;
