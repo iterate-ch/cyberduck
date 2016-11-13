@@ -295,8 +295,8 @@ public class ExtendedBookmarkController extends BookmarkController {
     }
 
     @Override
-    protected void init() {
-        super.init();
+    protected void update() {
+        super.update();
         transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransfer().name()));
         connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
         if(bookmark.getProtocol().getType() == Protocol.Type.ftp) {
