@@ -64,6 +64,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
@@ -185,7 +186,7 @@ public class BookmarkController extends WindowController {
         }
         bookmark.setProtocol(selected);
         this.itemChanged();
-        this.init();
+        this.update();
         this.reachable();
     }
 
@@ -356,7 +357,7 @@ public class BookmarkController extends WindowController {
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
-        this.init();
+        this.update();
         this.reachable();
         window.makeFirstResponder(hostField);
     }
@@ -389,14 +390,6 @@ public class BookmarkController extends WindowController {
             this.privateKeyPopup.addItemWithTitle(certificate.getAbbreviatedPath());
             this.privateKeyPopup.lastItem().setRepresentedObject(certificate.getAbsolute());
         }
-        if(bookmark.getCredentials().isPublicKeyAuthentication()) {
-            final Local key = bookmark.getCredentials().getIdentity();
-            if(-1 == this.privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
-                this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
-                this.privateKeyPopup.addItemWithTitle(key.getAbbreviatedPath());
-                this.privateKeyPopup.lastItem().setRepresentedObject(key.getAbsolute());
-            }
-        }
         // Choose another folder
         this.privateKeyPopup.menu().addItem(NSMenuItem.separatorItem());
         this.privateKeyPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
@@ -411,7 +404,7 @@ public class BookmarkController extends WindowController {
             privateKeyOpenPanel.setCanChooseFiles(true);
             privateKeyOpenPanel.setAllowsMultipleSelection(false);
             privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
-            privateKeyOpenPanel.setPrompt(String.format("%s…", LocaleFactory.localizedString("Choose")));
+            privateKeyOpenPanel.setPrompt(LocaleFactory.localizedString("Choose"));
             privateKeyOpenPanel.beginSheetForDirectory(OpenSSHPrivateKeyConfigurator.OPENSSH_CONFIGURATION_DIRECTORY.getAbsolute(), null, this.window(), this.id(),
                     Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
@@ -433,7 +426,7 @@ public class BookmarkController extends WindowController {
                 bookmark.getCredentials().setIdentity(null);
                 break;
         }
-        this.init();
+        this.update();
         this.itemChanged();
     }
 
@@ -451,7 +444,7 @@ public class BookmarkController extends WindowController {
             bookmark.setHostname(input);
         }
         this.itemChanged();
-        this.init();
+        this.update();
         this.reachable();
     }
 
@@ -490,7 +483,7 @@ public class BookmarkController extends WindowController {
             bookmark.setPort(-1);
         }
         this.itemChanged();
-        this.init();
+        this.update();
         this.reachable();
     }
 
@@ -498,21 +491,21 @@ public class BookmarkController extends WindowController {
     public void pathInputDidChange(final NSNotification sender) {
         bookmark.setDefaultPath(pathField.stringValue());
         this.itemChanged();
-        this.init();
+        this.update();
     }
 
     @Action
     public void nicknameInputDidChange(final NSNotification sender) {
         bookmark.setNickname(nicknameField.stringValue());
         this.itemChanged();
-        this.init();
+        this.update();
     }
 
     @Action
     public void usernameInputDidChange(final NSNotification sender) {
         bookmark.getCredentials().setUsername(usernameField.stringValue());
         this.itemChanged();
-        this.init();
+        this.update();
     }
 
     @Action
@@ -530,7 +523,7 @@ public class BookmarkController extends WindowController {
             }
         }
         this.itemChanged();
-        this.init();
+        this.update();
     }
 
     /**
@@ -541,7 +534,10 @@ public class BookmarkController extends WindowController {
         collection.collectionItemChanged(bookmark);
     }
 
-    protected void init() {
+    /**
+     * Update components from model
+     */
+    protected void update() {
         window.setTitle(BookmarkNameProvider.toString(bookmark));
         this.updateField(hostField, bookmark.getHostname());
         hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
@@ -582,6 +578,14 @@ public class BookmarkController extends WindowController {
         }
         else {
             privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        }
+        if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+            final Local key = bookmark.getCredentials().getIdentity();
+            if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
+                final NSInteger index = new NSInteger(0);
+                privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
+                privateKeyPopup.itemAtIndex(index).setRepresentedObject(key.getAbsolute());
+            }
         }
         timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
         if(null == bookmark.getTimezone()) {
