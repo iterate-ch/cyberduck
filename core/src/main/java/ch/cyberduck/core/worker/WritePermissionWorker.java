@@ -85,20 +85,19 @@ public class WritePermissionWorker extends Worker<Boolean> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            this.write(session, feature, file);
+            final Permission merged = permissions.get(file);
+            this.write(session, feature, file, merged);
         }
         return true;
     }
 
-    protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
-        final Permission merged = permissions.get(file);
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), merged));
-        feature.setUnixPermission(file, merged);
+    protected void write(final Session<?> session, final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"), file.getName(), permission));
+        feature.setUnixPermission(file, permission);
         if(file.isDirectory()) {
-            if(callback.recurse(file, merged)) {
+            if(callback.recurse(file, permission)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(session, feature, child);
+                    this.write(session, feature, child, permission);
                 }
             }
         }
