@@ -31,6 +31,8 @@ public abstract class SheetController extends WindowController {
 
     private InputValidator validator;
 
+    private SheetCallback callback = new DisabledSheetCallback();
+
     public SheetController() {
         this(new InputValidator() {
             @Override
@@ -44,8 +46,12 @@ public abstract class SheetController extends WindowController {
         this.validator = callback;
     }
 
-    public void setValidator(InputValidator validator) {
+    public void setValidator(final InputValidator validator) {
         this.validator = validator;
+    }
+
+    public void setCallback(final SheetCallback callback) {
+        this.callback = callback;
     }
 
     /**
@@ -61,11 +67,13 @@ public abstract class SheetController extends WindowController {
         }
         final int option = new PanelReturnCodeMapper().getOption(sender);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
+            window.endEditingFor(null);
             if(!validator.validate()) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }
         }
+        callback.callback(option);
         application.endSheet(window, option);
     }
 }
