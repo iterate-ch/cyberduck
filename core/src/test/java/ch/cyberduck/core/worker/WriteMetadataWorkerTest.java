@@ -89,7 +89,7 @@ public class WriteMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                            return file.attributes().getMetadata();
+                            throw new UnsupportedOperationException();
                         }
 
                         @Override
@@ -116,9 +116,6 @@ public class WriteMetadataWorkerTest {
         updated.put("nullified", null);
         updated.put("key", "v2");
 
-        final Map<Path, Map<String, String>> original = new HashMap<>();
-        original.put(p, previous);
-
         WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean map) {
@@ -138,7 +135,7 @@ public class WriteMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-                            return file.attributes().getMetadata();
+                            throw new UnsupportedOperationException();
                         }
 
                         @Override
