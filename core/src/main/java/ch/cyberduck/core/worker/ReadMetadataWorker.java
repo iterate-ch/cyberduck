@@ -59,17 +59,18 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
         Map<String, Map<Path, String>> metaGraph = new HashMap<>();
 
         // iterate through all files
-        for (Path file : files) {
+        for(Path file : files) {
             // read online metadata
             Map<String, String> metadata = feature.getMetadata(file);
             // put it into onlineMetadata (do nothing with it)
             onlineMetadata.put(file, new HashMap<>(metadata));
             // take every entry of current metadata and store it in metaGraph
-            for (Map.Entry<String, String> entry : metadata.entrySet()) {
-                if (metaGraph.containsKey(entry.getKey())) {
+            for(Map.Entry<String, String> entry : metadata.entrySet()) {
+                if(metaGraph.containsKey(entry.getKey())) {
                     // if existing, get map, put value
                     metaGraph.get(entry.getKey()).put(file, entry.getValue());
-                } else {
+                }
+                else {
                     // if not existent create hashmap and put it back
                     Map<Path, String> map = new HashMap<>();
                     metaGraph.put(entry.getKey(), map);
@@ -78,28 +79,28 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
             }
         }
 
-        for (Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
+        for(Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
             // if current key does not have equal to files amount items remove it
-            if (entry.getValue().size() != files.size()) {
+            if(entry.getValue().size() != files.size()) {
                 removedEntries.add(entry.getKey());
             }
         }
         // deferred removing of files due to InvalidOperationException if changed while iteration
-        for (String key : removedEntries) {
+        for(String key : removedEntries) {
             metaGraph.remove(key);
         }
         // iterate all Path->Meta values
-        for (Map.Entry<Path, Map<String, String>> entry : onlineMetadata.entrySet()) {
+        for(Map.Entry<Path, Map<String, String>> entry : onlineMetadata.entrySet()) {
             // before continue, clear removedEntries
             removedEntries.clear();
-            for (Map.Entry<String, String> metaPair : entry.getValue().entrySet()) {
+            for(Map.Entry<String, String> metaPair : entry.getValue().entrySet()) {
                 // if filtered metaGraph does not contain this key, remove it
-                if (!metaGraph.containsKey(metaPair.getKey())) {
+                if(!metaGraph.containsKey(metaPair.getKey())) {
                     removedEntries.add(metaPair.getKey());
                 }
             }
             // deferred removing of entries due to InvalidOperationException on change while iteration
-            for (String key : removedEntries) {
+            for(String key : removedEntries) {
                 entry.getValue().remove(key);
             }
             // put filtered metadata to file attributes
@@ -108,7 +109,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
 
         // store result metadata in hashmap
         Map<String, String> metadata = new HashMap<>();
-        for (Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
+        for(Map.Entry<String, Map<Path, String>> entry : metaGraph.entrySet()) {
             // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
             Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
             // check count against 1, if it is use that value, otherwise use null
@@ -133,14 +134,14 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
+        if(this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if(o == null || getClass() != o.getClass()) {
             return false;
         }
         final ReadMetadataWorker that = (ReadMetadataWorker) o;
-        if (files != null ? !files.equals(that.files) : that.files != null) {
+        if(files != null ? !files.equals(that.files) : that.files != null) {
             return false;
         }
         return true;
