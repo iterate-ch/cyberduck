@@ -36,13 +36,19 @@ public final class BookmarkControllerFactory {
     public static BookmarkController create(final BookmarkCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(host)) {
-                final BookmarkController c = new ExtendedBookmarkController(collection, host) {
+                final BookmarkController c = new ExtendedBookmarkController(host) {
                     @Override
                     public void invalidate() {
                         open.remove(bookmark);
                         super.invalidate();
                     }
                 };
+                c.addObserver(new BookmarkController.BookmarkObserver() {
+                    @Override
+                    public void change(Host bookmark) {
+                        collection.collectionItemChanged(bookmark);
+                    }
+                });
                 c.loadBundle();
                 open.put(host, c);
             }

@@ -321,7 +321,6 @@ public class InfoController extends ToolbarWindowController {
     public void windowWillClose(final NSNotification notification) {
         cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
                 this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
-        this.window().endEditingFor(null);
         super.windowWillClose(notification);
     }
 
@@ -2551,7 +2550,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     @Action
-    public void helpButtonClicked(final NSButton sender) {
+    public void helpButtonClicked(final ID sender) {
         final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
         switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
             case info:

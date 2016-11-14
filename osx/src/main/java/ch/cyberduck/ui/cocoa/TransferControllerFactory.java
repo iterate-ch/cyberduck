@@ -17,9 +17,9 @@ package ch.cyberduck.ui.cocoa;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -63,7 +63,7 @@ public final class TransferControllerFactory {
                     LocaleFactory.localizedString("Cancel"), //alternative button
                     null //other button
             );
-            shared.alert(alert, new SheetCallback() {
+            shared.alert(alert, new DisabledSheetCallback() {
                 @Override
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Quit
