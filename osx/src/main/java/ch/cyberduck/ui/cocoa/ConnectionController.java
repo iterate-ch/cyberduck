@@ -78,13 +78,12 @@ public class ConnectionController extends BookmarkController {
         return "Connection";
     }
 
-//    todo
-//    @Override
-//    protected void beginSheet(final NSWindow window) {
-//        // Reset password input
-//        passField.setStringValue(StringUtils.EMPTY);
-//        super.beginSheet(window);
-//    }
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        // Reset password input
+        passwordField.setStringValue(StringUtils.EMPTY);
+    }
 
     public void setPasswordField(NSSecureTextField field) {
         this.passwordField = field;
@@ -110,6 +109,7 @@ public class ConnectionController extends BookmarkController {
                             bookmark.getHostname(),
                             credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
+                        credentials.setPassword(password);
                         updateField(passwordField, password);
                     }
                 }
