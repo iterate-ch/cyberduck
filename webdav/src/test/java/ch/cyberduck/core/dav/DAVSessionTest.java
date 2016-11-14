@@ -475,7 +475,7 @@ public class DAVSessionTest {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("test.cyberduck.ch", bookmark);
+                        assertEquals("test.cyberduck.ch", bookmark.getHostname());
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
                                 prompt);
                         throw new ConnectionCanceledException(prompt);
@@ -511,7 +511,7 @@ public class DAVSessionTest {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("test.cyberduck.ch", bookmark);
+                        assertEquals("test.cyberduck.ch", bookmark.getHostname());
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
                                 prompt);
                         throw new ConnectionCanceledException(prompt);
