@@ -24,17 +24,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.stream.ExtendedCollectors;
+
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.AbstractMap.Entry;
-import static java.util.AbstractMap.SimpleImmutableEntry;
 
 public class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
