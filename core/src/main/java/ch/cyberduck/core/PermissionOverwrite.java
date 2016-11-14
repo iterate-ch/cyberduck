@@ -16,7 +16,6 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public class PermissionOverwrite {
     public final Action user, group, other;
@@ -41,22 +40,6 @@ public class PermissionOverwrite {
         builder.append(other.mode());
 
         return builder.toString();
-    }
-
-    public PermissionOverwrite fromOctal(final String input) {
-        if(StringUtils.isBlank(input)) {
-            return null;
-        }
-        if(StringUtils.length(input) != 3) {
-            return null;
-        }
-        if(!StringUtils.isNumeric(input)) {
-            return null;
-        }
-        this.user.parse(input.charAt(0));
-        this.group.parse(input.charAt(1));
-        this.other.parse(input.charAt(2));
-        return this;
     }
 
     public Permission resolve(final Permission original) {

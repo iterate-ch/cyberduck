@@ -2092,13 +2092,24 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void octalPermissionsInputDidEndEditing(NSNotification sender) {
-        final PermissionOverwrite permission = this.getPermissionFromOctalField();
+        final Permission permission = this.getPermissionFromOctalField();
         if(null == permission) {
             AppKitFunctionsLibrary.beep();
             this.initPermissions();
         }
         else {
-            this.changePermissions(permission, false);
+            if(this.togglePermissionSettings(false)) {
+                controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                                new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
+                                    @Override
+                                    public void cleanup(final Boolean done) {
+                                        togglePermissionSettings(true);
+                                        initPermissions();
+                                    }
+                                }
+                        )
+                );
+            }
         }
     }
 
@@ -2107,19 +2118,38 @@ public class InfoController extends ToolbarWindowController {
      *
      * @return Null if invalid string has been entered entered,
      */
-    private PermissionOverwrite getPermissionFromOctalField() {
-        return new PermissionOverwrite().fromOctal(octalField.stringValue());
+    private Permission getPermissionFromOctalField() {
+        if(StringUtils.isNotBlank(octalField.stringValue())) {
+            if(StringUtils.length(octalField.stringValue()) >= 3) {
+                if(StringUtils.isNumeric(octalField.stringValue())) {
+                    return new Permission(Integer.valueOf(octalField.stringValue()).intValue());
+                }
+            }
+        }
+        log.warn(String.format("Invalid octal field input %s", octalField.stringValue()));
+        return null;
     }
 
     @Action
     public void recursiveButtonClicked(final NSButton sender) {
-        final PermissionOverwrite permission = this.getPermissionFromOctalField();
+        final Permission permission = this.getPermissionFromOctalField();
         if(null == permission) {
             AppKitFunctionsLibrary.beep();
             this.initPermissions();
         }
         else {
-            this.changePermissions(permission, true);
+            if(this.togglePermissionSettings(false)) {
+                controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                                new WritePermissionWorker(files, permission, new AlertRecursiveCallback<Permission>(this), controller) {
+                                    @Override
+                                    public void cleanup(final Boolean done) {
+                                        togglePermissionSettings(true);
+                                        initPermissions();
+                                    }
+                                }
+                        )
+                );
+            }
         }
     }
 
@@ -2128,30 +2158,13 @@ public class InfoController extends ToolbarWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        final PermissionOverwrite p = this.getPermissionFromCheckboxes();
-        this.changePermissions(p, false);
-    }
-
-    /**
-     * Permission selection from checkboxes.
-     *
-     * @return Never null.
-     */
-    private PermissionOverwrite getPermissionFromCheckboxes() {
-        return new PermissionOverwrite(
+        final PermissionOverwrite permission = new PermissionOverwrite(
                 new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
                 new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
                 new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
-    }
-
-    /**
-     * @param permission UNIX permissions to apply to files
-     * @param recursive  Recursively apply to child of directories
-     */
-    private void changePermissions(final PermissionOverwrite permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
-                    new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<PermissionOverwrite>(this) : new BooleanRecursiveCallback<PermissionOverwrite>(false), controller) {
+                    new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
                                 public void cleanup(final Boolean done) {
                                     togglePermissionSettings(true);
@@ -2162,6 +2175,7 @@ public class InfoController extends ToolbarWindowController {
             );
         }
     }
+
 
     /**
      * Toggle settings before and after update
