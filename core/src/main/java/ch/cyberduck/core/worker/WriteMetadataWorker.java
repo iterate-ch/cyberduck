@@ -28,14 +28,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import java.text.MessageFormat;
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
 
@@ -87,60 +82,30 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        // this does several things,
-        // first: Maps all entries from pathMapEntry (from MetadataOverwrite.originalMetadata) to their Metadata Key and the value "OLD"
-        // second: Maps all entries from MetadataOverwrite.metadata to their Metadata Key and the value "NEW"
-        // last: Group everything by Metadata Key and creating a set of NEW/OLD Values. i.e.:
-        // {{Key1, {NEW}}, {Key2, {NEW, OLD}}, {Key3, {OLD}}}
-        Map<String, Set<String>> merged = Stream.concat(
-                file.attributes().getMetadata().entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "OLD")),
-                metadata.entrySet().stream().map(x -> new AbstractMap.SimpleImmutableEntry<>(x.getKey(), "NEW"))
-        ).collect(Collectors.groupingBy(x -> x.getKey(), Collectors.mapping(x -> x.getValue(), Collectors.toSet())));
-
-        this.write(session, feature, file, merged);
-    }
-
-    protected void write(final Session<?> session, final Headers feature, final Path file, final Map<String, Set<String>> configMap) throws BackgroundException {
-        if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
-        // read online metadata (storing non-edited metadata entries)
-        Map<String, String> originalMetadata = new HashMap<>(feature.getMetadata(file));
-        boolean anyChanged = false;
-        // iterate through all configMap entries (created above)
-        for(Map.Entry<String, Set<String>> entry : configMap.entrySet()) {
-            // get set of OLD/NEW Values for current metadata key
-            Set<String> config = entry.getValue();
-            // retrieve value of current metadata key in metadataoverwrite.
-            String value = metadata.get(entry.getKey());
-
-            // if map does not contain a "NEW" value it is considered REMOVED
-            if(!config.contains("NEW")) {
-                anyChanged = true;
-                originalMetadata.remove(entry.getKey());
+        // Read online metadata (storing non-edited metadata entries)
+        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
+        // Iterate through all metadata entries
+        for(Map.Entry<String, String> entry : metadata.entrySet()) {
+            final String key = entry.getKey();
+            String value = entry.getValue();
+            if(!metadata.containsKey(key)) {
+                update.remove(key);
             }
             else if(value != null) {
-                // otherwise and if value is not null it is considered CHANGED
-                String oldValue = config.contains("OLD") ? originalMetadata.get(entry.getKey()) : null;
-                // if new value and old value are equal it is considered UNCHANGED
-                if(!Objects.equals(value, oldValue)) {
-                    anyChanged = true;
-                    originalMetadata.put(entry.getKey(), value);
-                }
+                // Update with new value if set
+                update.put(key, value);
             }
         }
-
-        // if anything has changed save metadata, otherwise continue and do for everything underneath this directory
-        if(anyChanged) {
+        // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
+        if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
-            feature.setMetadata(file, originalMetadata);
+            feature.setMetadata(file, update);
         }
-
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(session, feature, child, configMap);
+                    this.write(session, feature, child);
                 }
             }
         }
