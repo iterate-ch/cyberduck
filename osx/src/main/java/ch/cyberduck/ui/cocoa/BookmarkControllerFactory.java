@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public final class BookmarkControllerFactory {
         //
     }
 
-    public static BookmarkController create(final BookmarkCollection collection, final Host host) {
+    public static BookmarkController create(final AbstractHostCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(host)) {
                 final BookmarkController c = new ExtendedBookmarkController(host) {
