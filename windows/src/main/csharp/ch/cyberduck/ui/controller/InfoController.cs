@@ -1532,7 +1532,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
             private readonly Path _container;
-            private readonly HashSet<string> _containers = new HashSet<string>();
 
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
@@ -1576,12 +1575,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (s.getFeature(typeof (Logging)) != null)
                 {
                     _logging = ((Logging) s.getFeature(typeof (Logging))).getConfiguration(_container);
-                    AttributedList children = _infoController._controller.Session.list(_container.getParent(),
-                        new DisabledListProgressListener());
-                    foreach (AbstractPath c in children)
-                    {
-                        _containers.Add(c.getName());
-                    }
                 }
                 if (s.getFeature(typeof (Versioning)) != null)
                 {
@@ -1669,9 +1662,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (_logging != null)
                     {
                         _view.BucketLoggingCheckbox = _logging.isEnabled();
-                        if (_containers.Count > 0)
+                        if (_logging.getContainers().size() > 0)
                         {
-                            _view.PopulateBucketLogging(_containers.ToList());
+                            _view.PopulateBucketLogging(Utils.ConvertFromJavaList<Path>(_logging.getContainers()));
                         }
                         if (_logging.isEnabled())
                         {
