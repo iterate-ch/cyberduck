@@ -22,34 +22,27 @@ import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.EnumSet;
 
 public abstract class FileController extends AlertController {
 
-    @Outlet
-    protected NSTextField inputField
-            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
-
-    public void setInputField(final NSTextField inputField) {
-        this.inputField = inputField;
-    }
-
     protected final BrowserController parent;
 
     private final Cache<Path> cache;
+
+    @Outlet
+    protected NSTextField inputField
+            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
     public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
         super(parent, alert);
@@ -59,23 +52,14 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    protected void beginSheet(final NSWindow window) {
-        this.setAccessoryView(inputField);
-        super.beginSheet(window);
+    public NSView getAccessoryView() {
+        return inputField;
     }
 
     @Override
     protected void focus() {
-        this.focus(inputField);
-    }
-
-    protected void focus(final NSTextField control) {
-        // Focus accessory view.
-        control.selectText(null);
-        window.makeFirstResponder(control);
-        control.currentEditor().setSelectedRange(NSRange.NSMakeRange(
-                new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(control.stringValue()).length())
-        ));
+        super.focus();
+        inputField.selectText(null);
     }
 
     /**
@@ -100,7 +84,7 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    protected boolean validateInput() {
+    public boolean validate() {
         if(StringUtils.contains(inputField.stringValue(), Path.DELIMITER)) {
             return false;
         }
