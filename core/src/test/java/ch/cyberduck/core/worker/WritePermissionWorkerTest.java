@@ -102,8 +102,7 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(false, true, false)
         );
         final Path a = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.all));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener()
-        );
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
@@ -267,15 +266,7 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                            if(file.getName().equals("a")) {
-                                assertEquals(new Permission(1744), permission);
-                            }
-                            else if(file.getName().equals("b")) {
-                                assertEquals(new Permission(744), permission);
-                            }
-                            else {
-                                fail();
-                            }
+                            assertEquals(new Permission(1744), permission);
                         }
                     };
                 }
