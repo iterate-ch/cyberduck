@@ -44,7 +44,7 @@ public class SheetInvoker extends ProxyController {
     /**
      * The controller of the parent window
      */
-    private final WindowController parent;
+    private final NSWindow parent;
 
     private final NSWindow window;
 
@@ -68,12 +68,16 @@ public class SheetInvoker extends ProxyController {
      *
      * @param callback Callback
      * @param parent   The controller of the parent window
-     * @param window   Sheet
+     * @param sheet    Sheet
      */
-    public SheetInvoker(final SheetCallback callback, final WindowController parent, final NSWindow window) {
+    public SheetInvoker(final SheetCallback callback, final WindowController parent, final NSWindow sheet) {
+        this(callback, parent.window(), sheet);
+    }
+
+    public SheetInvoker(final SheetCallback callback, final NSWindow parent, final NSWindow sheet) {
         this.callback = callback;
         this.parent = parent;
-        this.window = window;
+        this.window = sheet;
     }
 
     /**
@@ -84,7 +88,7 @@ public class SheetInvoker extends ProxyController {
     }
 
     public int beginSheet() {
-        synchronized(parent.window()) {
+        synchronized(parent) {
             if(NSThread.isMainThread()) {
                 // No need to call invoke on main thread
                 return this.beginSheet(window);
@@ -115,9 +119,9 @@ public class SheetInvoker extends ProxyController {
     }
 
     protected int beginSheet(final NSWindow window) {
-        parent.window().makeKeyAndOrderFront(null);
+        parent.makeKeyAndOrderFront(null);
         application.beginSheet(window, //sheet
-                parent.window(), // modalForWindow
+                parent, // modalForWindow
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
