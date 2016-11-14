@@ -60,6 +60,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
         for(Path file : files) {
             // Read online metadata
             final Map<String, String> metadata = feature.getMetadata(file);
+            file.attributes().setMetadata(metadata);
             fullMetadata.put(file, new HashMap<>(metadata));
             // take every entry of current metadata and store it in metaGraph
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
@@ -92,9 +93,6 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
                     iter.remove();
                 }
             }
-            // Set filtered metadata to file attributes
-            final Path file = entry.getKey();
-            file.attributes().setMetadata(entry.getValue());
         }
 
         // Store result metadata in hashmap
