@@ -395,7 +395,6 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void awakeFromNib() {
         super.awakeFromNib();
         this.update();
-        window.makeFirstResponder(hostField);
     }
 
     @Override

@@ -79,9 +79,8 @@ public class LoginController extends ConnectionController {
 
     @Override
     public void awakeFromNib() {
-        this.update();
-        window.makeFirstResponder(usernameField);
         super.awakeFromNib();
+        window.makeFirstResponder(usernameField);
     }
 
     public void setIconView(NSImageView iconView) {

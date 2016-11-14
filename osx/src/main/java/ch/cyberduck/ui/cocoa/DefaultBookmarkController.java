@@ -58,6 +58,12 @@ public class DefaultBookmarkController extends BookmarkController {
         super(bookmark, bookmark.getCredentials());
     }
 
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        window.makeFirstResponder(hostField);
+    }
+
     public void setNicknameField(final NSTextField field) {
         this.nicknameField = field;
         notificationCenter.addObserver(this.id(),
