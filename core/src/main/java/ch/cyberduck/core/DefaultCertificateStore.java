@@ -40,10 +40,10 @@ public class DefaultCertificateStore implements CertificateStore {
 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
-                                  final String hostname, final String prompt) throws ConnectionCanceledException {
+                                  final Host bookmark, final String prompt) throws ConnectionCanceledException {
         final CertificateStoreX509KeyManager store;
         try {
-            store = new KeychainX509KeyManager(this).init();
+            store = new KeychainX509KeyManager(bookmark, this).init();
         }
         catch(IOException e) {
             throw new ConnectionCanceledException(e);

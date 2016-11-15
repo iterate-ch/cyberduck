@@ -296,7 +296,7 @@ public class S3SessionTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-                new KeychainX509KeyManager(new DisabledCertificateStore()));
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),

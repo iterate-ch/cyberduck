@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,9 +13,11 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// feedback@cyberduck.io
 // 
+
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -26,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string Title { set; }
         string Message { set; }
         string Username { get; set; }
-        string Password { get; set; }        
+        string Password { get; set; }
         Image DiskIcon { set; }
 
         bool SavePasswordState { get; set; }
@@ -35,13 +37,13 @@ namespace Ch.Cyberduck.Ui.Controller
         bool PasswordEnabled { set; }
         bool AnonymousState { get; set; }
         bool AnonymousEnabled { set; }
-        bool PkCheckboxState { get; set; }
-        bool PkCheckboxEnabled { set; }
-        string PkLabel { get; set; }
+        string SelectedPrivateKey { get; set; }
+        bool PrivateKeyFieldEnabled { set; }
 
         string PasswordLabel { set; }
         string UsernameLabel { set; }
 
+        void PopulatePrivateKeys(List<string> keys);
         void ShowPrivateKeyBrowser(string path);
 
         #region Events
@@ -53,6 +55,9 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedPkCheckboxEvent;
         event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
         event ValidateInputHandler ValidateInput;
+        event VoidHandler OpenPrivateKeyBrowserEvent;
+
+        // event EventHandler<PrivateKeyArgs> ChangedPrivateKeyEvent;
 
         #endregion
     }

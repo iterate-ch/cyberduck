@@ -18,59 +18,40 @@ package ch.cyberduck.binding;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.PanelReturnCodeMapper;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSThread;
-import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.ui.InputValidator;
 
 import org.apache.log4j.Logger;
-import org.rococoa.Foundation;
-import org.rococoa.ID;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-
-public abstract class SheetController extends WindowController implements SheetCallback {
+public abstract class SheetController extends WindowController {
     private static final Logger log = Logger.getLogger(SheetController.class);
 
-    /**
-     * Keep a reference to the sheet to protect it from being
-     * deallocated as a weak reference before the callback from the runtime
-     */
-    protected static final Set<SheetController> sheetRegistry
-            = new HashSet<SheetController>();
+    private final NSApplication application = NSApplication.sharedApplication();
 
-    /**
-     * The controller of the parent window
-     */
-    protected final WindowController parent;
+    private InputValidator validator;
 
-    /**
-     * Dismiss button clicked
-     */
-    private int returncode;
+    private SheetCallback callback = new DisabledSheetCallback();
 
-    private final CountDownLatch signal
-            = new CountDownLatch(1);
-
-    /**
-     * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
-     *
-     * @param parent The controller of the parent window
-     */
-    public SheetController(final WindowController parent) {
-        this.parent = parent;
-        sheetRegistry.add(this);
+    public SheetController() {
+        this(new InputValidator() {
+            @Override
+            public boolean validate() {
+                return true;
+            }
+        });
     }
 
-    /**
-     * @return Null by default, a sheet with no custom NIB
-     */
-    @Override
-    protected String getBundleName() {
-        return null;
+    public SheetController(final InputValidator callback) {
+        this.validator = callback;
+    }
+
+    public void setValidator(final InputValidator validator) {
+        this.validator = validator;
+    }
+
+    public void setCallback(final SheetCallback callback) {
+        this.callback = callback;
     }
 
     /**
@@ -85,104 +66,14 @@ public abstract class SheetController extends WindowController implements SheetC
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
         final int option = new PanelReturnCodeMapper().getOption(sender);
-        if(option == DEFAULT_OPTION || option == ALTERNATE_OPTION) {
-            if(!this.validateInput()) {
+        if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
+            window.endEditingFor(null);
+            if(!validator.validate()) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }
         }
-        NSApplication.sharedApplication().endSheet(this.window(), option);
-    }
-
-    /**
-     * @return The tag of the button this sheet was dismissed with
-     */
-    public int returnCode() {
-        return returncode;
-    }
-
-    /**
-     * Check input fields for any errors
-     *
-     * @return true if a valid input has been given
-     */
-    protected boolean validateInput() {
-        return true;
-    }
-
-    public void beginSheet() {
-        synchronized(parent.window()) {
-            if(NSThread.isMainThread()) {
-                this.loadBundle();
-                // No need to call invoke on main thread
-                this.beginSheet(this.window());
-            }
-            else {
-                final SheetController controller = this;
-                invoke(new ControllerMainAction(this) {
-                    @Override
-                    public void run() {
-                        controller.loadBundle();
-                        //Invoke again on main thread
-                        controller.beginSheet(controller.window());
-                    }
-                }, true);
-                if(log.isDebugEnabled()) {
-                    log.debug("Await sheet dismiss");
-                }
-                // Synchronize on parent controller. Only display one sheet at once.
-                try {
-                    signal.await();
-                }
-                catch(InterruptedException e) {
-                    log.error("Error waiting for sheet dismiss", e);
-                    this.callback(CANCEL_OPTION);
-                }
-            }
-        }
-    }
-
-    protected void beginSheet(final NSWindow window) {
-        parent.window().makeKeyAndOrderFront(null);
-        NSApplication.sharedApplication().beginSheet(window, //sheet
-                parent.window(), // modalForWindow
-                this.id(), // modalDelegate
-                Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-                null); //context
-    }
-
-    /**
-     * Called by the runtime after a sheet has been dismissed. Ends any modal session and
-     * sends the returncode to the callback implementation. Also invalidates this controller to be
-     * garbage collected and notifies the lock object
-     *
-     * @param sheet       Sheet window
-     * @param returncode  Identifier for the button clicked by the user
-     * @param contextInfo Not used
-     */
-    public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, ID contextInfo) {
-        sheet.orderOut(null);
-        this.returncode = returncode;
-        this.callback(returncode);
-        signal.countDown();
-        if(!this.isSingleton()) {
-            this.invalidate();
-        }
-    }
-
-    @Override
-    public void invalidate() {
-        sheetRegistry.remove(this);
-        super.invalidate();
-    }
-
-    /**
-     * @return True if the class is a singleton and the object should
-     * not be invlidated upon the sheet is closed
-     * @see #sheetDidClose_returnCode_contextInfo(ch.cyberduck.binding.application.NSWindow, int, org.rococoa.ID)
-     */
-    @Override
-    public boolean isSingleton() {
-        return false;
+        callback.callback(option);
+        application.endSheet(window, option);
     }
 }

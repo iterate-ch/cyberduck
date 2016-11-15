@@ -62,7 +62,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Image Favicon
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool ConnectModeFieldEnabled
@@ -77,12 +80,18 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool WebUrlFieldEnabled
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool TimezoneFieldEnabled
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool AlertIconEnabled
@@ -118,7 +127,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string Nickname
         {
             get { return string.Empty; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string URL
@@ -129,7 +141,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DownloadFolder
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public FTPConnectMode SelectedConnectMode
@@ -147,7 +162,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public Host.TransferType SelectedTransferMode
         {
             get { return null; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string SelectedDownloadFolder
@@ -158,46 +176,55 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string WebURL
         {
             get { return string.Empty; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string WebUrlButtonToolTip
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string Notes
         {
             get { return string.Empty; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string SelectedTimezone
         {
             get { return string.Empty; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string WindowTitle
         {
-            set { ; }
-        }
-
-        public bool PkCheckboxState
-        {
-            get { return checkBoxPKA.Checked; }
-            set { checkBoxPKA.Checked = value; }
-        }
-
-        public string PkLabel
-        {
             set
             {
-                pkLabel.Text = value;
-                pkLabel.ForeColor = checkBoxPKA.Checked ? Color.FromKnownColor(KnownColor.ControlText) : Color.Gray;
+                ;
             }
-            get { return pkLabel.Text; }
         }
+
+        public string SelectedPrivateKey
+        {
+            get { return comboBoxPrivateKey.Text; }
+            set { comboBoxPrivateKey.Text = value; }
+        }
+
+        public string SelectedClientCertificate { get; set; }
+
+        public bool ClientCertificateFieldEnabled { get; set; }
 
         public string UsernameLabel
         {
@@ -220,9 +247,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { numericUpDownPort.Enabled = value; }
         }
 
-        public bool PkCheckboxEnabled
+        public bool PrivateKeyFieldEnabled
         {
-            set { checkBoxPKA.Enabled = value; }
+            set
+            {
+                comboBoxPrivateKey.Enabled = value;
+                choosePkButton.Enabled = value;
+            }
         }
 
         public Protocol SelectedProtocol
@@ -308,6 +339,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             protocol.IconMember = "IconKey";
         }
 
+        public void PopulatePrivateKeys(List<string> keys)
+        {
+            comboBoxPrivateKey.DataSource = null;
+            comboBoxPrivateKey.DataSource = keys;
+        }
+
+        public void PopulateClientCertificates(List<string> keys)
+        {
+            throw new NotImplementedException();
+        }
+
         public void PopulateEncodings(List<string> encodings)
         {
             comboBoxEncoding.DataSource = encodings;
@@ -342,11 +384,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             openFileDialog.FileName = String.Empty;
             if (DialogResult.OK == openFileDialog.ShowDialog())
             {
-                ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
-            }
-            else
-            {
-                ChangedPrivateKey(this, new PrivateKeyArgs(null));
+                ChangedPrivateKeyEvent(this, new PrivateKeyArgs(openFileDialog.FileName));
             }
         }
 
@@ -364,14 +402,17 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedUsernameEvent = delegate { };
         public event VoidHandler ChangedPathEvent = delegate { };
         public event VoidHandler ChangedAnonymousCheckboxEvent = delegate { };
+        public event VoidHandler ChangedClientCertificateEvent;
         public event VoidHandler ChangedSavePasswordCheckboxEvent = delegate { };
-        public event VoidHandler ChangedPublicKeyCheckboxEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
         public event VoidHandler OpenWebUrl = delegate { };
+        public event VoidHandler OpenPrivateKeyBrowserEvent;
         public event VoidHandler OpenDownloadFolderBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderEvent = delegate { };
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
         public event VoidHandler ToggleOptions = delegate { };
+        public event EventHandler<PrivateKeyArgs> ChangedPrivateKeyEvent = delegate { };
+        public event VoidHandler ChangedPublicKeyCheckboxEvent = delegate { };
 
         private void ConfigureToggleOptions()
         {
@@ -441,6 +482,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void numericUpDownPort_TextChanged(object sender, EventArgs e)
         {
             ChangedPortEvent();
+        }
+
+        private void choosePkButton_Click(object sender, EventArgs e)
+        {
+            OpenPrivateKeyBrowserEvent();
         }
     }
 }

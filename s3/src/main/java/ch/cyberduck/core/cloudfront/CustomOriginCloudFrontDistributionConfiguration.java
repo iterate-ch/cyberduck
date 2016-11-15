@@ -54,7 +54,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
                         new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
                 ),
-                new KeychainX509KeyManager(),
+                new KeychainX509KeyManager(
+                        new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
+                ),
                 transcript);
     }
 

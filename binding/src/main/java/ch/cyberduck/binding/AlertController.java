@@ -18,51 +18,56 @@ package ch.cyberduck.binding;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.ui.InputValidator;
 
 import org.rococoa.Foundation;
-import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSRect;
 
-public abstract class AlertController extends SheetController {
+public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
 
     /**
      * If using alert and no custom window
      */
     protected final NSAlert alert;
 
+    public final SheetInvoker sheet;
+
     public AlertController(final WindowController parent, final NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);
     }
 
     public AlertController(final WindowController parent, final NSAlert alert, final int style) {
-        super(parent);
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
-        this.setWindow(this.alert.window());
+        this.sheet = new SheetInvoker(this, parent, alert.window());
+        this.setValidator(this);
+        this.setWindow(alert.window());
     }
 
-    public void setAccessoryView(final NSView view) {
-        view.setFrame(new NSRect(alert.window().contentView().frame().size.width.floatValue(),
-                view.frame().size.height.floatValue()));
-        alert.setAccessoryView(view);
-    }
-
+    /**
+     * @return Null by default, a sheet with no custom NIB
+     */
     @Override
-    public void beginSheet() {
-        super.beginSheet();
+    protected String getBundleName() {
+        return null;
+    }
+
+    public NSView getAccessoryView() {
+        return null;
+    }
+
+    public int beginSheet() {
         this.focus();
+        return sheet.beginSheet();
     }
 
-    @Override
-    protected void beginSheet(final NSWindow window) {
-        parent.window().makeKeyAndOrderFront(null);
-        alert.layout();
+    protected void focus() {
         NSEnumerator buttons = alert.buttons().objectEnumerator();
         NSObject button;
         while(((button = buttons.nextObject()) != null)) {
@@ -70,11 +75,14 @@ public abstract class AlertController extends SheetController {
             b.setTarget(this.id());
             b.setAction(Foundation.selector("closeSheet:"));
         }
-        alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
-    }
-
-    protected void focus() {
-        //
+        final NSView accessory = this.getAccessoryView();
+        if(accessory != null) {
+            accessory.setFrame(new NSRect(alert.window().contentView().frame().size.width.floatValue(),
+                    accessory.frame().size.height.floatValue()));
+            alert.setAccessoryView(accessory);
+            alert.window().makeFirstResponder(accessory);
+        }
+        alert.layout();
     }
 
     protected void setTitle(final String title) {
@@ -86,21 +94,15 @@ public abstract class AlertController extends SheetController {
     }
 
     /**
-     * Message the alert sends to modalDelegate after the user responds but before the sheet is dismissed.
-     *
-     * @param alert       Alert window
-     * @param returnCode  Button code
-     * @param contextInfo Context
-     */
-    public void alertDidEnd_returnCode_contextInfo(final NSAlert alert, final int returnCode, final ID contextInfo) {
-        this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
-    }
-
-    /**
      * Open help page.
      */
     protected void help() {
         new DefaultProviderHelpService().help();
+    }
+
+    @Override
+    public boolean validate() {
+        return true;
     }
 
     /**

@@ -2607,7 +2607,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session = SessionFactory.create(host,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
-                new KeychainX509KeyManager());
+                new KeychainX509KeyManager(host));
             SetWorkdir(null);
             View.SelectedEncoding = Session.getEncoding();
             View.ClearTranscript();

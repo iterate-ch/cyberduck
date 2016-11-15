@@ -143,7 +143,7 @@ public class ConcurrentTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore()), PathCache.empty(),
+                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
                 connections);
         assertTrue(worker.run(null));
         assertEquals(0L, transfer.getTransferred(), 0L);

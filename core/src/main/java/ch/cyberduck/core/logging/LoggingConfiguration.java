@@ -17,7 +17,12 @@ package ch.cyberduck.core.logging;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 public class LoggingConfiguration {
 
@@ -28,6 +33,11 @@ public class LoggingConfiguration {
     private final boolean enabled;
 
     private final String loggingTarget;
+
+    /**
+     * Logging target containers
+     */
+    private List<Path> containers = Collections.emptyList();
 
     public LoggingConfiguration() {
         this.enabled = false;
@@ -50,6 +60,14 @@ public class LoggingConfiguration {
 
     public String getLoggingTarget() {
         return loggingTarget;
+    }
+
+    public List<Path> getContainers() {
+        return containers;
+    }
+
+    public void setContainers(final List<Path> containers) {
+        this.containers = containers;
     }
 
     @Override
