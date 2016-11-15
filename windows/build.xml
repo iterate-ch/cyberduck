@@ -118,6 +118,13 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
+        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+            <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
+            <property name="CyberduckInstallerArgs" value="/Q /S" />
+        </msbuild>
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">
                 <include name="*.msi"/>
