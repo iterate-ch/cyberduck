@@ -83,17 +83,15 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             throw new ConnectionCanceledException();
         }
         // Read online metadata (storing non-edited metadata entries)
-        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
-        // Iterate through all metadata entries
-        for(Map.Entry<String, String> entry : metadata.entrySet()) {
-            final String key = entry.getKey();
-            String value = entry.getValue();
-            if(!metadata.containsKey(key)) {
-                update.remove(key);
+        final Map<String, String> update = new HashMap<>(metadata);
+        // Iterate through cached metadata to remove stale entries
+        for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
+            if(!metadata.containsKey(entry.getKey())) {
+                update.remove(entry.getKey());
             }
-            else if(value != null) {
-                // Update with new value if set
-                update.put(key, value);
+            else if(null == metadata.get(entry.getKey())) {
+                // Set cached value
+                update.put(entry.getKey(), entry.getValue());
             }
         }
         // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
