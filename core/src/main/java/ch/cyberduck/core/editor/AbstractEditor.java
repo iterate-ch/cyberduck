@@ -264,9 +264,6 @@ public abstract class AbstractEditor implements Editor {
         if(local != null ? !local.equals(that.local) : that.local != null) {
             return false;
         }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
-            return false;
-        }
         return true;
     }
 
@@ -274,7 +271,6 @@ public abstract class AbstractEditor implements Editor {
     public int hashCode() {
         int result = local != null ? local.hashCode() : 0;
         result = 31 * result + (application != null ? application.hashCode() : 0);
-        result = 31 * result + (session != null ? session.hashCode() : 0);
         return result;
     }
 
