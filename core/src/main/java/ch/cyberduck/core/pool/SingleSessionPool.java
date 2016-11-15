@@ -44,11 +44,6 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
-    public Integer getSize() {
-        return 1;
-    }
-
-    @Override
     public Integer getNumActive() {
         return 1;
     }

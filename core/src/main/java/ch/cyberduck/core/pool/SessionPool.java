@@ -30,8 +30,6 @@ public interface SessionPool {
 
     Host getHost();
 
-    Integer getSize();
-
     /**
      * @return Number of active connections in pool
      */

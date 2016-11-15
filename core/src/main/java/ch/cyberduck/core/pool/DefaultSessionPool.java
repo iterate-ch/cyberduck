@@ -205,10 +205,6 @@ public class DefaultSessionPool implements SessionPool {
         return bookmark;
     }
 
-    public Integer getSize() {
-        return connections;
-    }
-
     @Override
     public Integer getNumActive() {
         return pool.getNumActive();
