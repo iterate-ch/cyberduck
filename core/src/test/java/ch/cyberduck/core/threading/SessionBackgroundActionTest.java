@@ -39,7 +39,7 @@ public class SessionBackgroundActionTest {
 
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
-        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(null, new DisabledAlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(new NullSession(new Host(new TestProtocol(), "t"))), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
