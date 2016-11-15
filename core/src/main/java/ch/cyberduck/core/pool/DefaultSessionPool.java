@@ -51,8 +51,6 @@ public class DefaultSessionPool implements SessionPool {
 
     private final int retry;
 
-    private final Integer connections;
-
     protected final GenericObjectPool<Session> pool;
 
     /**
@@ -70,7 +68,6 @@ public class DefaultSessionPool implements SessionPool {
         this.bookmark = bookmark;
         this.retry = Integer.max(PreferencesFactory.get().getInteger("connection.retry"), connections);
         this.progress = progress;
-        this.connections = connections;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setMinIdle(0);
