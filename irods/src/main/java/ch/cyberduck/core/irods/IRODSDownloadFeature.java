@@ -43,7 +43,7 @@ import java.io.File;
 
 public class IRODSDownloadFeature implements Download {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     private final Preferences preferences = PreferencesFactory.get();
 

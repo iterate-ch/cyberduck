@@ -38,15 +38,15 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     /**
      *
      */
-    private ReentrantLock locked = new ReentrantLock();
+    private final ReentrantLock locked = new ReentrantLock();
 
-    private Set<CollectionListener<E>> listeners
+    private final Set<CollectionListener<E>> listeners
             = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
 
     /**
      *
      */
-    private AtomicBoolean loaded = new AtomicBoolean();
+    private final AtomicBoolean loaded = new AtomicBoolean();
 
     public Collection() {
         super();

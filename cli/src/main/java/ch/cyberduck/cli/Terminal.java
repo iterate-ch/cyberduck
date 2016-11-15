@@ -23,6 +23,7 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -92,20 +93,20 @@ public class Terminal {
 
     private final TerminalPromptReader reader;
 
-    private PathCache cache;
+    private final PathCache cache;
 
-    private ProgressListener progress;
+    private final ProgressListener progress;
 
-    private TranscriptListener transcript;
+    private final TranscriptListener transcript;
 
     private enum Exit {
         success,
         failure
     }
 
-    private CommandLine input;
+    private final CommandLine input;
 
-    private Options options;
+    private final Options options;
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
@@ -123,7 +124,9 @@ public class Terminal {
                 new SpectraProtocol(),
                 new B2Protocol(),
                 new DriveProtocol(),
-                new HubicProtocol()
+                new HubicProtocol(),
+                new DriveProtocol(),
+                new DropboxProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
@@ -217,7 +220,7 @@ public class Terminal {
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
@@ -232,6 +235,7 @@ public class Terminal {
                 case edit:
                     return this.edit(session, remote);
                 case list:
+                case longlist:
                     return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
                 case mount:
                     return this.mount(session);
@@ -254,7 +258,7 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(new TerminalCertificateStore(reader))),
+                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))),
                             Collections.singletonMap(
                                     remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             )
@@ -322,11 +326,12 @@ public class Terminal {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
+        final Host host = session.getHost();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            session.getHost().setTransfer(Host.TransferType.concurrent);
+            host.setTransfer(Host.TransferType.concurrent);
         }
         else {
-            session.getHost().setTransfer(Host.TransferType.newconnection);
+            host.setTransfer(Host.TransferType.newconnection);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             prompt = new DisabledTransferPrompt() {
@@ -353,10 +358,10 @@ public class Terminal {
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter),
                 new CertificateStoreX509TrustManager(
-                        new DefaultTrustManagerHostnameCallback(session.getHost()),
+                        new DefaultTrustManagerHostnameCallback(host),
                         new TerminalCertificateStore(reader)
                 ),
-                new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
+                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -394,12 +399,12 @@ public class Terminal {
         }
         final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress, new DownloadGlobFilter(remote.getName()));
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, new DownloadGlobFilter(remote.getName()), progress);
         }
         else {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Boolean>(
+        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
                 new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
                 session, cache, new TerminalHostKeyVerifier(reader), worker);
         this.execute(action);

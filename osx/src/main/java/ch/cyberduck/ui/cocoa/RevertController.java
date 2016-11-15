@@ -27,7 +27,7 @@ import java.util.List;
 
 public class RevertController extends ProxyController {
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public RevertController(final BrowserController parent) {
         this.parent = parent;

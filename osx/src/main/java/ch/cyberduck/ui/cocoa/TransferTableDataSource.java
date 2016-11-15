@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableColumn;
@@ -53,7 +54,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TransferTableDataSource extends ListDataSource {
-    private static Logger log = Logger.getLogger(TransferTableDataSource.class);
+    private static final Logger log = Logger.getLogger(TransferTableDataSource.class);
 
     public enum Column {
         progress,
@@ -65,7 +66,7 @@ public class TransferTableDataSource extends ListDataSource {
     private TransferFilter filter
             = new NullTransferFilter();
 
-    private TransferCollection collection
+    private final TransferCollection collection
             = TransferCollection.defaultCollection();
 
     public TransferTableDataSource() {

@@ -24,7 +24,6 @@ import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSIndexSet;
-import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.AttributedList;
@@ -138,7 +137,6 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
     public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
                                                                final NSPasteboard pboard) {
         if(controller.isMounted()) {
-            NSMutableArray items = NSMutableArray.array();
             final AttributedList<Path> children = this.get(controller.workdir());
             final List<Path> selected = new ArrayList<Path>();
             for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {

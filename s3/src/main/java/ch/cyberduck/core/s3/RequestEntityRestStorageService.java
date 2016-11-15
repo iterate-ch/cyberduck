@@ -101,14 +101,20 @@ public class RequestEntityRestStorageService extends RestS3Service {
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             if("PUT".equals(request.getMethod())) {
                 // #7621
-                request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+                final Jets3tProperties properties = getJetS3tProperties();
+                if(!properties.getBoolProperty("s3service.disable-expect-continue", false)) {
+                    request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+                }
             }
         }
         if(preferences.getBoolean("s3.bucket.requesterpays")) {
             // Downloading Objects in Requester Pays Buckets
             if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
-                // For GET and POST requests, include x-amz-request-payer : requester in the header
-                request.addHeader("x-amz-request-payer", "requester");
+                final Jets3tProperties properties = getJetS3tProperties();
+                if(!properties.getBoolProperty("s3service.disable-request-payer", false)) {
+                    // For GET and POST requests, include x-amz-request-payer : requester in the header
+                    request.addHeader("x-amz-request-payer", "requester");
+                }
             }
         }
         return request;
@@ -202,12 +208,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
     @Override
     public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context,
                                      final String forceRequestSignatureVersion) throws ServiceException {
-        if(forceRequestSignatureVersion != null
-                && !StringUtils.equals(session.getSignatureVersion().toString(), forceRequestSignatureVersion)) {
+        if(forceRequestSignatureVersion != null) {
+            final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
+                    = S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(StringUtils.remove(forceRequestSignatureVersion, "-"));
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
-            session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
-                    StringUtils.remove(forceRequestSignatureVersion, "-"))
-            );
+            session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
         if(session.authorize(httpMethod, this.getProviderCredentials())) {
             return;

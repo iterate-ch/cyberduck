@@ -37,10 +37,10 @@ import java.util.List;
 public abstract class EditorFactory extends Factory<EditorFactory> {
     private static final Logger log = Logger.getLogger(EditorFactory.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private ApplicationFinder applicationFinder;
+    private final ApplicationFinder applicationFinder;
 
     public EditorFactory() {
         this(ApplicationFinderFactory.get());

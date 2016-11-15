@@ -36,9 +36,9 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private static final Local file
             = LocalFactory.get(Local.HOME, ".ssh/config");
 
-    private OpenSshConfig configuration;
+    private final OpenSshConfig configuration;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public OpenSSHCredentialsConfigurator() {

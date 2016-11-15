@@ -38,7 +38,7 @@ import java.text.MessageFormat;
 public class RenameExistingFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
 
-    private Move move;
+    private final Move move;
 
     public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions());

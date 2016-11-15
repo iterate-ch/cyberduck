@@ -42,7 +42,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     private static final char[] EMPTY_RESPONSE = new char[0];
 
@@ -51,9 +51,9 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException {
-        return this.authenticate(host, host.getCredentials(), controller);
+        return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
     }
 
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)

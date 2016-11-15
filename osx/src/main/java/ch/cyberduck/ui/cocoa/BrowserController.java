@@ -18,11 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -99,7 +101,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -130,7 +132,7 @@ import java.util.Set;
 
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
-    private static Logger log = Logger.getLogger(BrowserController.class);
+    private static final Logger log = Logger.getLogger(BrowserController.class);
 
     private final BookmarkCollection bookmarks
             = BookmarkCollection.defaultCollection();
@@ -153,7 +155,7 @@ public class BrowserController extends WindowController
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     /**
@@ -210,16 +212,16 @@ public class BrowserController extends WindowController
 
     private PathPasteboard pasteboard;
 
-    private ListProgressListener listener
+    private final ListProgressListener listener
             = new PromptLimitedListProgressListener(this);
 
     /**
      * Caching files listings of previously listed directories
      */
-    private PathCache cache
+    private final PathCache cache
             = new PathCache(preferences.getInteger("browser.cache.size"));
 
-    private List<Editor> editors
+    private final List<Editor> editors
             = new ArrayList<Editor>();
 
     public BrowserController() {
@@ -579,6 +581,9 @@ public class BrowserController extends WindowController
         window.setMovableByWindowBackground(true);
         window.setCollectionBehavior(window.collectionBehavior() | NSWindow.NSWindowCollectionBehavior.NSWindowCollectionBehaviorFullScreenPrimary);
         window.setContentMinSize(new NSSize(600d, 200d));
+        if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
+            window.setTabbingIdentifier(preferences.getProperty("browser.window.tabbing.identifier"));
+        }
         super.setWindow(window);
         // Accept file promises from history tab
         window.registerForDraggedTypes(NSArray.arrayWithObject(NSPasteboard.FilesPromisePboardType));
@@ -674,34 +679,32 @@ public class BrowserController extends WindowController
         this.logDrawer.setDelegate(this.id());
     }
 
-    private NSButton donateButton;
+    private NSTitlebarAccessoryViewController accessoryView;
 
-    public void setDonateButton(NSButton donateButton) {
-        this.donateButton = donateButton;
-        this.donateButton.setTitle(LocaleFactory.localizedString("Get a donation key!", "License"));
-        this.donateButton.setAction(Foundation.selector("donateMenuClicked:"));
-        this.donateButton.sizeToFit();
+    public void setDonateButton(NSButton button) {
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
+            button.setAction(Foundation.selector("donateMenuClicked:"));
+            button.sizeToFit();
+            NSView view = NSView.create();
+            view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
+            view.addSubview(button);
+            accessoryView = NSTitlebarAccessoryViewController.create();
+            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
+            accessoryView.setView(view);
+        }
     }
 
     private void addDonateWindowTitle() {
-        NSView parent = this.window().contentView().superview();
-        NSSize bounds = parent.frame().size;
-        NSSize size = donateButton.frame().size;
-        donateButton.setFrame(new NSRect(
-                        new NSPoint(
-                                bounds.width.intValue() - size.width.intValue() - 40,
-                                bounds.height.intValue() - size.height.intValue() + 3),
-                        new NSSize(
-                                size.width.intValue(),
-                                size.height.intValue())
-                )
-        );
-        donateButton.setAutoresizingMask(new NSUInteger(NSView.NSViewMinXMargin | NSView.NSViewMinYMargin));
-        parent.addSubview(donateButton);
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            window.addTitlebarAccessoryViewController(accessoryView);
+        }
     }
 
     public void removeDonateWindowTitle() {
-        donateButton.removeFromSuperview();
+        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
+            accessoryView.removeFromParentViewController();
+        }
     }
 
     protected enum BrowserTab {
@@ -1877,7 +1880,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSComboBox quickConnectPopup;
 
-    private ProxyController quickConnectPopupModel = new QuickConnectModel();
+    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
 
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
@@ -2008,7 +2011,7 @@ public class BrowserController extends WindowController
                                 LocaleFactory.localizedString("Cancel"),
                                 null
                         );
-                        this.alert(alert, new SheetCallback() {
+                        this.alert(alert, new DisabledSheetCallback() {
                             @Override
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
@@ -2073,7 +2076,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
@@ -2127,7 +2130,7 @@ public class BrowserController extends WindowController
         final NSInteger index = new NSInteger(row);
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
-        final BookmarkController c = BookmarkControllerFactory.create(item);
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
         c.window().makeKeyAndOrderFront(null);
     }
 
@@ -2166,7 +2169,7 @@ public class BrowserController extends WindowController
                 LocaleFactory.localizedString("Delete"),
                 LocaleFactory.localizedString("Cancel"),
                 null);
-        this.alert(alert, new SheetCallback() {
+        this.alert(alert, new DisabledSheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -2452,7 +2455,7 @@ public class BrowserController extends WindowController
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 
@@ -2556,32 +2559,32 @@ public class BrowserController extends WindowController
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        final SheetController sheet = new GotoController(this, cache);
+        final GotoController sheet = new GotoController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        final SheetController sheet = new CreateFileController(this, cache);
+        final CreateFileController sheet = new CreateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        final SheetController sheet = new CreateSymlinkController(this, cache);
+        final CreateSymlinkController sheet = new CreateSymlinkController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        final SheetController sheet = new DuplicateFileController(this, cache);
+        final DuplicateFileController sheet = new DuplicateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        final SheetController sheet = new FolderController(this, cache,
+        final FolderController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
         sheet.beginSheet();
     }
@@ -2603,7 +2606,8 @@ public class BrowserController extends WindowController
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        SheetController sheet = new CommandController(this, session);
+        CommandController controller = new CommandController(this, session);
+        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller.window());
         sheet.beginSheet();
     }
 
@@ -2921,14 +2925,16 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final SheetController controller = ConnectionControllerFactory.create(this);
-        this.addListener(new WindowListener() {
+        final ConnectionController controller = ConnectionControllerFactory.create(this);
+        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
-            public void windowWillClose() {
-                controller.invalidate();
+            public void callback(final int returncode) {
+                if(returncode == SheetCallback.DEFAULT_OPTION) {
+                    mount(controller.getBookmark());
+                }
             }
-        });
-        controller.beginSheet();
+        }, this, controller.window());
+        sheet.beginSheet();
     }
 
     @Action
@@ -3339,7 +3345,7 @@ public class BrowserController extends WindowController
      * to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
-        return this.unmount(new SheetCallback() {
+        return this.unmount(new DisabledSheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -3370,7 +3376,7 @@ public class BrowserController extends WindowController
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new SheetCallback() {
+                this.alert(alert, new DisabledSheetCallback() {
                     @Override
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -3414,7 +3420,7 @@ public class BrowserController extends WindowController
      * Unmount this session
      */
     private void disconnect(final Runnable disconnected) {
-        final InfoController c = InfoControllerFactory.get(BrowserController.this);
+        final InfoController c = InfoControllerFactory.get(this);
         if(null != c) {
             c.window().close();
         }
@@ -3458,7 +3464,7 @@ public class BrowserController extends WindowController
     public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
-            if(!controller.unmount(new SheetCallback() {
+            if(!controller.unmount(new DisabledSheetCallback() {
                                        @Override
                                        public void callback(final int returncode) {
                                            if(returncode == DEFAULT_OPTION) { //Disconnect

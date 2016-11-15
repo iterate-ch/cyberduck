@@ -2,6 +2,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.HashMap;
@@ -10,30 +11,32 @@ import java.util.Map;
 
 public final class InfoControllerFactory {
 
-    private static Map<BrowserController, InfoController> open
+    private static final Map<BrowserController, InfoController> open
             = new HashMap<BrowserController, InfoController>();
+
+    private static final Preferences preferences = PreferencesFactory.get();
 
     private InfoControllerFactory() {
         //
     }
 
     public static InfoController create(final BrowserController controller, final List<Path> files) {
-        if(PreferencesFactory.get().getBoolean("browser.info.inspector")) {
+        if(preferences.getBoolean("browser.info.inspector")) {
             if(open.containsKey(controller)) {
                 final InfoController c = open.get(controller);
                 c.setFiles(files);
                 return c;
             }
         }
-        final InfoController c = new InfoController(controller, files) {
+        final InfoController info = new InfoController(controller, controller.getSession(), controller.getCache(), files) {
             @Override
             public void windowWillClose(final NSNotification notification) {
-                InfoControllerFactory.open.remove(controller);
+                open.remove(controller);
                 super.windowWillClose(notification);
             }
         };
-        open.put(controller, c);
-        return c;
+        open.put(controller, info);
+        return info;
     }
 
     /**

@@ -1,6 +1,8 @@
 package ch.cyberduck.core.ssl;
 
 import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
@@ -11,7 +13,7 @@ public class CustomTrustSSLProtocolSocketFactoryTest {
     @Test
     public void testGetSSLContext() throws Exception {
         assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
-                new DisabledCertificateStore()
-        )).getSSLContext());
+                new DisabledCertificateStore(),
+                new Host(new TestProtocol()))).getSSLContext());
     }
 }

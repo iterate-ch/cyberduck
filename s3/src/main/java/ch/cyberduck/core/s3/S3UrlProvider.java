@@ -46,12 +46,12 @@ import java.util.concurrent.TimeUnit;
 public class S3UrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(S3UrlProvider.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private HostPasswordStore store;
+    private final HostPasswordStore store;
 
-    private S3Session session;
+    private final S3Session session;
 
     public S3UrlProvider(final S3Session session) {
         this(session, PasswordStoreFactory.get());
@@ -99,12 +99,14 @@ public class S3UrlProvider implements UrlProvider {
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
-                containerService.getContainer(file).getName(),
-                containerService.isContainer(file)
-                        ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-                DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        if(!file.isRoot()) {
+            list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
+                    containerService.getContainer(file).getName(),
+                    containerService.isContainer(file)
+                            ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        }
         return list;
     }
 
@@ -165,7 +167,7 @@ public class S3UrlProvider implements UrlProvider {
                 session.getHost().getCredentials().getUsername(), secret,
                 containerService.getContainer(file).getName(), region, containerService.getKey(file),
                 expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
         );

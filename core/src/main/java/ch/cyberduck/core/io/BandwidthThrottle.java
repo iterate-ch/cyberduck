@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 
  */
 public final class BandwidthThrottle {
-    private static Logger log = Logger.getLogger(BandwidthThrottle.class);
+    private static final Logger log = Logger.getLogger(BandwidthThrottle.class);
 
     /**
      * The number of windows per second.

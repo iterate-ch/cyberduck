@@ -263,11 +263,11 @@ public class FTPSessionTest {
         ));
         final AtomicBoolean callback = new AtomicBoolean();
         final FTPSession session = new FTPSession(host, new DefaultX509TrustManager(),
-                new KeychainX509KeyManager(new DisabledCertificateStore() {
+                new KeychainX509KeyManager(host, new DisabledCertificateStore() {
                     @Override
-                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+                    public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("test.cyberduck.ch", hostname);
+                        assertEquals("test.cyberduck.ch", bookmark);
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.",
                                 prompt);
                         callback.set(true);

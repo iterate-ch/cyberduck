@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;
@@ -61,7 +62,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class BookmarkTableDataSource extends ListDataSource {
-    private static Logger log = Logger.getLogger(BookmarkTableDataSource.class);
+    private static final Logger log = Logger.getLogger(BookmarkTableDataSource.class);
 
     public enum Column {
         icon,
@@ -69,7 +70,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         status,
     }
 
-    protected BrowserController controller;
+    protected final BrowserController controller;
 
     private HostFilter filter;
 
@@ -82,7 +83,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     private CollectionListener<Host> listener;
 
-    private ScheduledThreadPool timerPool = new ScheduledThreadPool();
+    private final ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
     private final HostPasteboard pasteboard
             = HostPasteboard.getPasteboard();

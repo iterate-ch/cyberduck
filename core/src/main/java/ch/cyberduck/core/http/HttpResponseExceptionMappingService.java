@@ -21,7 +21,9 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -42,8 +44,12 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new LoginFailureException(buffer.toString(), failure);
             case HttpStatus.SC_FORBIDDEN:
                 return new AccessDeniedException(buffer.toString(), failure);
+            case HttpStatus.SC_CONFLICT:
+                return new ConflictException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
                 return new NotfoundException(buffer.toString(), failure);
+            case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
                 return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_INSUFFICIENT_STORAGE:
@@ -60,6 +66,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 return new ConnectionRefusedException(buffer.toString(), failure);
+            case HttpStatus.SC_REQUEST_TIMEOUT:
+                return new ConnectionTimeoutException(buffer.toString(), failure);
         }
         return this.wrap(failure, buffer);
     }

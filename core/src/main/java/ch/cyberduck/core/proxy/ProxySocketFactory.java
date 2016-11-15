@@ -42,15 +42,15 @@ import java.util.List;
 public class ProxySocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
 
-    private SocketConfigurator configurator;
+    private final SocketConfigurator configurator;
 
-    private ProxyFinder proxyFinder;
+    private final ProxyFinder proxyFinder;
 
-    private Protocol protocol;
+    private final Protocol protocol;
 
-    private TrustManagerHostnameCallback hostnameCallback;
+    private final TrustManagerHostnameCallback hostnameCallback;
 
-    private List<Proxy.Type> types = new ArrayList<Proxy.Type>(
+    private final List<Proxy.Type> types = new ArrayList<Proxy.Type>(
             Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
 
     /**

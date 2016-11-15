@@ -48,7 +48,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         //
     }
 
-    private Object identity = new Object();
+    private final Object identity = new Object();
 
     /**
      * @return The currently running background action. Null if none is currently running.

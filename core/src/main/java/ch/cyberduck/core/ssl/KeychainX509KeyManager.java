@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.Host;
 
 import java.net.Socket;
 import java.security.KeyStore;
@@ -31,23 +32,23 @@ import java.util.Map;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private Map<Key, String> memory
+    private final Map<Key, String> memory
             = new HashMap<Key, String>();
 
-    public KeychainX509KeyManager() {
-        super(CertificateStoreFactory.get());
+    public KeychainX509KeyManager(final Host bookmark) {
+        super(CertificateStoreFactory.get(), bookmark);
     }
 
-    public KeychainX509KeyManager(final Controller controller) {
-        super(CertificateStoreFactory.get(controller));
+    public KeychainX509KeyManager(final Host bookmark, final Controller controller) {
+        super(CertificateStoreFactory.get(controller), bookmark);
     }
 
-    public KeychainX509KeyManager(final CertificateStore callback) {
-        super(callback);
+    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback) {
+        super(callback, bookmark);
     }
 
-    public KeychainX509KeyManager(final CertificateStore callback, final KeyStore store) {
-        super(callback, store);
+    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
+        super(bookmark, callback, store);
     }
 
     @Override
@@ -77,9 +78,9 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
     }
 
     protected static final class Key {
-        private String hostname;
-        private int port;
-        private Principal[] issuers;
+        private final String hostname;
+        private final int port;
+        private final Principal[] issuers;
 
         private Key(String hostname, int port, Principal[] issuers) {
             this.hostname = hostname;

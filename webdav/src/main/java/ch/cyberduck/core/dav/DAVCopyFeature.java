@@ -30,7 +30,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVCopyFeature implements Copy {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVCopyFeature(final DAVSession session) {
         this.session = session;

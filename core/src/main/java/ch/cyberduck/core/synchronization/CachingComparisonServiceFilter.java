@@ -33,7 +33,7 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
 
     private Map<TransferItem, Comparison> cache = Collections.emptyMap();
 
-    private ComparisonServiceFilter delegate;
+    private final ComparisonServiceFilter delegate;
 
     public CachingComparisonServiceFilter(final ComparisonServiceFilter delegate) {
         this.delegate = delegate;

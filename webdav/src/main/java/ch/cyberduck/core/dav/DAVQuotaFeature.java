@@ -39,7 +39,10 @@ public class DAVQuotaFeature implements Quota {
         final Path home = new DefaultHomeFinderService(session).find();
         try {
             final DavQuota quota = session.getClient().getQuota(new DAVPathEncoder().encode(home));
-            return new Space(quota.getQuotaUsedBytes(), quota.getQuotaAvailableBytes());
+            return new Space(
+                    quota.getQuotaUsedBytes() > 0 ? quota.getQuotaUsedBytes() : 0,
+                    quota.getQuotaAvailableBytes() > 0 ? quota.getQuotaAvailableBytes() : Long.MAX_VALUE
+            );
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, home);

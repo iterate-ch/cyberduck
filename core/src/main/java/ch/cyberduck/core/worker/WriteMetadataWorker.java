@@ -38,34 +38,29 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * The updated metadata to apply
      */
-    private Map<String, String> metadata;
+    private final Map<String, String> metadata;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<String> callback;
+    private final RecursiveCallback<String> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
-                                  final boolean recursive,
-                                  final ProgressListener listener) {
-        this(files, metadata, new RecursiveCallback<String>() {
-            @Override
-            public boolean recurse(final Path directory, final String value) {
-                return recursive;
-            }
-        }, listener);
+    public WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
+                               final boolean recursive,
+                               final ProgressListener listener) {
+        this(files, metadata, new BooleanRecursiveCallback<String>(recursive), listener);
     }
 
-    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
-                                  final RecursiveCallback<String> callback,
-                                  final ProgressListener listener) {
+    public WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
+                               final RecursiveCallback<String> callback,
+                               final ProgressListener listener) {
         this.files = files;
         this.metadata = metadata;
         this.callback = callback;
@@ -76,6 +71,9 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;
@@ -96,7 +94,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setMetadata(file, metadata);
-            file.attributes().setMetadata(metadata);
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {

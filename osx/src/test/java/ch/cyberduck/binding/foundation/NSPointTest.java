@@ -24,9 +24,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-/**
- * @version $Id$
- */
 public class NSPointTest {
 
     @Test

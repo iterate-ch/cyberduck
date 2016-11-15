@@ -93,7 +93,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * @param type  Transfer type
      * @param files Files and status
      * @return Job status identifier list
-     * @throws BackgroundException
      */
     @Override
     public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
@@ -141,6 +140,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         job = helper.startWriteJob(
                                 container.getKey().getName(), container.getValue(), WriteJobOptions.create()
+                                        .withMaxUploadSize(Integer.MAX_VALUE)
                                         .withChecksumType(Checksum.Type.CRC32));
                         break;
                     default:

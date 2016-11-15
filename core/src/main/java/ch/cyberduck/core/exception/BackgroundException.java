@@ -18,14 +18,21 @@ package ch.cyberduck.core.exception;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.StringAppender;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
+
 public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
 
+    private Path file = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory));
+
     private String message;
+
     private String detail;
 
     public BackgroundException() {
@@ -56,7 +63,15 @@ public class BackgroundException extends Exception {
 
     @Override
     public String getMessage() {
-        return message;
+        return null == message ? LocaleFactory.localizedString("Unknown") : message;
+    }
+
+    public void setFile(final Path file) {
+        this.file = file;
+    }
+
+    public Path getFile() {
+        return file;
     }
 
     public String getHelp() {

@@ -19,9 +19,6 @@ package ch.cyberduck.binding.foundation;
 
 import com.sun.jna.Library;
 
-/**
- * @version $Id$
- */
 public interface ServiceManagementFunctions extends Library {
 
     /**

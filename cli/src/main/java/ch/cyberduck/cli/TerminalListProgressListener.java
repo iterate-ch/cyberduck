@@ -33,9 +33,9 @@ import java.text.MessageFormat;
 
 public class TerminalListProgressListener extends LimitedListProgressListener {
 
-    private Console console = new Console();
+    private final Console console = new Console();
 
-    private AbstractUserDateFormatter formatter
+    private final AbstractUserDateFormatter formatter
             = UserDateFormatterFactory.get();
 
     private int size = 0;

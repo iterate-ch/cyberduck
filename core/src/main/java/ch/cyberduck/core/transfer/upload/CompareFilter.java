@@ -33,7 +33,7 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractUploadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private ComparisonServiceFilter comparisonService;
+    private final ComparisonServiceFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final ProgressListener listener) {

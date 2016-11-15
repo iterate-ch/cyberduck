@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class RegexFilter implements Filter<Path> {
 
-    private Pattern pattern = Pattern.compile(
+    private final Pattern pattern = Pattern.compile(
             PreferencesFactory.get().getProperty("browser.hidden.regex"));
 
     @Override

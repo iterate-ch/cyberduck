@@ -36,13 +36,13 @@ import java.util.List;
 public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 
-    private Path directory;
+    private final Path directory;
 
-    private Local local;
+    private final Local local;
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public TransferPromptListWorker(final Transfer transfer,
                                     final Path directory, final Local local,

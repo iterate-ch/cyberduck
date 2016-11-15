@@ -30,8 +30,8 @@ import java.io.OutputStream;
 public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
-    public ResponseOutputStream(OutputStream d) {
-        super(d);
+    public ResponseOutputStream(final OutputStream proxy) {
+        super(proxy);
     }
 
     /**

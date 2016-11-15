@@ -33,7 +33,7 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
-public class WorkerBackgroundAction<T> extends BrowserBackgroundAction<T> {
+public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
     protected Worker<T> worker;

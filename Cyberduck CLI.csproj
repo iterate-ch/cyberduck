@@ -18,7 +18,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>cli\target</OutputPath>
+    <OutputPath>cli\windows\target</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
@@ -27,7 +27,7 @@
     <WarningLevel>1</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>cli\target</OutputPath>
+    <OutputPath>cli\windows\target</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
@@ -113,7 +113,7 @@
   <ItemGroup>
     <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminal.cs" />
     <Compile Include="cli\src\main\csharp\ch\cyberduck\cli\WindowsTerminalPreferences.cs" />
-    <Compile Include="cli\target\AssemblyInfo.cs" />
+    <Compile Include="cli\windows\target\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Cyberduck Core.csproj">
@@ -126,7 +126,7 @@
        Other similar extension points exist, see Microsoft.Common.targets. -->
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
   <Target Name="AssemblyInfo">
-    <AssemblyInfo CodeLanguage="CS" OutputFile="cli\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(Version)" Condition="$(Version) != '0' " />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="cli\windows\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(Version)" Condition="$(Version) != '0' " />
   </Target>
   <Target Name="BeforeBuild">
     <CallTarget Targets="AssemblyInfo" />
@@ -153,7 +153,5 @@
     <Copy SourceFiles="@(JNASupport)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
-  </Target>
-  <Target Name="AfterBuild">
   </Target>
 </Project>

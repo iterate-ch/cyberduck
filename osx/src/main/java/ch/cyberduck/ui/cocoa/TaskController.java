@@ -34,7 +34,7 @@ import org.rococoa.ID;
 
 public class TaskController extends BundleController {
 
-    private BackgroundAction task;
+    private final BackgroundAction task;
 
     @Outlet
     private NSTextField name;

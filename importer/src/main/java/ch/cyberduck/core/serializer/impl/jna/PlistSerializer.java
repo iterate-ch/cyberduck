@@ -18,18 +18,15 @@ package ch.cyberduck.core.serializer.impl.jna;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.SerializerFactory;
-import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.serializer.Serializer;
 
 import java.util.List;
 
-/**
- * @version $Id$
- */
 public class PlistSerializer implements Serializer {
 
     final NSMutableDictionary dict;

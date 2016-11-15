@@ -24,12 +24,9 @@ import ch.cyberduck.core.features.Symlink;
 
 import java.io.IOException;
 
-/**
- * @version $Id:$
- */
 public class FTPSymlinkFeature implements Symlink {
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPSymlinkFeature(FTPSession session) {
         this.session = session;

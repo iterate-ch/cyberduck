@@ -51,7 +51,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     /**
      * The file to persist this collection in
      */
-    private Local file;
+    private final Local file;
 
     @Override
     public String getName() {

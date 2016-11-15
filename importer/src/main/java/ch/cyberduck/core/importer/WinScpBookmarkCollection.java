@@ -39,9 +39,6 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * @version $Id$
- */
 public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
 
@@ -127,6 +124,8 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                         current.setProtocol(new FTPProtocol());
                                         break;
                                 }
+                                // Reset port to default
+                                current.setPort(-1);
                             }
                             catch(NumberFormatException e) {
                                 log.warn("Unknown Protocol:" + e.getMessage());

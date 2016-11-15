@@ -44,7 +44,7 @@ import java.util.Map;
 public class TransferDictionary {
     private static final Logger log = Logger.getLogger(TransferDictionary.class);
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
     private final ProtocolFactory protocols;
 
     public TransferDictionary() {
@@ -124,12 +124,12 @@ public class TransferDictionary {
         }
         final Transfer transfer;
         Transfer.Type type = null;
-        String kindObj = dict.stringForKey("Kind");
+        final String kindObj = dict.stringForKey("Kind");
         if(kindObj != null) {
             // Legacy
             type = Transfer.Type.values()[Integer.parseInt(kindObj)];
         }
-        String typeObj = dict.stringForKey("Type");
+        final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
             type = Transfer.Type.valueOf(typeObj);
         }
@@ -206,19 +206,23 @@ public class TransferDictionary {
                 log.warn(String.format("Unknown transfer type %s", kindObj));
                 return null;
         }
-        Object sizeObj = dict.stringForKey("Size");
+        final Object uuidObj = dict.stringForKey("UUID");
+        if(uuidObj != null) {
+            transfer.setUuid(uuidObj.toString());
+        }
+        final Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             transfer.setSize((long) Double.parseDouble(sizeObj.toString()));
         }
-        Object timestampObj = dict.stringForKey("Timestamp");
+        final Object timestampObj = dict.stringForKey("Timestamp");
         if(timestampObj != null) {
             transfer.setTimestamp(new Date(Long.parseLong(timestampObj.toString())));
         }
-        Object currentObj = dict.stringForKey("Current");
+        final Object currentObj = dict.stringForKey("Current");
         if(currentObj != null) {
             transfer.setTransferred((long) Double.parseDouble(currentObj.toString()));
         }
-        Object bandwidthObj = dict.stringForKey("Bandwidth");
+        final Object bandwidthObj = dict.stringForKey("Bandwidth");
         if(bandwidthObj != null) {
             transfer.getBandwidth().setRate(Float.parseFloat(bandwidthObj.toString()));
         }

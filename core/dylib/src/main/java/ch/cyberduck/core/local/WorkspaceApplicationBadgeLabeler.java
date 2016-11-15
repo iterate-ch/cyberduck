@@ -21,9 +21,6 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSWorkspace;
 
-/**
- * @version $Id$
- */
 public class WorkspaceApplicationBadgeLabeler implements ApplicationBadgeLabeler {
 
     @Override

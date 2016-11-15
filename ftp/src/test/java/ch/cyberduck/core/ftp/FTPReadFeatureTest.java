@@ -33,7 +33,7 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -107,24 +107,25 @@ public class FTPReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(test);
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(2048);
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final TransferStatus status = new TransferStatus();
         // Partial read with offset and not full content length
-        status.setLength(content.length - 100 - 1);
+        final long limit = content.length - 100;
+        status.setLength(limit);
         status.setAppend(true);
-        status.setOffset(100L);
+        final long offset = 2L;
+        status.setOffset(offset);
         final InputStream in = new FTPReadFeature(session).read(test, status);
         assertNotNull(in);
         final ByteArrayOutputStream download = new ByteArrayOutputStream();
-        new StreamCopier(status, status).withLimit(status.getLength()).transfer(in, download);
-        final byte[] reference = new byte[content.length - 100 - 1];
-        System.arraycopy(content, 100, reference, 0, content.length - 100 - 1);
+        new StreamCopier(status, status).withLimit(limit).transfer(in, download);
+        final byte[] reference = new byte[(int) limit];
+        System.arraycopy(content, (int) offset, reference, 0, (int) limit);
         assertArrayEquals(reference, download.toByteArray());
-        in.close();
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -164,7 +165,7 @@ public class FTPReadFeatureTest {
         new DefaultTouchFeature(session).touch(test);
         final OutputStream out = new FTPWriteFeature(session).write(test, new TransferStatus().length(20L));
         assertNotNull(out);
-        final byte[] content = RandomStringUtils.random(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(2048);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final TransferStatus status = new TransferStatus();

@@ -189,54 +189,11 @@ NSArray* CreateCertificatesFromData(JNIEnv *env, jobjectArray jCertificates) {
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEnv *env, jobject this, jstring jHostname, jobjectArray jCertificates) {
 	OSStatus err;
 	NSArray *certificates = CreateCertificatesFromData(env, jCertificates);
-	// Creates a search object for finding policies.
-	SecPolicySearchRef searchRef = NULL;
-	err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &searchRef);
-	if(err != noErr) {
-        NSLog(@"Error creating policy");
-		return FALSE;
-	}
-	// Retrieves a policy object for the next policy matching specified search criteria.
-	SecPolicyRef policyRef = NULL;
-	err = SecPolicySearchCopyNext(searchRef, &policyRef);
-	if(err != noErr) {
-        NSLog(@"Error retrieving policy");
-		if(searchRef) {
-			CFRelease(searchRef);
-		}
-		return FALSE;
-	}
-	if(searchRef) {
-		CFRelease(searchRef);
-	}
+	NSString *hostname = JNFJavaToNSString(env, jHostname);
+	// Specify true on the client side to return a policy for SSL server certificates.
+	SecPolicyRef policyRef = SecPolicyCreateSSL(TRUE, hostname);
 	if(!policyRef) {
 	    return FALSE;
-	}
-	NSString *hostname = JNFJavaToNSString(env, jHostname);
-	// Returns NULL if the receiver cannot be losslessly converted to encoding.
-	const char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
-	if(!cHostname) {
-        NSLog(@"Error adding hostname to SSL options");
-	}
-	else {
-        CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
-            .Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
-            .ServerNameLen = strlen(cHostname),
-            .ServerName = cHostname,
-            .Flags = 0
-        };
-        CSSM_DATA customCssmData = {
-            .Length = sizeof(ssloptions),
-            .Data = (uint8*)&ssloptions
-        };
-        err = SecPolicySetValue(policyRef, &customCssmData);
-        if(err != noErr) {
-            NSLog(@"Error setting policy for evaluating trust");
-            if(policyRef) {
-                CFRelease(policyRef);
-            }
-            return FALSE;
-        }
 	}
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
@@ -323,15 +280,10 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 			}
 		}
 	}
-	if([panel respondsToSelector:@selector(setAlternateButtonTitle:)]) {
-		[panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
-	}
-	if([panel respondsToSelector:@selector(setPolicies:)]) {
-		[panel setPolicies:(id)policyRef];
-	}
-	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
-		[panel setShowsHelp:YES];
-	}
+    [panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
+    // Modify how the certificates are evaluated
+    [panel setPolicies:(id)policyRef];
+    [panel setShowsHelp:YES];
 	// Displays a modal panel that shows the results of a certificate trust evaluation and
 	// that allows the user to edit trust settings.
 	NSInteger result = [panel runModalForTrust:trustRef message:nil];

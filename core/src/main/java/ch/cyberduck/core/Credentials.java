@@ -24,8 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Stores the login credentials
- *
- * @version $Id$
  */
 public class Credentials implements Comparable<Credentials> {
 
@@ -40,9 +38,14 @@ public class Credentials implements Comparable<Credentials> {
     private String password;
 
     /**
-     * If not null, use public key authentication if SSH is the protocol
+     * Private key identity for SSH public key authentication.
      */
     private Local identity;
+
+    /**
+     * Client certificate alias for TLS
+     */
+    private String certificate;
 
     /**
      * If the credentials should be stored in the Keychain upon successful login
@@ -116,6 +119,13 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     /**
+     * @return true if the password will be added to the system keychain when logged in successfully
+     */
+    public boolean isSaved() {
+        return this.keychained;
+    }
+
+    /**
      * Use this to define if passwords should be added to the keychain
      *
      * @param saved If true, the password of the login is added to the keychain upon
@@ -123,13 +133,6 @@ public class Credentials implements Comparable<Credentials> {
      */
     public void setSaved(final boolean saved) {
         this.keychained = saved;
-    }
-
-    /**
-     * @return true if the password will be added to the system keychain when logged in successfully
-     */
-    public boolean isSaved() {
-        return this.keychained;
     }
 
     public boolean isPassed() {
@@ -164,16 +167,6 @@ public class Credentials implements Comparable<Credentials> {
         return identity.exists();
     }
 
-    /**
-     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
-     *
-     * @param file Private key file
-     */
-    public void setIdentity(final Local file) {
-        this.identity = file;
-        this.passed = false;
-    }
-
     public Credentials withIdentity(final Local file) {
         this.identity = file;
         this.passed = false;
@@ -185,6 +178,31 @@ public class Credentials implements Comparable<Credentials> {
      */
     public Local getIdentity() {
         return identity;
+    }
+
+    /**
+     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     *
+     * @param file Private key file
+     */
+    public void setIdentity(final Local file) {
+        this.identity = file;
+        this.passed = false;
+    }
+
+    public String getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(final String certificate) {
+        this.certificate = certificate;
+    }
+
+    public boolean isCertificateAuthentication() {
+        if(null == certificate) {
+            return false;
+        }
+        return true;
     }
 
     /**

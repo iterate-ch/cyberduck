@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 public class DefaultFindFeature implements Find {
     private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
 
-    private Session<?> session;
+    private final Session<?> session;
 
     private Cache<Path> cache
             = PathCache.empty();

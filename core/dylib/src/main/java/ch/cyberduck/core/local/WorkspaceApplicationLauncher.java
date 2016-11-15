@@ -31,16 +31,13 @@ import org.rococoa.Foundation;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @version $Id$
- */
 public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
 
     private final NSWorkspace workspace
             = NSWorkspace.sharedWorkspace();
 
-    private Map<Application, ApplicationQuitCallback> registered
+    private final Map<Application, ApplicationQuitCallback> registered
             = new HashMap<Application, ApplicationQuitCallback>();
 
     public void register(final Application application, final ApplicationQuitCallback callback) {

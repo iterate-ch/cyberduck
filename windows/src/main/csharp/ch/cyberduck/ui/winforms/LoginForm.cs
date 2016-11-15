@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,15 +13,16 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -32,21 +33,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             openFileDialog.Title = LocaleFactory.localizedString("Select the private key in PEM or PuTTY format",
-                                                                 "Credentials");
+                "Credentials");
             labelMessageLink.Font = DefaultFontBold;
 
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
+            {
+                bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
+                if (cancel)
                 {
-                    bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
-                    if (cancel)
-                    {
-                        args.Cancel = true;
-                        SystemSounds.Beep.Play();
-                    }
-                };
+                    args.Cancel = true;
+                    SystemSounds.Beep.Play();
+                }
+            };
         }
 
         public string Title
@@ -129,27 +130,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { checkBoxAnonymous.Checked = value; }
         }
 
-        public bool PkCheckboxState
-        {
-            get { return checkBoxPkAuthentication.Checked; }
-            set { checkBoxPkAuthentication.Checked = value; }
-        }
-
-        public bool PkCheckboxEnabled
-        {
-            set { checkBoxPkAuthentication.Enabled = value; }
-        }
-
-        public string PkLabel
+        public bool PrivateKeyFieldEnabled
         {
             set
             {
-                pkLabel.Text = value;
-                pkLabel.ForeColor = checkBoxPkAuthentication.Checked
-                                        ? Color.FromKnownColor(KnownColor.ControlText)
-                                        : Color.Gray;
+                comboBoxPrivateKey.Enabled = value;
+                choosePkButton.Enabled = value;
             }
-            get { return pkLabel.Text; }
         }
 
         public string PasswordLabel
@@ -162,6 +149,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { labelUsername.Text = value; }
         }
 
+        public void PopulatePrivateKeys(List<string> keys)
+        {
+            comboBoxPrivateKey.DataSource = null;
+            comboBoxPrivateKey.DataSource = keys;
+        }
+
         public void ShowPrivateKeyBrowser(string path)
         {
             if (!Visible) return;
@@ -171,10 +164,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             if (DialogResult.OK == openFileDialog.ShowDialog())
             {
                 ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
-            }
-            else
-            {
-                ChangedPrivateKey(this, new PrivateKeyArgs(null));
             }
         }
 
@@ -188,6 +177,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { checkBoxAnonymous.Enabled = value; }
         }
 
+        public string SelectedPrivateKey
+        {
+            get { return comboBoxPrivateKey.Text; }
+            set { comboBoxPrivateKey.Text = value; }
+        }
+
         public event VoidHandler ChangedUsernameEvent;
         public event VoidHandler ChangedPasswordEvent;
         public event VoidHandler ChangedSavePasswordCheckboxEvent;
@@ -195,6 +190,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedPkCheckboxEvent;
         public event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
         public event ValidateInputHandler ValidateInput;
+        public event VoidHandler OpenPrivateKeyBrowserEvent;
 
         private void textBoxUsername_TextChanged(object sender, EventArgs e)
         {
@@ -216,9 +212,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             ChangedAnonymousCheckboxEvent();
         }
 
-        private void checkBoxPkAuthentication_CheckedChanged(object sender, EventArgs e)
+        private void choosePkButton_Click(object sender, EventArgs e)
         {
-            ChangedPkCheckboxEvent();
+            OpenPrivateKeyBrowserEvent();
         }
     }
 }

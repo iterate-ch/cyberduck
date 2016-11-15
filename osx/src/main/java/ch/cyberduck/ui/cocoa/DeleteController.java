@@ -18,9 +18,10 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class DeleteController extends ProxyController {
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public DeleteController(final BrowserController parent) {
         this.parent = parent;
@@ -67,7 +68,7 @@ public class DeleteController extends ProxyController {
                 LocaleFactory.localizedString("Cancel"), //alternative button
                 null //other button
         );
-        parent.alert(alert, new SheetCallback() {
+        parent.alert(alert, new DisabledSheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -88,13 +89,13 @@ public class DeleteController extends ProxyController {
     }
 
     private void run(final List<Path> files) {
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
-                        new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
+        final Cache<Path> cache = parent.getCache();
+        parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                new DeleteWorker(LoginCallbackFactory.get(parent), files, cache, parent) {
                             @Override
-                            public void cleanup(final Boolean done) {
-                                if(done) {
-                                    parent.reload(parent.workdir(), files, Collections.<Path>emptyList());
-                                }
+                            public void cleanup(final List<Path> deleted) {
+                                super.cleanup(deleted);
+                                parent.reload(parent.workdir(), files, Collections.emptyList());
                             }
                         }
                 )

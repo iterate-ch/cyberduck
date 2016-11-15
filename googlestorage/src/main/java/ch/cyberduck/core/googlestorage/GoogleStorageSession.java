@@ -26,6 +26,7 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
@@ -46,6 +47,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -77,16 +79,16 @@ import com.google.api.client.auth.oauth2.Credential;
 public class GoogleStorageSession extends S3Session {
     private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
             OAuthConstants.GSOAuth2_10.Endpoints.Token,
             OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-            preferences.getProperty("google.storage.oauth.clientid"),
-            preferences.getProperty("google.storage.oauth.secret"),
+            preferences.getProperty("googlestorage.oauth.clientid"),
+            preferences.getProperty("googlestorage.oauth.secret"),
             Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-    ).withLegacyPrefix("Google");
+    ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
 
     public GoogleStorageSession(final Host h) {
         super(h);
@@ -131,10 +133,15 @@ public class GoogleStorageSession extends S3Session {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
 
-        final Credential tokens = authorizationService.authorize(host, keychain, prompt);
+        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
+        this.login(keychain, prompt, cancel, cache, tokens);
+    }
 
-        client.setProviderCredentials(new OAuth2ProviderCredentials(tokens, preferences.getProperty("google.storage.oauth.clientid"),
-                preferences.getProperty("google.storage.oauth.secret")));
+    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+        final Credential credentials = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
+
+        client.setProviderCredentials(new OAuth2ProviderCredentials(credentials, preferences.getProperty("googlestorage.oauth.clientid"),
+                preferences.getProperty("googlestorage.oauth.secret")));
 
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
@@ -145,8 +152,8 @@ public class GoogleStorageSession extends S3Session {
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
             cache.put(root, this.list(root, new DisabledListProgressListener()));
         }
-        catch(BackgroundException e) {
-            throw new LoginFailureException(e.getDetail(false), e);
+        catch(LoginFailureException | InteroperabilityException e) {
+            this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
         }
     }
 
@@ -260,7 +267,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new S3SingleUploadService(this);
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this);
+            return (T) new S3WriteFeature(this, new S3DisabledMultipartService());
         }
         if(type == Delete.class) {
             return (T) new S3DefaultDeleteFeature(this);

@@ -97,7 +97,7 @@ public class SyncTransferTest {
 
                     @Override
                     public LocalAttributes attributes() {
-                        return new LocalAttributes(path) {
+                        return new LocalAttributes(this.getAbsolute()) {
                             @Override
                             public long getSize() {
                                 return 1L;
@@ -121,7 +121,7 @@ public class SyncTransferTest {
 
                     @Override
                     public LocalAttributes attributes() {
-                        return new LocalAttributes(path) {
+                        return new LocalAttributes(this.getAbsolute()) {
                             @Override
                             public long getSize() {
                                 return 1L;
@@ -138,7 +138,7 @@ public class SyncTransferTest {
 
                     @Override
                     public LocalAttributes attributes() {
-                        return new LocalAttributes(path) {
+                        return new LocalAttributes(this.getAbsolute()) {
                             @Override
                             public long getSize() {
                                 return 0L;

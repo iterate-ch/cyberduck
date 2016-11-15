@@ -27,7 +27,7 @@ import java.util.Collections;
 
 public class DriveMoveFeature implements Move {
 
-    private DriveSession session;
+    private final DriveSession session;
 
     public DriveMoveFeature(DriveSession session) {
         this.session = session;

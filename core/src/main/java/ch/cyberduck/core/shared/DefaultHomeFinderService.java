@@ -34,7 +34,7 @@ public class DefaultHomeFinderService implements Home {
     protected final Path DEFAULT_HOME = new Path(String.valueOf(Path.DELIMITER),
             EnumSet.of(Path.Type.volume, Path.Type.directory));
 
-    private Session<?> session;
+    private final Session<?> session;
 
     public DefaultHomeFinderService(final Session session) {
         this.session = session;

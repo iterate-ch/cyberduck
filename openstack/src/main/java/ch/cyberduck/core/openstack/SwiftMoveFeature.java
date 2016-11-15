@@ -36,12 +36,12 @@ import ch.iterate.openstack.swift.exception.NotFoundException;
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftMoveFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

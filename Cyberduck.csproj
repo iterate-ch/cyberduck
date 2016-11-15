@@ -607,11 +607,4 @@
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  <PropertyGroup>
-    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
-    if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked
-</PreBuildEvent>
-  </PropertyGroup>
 </Project>

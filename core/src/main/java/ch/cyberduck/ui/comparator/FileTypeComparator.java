@@ -29,9 +29,9 @@ import java.util.Locale;
 public class FileTypeComparator extends BrowserComparator {
     private static final long serialVersionUID = 3354482708309574292L;
 
-    private Collator impl = Collator.getInstance(Locale.getDefault());
+    private final Collator impl = Collator.getInstance(Locale.getDefault());
 
-    private FileDescriptor descriptor = FileDescriptorFactory.get();
+    private final FileDescriptor descriptor = FileDescriptorFactory.get();
 
     public FileTypeComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

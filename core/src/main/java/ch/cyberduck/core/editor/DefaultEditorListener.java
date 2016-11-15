@@ -30,11 +30,11 @@ import org.apache.log4j.Logger;
 public class DefaultEditorListener implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(DefaultEditorListener.class);
 
-    private Controller controller;
+    private final Controller controller;
 
-    private Session session;
+    private final Session session;
 
-    private Editor editor;
+    private final Editor editor;
 
     public DefaultEditorListener(final Controller controller, final Session session, final Editor editor) {
         this.controller = controller;

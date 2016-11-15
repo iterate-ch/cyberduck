@@ -19,9 +19,6 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public final class AppKitFunctionsLibrary {
 
     private AppKitFunctionsLibrary() {

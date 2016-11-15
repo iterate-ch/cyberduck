@@ -26,7 +26,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -44,7 +44,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     /**
      * Cache limited to n entries
      */
-    private Map<String, NSImage> cache;
+    private final Map<String, NSImage> cache;
 
     public NSImageIconCache() {
         if(0 == PreferencesFactory.get().getInteger("icon.cache.size")) {
@@ -56,7 +56,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             };
         }
         else {
-            cache = new LRUMap(PreferencesFactory.get().getInteger("icon.cache.size")) {
+            cache = new LRUMap<String, NSImage>(PreferencesFactory.get().getInteger("icon.cache.size")) {
                 @Override
                 protected boolean removeLRU(LinkEntry entry) {
                     if(log.isDebugEnabled()) {

@@ -20,7 +20,7 @@ using ch.cyberduck.core.threading;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public abstract class BrowserControllerBackgroundAction : BrowserBackgroundAction
+    public abstract class BrowserControllerBackgroundAction : RegistryBackgroundAction
     {
         private readonly BrowserController _controller;
 

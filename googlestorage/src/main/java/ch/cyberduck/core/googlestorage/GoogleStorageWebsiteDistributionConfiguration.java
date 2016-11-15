@@ -43,15 +43,15 @@ import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
 
-    private GoogleStorageSession session;
+    private final GoogleStorageSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
@@ -66,7 +66,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
      */
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        return Arrays.asList(Distribution.WEBSITE);
+        return Collections.singletonList(Distribution.WEBSITE);
     }
 
     @Override
@@ -90,7 +90,8 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname()));
         try {
             final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
@@ -119,7 +120,8 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             if(distribution.isEnabled()) {
                 String suffix = "index.html";

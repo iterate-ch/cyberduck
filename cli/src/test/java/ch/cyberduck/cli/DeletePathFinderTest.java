@@ -29,9 +29,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * @version $Id$
- */
 public class DeletePathFinderTest  {
 
     @Test

@@ -24,9 +24,9 @@ import java.util.EnumSet;
 
 public class DefaultPathReference implements CacheReference<Path> {
 
-    private Path file;
+    private final Path file;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new PathContainerService();
 
     public DefaultPathReference(final Path file) {

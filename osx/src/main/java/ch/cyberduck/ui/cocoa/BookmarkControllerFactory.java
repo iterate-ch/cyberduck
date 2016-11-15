@@ -18,14 +18,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- */
 public final class BookmarkControllerFactory {
 
     private static final Map<Host, BookmarkController> open
@@ -35,16 +33,23 @@ public final class BookmarkControllerFactory {
         //
     }
 
-    public static BookmarkController create(final Host host) {
+    public static BookmarkController create(final AbstractHostCollection collection, final Host host) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(host)) {
-                final BookmarkController c = new BookmarkController(host) {
+                final BookmarkController c = new ExtendedBookmarkController(host) {
                     @Override
                     public void invalidate() {
-                        open.remove(host);
+                        open.remove(bookmark);
                         super.invalidate();
                     }
                 };
+                c.addObserver(new BookmarkController.BookmarkObserver() {
+                    @Override
+                    public void change(Host bookmark) {
+                        collection.collectionItemChanged(bookmark);
+                    }
+                });
+                c.loadBundle();
                 open.put(host, c);
             }
             return open.get(host);

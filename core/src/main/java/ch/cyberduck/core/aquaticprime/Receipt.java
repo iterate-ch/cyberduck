@@ -24,7 +24,7 @@ import ch.cyberduck.core.LocaleFactory;
 
 public class Receipt extends AbstractLicense {
 
-    private String guid;
+    private final String guid;
 
     /**
      * @param file The license key file.

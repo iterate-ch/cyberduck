@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="*" Name="Cyberduck CLI" Language="1033" Version="1.0.0.0" Manufacturer="iterate GmbH"
+           UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="Cyberduck CLI">
+          <Component Id="setEnviroment"
+                     Guid="B429556B-9604-45DD-896C-4AE7BFFBE9EB">
+            <CreateFolder />
+            <Environment Id="PathVar"
+                         Action="set"
+                         Part="last"
+                         Name="PATH"
+                         Permanent="no"
+                         System="yes"
+                         Value="[INSTALLFOLDER]" />
+          </Component>
+         <Directory Id="PROFILES" Name="profiles"/>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
+        <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
+        <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="acknowledgments" Guid="95A3AF7B-D782-47C5-9AEE-398DEE02D222">
+        <File Source="$(var.CLI.TargetDir)/Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="Cyberduck.Cli" Guid="811AEB4A-4751-428E-9116-9F7396C5C2C8">
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Cli.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Cli" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Core" Guid="058A9F4C-D8E9-43C3-83C1-E0E7439ACD93">
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Core" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Protocols" Guid="A27F0196-0678-4AE6-9BD6-3EFD6EB1507A">
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Protocols" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="Cyberduck.Core.Native" Guid="678E99DD-6943-495D-8742-ECE21846365D">
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.runtime" Guid="CBF03DF9-ADB2-4B77-BA28-E5C5BC0D10BE">
+        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.runtime" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.runtime.jni" Guid="FF7FDFAA-9930-48F6-9AEF-96B5182263AA">
+        <File Source="$(var.CLI.TargetDir)/IKVM.Runtime.JNI.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.runtime.jni" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.core" Guid="5F3B0202-28BE-4942-BEF0-C929B5D248AB">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.core" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.jdbc" Guid="8BA96855-9779-4BD2-B356-896EC4641A17">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Jdbc.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.jdbc" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.beans" Guid="860C9858-A36C-4AF7-9583-A2AA8F9884DF">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.beans" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.charsets" Guid="700C1DBC-EADB-4FF0-B315-3119F1066219">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.charsets" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.localedata" Guid="968E70A5-1C73-4778-BC21-B2D048B44F18">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.localedata" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.security" Guid="1B1BE55B-387C-4559-8A23-C6CB24CA7BDB">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.security" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.swingawt" Guid="7BC8B02E-D6A9-4FBD-83D6-01F60B916CF1">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.SwingAWT.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.swingawt" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.text" Guid="5ED02B77-D4DA-460C-B94E-38694B253DE5">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Text.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.text" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.util" Guid="846EF773-9449-4A87-9D93-5E82DE274BF4">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Util.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.util" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.api" Guid="F8C5B769-FABF-4D33-B005-EB6BBF8591B8">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.API.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.api" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.bind" Guid="5CF8B0D1-AAE1-4EC2-BF2A-C7F20D18D3CF">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Bind.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.bind" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.parse" Guid="630403AD-B691-4215-9D06-5729CFDF1506">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Parse.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.parse" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.transform" Guid="A41849C5-E22A-40C3-B62B-8FC8B7F5C4F9">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.Transform.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.transform" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.xml.xpath" Guid="BC007679-0E64-4D96-94AA-A88CE7302E32">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.XML.XPath.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.xml.path" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.naming" Guid="F99DD3CA-1E4E-4F17-9F94-52A3E93BDAD5">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Naming.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.naming" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.management" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.management" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
+        <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x86.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_ikvm.native" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
+      <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
+        <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+        <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <ComponentGroup Id="profiles" Directory="PROFILES">
+      <Component Id="rackspace" Guid="23B4C8D9-0E58-43D9-A8CE-85A069E6FDC8">
+        <File Source="$(var.CLI.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="b2" Guid="88764897-D0C8-4134-B78A-026EFB74D219">
+        <File Source="$(var.CLI.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentGroupRef Id="profiles" />
+      <ComponentRef Id="setEnviroment" />
+    </Feature>
+  </Product>
+</Wix>

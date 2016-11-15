@@ -22,11 +22,11 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,13 +78,13 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                 // Actually never returned by S3 but always 403
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
-                return new InteroperabilityException(buffer.toString(), e);
             case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                return new ConnectionRefusedException(buffer.toString(), e);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
                 return new InteroperabilityException(buffer.toString(), e);
+            case HttpStatus.SC_SERVICE_UNAVAILABLE:
+                // ServiceUnavailable
+                // SlowDown
+                return new RetriableAccessDeniedException(buffer.toString(), e);
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), e);
         }

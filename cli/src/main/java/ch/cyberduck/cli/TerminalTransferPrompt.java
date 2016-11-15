@@ -32,9 +32,9 @@ import java.util.Set;
 
 public class TerminalTransferPrompt implements TransferPrompt {
 
-    private Console console = new Console();
+    private final Console console = new Console();
 
-    private Transfer.Type transfer;
+    private final Transfer.Type transfer;
 
     public TerminalTransferPrompt(final Transfer.Type transfer) {
         this.transfer = transfer;

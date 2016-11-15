@@ -48,20 +48,20 @@ import com.google.gson.JsonObject;
 public class SwiftSegmentService {
     private static final Logger log = Logger.getLogger(SwiftSegmentService.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private ISO8601DateParser dateParser
+    private final ISO8601DateParser dateParser
             = new ISO8601DateParser();
 
     /**
      * Segement files prefix
      */
-    private String prefix;
+    private final String prefix;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftSegmentService(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

@@ -25,7 +25,7 @@ import java.util.Collections;
 
 public class PathAttributesDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public PathAttributesDictionary() {
         this.deserializer = new DeserializerFactory();
@@ -38,24 +38,24 @@ public class PathAttributesDictionary {
     public <T> PathAttributes deserialize(T serialized) {
         final Deserializer dict = deserializer.create(serialized);
         final PathAttributes attributes = new PathAttributes();
-        String sizeObj = dict.stringForKey("Size");
+        final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
             attributes.setSize(Long.parseLong(sizeObj));
         }
-        String modifiedObj = dict.stringForKey("Modified");
+        final String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));
         }
-        Object permissionObj = dict.objectForKey("Permission");
+        final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
         }
         attributes.setVersionId(dict.stringForKey("Version"));
-        String duplicateObj = dict.stringForKey("Duplicate");
+        final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));
         }
-        attributes.setMetadata(Collections.<String, String>emptyMap());
+        attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
         return attributes;

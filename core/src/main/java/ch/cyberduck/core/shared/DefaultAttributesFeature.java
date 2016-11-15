@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 public class DefaultAttributesFeature implements Attributes {
     private static final Logger log = Logger.getLogger(DefaultAttributesFeature.class);
 
-    private Session<?> session;
+    private final Session<?> session;
 
     private PathCache cache
             = PathCache.empty();

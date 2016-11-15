@@ -61,7 +61,7 @@ import java.util.Map;
  * Simple configuration parser for the OpenSSH ~/.ssh/config file.
  */
 public class OpenSshConfig {
-    private static Logger log = Logger.getLogger(OpenSshConfig.class);
+    private static final Logger log = Logger.getLogger(OpenSshConfig.class);
 
     /**
      * The .ssh/config file we read and monitor for updates.

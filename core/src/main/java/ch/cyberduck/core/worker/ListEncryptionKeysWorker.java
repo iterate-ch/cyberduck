@@ -20,10 +20,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Encryption;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +46,14 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
     @Override
     public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
-        return feature.getKeys(prompt);
+        final Set<Encryption.Algorithm> keys = new HashSet<>();
+        for(Path file : this.getContainers(files)) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
+            keys.addAll(feature.getKeys(file, prompt));
+        }
+        return keys;
     }
 
 

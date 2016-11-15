@@ -30,7 +30,7 @@ import java.text.MessageFormat;
 public class DisconnectWorker extends Worker<Void> {
     private static final Logger log = Logger.getLogger(DisconnectWorker.class);
 
-    private Host bookmark;
+    private final Host bookmark;
 
     public DisconnectWorker(final Host bookmark) {
         this.bookmark = bookmark;

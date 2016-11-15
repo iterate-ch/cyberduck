@@ -9,7 +9,7 @@ import java.util.Map;
 
 public final class PathPasteboardFactory {
 
-    private static Map<Session, PathPasteboard> pasteboards
+    private static final Map<Session, PathPasteboard> pasteboards
             = new HashMap<Session, PathPasteboard>();
 
     private PathPasteboardFactory() {

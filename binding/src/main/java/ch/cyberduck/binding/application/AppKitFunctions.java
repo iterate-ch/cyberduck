@@ -22,9 +22,6 @@ package ch.cyberduck.binding.application;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
-/**
- * @version $Id$
- */
 public interface AppKitFunctions extends Library {
     public static final AppKitFunctions instance = (AppKitFunctions) Native.loadLibrary("AppKit", AppKitFunctions.class);
 

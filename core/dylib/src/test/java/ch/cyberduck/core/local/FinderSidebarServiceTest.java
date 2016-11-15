@@ -30,9 +30,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.UUID;
 
-/**
- * @version $Id:$
- */
 @Ignore
 public class FinderSidebarServiceTest {
 

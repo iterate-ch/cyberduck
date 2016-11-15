@@ -41,6 +41,6 @@ public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
     }
 
     public interface CLibrary extends Library {
-        public String getcwd(Pointer buffer, long size);
+        String getcwd(Pointer buffer, long size);
     }
 }

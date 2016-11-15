@@ -28,7 +28,7 @@ import java.util.List;
 
 public class SFTPCompressFeature implements Compress {
 
-    private SFTPCommandFeature command;
+    private final SFTPCommandFeature command;
 
     public SFTPCompressFeature(final SFTPSession session) {
         this.command = new SFTPCommandFeature(session);

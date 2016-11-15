@@ -16,16 +16,13 @@ import org.rococoa.ObjCObjectByReference;
 
 import java.text.MessageFormat;
 
-/**
- * @version $Id$
- */
 public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
 
-    private ApplicationFinder finder
+    private final ApplicationFinder finder
             = ApplicationFinderFactory.get();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

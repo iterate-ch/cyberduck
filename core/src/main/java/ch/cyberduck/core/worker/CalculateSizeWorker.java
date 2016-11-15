@@ -34,11 +34,11 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    protected CalculateSizeWorker(final List<Path> files, final ProgressListener listener) {
+    public CalculateSizeWorker(final List<Path> files, final ProgressListener listener) {
         this.files = files;
         this.listener = listener;
     }

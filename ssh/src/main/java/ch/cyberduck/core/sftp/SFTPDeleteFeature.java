@@ -29,7 +29,7 @@ import java.util.List;
 
 public class SFTPDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPDeleteFeature(final SFTPSession session) {
         this.session = session;
@@ -56,7 +56,7 @@ public class SFTPDeleteFeature extends ThreadedDeleteFeature implements Delete {
         // Await and shutdown
         this.await();
         for(Path file : files) {
-            if(file.isDirectory()) {
+            if(file.isDirectory() && !file.isSymbolicLink()) {
                 callback.delete(file);
                 try {
                     session.sftp().removeDir(file.getAbsolute());

@@ -31,9 +31,9 @@ import java.util.List;
 public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
     private static final Logger log = Logger.getLogger(UploadSymlinkResolver.class);
 
-    private Symlink feature;
+    private final Symlink feature;
 
-    private List<TransferItem> files;
+    private final List<TransferItem> files;
 
     public UploadSymlinkResolver(final Symlink feature, final List<TransferItem> files) {
         this.feature = feature;

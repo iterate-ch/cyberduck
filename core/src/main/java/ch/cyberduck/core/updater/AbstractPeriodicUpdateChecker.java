@@ -24,11 +24,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChecker {
-    private static Logger log = Logger.getLogger(AbstractPeriodicUpdateChecker.class.getName());
+    private static final Logger log = Logger.getLogger(AbstractPeriodicUpdateChecker.class.getName());
 
     private final Duration delay;
 
-    private Timer timer = new Timer("updater", true);
+    private final Timer timer = new Timer("updater", true);
 
     /**
      * Defaults to 24 hours

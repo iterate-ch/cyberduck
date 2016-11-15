@@ -22,6 +22,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UseragentProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpException;
@@ -39,7 +40,7 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     private final UseragentProvider useragentProvider
             = new PreferencesUseragentProvider();
 
-    private TranscriptListener listener;
+    private final TranscriptListener listener;
 
     public LoggingHttpRequestExecutor(final TranscriptListener listener) {
         this.listener = listener;
@@ -56,9 +57,19 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
 
     @Override
     protected HttpResponse doSendRequest(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws IOException, HttpException {
-        listener.log(true, request.getRequestLine().toString());
+        listener.log(TranscriptListener.Type.request, request.getRequestLine().toString());
         for(Header header : request.getAllHeaders()) {
-            listener.log(true, header.toString());
+            switch(header.getName()) {
+                case HttpHeaders.AUTHORIZATION:
+                case "X-Auth-Key":
+                case "X-Auth-Token":
+                    listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
+                            StringUtils.repeat("*", Integer.min(8, StringUtils.length(header.getValue())))));
+                    break;
+                default:
+                    listener.log(TranscriptListener.Type.request, header.toString());
+                    break;
+            }
         }
         return super.doSendRequest(request, conn, context);
     }
@@ -66,9 +77,9 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
     @Override
     protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
         final HttpResponse response = super.doReceiveResponse(request, conn, context);
-        listener.log(false, response.getStatusLine().toString());
+        listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
         for(Header header : response.getAllHeaders()) {
-            listener.log(false, header.toString());
+            listener.log(TranscriptListener.Type.response, header.toString());
         }
         return response;
     }

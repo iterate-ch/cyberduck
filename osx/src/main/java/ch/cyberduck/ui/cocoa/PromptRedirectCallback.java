@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -32,10 +31,10 @@ import org.apache.log4j.Logger;
 public class PromptRedirectCallback implements RedirectCallback {
     private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
 
-    private RedirectCallback preferences
+    private final RedirectCallback preferences
             = new PreferencesRedirectCallback();
 
-    private WindowController parent;
+    private final WindowController parent;
 
     public PromptRedirectCallback(final WindowController parent) {
         this.parent = parent;
@@ -47,15 +46,15 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        NSAlert alert = NSAlert.alert("Redirect", //title
+        final NSAlert alert = NSAlert.alert("Redirect", //title
                 LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"),
-                LocaleFactory.localizedString("Allow"), // defaultbutton
+                LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Cancel", "Alert"), //alternative button
                 null //other button
         );
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        SheetController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(parent, alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -66,7 +65,7 @@ public class PromptRedirectCallback implements RedirectCallback {
                 }
             }
         };
-        c.beginSheet();
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
+        final int option = c.beginSheet();
+        return option == SheetCallback.DEFAULT_OPTION;
     }
 }

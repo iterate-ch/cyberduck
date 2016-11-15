@@ -28,7 +28,7 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPTimestampFeature extends DefaultTimestampFeature implements Timestamp {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPTimestampFeature(final SFTPSession session) {
         this.session = session;

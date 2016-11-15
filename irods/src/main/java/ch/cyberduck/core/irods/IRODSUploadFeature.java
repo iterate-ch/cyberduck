@@ -54,7 +54,7 @@ import java.text.MessageFormat;
 public class IRODSUploadFeature implements Upload<Checksum> {
     private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     private final Preferences preferences = PreferencesFactory.get();
 

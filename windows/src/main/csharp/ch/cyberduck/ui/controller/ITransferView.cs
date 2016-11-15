@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,11 +13,12 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Collections.Generic;
 using System.Drawing;
+using ch.cyberduck.core;
 using Ch.Cyberduck.Ui.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -36,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void SelectTransfer(IProgressView view);
         void AddTransfer(IProgressView view);
         void RemoveTransfer(IProgressView view);
-        void AddTranscriptEntry(bool request, string entry);
+        void AddTranscriptEntry(TranscriptListener.Type request, string entry);
         event VoidHandler ResumeEvent;
         event ValidateCommand ValidateResumeEvent;
         event VoidHandler ReloadEvent;

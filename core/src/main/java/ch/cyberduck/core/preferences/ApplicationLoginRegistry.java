@@ -30,7 +30,7 @@ public interface ApplicationLoginRegistry {
     boolean register(Application application);
 
     /**
-     * @param application
+     * @param application Bundle identifier
      * @return False on failure
      */
     boolean unregister(Application application);

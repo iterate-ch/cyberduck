@@ -28,7 +28,7 @@ public interface Location {
     Name getLocation(Path file) throws BackgroundException;
 
     class Name {
-        private String identifier;
+        private final String identifier;
 
         public Name(String identifier) {
             this.identifier = identifier;
@@ -40,7 +40,7 @@ public interface Location {
 
         public String toString() {
             return identifier;
-        };
+        }
 
         @Override
         public boolean equals(final Object o) {

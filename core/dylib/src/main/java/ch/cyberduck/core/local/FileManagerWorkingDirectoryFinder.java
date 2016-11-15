@@ -22,9 +22,6 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
-/**
- * @version $Id$
- */
 public class FileManagerWorkingDirectoryFinder implements WorkingDirectoryFinder {
 
     @Override

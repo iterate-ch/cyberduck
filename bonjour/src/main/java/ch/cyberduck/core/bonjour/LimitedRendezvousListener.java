@@ -28,18 +28,15 @@ import java.net.UnknownHostException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @version $Id$
- */
 public class LimitedRendezvousListener implements RendezvousListener {
     private static final Logger log = Logger.getLogger(LimitedRendezvousListener.class);
 
     /**
      * Rate limit for notifications
      */
-    private TimedSemaphore limit;
+    private final TimedSemaphore limit;
 
-    private Set<RendezvousListener> listeners;
+    private final Set<RendezvousListener> listeners;
 
     public LimitedRendezvousListener(final Set<RendezvousListener> listeners) {
         this(new TimedSemaphore(

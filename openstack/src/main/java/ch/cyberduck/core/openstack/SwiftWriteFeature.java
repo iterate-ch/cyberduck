@@ -51,23 +51,23 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private SwiftSegmentService segmentService;
+    private final SwiftSegmentService segmentService;
 
-    private SwiftObjectListService listService;
+    private final SwiftObjectListService listService;
 
-    private Find finder;
+    private final Find finder;
 
-    private Attributes attributes;
+    private final Attributes attributes;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new DefaultFindFeature(session));

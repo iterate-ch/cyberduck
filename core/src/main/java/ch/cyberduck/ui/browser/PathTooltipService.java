@@ -28,9 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PathTooltipService {
 
-    private SizeFormatter sizeFormatter;
+    private final SizeFormatter sizeFormatter;
 
-    private AbstractUserDateFormatter dateFormatter;
+    private final AbstractUserDateFormatter dateFormatter;
 
     public PathTooltipService() {
         this(SizeFormatterFactory.get(), UserDateFormatterFactory.get());

@@ -32,11 +32,11 @@ import com.microsoft.azure.storage.OperationContext;
 
 public class AzureMoveFeature implements Move {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureMoveFeature(final AzureSession session, final OperationContext context) {

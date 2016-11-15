@@ -37,7 +37,7 @@ import static ch.cyberduck.ui.cocoa.TransferToolbarFactory.TransferToolbarItem.s
 
 public class TransferToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
 
-    private TransferController controller;
+    private final TransferController controller;
 
     public TransferToolbarFactory(final TransferController controller) {
         this.controller = controller;
@@ -46,7 +46,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
     /**
      * Keep reference to weak toolbar items
      */
-    private Map<String, NSToolbarItem> toolbarItems
+    private final Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
 
     public enum TransferToolbarItem {

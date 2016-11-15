@@ -124,7 +124,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         super.collectionItemRemoved(item);
     }
 
-    private Comparator<String> comparator = new NaturalOrderComparator();
+    private final Comparator<String> comparator = new NaturalOrderComparator();
 
     public synchronized void sortByNickname() {
         this.doSort(new Comparator<Host>() {

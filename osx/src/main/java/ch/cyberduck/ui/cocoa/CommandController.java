@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSImage;
@@ -46,7 +45,7 @@ import ch.cyberduck.core.threading.WindowMainAction;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
+public class CommandController extends WindowController implements TranscriptListener, NSLayoutManager.Delegate {
 
     @Outlet
     private NSTextField inputField;
@@ -56,6 +55,15 @@ public class CommandController extends SheetController implements TranscriptList
     private NSProgressIndicator progress;
     @Outlet
     private NSImageView image;
+
+    private final WindowController parent;
+
+    private final Session<?> session;
+
+    public CommandController(final WindowController parent, final Session session) {
+        this.parent = parent;
+        this.session = session;
+    }
 
     @Override
     public void setWindow(final NSWindow window) {
@@ -97,13 +105,6 @@ public class CommandController extends SheetController implements TranscriptList
         }
     }
 
-    private Session<?> session;
-
-    public CommandController(final WindowController parent, final Session session) {
-        super(parent);
-        this.session = session;
-    }
-
     @Override
     protected String getBundleName() {
         return "Command";
@@ -117,7 +118,7 @@ public class CommandController extends SheetController implements TranscriptList
             sender.setEnabled(false);
             parent.background(new ControllerBackgroundAction<Void>(this, session, PathCache.empty()) {
                 @Override
-                public boolean alert() {
+                public boolean alert(final BackgroundException e) {
                     return false;
                 }
 
@@ -144,7 +145,7 @@ public class CommandController extends SheetController implements TranscriptList
     }
 
     @Override
-    public void log(boolean request, final String message) {
+    public void log(final Type request, final String message) {
         invoke(new WindowMainAction(this) {
             @Override
             public void run() {
@@ -153,16 +154,6 @@ public class CommandController extends SheetController implements TranscriptList
                         NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         });
-    }
-
-    @Override
-    protected boolean validateInput() {
-        return true;
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        //
     }
 
     @Override

@@ -18,6 +18,7 @@
 
 package ch.cyberduck.ui.cocoa;
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
@@ -39,9 +40,9 @@ import org.apache.log4j.Logger;
 import java.util.Comparator;
 
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path> {
-    private static Logger log = Logger.getLogger(AbstractTableDelegate.class);
+    private static final Logger log = Logger.getLogger(AbstractTableDelegate.class);
 
-    private PathTooltipService tooltip = new PathTooltipService();
+    private final PathTooltipService tooltip = new PathTooltipService();
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);

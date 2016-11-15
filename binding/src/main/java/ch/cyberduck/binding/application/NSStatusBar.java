@@ -22,9 +22,6 @@ import ch.cyberduck.binding.foundation.NSObject;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 
-/**
- * @version $Id$
- */
 public abstract class NSStatusBar extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSStatusBar", _Class.class);
 

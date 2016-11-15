@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
+using ch.cyberduck.core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
@@ -212,14 +213,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             control.Dispose();
         }
 
-        public void AddTranscriptEntry(bool request, string entry)
+        public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request)
+            if (request == TranscriptListener.Type.request)
             {
                 transcriptBox.SelectionColor = Color.Black;
             }
-            else
+            else if (request == TranscriptListener.Type.response)
             {
                 transcriptBox.SelectionColor = Color.DarkGray;
             }

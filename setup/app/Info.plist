@@ -228,6 +228,16 @@
                 </array>
             </dict>
             <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>CFBundleURLName</key>
+                <string>iRODS URL</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>irods</string>
+                </array>
+            </dict>
+            <dict>
                 <key>CFBundleURLName</key>
                 <string>Cyberduck Command URL</string>
                 <key>CFBundleURLSchemes</key>
@@ -262,10 +272,6 @@
         <key>${SPARKLE_KEY_PREFIX}CheckAtStartup</key>
         <false/>
         <key>${SPARKLE_KEY_PREFIX}EnableSystemProfiling</key>
-        <false/>
-        <key>${SPARKLE_KEY_PREFIX}EnableAutomaticChecks</key>
-        <false/>
-        <key>${SPARKLE_KEY_PREFIX}AllowsAutomaticUpdates</key>
         <false/>
         <key>${SPARKLE_KEY_PREFIX}PublicDSAKeyFile</key>
         <string>update.pem</string>

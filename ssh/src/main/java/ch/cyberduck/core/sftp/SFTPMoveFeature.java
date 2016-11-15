@@ -28,7 +28,7 @@ import java.util.Collections;
 
 public class SFTPMoveFeature implements Move {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPMoveFeature(final SFTPSession session) {
         this.session = session;

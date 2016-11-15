@@ -68,20 +68,20 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
-    private AlertCallback alert;
+    private final AlertCallback alert;
 
-    private ProgressListener progressListener;
+    private final ProgressListener progressListener;
 
-    private TranscriptListener transcriptListener;
+    private final TranscriptListener transcriptListener;
 
-    protected ConnectionService connection;
+    protected final ConnectionService connection;
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
-    protected Session<?> session;
+    protected final Session<?> session;
 
-    private Cache<Path> cache;
+    private final Cache<Path> cache;
 
     public SessionBackgroundAction(final Session<?> session,
                                    final Cache<Path> cache,
@@ -131,7 +131,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Append to the transcript and notify listeners.
      */
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.append(message).append(LINE_SEPARATOR);
         transcriptListener.log(request, message);
     }
@@ -210,6 +210,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         catch(Exception e) {
             log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
+            exception = new BackgroundException(e);
             failed = true;
             throw e;
         }
@@ -229,7 +230,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public boolean alert() {
+    public boolean alert(final BackgroundException e) {
         if(this.hasFailed() && !this.isCanceled()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Display alert for failure %s", exception));

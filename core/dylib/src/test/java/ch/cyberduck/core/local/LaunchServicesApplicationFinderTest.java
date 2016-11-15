@@ -24,9 +24,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * @version $Id$
- */
 public class LaunchServicesApplicationFinderTest {
 
     @Test

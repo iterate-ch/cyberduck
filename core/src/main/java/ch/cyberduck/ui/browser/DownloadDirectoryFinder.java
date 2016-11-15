@@ -32,7 +32,7 @@ public class DownloadDirectoryFinder implements DirectoryFinder {
 
     private final BookmarkCollection collection = BookmarkCollection.defaultCollection();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

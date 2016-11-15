@@ -26,9 +26,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DefaultCredentialsIdentityConfiguration extends AbstractIdentityConfiguration {
 
-    private Host host;
+    private final Host host;
 
-    private PasswordStore store;
+    private final PasswordStore store;
 
     public DefaultCredentialsIdentityConfiguration(final Host host) {
         this.host = host;

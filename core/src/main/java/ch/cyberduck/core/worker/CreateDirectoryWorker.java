@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 
 public class CreateDirectoryWorker extends Worker<Boolean> {
 
-    private Path folder;
+    private final Path folder;
 
     private String region;
 

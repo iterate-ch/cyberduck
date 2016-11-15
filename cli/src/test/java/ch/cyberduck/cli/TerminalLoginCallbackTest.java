@@ -22,9 +22,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class TerminalLoginCallbackTest  {
 
     @Test(expected = LoginCanceledException.class)

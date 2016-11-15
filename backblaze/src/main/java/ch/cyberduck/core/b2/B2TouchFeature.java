@@ -21,7 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
@@ -35,7 +38,8 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2TouchFeature implements Touch {
 
     private final B2Session session;
-    private PathContainerService containerService
+
+    private final PathContainerService containerService
             = new B2PathContainerService();
 
     public B2TouchFeature(final B2Session session) {
@@ -50,7 +54,8 @@ public class B2TouchFeature implements Touch {
             session.getClient().uploadFile(
                     uploadUrl,
                     containerService.getKey(file),
-                    new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                    new ByteArrayEntity(new byte[0]),
+                    ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L)).hash,
                     new MappingMimeTypeService().getMime(file.getName()),
                     Collections.singletonMap(
                             X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())

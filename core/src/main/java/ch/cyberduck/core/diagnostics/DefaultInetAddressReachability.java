@@ -26,7 +26,7 @@ import java.net.InetAddress;
 
 public class DefaultInetAddressReachability implements Reachability {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

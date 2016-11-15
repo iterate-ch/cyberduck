@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class FTPDirectoryFeature implements Directory {
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPDirectoryFeature(final FTPSession session) {
         this.session = session;

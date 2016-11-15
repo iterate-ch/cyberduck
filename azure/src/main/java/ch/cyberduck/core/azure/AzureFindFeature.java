@@ -35,11 +35,11 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureFindFeature implements Find {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     private PathCache cache;

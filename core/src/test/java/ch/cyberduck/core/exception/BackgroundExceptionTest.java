@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.net.SocketException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class BackgroundExceptionTest {
 
@@ -20,7 +19,7 @@ public class BackgroundExceptionTest {
     @Test
     public void testGetMessageIO() throws Exception {
         final BackgroundException e = new BackgroundException(new IOException("m"));
-        assertNull(e.getMessage());
+        assertEquals("Unknown", e.getMessage());
         assertEquals("m.", e.getDetail());
     }
 

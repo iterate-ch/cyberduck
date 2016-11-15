@@ -76,7 +76,7 @@ public class ReceiptVerifier implements LicenseVerifier {
             final CMSSignedData s = new CMSSignedData(new FileInputStream(file.getAbsolute()));
             Store certs = s.getCertificates();
             SignerInformationStore signers = s.getSignerInfos();
-            for(SignerInformation signer : (Iterable<SignerInformation>) signers.getSigners()) {
+            for(SignerInformation signer : signers.getSigners()) {
                 final Collection<X509CertificateHolder> matches = certs.getMatches(signer.getSID());
                 for(X509CertificateHolder holder : matches) {
                     if(!signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(

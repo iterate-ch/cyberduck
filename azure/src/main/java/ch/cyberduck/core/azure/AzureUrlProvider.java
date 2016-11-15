@@ -46,10 +46,10 @@ import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
 public class AzureUrlProvider implements UrlProvider {
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
-    private AzureSession session;
+    private final AzureSession session;
 
     public AzureUrlProvider(final AzureSession session) {
         this.session = session;
@@ -99,7 +99,7 @@ public class AzureUrlProvider implements UrlProvider {
         return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
                 Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
                 DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Signed", "S3"))
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                         + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                         UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
     }

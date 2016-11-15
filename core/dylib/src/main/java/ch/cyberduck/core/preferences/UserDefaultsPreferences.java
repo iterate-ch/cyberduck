@@ -188,6 +188,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
         defaults.put("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
         defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
+        defaults.put("bookmark.import.transmit4.location", "~/Library/Application Support/Transmit/Favorites/Favorites.xml");
         defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
         defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
         defaults.put("bookmark.import.expandrive3.location", "~/Library/Application Support/ExpanDrive/favorites.js");
@@ -207,6 +208,10 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("connection.ssl.keystore.provider", "Apple");
 
         defaults.put("network.interface.blacklist", "awdl0 utun0");
+
+        defaults.put("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
+        // Allow to show transfers in browser window as tab
+        defaults.put("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
     }
 
     /**

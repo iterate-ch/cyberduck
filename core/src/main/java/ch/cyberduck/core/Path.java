@@ -50,7 +50,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     /**
      * Attributes denoting this path
      */
-    private PathAttributes attributes;
+    private final PathAttributes attributes;
 
     /**
      * @param parent the absolute directory

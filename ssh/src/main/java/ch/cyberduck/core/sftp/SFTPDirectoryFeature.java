@@ -30,7 +30,7 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPDirectoryFeature implements Directory {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPDirectoryFeature(final SFTPSession session) {
         this.session = session;

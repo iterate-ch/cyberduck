@@ -46,7 +46,9 @@ using java.text;
 using java.util;
 using org.apache.commons.lang3;
 using org.apache.log4j;
+using org.jets3t.service.model;
 using StructureMap;
+using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
@@ -61,6 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
+        private PermissionOverwrite permissions = new PermissionOverwrite();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
@@ -190,15 +193,13 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
-                View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = new S3Protocol().getName();
-                View.ToolbarS3Image =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof (AclPermission)) != null;
@@ -215,8 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage =
-                    IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
             }
             else
             {
@@ -225,12 +225,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (distribution)
                 {
                     View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().getProvider()];
+                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
                 }
                 else
                 {
-                    View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[new S3Protocol().getProvider()];
+                    View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
                 }
             }
             if (anonymous)
@@ -610,7 +609,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ToggleDistributionSettings(false))
             {
-                _controller.background(new WriteDistributionBackgroundAction(_controller, this, _files));
+                _controller.background(new WriteDistributionBackgroundAction(_controller, this));
             }
         }
 
@@ -618,7 +617,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (ToggleDistributionSettings(false))
             {
-                _controller.background(new WriteDistributionBackgroundAction(_controller, this, _files));
+                _controller.background(new WriteDistributionBackgroundAction(_controller, this));
             }
         }
 
@@ -773,6 +772,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AttachS3Handlers()
         {
             DetachS3Handlers();
+            View.TransferAccelerationCheckboxChanged += TransferAccelerationCheckboxChanged;
             View.BucketLoggingCheckboxChanged += BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged += BucketLoggingPopupChanged;
             View.EncryptionChanged += EncryptionChanged;
@@ -784,6 +784,14 @@ namespace Ch.Cyberduck.Ui.Controller
             View.LifecycleTransitionPopupChanged += LifecycleChanged;
             View.LifecycleDeleteCheckboxChanged += LifecycleChanged;
             View.LifecycleDeletePopupChanged += LifecycleChanged;
+        }
+
+        private void TransferAccelerationCheckboxChanged()
+        {
+            if (ToggleS3Settings(false))
+            {
+                _controller.background(new SetTransferAccelerationBackgroundAction(_controller, this));
+            }
         }
 
         private void BucketAnalyticsCheckboxChanged()
@@ -830,6 +838,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DetachS3Handlers()
         {
+            View.TransferAccelerationCheckboxChanged -= TransferAccelerationCheckboxChanged;
             View.BucketLoggingCheckboxChanged -= BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged -= BucketLoggingPopupChanged;
             View.EncryptionChanged -= EncryptionChanged;
@@ -885,90 +894,63 @@ namespace Ch.Cyberduck.Ui.Controller
         private void OtherExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherExecute == CheckState.Indeterminate)
-            {
-                View.OtherExecute = CheckState.Unchecked;
-            }
+            permissions.other.execute = View.OtherExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OtherWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherWrite == CheckState.Indeterminate)
-            {
-                View.OtherWrite = CheckState.Unchecked;
-            }
+            permissions.other.write = View.OtherWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OtherReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.OtherRead == CheckState.Indeterminate)
-            {
-                View.OtherRead = CheckState.Unchecked;
-            }
+            permissions.other.read = View.OtherRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void GroupExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupExecute == CheckState.Indeterminate)
-            {
-                View.GroupExecute = CheckState.Unchecked;
-            }
+            permissions.group.execute = View.GroupExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void GroupWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupWrite == CheckState.Indeterminate)
-            {
-                View.GroupWrite = CheckState.Unchecked;
-            }
+            permissions.group.write = View.GroupWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void GroupReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.GroupRead == CheckState.Indeterminate)
-            {
-                View.GroupRead = CheckState.Unchecked;
-            }
+            permissions.group.execute = View.GroupRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OwnerExecuteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerExecute == CheckState.Indeterminate)
-            {
-                View.OwnerExecute = CheckState.Unchecked;
-            }
+            permissions.user.execute = View.OwnerExecute == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OwnerWriteChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerWrite == CheckState.Indeterminate)
-            {
-                View.OwnerWrite = CheckState.Unchecked;
-            }
+            permissions.user.write = View.OwnerWrite == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
         private void OwnerReadChanged()
         {
             DetachPermissionHandlers();
-            if (View.OwnerRead == CheckState.Indeterminate)
-            {
-                View.OwnerRead = CheckState.Unchecked;
-            }
+            permissions.user.read = View.OwnerRead == CheckState.Checked ? Boolean.TRUE : Boolean.FALSE;
             PermissionsChanged();
         }
 
@@ -989,52 +971,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void ApplyRecursivePermissions()
         {
-            ChangePermissions(GetPermissionFromCheckboxes(), true);
+            ChangePermissions(true);
         }
 
         private void OctalPermissionsChanged()
         {
-            Permission permission = GetPermissionsFromOctalField();
-            if (null == permission)
-            {
-                SystemSounds.Beep.Play();
-                InitPermissions();
-            }
-            else
-            {
-                bool change = false;
-                foreach (Path path in _files)
-                {
-                    if (!path.attributes().getPermission().Equals(permission))
-                    {
-                        change = true;
-                    }
-                }
-                if (change)
-                {
-                    ChangePermissions(permission, false);
-                }
-            }
-        }
-
-        private Permission GetPermissionsFromOctalField()
-        {
-            if (!String.IsNullOrEmpty(View.OctalPermissions))
-            {
-                if (View.OctalPermissions.Length >= 3)
-                {
-                    if (Utils.IsInt(View.OctalPermissions))
-                    {
-                        return new Permission(int.Parse(View.OctalPermissions));
-                    }
-                }
-            }
-            return null;
+            permissions.fromOctal(View.OctalPermissions);
+            ChangePermissions(true);
         }
 
         private void PermissionsChanged()
         {
-            ChangePermissions(GetPermissionFromCheckboxes(), false);
+            ChangePermissions(false);
         }
 
         /// <summary>
@@ -1042,60 +990,14 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="permission">UNIX permissions to apply to files</param>
         /// <param name="recursive">Recursively apply to child of directories</param>
-        private void ChangePermissions(Permission permission, bool recursive)
+        private void ChangePermissions(bool recursive)
         {
             if (TogglePermissionSettings(false))
             {
-                _controller.background(new WritePermissionBackgroundAction(_controller, this, permission, recursive));
+                _controller.background(new WritePermissionBackgroundAction(_controller, this, recursive));
             }
         }
-
-        private Permission GetPermissionFromCheckboxes()
-        {
-            Permission.Action u = Permission.Action.none;
-            if (View.OwnerRead == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.read);
-            }
-            if (View.OwnerWrite == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.write);
-            }
-            if (View.OwnerExecute == CheckState.Checked)
-            {
-                u = u.or(Permission.Action.execute);
-            }
-
-            Permission.Action g = Permission.Action.none;
-            if (View.GroupRead == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.read);
-            }
-            if (View.GroupWrite == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.write);
-            }
-            if (View.GroupExecute == CheckState.Checked)
-            {
-                g = g.or(Permission.Action.execute);
-            }
-
-            Permission.Action o = Permission.Action.none;
-            if (View.OtherRead == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.read);
-            }
-            if (View.OtherWrite == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.write);
-            }
-            if (View.OtherExecute == CheckState.Checked)
-            {
-                o = o.or(Permission.Action.execute);
-            }
-            return new Permission(u, g, o);
-        }
-
+		
         private void InitGeneral()
         {
             int count = NumberOfFiles;
@@ -1187,12 +1089,6 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<string> none = new List<string> {LocaleFactory.localizedString("None")};
             View.PopulateBucketLogging(none);
 
-            View.S3PublicUrl = LocaleFactory.localizedString("None");
-            View.S3PublicUrlEnabled = false;
-            View.S3PublicUrlValidity = LocaleFactory.localizedString("Unknown");
-            View.S3TorrentUrl = LocaleFactory.localizedString("None");
-            View.S3TorrentUrlEnabled = false;
-
             IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
             classes.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
@@ -1205,47 +1101,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             PopulateLifecycleTransitionPeriod();
             PopulateLifecycleDeletePeriod();
-
-            Session session = _controller.Session;
-
             if (ToggleS3Settings(false))
             {
-                if (NumberOfFiles > 1)
-                {
-                    View.S3PublicUrl = _multipleFilesString;
-                    View.S3PublicUrlTooltip = null;
-                    View.S3TorrentUrl = _multipleFilesString;
-                    View.S3TorrentUrlTooltip = null;
-                }
-                else
-                {
-                    Path file = SelectedPath;
-                    if (file.isFile())
-                    {
-                        if (session.getHost().getProtocol().getType() == Protocol.Type.s3)
-                        {
-                            DescriptiveUrl signed =
-                                ((UrlProvider) session.getFeature(typeof (UrlProvider))).toUrl(file)
-                                    .find(DescriptiveUrl.Type.signed);
-                            if (!signed.equals(DescriptiveUrl.EMPTY))
-                            {
-                                View.S3PublicUrl = signed.getUrl();
-                                View.S3PublicUrlEnabled = true;
-                                View.S3PublicUrlTooltip = signed.getUrl();
-                                View.S3PublicUrlValidity = signed.getHelp();
-                            }
-                            DescriptiveUrl torrent =
-                                ((UrlProvider) session.getFeature(typeof (UrlProvider))).toUrl(file)
-                                    .find(DescriptiveUrl.Type.torrent);
-                            if (!torrent.equals(DescriptiveUrl.EMPTY))
-                            {
-                                View.S3TorrentUrl = torrent.getUrl();
-                                View.S3TorrentUrlEnabled = true;
-                                View.S3TorrentUrlTooltip = torrent.getUrl();
-                            }
-                        }
-                    }
-                }
                 _controller.background(new FetchS3BackgroundAction(_controller, this));
             }
             else
@@ -1274,6 +1131,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool storageclass = false;
             bool encryption = false;
             bool lifecycle = false;
+            bool acceleration = false;
             if (enable)
             {
                 logging = session.getFeature(typeof (Logging)) != null;
@@ -1282,14 +1140,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 lifecycle = session.getFeature(typeof (Lifecycle)) != null;
                 encryption = session.getFeature(typeof (Encryption)) != null;
                 storageclass = session.getFeature(typeof (Redundancy)) != null;
+                acceleration = session.getFeature(typeof (TransferAcceleration)) != null;
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
             View.BucketLoggingCheckboxEnabled = stop && enable && logging;
+            View.TransferAccelerationCheckboxEnabled = stop && enable && acceleration;
             View.BucketLoggingPopupEnabled = stop && enable && logging;
             View.StorageClassEnabled = stop && enable && storageclass;
             View.EncryptionEnabled = stop && enable && encryption;
-
 
             IdentityConfiguration identityFeature =
                 (IdentityConfiguration) _controller.Session.getFeature(typeof (IdentityConfiguration));
@@ -1637,60 +1496,36 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     IInfoView view = _infoController.View;
-                    ICollection<Permission> permissions = Utils.ConvertFromJavaList<Permission>((List) obj);
-                    bool overwrite = true;
-                    foreach (Permission permission in permissions)
-                    {
-                        view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
-                            permission.getUser().implies(Permission.Action.read));
-                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
-                            permission.getUser().implies(Permission.Action.write));
-                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
-                            permission.getUser().implies(Permission.Action.execute));
-                        view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
-                            permission.getGroup().implies(Permission.Action.read));
-                        view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
-                            permission.getGroup().implies(Permission.Action.write));
-                        view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
-                            permission.getGroup().implies(Permission.Action.execute));
-                        view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
-                            permission.getOther().implies(Permission.Action.read));
-                        view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
-                            permission.getOther().implies(Permission.Action.write));
-                        view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
-                            permission.getOther().implies(Permission.Action.execute));
+                    var permission = (PermissionOverwrite)obj;
+                    _infoController.permissions = permission;
 
-                        overwrite = false;
-                    }
+                    view.OwnerRead = GetCheckState(permission.user.read);
+                    view.OwnerWrite = GetCheckState(permission.user.write);
+                    view.OwnerExecute = GetCheckState(permission.user.execute);
 
-                    if (permissions.Count > 1)
+                    view.GroupRead = GetCheckState(permission.group.read);
+                    view.GroupWrite = GetCheckState(permission.group.write);
+                    view.GroupExecute = GetCheckState(permission.group.execute);
+
+                    view.OtherRead = GetCheckState(permission.other.read);
+                    view.OtherWrite = GetCheckState(permission.other.write);
+                    view.OtherExecute = GetCheckState(permission.other.execute);
+
+                    if (_infoController.NumberOfFiles > 1)
                     {
-                        view.Permissions = _infoController._multipleFilesString;
+                        view.OctalPermissions = permission.getMode();
+                        view.Permissions = permission.toString();
                     }
                     else
                     {
-                        foreach (Permission permission in permissions)
-                        {
-                            view.OctalPermissions = permission.getMode();
-                            view.Permissions = permission.toString();
-                        }
+                        view.OctalPermissions = permission.resolve(Permission.EMPTY).getMode();
+                        view.Permissions = permission.resolve(Permission.EMPTY).toString();
                     }
                     _infoController.TogglePermissionSettings(true);
                 }
 
-                private static CheckState GetCheckboxState(CheckState state, bool overwrite, bool condition)
-                {
-                    // Gets the state which can be CheckState.Checked, CheckState.Unchecked, or CheckState.Indeterminate.
-                    if ((state == CheckState.Unchecked || overwrite) && !condition)
-                    {
-                        return CheckState.Unchecked;
-                    }
-                    if ((state == CheckState.Checked || overwrite) && condition)
-                    {
-                        return CheckState.Checked;
-                    }
-                    return CheckState.Indeterminate;
-                }
+                private static CheckState GetCheckState(java.lang.Boolean state) =>
+                    state != null ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked : CheckState.Indeterminate; // if count = 0: unchecked, count = permission count: checked, else: indeterminate
             }
         }
 
@@ -1699,23 +1534,27 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Path _container;
             private readonly HashSet<string> _containers = new HashSet<string>();
 
-            private String _encryption;
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly InfoController _infoController;
             private readonly Path _selected;
 
-            private String _storageClass;
             private readonly HashSet<KeyValuePair<string, string>> _storageClasses =
                 new HashSet<KeyValuePair<string, string>>();
 
             private readonly IInfoView _view;
+
+            private bool _acceleration;
             private Credentials _credentials;
+
+            private String _encryption;
 
             private LifecycleConfiguration _lifecycle;
             private Location.Name _location;
             private LoggingConfiguration _logging;
+
+            private String _storageClass;
             private VersioningConfiguration _versioning;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1759,7 +1598,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ((IdentityConfiguration) s.getFeature(typeof (IdentityConfiguration))).getCredentials(
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getName());
                 }
-                Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof (Redundancy));
+                Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof (Redundancy));
                 if (redundancyFeature != null)
                 {
                     List list = redundancyFeature.getClasses();
@@ -1797,22 +1636,27 @@ namespace Ch.Cyberduck.Ui.Controller
                         _encryption = algorithm.ToString();
                     }
                     // Add additional keys stored in KMS
-                    Set keys = encryptionFeature.getKeys(_infoController._prompt);
+                    Set keys = encryptionFeature.getKeys(_container, _infoController._prompt);
                     Iterator iterator = keys.iterator();
                     while (iterator.hasNext())
                     {
                         Encryption.Algorithm algorithm = (Encryption.Algorithm) iterator.next();
                         _encryptionKeys.Add(
                             new KeyValuePair<string, string>(
-                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"),
-                                algorithm.ToString()));
+                                LocaleFactory.localizedString(algorithm.getDescription(), "S3"), algorithm.ToString()));
                     }
                     if (selectedEncryptionKeys.Count > 1)
                     {
-                        _encryptionKeys.Add(
-                            new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"), "Multiple"));
+                        _encryptionKeys.Add(new KeyValuePair<string, string>(LocaleFactory.localizedString("Multiple"),
+                            "Multiple"));
                         _encryption = "Multiple";
                     }
+                }
+                TransferAcceleration accelerationFeature =
+                    (TransferAcceleration) s.getFeature(typeof (TransferAcceleration));
+                if (accelerationFeature != null)
+                {
+                    _acceleration = accelerationFeature.getStatus(_container);
                 }
                 return true;
             }
@@ -1864,7 +1708,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.BucketAnalyticsSetupUrl =
                             ((AnalyticsProvider) s.getFeature(typeof (AnalyticsProvider))).getSetup(
                                 s.getHost().getProtocol().getDefaultHostname(), s.getHost().getProtocol().getScheme(),
-                                _container.getName(), _credentials).getUrl();
+                                _container, _credentials).getUrl();
                     }
                     _view.BucketAnalyticsCheckbox = null != _credentials;
 
@@ -1901,6 +1745,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                         }
                     }
+                    _view.TransferAccelerationCheckbox = _acceleration;
                 }
                 finally
                 {
@@ -1916,80 +1761,66 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class InvalidateObjectsBackgroundAction : BrowserControllerBackgroundAction
+        private class InvalidateObjectsBackgroundAction : WorkerBackgroundAction
         {
-            private readonly InfoController _infoController;
-            private readonly Distribution.Method _method;
-
             public InvalidateObjectsBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerDistributionPurgeWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
+                        infoController._prompt, infoController.View.DistributionDeliveryMethod))
             {
-                _infoController = infoController;
-                _method = _infoController.View.DistributionDeliveryMethod;
             }
 
-            public override object run()
+            private class InnerDistributionPurgeWorker : DistributionPurgeWorker
             {
-                Session session = BrowserController.Session;
-                DistributionConfiguration cdn =
-                    (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration));
-                Purge feature = (Purge) cdn.getFeature(typeof (Purge), _method);
-                feature.invalidate(_infoController.containerService.getContainer(_infoController.SelectedPath), _method,
-                    Utils.ConvertToJavaList(_infoController._files), _infoController._prompt);
-                return true;
-            }
+                private readonly InfoController _infoController;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                // Refresh the current distribution status
-                _infoController.DistributionDeliveryMethodChanged();
-            }
+                public InnerDistributionPurgeWorker(InfoController infoController, List files, LoginCallback prompt,
+                    Distribution.Method method) : base(files, prompt, method)
+                {
+                    _infoController = infoController;
+                }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                    _infoController.containerService.getContainer(_infoController.SelectedPath).getName());
+                public override void cleanup(object result)
+                {
+                    // Refresh the current distribution status
+                    _infoController.DistributionDeliveryMethodChanged();
+                }
             }
         }
 
-        private class LifecycleBackgroundAction : BrowserControllerBackgroundAction
+        private class LifecycleBackgroundAction : WorkerBackgroundAction
         {
-            private readonly bool _deleteEnabled;
-            private readonly string _deletePeriod;
-            private readonly InfoController _infoController;
-            private readonly Path _selected;
-            private readonly bool _transitionEnabled;
-            private readonly string _transitionPeriod;
-            private readonly IInfoView _view;
-
             public LifecycleBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
-            {
-                _infoController = infoController;
-                _view = infoController.View;
-                _selected = infoController.SelectedPath;
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteLifecycleWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
+                        new LifecycleConfiguration(
+                            infoController.View.LifecycleTransitionCheckbox
+                                ? Integer.valueOf(infoController.View.LifecycleTransition)
+                                : null, S3Object.STORAGE_CLASS_GLACIER,
+                            infoController.View.LifecycleDeleteCheckbox
+                                ? Integer.valueOf(infoController.View.LifecycleDelete)
+                                : null)))
 
-                _deleteEnabled = _view.LifecycleDeleteCheckbox;
-                _transitionEnabled = _view.LifecycleTransitionCheckbox;
-                _deletePeriod = _view.LifecycleDelete;
-                _transitionPeriod = _view.LifecycleTransition;
+            {
             }
 
-            public override object run()
+            private class InnerWriteLifecycleWorker : WriteLifecycleWorker
             {
-                Lifecycle lifecycle = (Lifecycle) BrowserController.Session.getFeature(typeof (Lifecycle));
-                lifecycle.setConfiguration(_infoController.containerService.getContainer(_selected),
-                    new LifecycleConfiguration(_transitionEnabled ? Integer.valueOf(_transitionPeriod) : null,
-                        _deleteEnabled ? Integer.valueOf(_deletePeriod) : null));
-                return true;
-            }
+                private readonly InfoController _infoController;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
+                public InnerWriteLifecycleWorker(InfoController infoController, List files,
+                    LifecycleConfiguration configuration) : base(files, configuration)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 
@@ -2015,213 +1846,198 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    if (obj != null)
+                    IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
                     {
-                        IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
-                        {
-                            Acl.UserAndRole entry = (Acl.UserAndRole) item;
-                            return new UserAndRoleEntry(entry.getUser(), entry.getRole());
-                        });
-                        _infoController.SetAcl(entries);
-                    }
+                        Acl.UserAndRole entry = (Acl.UserAndRole) item;
+                        return new UserAndRoleEntry(entry.getUser(), entry.getRole());
+                    });
+                    _infoController.SetAcl(entries);
                     _infoController.ToggleAclSettings(true);
                 }
             }
         }
 
-        private class ReadDistributionBackgroundAction : BrowserControllerBackgroundAction
+        private class ReadDistributionBackgroundAction : WorkerBackgroundAction
         {
-            private readonly Distribution.Method _deliveryMethod;
-            private readonly InfoController _infoController;
-            private readonly List _rootDocuments = new ArrayList();
-            private readonly Session _session;
-            private readonly IInfoView _view;
-            private Distribution _distribution;
-
             public ReadDistributionBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerReadDistributionWorker(infoController, browserController,
+                        Utils.ConvertToJavaList(infoController.Files), infoController._prompt,
+                        infoController.View.DistributionDeliveryMethod))
             {
-                _infoController = infoController;
-                _view = infoController.View;
-                _deliveryMethod = _view.DistributionDeliveryMethod;
-                _session = BrowserController.Session;
-                _distribution = new Distribution(_deliveryMethod, false);
             }
 
-            public override object run()
+            private class InnerReadDistributionWorker : ReadDistributionWorker
             {
-                Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
+                private readonly BrowserController _controller;
+                private readonly InfoController _infoController;
 
-                DistributionConfiguration cdn =
-                    (DistributionConfiguration) _session.getFeature(typeof (DistributionConfiguration));
-                _distribution = cdn.read(container, _deliveryMethod, _infoController._prompt);
-                if (cdn.getFeature(typeof (Index), _distribution.getMethod()) != null)
+                public InnerReadDistributionWorker(InfoController infoController, BrowserController controller,
+                    List files, LoginCallback prompt, Distribution.Method method) : base(files, prompt, method)
                 {
-                    // Make sure container items are cached for default root object.
-                    _rootDocuments.addAll(_session.list(container, new DisabledListProgressListener()));
+                    _infoController = infoController;
+                    _controller = controller;
                 }
-                return _distribution;
-            }
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                try
+                public override void cleanup(Object obj)
                 {
-                    _infoController.DetachDistributionHandlers();
-                    Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
-                    DistributionConfiguration cdn =
-                        (DistributionConfiguration) _session.getFeature(typeof (DistributionConfiguration));
-                    _view.DistributionTitle =
-                        String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                            cdn.getName(_deliveryMethod));
-                    //Path file = _infoController.SelectedPath;
-                    _view.Distribution = _distribution.isEnabled();
-                    _view.DistributionStatus = _distribution.getStatus();
-                    _view.DistributionLoggingCheckboxEnabled = _distribution.isEnabled();
-                    _view.DistributionLoggingCheckbox = _distribution.isLogging();
+                    Distribution distribution = (Distribution) obj;
+                    IInfoView view = _infoController.View;
+                    try
+                    {
+                        _infoController.DetachDistributionHandlers();
+                        Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
+                        DistributionConfiguration cdn =
+                            (DistributionConfiguration)
+                                _controller.Session.getFeature(typeof (DistributionConfiguration));
+                        view.DistributionTitle =
+                            String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
+                                cdn.getName(view.DistributionDeliveryMethod));
+                        //Path file = _infoController.SelectedPath;
+                        view.Distribution = distribution.isEnabled();
+                        view.DistributionStatus = distribution.getStatus();
+                        view.DistributionLoggingCheckboxEnabled = distribution.isEnabled();
+                        view.DistributionLoggingCheckbox = distribution.isLogging();
 
 
-                    List containers = _distribution.getContainers();
-                    IList<string> buckets = new List<string>();
-                    bool containerForSelectionAvailable = false;
-                    for (Iterator iter = containers.iterator(); iter.hasNext();)
-                    {
-                        Path c = (Path) iter.next();
-                        buckets.Add(c.getName());
-                        if (!containerForSelectionAvailable && c.Equals(c.getName()))
+                        List containers = distribution.getContainers();
+                        IList<string> buckets = new List<string>();
+                        bool containerForSelectionAvailable = false;
+                        for (Iterator iter = containers.iterator(); iter.hasNext();)
                         {
-                            containerForSelectionAvailable = true;
+                            Path c = (Path) iter.next();
+                            buckets.Add(c.getName());
+                            if (!containerForSelectionAvailable && c.Equals(c.getName()))
+                            {
+                                containerForSelectionAvailable = true;
+                            }
                         }
-                    }
-                    _view.PopulateDistributionLogging(buckets);
-                    if (Utils.IsNotBlank(_distribution.getLoggingContainer()))
-                    {
-                        // Select configured logging container if any
-                        _view.DistributionLoggingPopup = _distribution.getLoggingContainer();
-                    }
-                    else
-                    {
-                        if (containerForSelectionAvailable)
+                        view.PopulateDistributionLogging(buckets);
+                        if (Utils.IsNotBlank(distribution.getLoggingContainer()))
                         {
-                            _view.DistributionLoggingPopup = container.getName();
-                        }
-                    }
-                    if (null == _view.DistributionLoggingPopup)
-                    {
-                        _view.DistributionLoggingPopup = LocaleFactory.localizedString("None");
-                    }
-                    AnalyticsProvider analyticsFeature =
-                        (AnalyticsProvider) cdn.getFeature(typeof (AnalyticsProvider), _deliveryMethod);
-                    IdentityConfiguration identityFeature =
-                        (IdentityConfiguration) cdn.getFeature(typeof (IdentityConfiguration), _deliveryMethod);
-                    if (analyticsFeature != null && identityFeature != null)
-                    {
-                        Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
-                        _view.DistributionAnalyticsCheckbox = credentials != null;
-                        if (credentials != null)
-                        {
-                            _view.DistributionAnalyticsSetupUrl =
-                                analyticsFeature.getSetup(cdn.getHostname(), _distribution.getMethod().getScheme(),
-                                    container.getName(), credentials).getUrl();
-                        }
-                    }
-                    DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
-                    if (!origin.equals(DescriptiveUrl.EMPTY))
-                    {
-                        _view.DistributionOrigin = origin.getUrl();
-                    }
-                    // Concatenate URLs
-                    if (_infoController.NumberOfFiles > 1)
-                    {
-                        _view.DistributionUrl = _infoController._multipleFilesString;
-                        _view.DistributionUrlTooltip = null;
-                        _view.DistributionCnameUrl = _infoController._multipleFilesString;
-                    }
-                    else
-                    {
-                        DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cdn);
-                        if (!url.equals(DescriptiveUrl.EMPTY))
-                        {
-                            _view.DistributionUrl = url.getUrl();
-                            _view.DistributionUrlEnabled = true;
-                            _view.DistributionUrlTooltip = LocaleFactory.localizedString("CDN URL");
+                            // Select configured logging container if any
+                            view.DistributionLoggingPopup = distribution.getLoggingContainer();
                         }
                         else
                         {
-                            _view.DistributionUrl = LocaleFactory.localizedString("None");
-                            _view.DistributionUrlTooltip = null;
-                        }
-                    }
-                    string[] cnames = _distribution.getCNAMEs();
-                    if (0 == cnames.Length)
-                    {
-                        _view.DistributionCname = string.Empty;
-                        _view.DistributionCnameUrl = string.Empty;
-                        _view.DistributionCnameUrlTooltip = null;
-                    }
-                    else
-                    {
-                        _view.DistributionCname = string.Join(" ", cnames);
-                        DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
-                        if (!url.equals(DescriptiveUrl.EMPTY))
-                        {
-                            // We only support one CNAME URL to be displayed
-                            _view.DistributionCnameUrl = url.getUrl();
-                            _view.DistributionCnameUrlEnabled = true;
-                            _view.DistributionCnameUrlTooltip = LocaleFactory.localizedString("CDN URL");
-                        }
-                    }
-                    KeyValuePair<string, string> noneEntry =
-                        new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty);
-
-                    if (cdn.getFeature(typeof (Index), _view.DistributionDeliveryMethod) != null)
-                    {
-                        List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
-                        {
-                            noneEntry
-                        };
-                        foreach (Path next in Utils.ConvertFromJavaList<Path>(_rootDocuments))
-                        {
-                            if (next.isFile())
+                            if (containerForSelectionAvailable)
                             {
-                                defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
+                                view.DistributionLoggingPopup = container.getName();
                             }
                         }
-                        _view.PopulateDefaultRoot(defaultRoots);
-                    }
-                    String defaultRoot = _distribution.getIndexDocument();
-                    if (Utils.IsNotBlank(defaultRoot))
-                    {
-                        _view.DistributionDefaultRoot = defaultRoot;
-                    }
-                    else
-                    {
-                        _view.DistributionDefaultRoot = LocaleFactory.localizedString("None");
-                    }
-                    StringBuilder tooltip = new StringBuilder();
-                    int i = 0;
-                    foreach (Path f in _infoController._files)
-                    {
-                        if (i > 0) tooltip.Append(Environment.NewLine);
-                        tooltip.Append(f.getAbsolute());
-                        i++;
-                    }
+                        if (null == view.DistributionLoggingPopup)
+                        {
+                            view.DistributionLoggingPopup = LocaleFactory.localizedString("None");
+                        }
+                        AnalyticsProvider analyticsFeature =
+                            (AnalyticsProvider)
+                                cdn.getFeature(typeof (AnalyticsProvider), view.DistributionDeliveryMethod);
+                        IdentityConfiguration identityFeature =
+                            (IdentityConfiguration)
+                                cdn.getFeature(typeof (IdentityConfiguration), view.DistributionDeliveryMethod);
+                        if (analyticsFeature != null && identityFeature != null)
+                        {
+                            Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
+                            view.DistributionAnalyticsCheckbox = credentials != null;
+                            if (credentials != null)
+                            {
+                                view.DistributionAnalyticsSetupUrl =
+                                    analyticsFeature.getSetup(cdn.getHostname(), distribution.getMethod().getScheme(),
+                                        container, credentials).getUrl();
+                            }
+                        }
+                        DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
+                        if (!origin.equals(DescriptiveUrl.EMPTY))
+                        {
+                            view.DistributionOrigin = origin.getUrl();
+                        }
+                        // Concatenate URLs
+                        if (_infoController.NumberOfFiles > 1)
+                        {
+                            view.DistributionUrl = _infoController._multipleFilesString;
+                            view.DistributionUrlTooltip = null;
+                            view.DistributionCnameUrl = _infoController._multipleFilesString;
+                        }
+                        else
+                        {
+                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cdn);
+                            if (!url.equals(DescriptiveUrl.EMPTY))
+                            {
+                                view.DistributionUrl = url.getUrl();
+                                view.DistributionUrlEnabled = true;
+                                view.DistributionUrlTooltip = LocaleFactory.localizedString("CDN URL");
+                            }
+                            else
+                            {
+                                view.DistributionUrl = LocaleFactory.localizedString("None");
+                                view.DistributionUrlTooltip = null;
+                            }
+                        }
+                        string[] cnames = distribution.getCNAMEs();
+                        if (0 == cnames.Length)
+                        {
+                            view.DistributionCname = string.Empty;
+                            view.DistributionCnameUrl = string.Empty;
+                            view.DistributionCnameUrlTooltip = null;
+                        }
+                        else
+                        {
+                            view.DistributionCname = string.Join(" ", cnames);
+                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
+                            if (!url.equals(DescriptiveUrl.EMPTY))
+                            {
+                                // We only support one CNAME URL to be displayed
+                                view.DistributionCnameUrl = url.getUrl();
+                                view.DistributionCnameUrlEnabled = true;
+                                view.DistributionCnameUrlTooltip = LocaleFactory.localizedString("CDN URL");
+                            }
+                        }
+                        KeyValuePair<string, string> noneEntry =
+                            new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty);
 
-                    _infoController.View.DistributionInvalidateObjectsTooltip = tooltip.ToString();
-                    _infoController.View.DistributionInvalidationStatus = _distribution.getInvalidationStatus();
-                    _infoController.ToggleDistributionSettings(true);
-                }
-                finally
-                {
-                    _infoController.AttachDistributionHandlers();
-                }
-            }
+                        if (cdn.getFeature(typeof (Index), view.DistributionDeliveryMethod) != null)
+                        {
+                            List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
+                            {
+                                noneEntry
+                            };
+                            foreach (Path next in Utils.ConvertFromJavaList<Path>(distribution.getRootDocuments()))
+                            {
+                                if (next.isFile())
+                                {
+                                    defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
+                                }
+                            }
+                            view.PopulateDefaultRoot(defaultRoots);
+                        }
+                        String defaultRoot = distribution.getIndexDocument();
+                        if (Utils.IsNotBlank(defaultRoot))
+                        {
+                            view.DistributionDefaultRoot = defaultRoot;
+                        }
+                        else
+                        {
+                            view.DistributionDefaultRoot = LocaleFactory.localizedString("None");
+                        }
+                        StringBuilder tooltip = new StringBuilder();
+                        int i = 0;
+                        foreach (Path f in _infoController._files)
+                        {
+                            if (i > 0) tooltip.Append(Environment.NewLine);
+                            tooltip.Append(f.getAbsolute());
+                            i++;
+                        }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Reading CDN configuration of {0}", "Status"),
-                    toString(Utils.ConvertToJavaList(_infoController.Files)));
+                        _infoController.View.DistributionInvalidateObjectsTooltip = tooltip.ToString();
+                        _infoController.View.DistributionInvalidationStatus = distribution.getInvalidationStatus();
+                        _infoController.ToggleDistributionSettings(true);
+                    }
+                    finally
+                    {
+                        _infoController.AttachDistributionHandlers();
+                    }
+                }
             }
         }
 
@@ -2324,147 +2140,153 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class SetBucketAnalyticsUrlBackgroundAction : BrowserControllerBackgroundAction
+        private class SetTransferAccelerationBackgroundAction : WorkerBackgroundAction
         {
-            private readonly bool _bucketAnalyticsCheckBox;
-            private readonly InfoController _infoController;
+            public SetTransferAccelerationBackgroundAction(BrowserController browserController,
+                InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteTransferAccelerationWorker(infoController,
+                        Utils.ConvertToJavaList(infoController.Files), infoController.View.TransferAccelerationCheckbox)
+                    )
+            {
+            }
 
+            private class InnerWriteTransferAccelerationWorker : WriteTransferAccelerationWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerWriteTransferAccelerationWorker(InfoController infoController, List files, bool enabled)
+                    : base(files, enabled)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
+            }
+        }
+
+        private class SetBucketAnalyticsUrlBackgroundAction : WorkerBackgroundAction
+        {
             public SetBucketAnalyticsUrlBackgroundAction(BrowserController browserController,
-                InfoController infoController) : base(browserController)
+                InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteIdentityWorker(infoController, infoController._prompt,
+                        Boolean.valueOf(infoController.View.BucketAnalyticsCheckbox),
+                        PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
             {
-                _infoController = infoController;
-                _bucketAnalyticsCheckBox = _infoController.View.BucketAnalyticsCheckbox;
             }
 
-            public override object run()
+            private class InnerWriteIdentityWorker : WriteIdentityWorker
             {
-                Session session = BrowserController.Session;
-                IdentityConfiguration iam = (IdentityConfiguration) session.getFeature(typeof (IdentityConfiguration));
-                AnalyticsProvider analytics = (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider));
-                if (_bucketAnalyticsCheckBox)
-                {
-                    String document = PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy");
-                    iam.create(analytics.getName(), document, _infoController._prompt);
-                }
-                else
-                {
-                    iam.delete(analytics.getName(), _infoController._prompt);
-                }
-                return true;
-            }
+                private readonly InfoController _infoController;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
+                public InnerWriteIdentityWorker(InfoController infoController, LoginCallback prompt, Boolean enabled,
+                    string policy) : base(prompt, enabled, policy)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 
-        private class SetBucketLoggingBackgroundAction : BrowserControllerBackgroundAction
+        private class SetBucketLoggingBackgroundAction : WorkerBackgroundAction
         {
-            private readonly bool _bucketLoggingCheckbox;
-            private readonly string _bucketLoggingPopup;
-            private readonly InfoController _infoController;
-
             public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteLoggingWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
+                        new LoggingConfiguration(infoController.View.BucketLoggingCheckbox,
+                            infoController.View.BucketLoggingPopup)))
             {
-                _infoController = infoController;
-                _bucketLoggingCheckbox = _infoController.View.BucketLoggingCheckbox;
-                _bucketLoggingPopup = _infoController.View.BucketLoggingPopup;
             }
 
-            public override object run()
+            private class InnerWriteLoggingWorker : WriteLoggingWorker
             {
-                ((Logging) BrowserController.Session.getFeature(typeof (Logging))).setConfiguration(
-                    _infoController.containerService.getContainer(_infoController.SelectedPath),
-                    new LoggingConfiguration(_bucketLoggingCheckbox, _bucketLoggingPopup));
-                return true;
-            }
+                private readonly InfoController _infoController;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
-            }
+                public InnerWriteLoggingWorker(InfoController infoController, List files,
+                    LoggingConfiguration configuration) : base(files, configuration)
+                {
+                    _infoController = infoController;
+                }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                    toString(Utils.ConvertToJavaList(_infoController.Files)));
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 
-        private class SetBucketVersioningAndMfaBackgroundAction : BrowserControllerBackgroundAction
+        private class SetBucketVersioningAndMfaBackgroundAction : WorkerBackgroundAction
         {
-            private readonly bool _bucketMfa;
-            private readonly bool _bucketVersioning;
-            private readonly InfoController _infoController;
-
             public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController,
-                InfoController infoController) : base(browserController)
+                InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteVersioningWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
+                        infoController._prompt,
+                        new VersioningConfiguration(infoController.View.BucketVersioning, infoController.View.BucketMfa))
+                    )
             {
-                _infoController = infoController;
-                _bucketMfa = _infoController.View.BucketMfa;
-                _bucketVersioning = _infoController.View.BucketVersioning;
             }
 
-            public override object run()
+            private class InnerWriteVersioningWorker : WriteVersioningWorker
             {
-                foreach (Path next in _infoController._files)
+                private readonly InfoController _infoController;
+
+                public InnerWriteVersioningWorker(InfoController infoController, List files, LoginCallback prompt,
+                    VersioningConfiguration configuration) : base(files, prompt, configuration)
                 {
-                    ((Versioning) BrowserController.Session.getFeature(typeof (Versioning))).setConfiguration(
-                        _infoController.containerService.getContainer(_infoController.SelectedPath),
-                        _infoController._prompt, new VersioningConfiguration(_bucketVersioning, _bucketMfa));
-                    break;
+                    _infoController = infoController;
                 }
-                return true;
-            }
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleS3Settings(true);
-                _infoController.InitS3();
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleS3Settings(true);
+                    _infoController.InitS3();
+                }
             }
         }
 
-        private class SetDistributionAnalyticsUrlBackgroundAction : BrowserControllerBackgroundAction
+        private class SetDistributionAnalyticsUrlBackgroundAction : WorkerBackgroundAction
         {
-            private readonly bool _distributionAnalyticsCheckBox;
-            private readonly InfoController _infoController;
-
             public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
-                InfoController infoController) : base(browserController)
+                InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteIdentityWorker(infoController, infoController._prompt,
+                        Boolean.valueOf(infoController.View.DistributionAnalyticsCheckbox),
+                        PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
             {
-                _infoController = infoController;
-                _distributionAnalyticsCheckBox = _infoController.View.DistributionAnalyticsCheckbox;
             }
 
-            public override object run()
+            private class InnerWriteIdentityWorker : WriteIdentityWorker
             {
-                Session session = BrowserController.Session;
-                IdentityConfiguration iam = (IdentityConfiguration) session.getFeature(typeof (IdentityConfiguration));
-                AnalyticsProvider analytics = (AnalyticsProvider) session.getFeature(typeof (AnalyticsProvider));
-                if (_distributionAnalyticsCheckBox)
-                {
-                    String document = PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy");
-                    iam.create(analytics.getName(), document, _infoController._prompt);
-                }
-                else
-                {
-                    iam.delete(analytics.getName(), _infoController._prompt);
-                }
-                return true;
-            }
+                private readonly InfoController _infoController;
 
-            public override void cleanup()
-            {
-                base.cleanup();
-                _infoController.ToggleDistributionSettings(true);
-                _infoController.InitDistribution();
+                public InnerWriteIdentityWorker(InfoController infoController, LoginCallback prompt, Boolean enabled,
+                    string policy) : base(prompt, enabled, policy)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    _infoController.ToggleDistributionSettings(true);
+                    _infoController.InitDistribution();
+                }
             }
         }
 
@@ -2605,59 +2427,43 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class WriteDistributionBackgroundAction : BrowserControllerBackgroundAction
+        private class WriteDistributionBackgroundAction : WorkerBackgroundAction
         {
-            private readonly string _cname;
-            private readonly String _defaultRoot;
-            private readonly Distribution.Method _deliveryMethod;
-            private readonly bool _distribution;
-            private readonly string _distributionLogging;
-            private readonly IList<Path> _files;
-            private readonly InfoController _infoController;
-            private readonly bool _logging;
-            private readonly IInfoView _view;
-
-            public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController,
-                IList<Path> files) : base(browserController)
+            public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(
+                    browserController, browserController.Session, browserController.Cache,
+                    new InnerWriteDistributionWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
+                        infoController._prompt, GetDistribution(infoController.View)))
             {
-                _files = files;
-                _infoController = infoController;
-                _view = infoController.View;
-
-                _deliveryMethod = _view.DistributionDeliveryMethod;
-                _logging = _view.DistributionLoggingCheckbox;
-                _cname = _view.DistributionCname;
-                _distribution = _view.Distribution;
-                _defaultRoot = Utils.IsBlank(_view.DistributionDefaultRoot) ? null : _view.DistributionDefaultRoot;
-                _distributionLogging = _view.DistributionLoggingPopup;
             }
 
-            public override object run()
+            private static Distribution GetDistribution(IInfoView view)
             {
-                Session session = BrowserController.Session;
-                DistributionConfiguration cdn =
-                    (DistributionConfiguration) session.getFeature(typeof (DistributionConfiguration));
-                Distribution configuration = new Distribution(_deliveryMethod, _distribution);
-                configuration.setIndexDocument(_defaultRoot);
-                configuration.setLogging(_logging);
-                configuration.setLoggingContainer(_distributionLogging);
-                configuration.setCNAMEs(StringUtils.split(_cname));
-                Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
-                cdn.write(container, configuration, _infoController._prompt);
-                return true;
+                Distribution configuration = new Distribution(view.DistributionDeliveryMethod, view.Distribution);
+                configuration.setIndexDocument(Utils.IsBlank(view.DistributionDefaultRoot)
+                    ? null
+                    : view.DistributionDefaultRoot);
+                configuration.setLogging(view.DistributionLoggingCheckbox);
+                configuration.setLoggingContainer(view.DistributionLoggingPopup);
+                configuration.setCNAMEs(StringUtils.split(view.DistributionCname));
+                return configuration;
             }
 
-            public override void cleanup()
+            private class InnerWriteDistributionWorker : WriteDistributionWorker
             {
-                base.cleanup();
-                // Refresh the current distribution status
-                _infoController.DistributionDeliveryMethodChanged();
-            }
+                private readonly InfoController _infoController;
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Writing CDN configuration of {0}", "Status"),
-                    toString(Utils.ConvertToJavaList(_files)));
+                public InnerWriteDistributionWorker(InfoController infoController, List files, LoginCallback prompt,
+                    Distribution configuration) : base(files, prompt, configuration)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object result)
+                {
+                    // Refresh the current distribution status
+                    _infoController.DistributionDeliveryMethodChanged();
+                }
             }
         }
 
@@ -2684,18 +2490,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.ToggleMetadataSettings(true);
+                    _infoController.InitMetadata();
                 }
             }
         }
 
         private class WritePermissionBackgroundAction : WorkerBackgroundAction
         {
-            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController,
-                Permission permission, bool recursive)
+            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController, bool recursive)
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        permission, recursive))
+                        recursive
+                            ? (Worker.RecursiveCallback) new DialogRecursiveCallback(infoController)
+                            : new BooleanRecursiveCallback(false)))
             {
             }
 
@@ -2703,9 +2511,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWritePermissionWorker(InfoController infoController, List files, Permission permission,
-                    bool recursive)
-                    : base(files, permission, recursive, infoController._controller)
+                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback) : base(files, infoController.permissions, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }
@@ -2713,6 +2519,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     _infoController.TogglePermissionSettings(true);
+                    _infoController.InitPermissions();
                 }
             }
         }

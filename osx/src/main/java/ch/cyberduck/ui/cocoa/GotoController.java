@@ -25,6 +25,7 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSComboBox;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.Cache;
@@ -45,41 +46,14 @@ import java.util.Comparator;
 public class GotoController extends AlertController {
 
     @Outlet
-    private NSComboBox folderCombobox;
+    private final NSComboBox folderCombobox;
 
     @Delegate
-    private ProxyController folderComboboxModel;
+    private final ProxyController folderComboboxModel;
 
-    private Cache<Path> cache;
+    private final BrowserController parent;
 
-    private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
-
-        private Path workdir;
-
-        private final Comparator<Path> comparator = new NullComparator<Path>();
-
-        private FolderComboboxModel(final Path workdir) {
-            this.workdir = workdir;
-        }
-
-        private final Filter<Path> filter = new Filter<Path>() {
-            @Override
-            public boolean accept(Path p) {
-                return p.isDirectory();
-            }
-        };
-
-        @Override
-        public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
-            return new NSInteger(cache.get(workdir).filter(comparator, filter).size());
-        }
-
-        @Override
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(cache.get(workdir)
-                    .filter(comparator, filter).get(row.intValue()).getName());
-        }
-    }
+    private final Cache<Path> cache;
 
     public GotoController(final BrowserController parent, final Cache<Path> cache) {
         super(parent, NSAlert.alert(
@@ -89,6 +63,7 @@ public class GotoController extends AlertController {
                 null,
                 LocaleFactory.localizedString("Cancel", "Goto")
         ));
+        this.parent = parent;
         this.cache = cache;
         alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
@@ -97,14 +72,17 @@ public class GotoController extends AlertController {
         folderComboboxModel = new FolderComboboxModel(parent.workdir());
         folderCombobox.setDataSource(folderComboboxModel.id());
         folderCombobox.setStringValue(parent.workdir().getAbsolute());
-        this.setAccessoryView(folderCombobox);
+    }
+
+    @Override
+    public NSView getAccessoryView() {
+        return folderCombobox;
     }
 
     @Override
     protected void focus() {
-        // Focus accessory view.
+        super.focus();
         folderCombobox.selectText(null);
-        window.makeFirstResponder(folderCombobox);
     }
 
     @Override
@@ -118,7 +96,7 @@ public class GotoController extends AlertController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final String filename = folderCombobox.stringValue();
-            final BrowserController controller = (BrowserController) parent;
+            final BrowserController controller = parent;
             final Path workdir = controller.workdir();
             final Path directory = controller.getSession().getFeature(Home.class).find(workdir, filename);
             if(workdir.getParent().equals(directory)) {
@@ -131,11 +109,39 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    protected boolean validateInput() {
+    public boolean validate() {
         return StringUtils.isNotBlank(folderCombobox.stringValue());
     }
 
     protected Session getSession() {
         return ((BrowserController) parent).getSession();
+    }
+
+    private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
+
+        private final Path workdir;
+
+        private final Comparator<Path> comparator = new NullComparator<Path>();
+        private final Filter<Path> filter = new Filter<Path>() {
+            @Override
+            public boolean accept(Path p) {
+                return p.isDirectory();
+            }
+        };
+
+        private FolderComboboxModel(final Path workdir) {
+            this.workdir = workdir;
+        }
+
+        @Override
+        public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
+            return new NSInteger(cache.get(workdir).filter(comparator, filter).size());
+        }
+
+        @Override
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(cache.get(workdir)
+                    .filter(comparator, filter).get(row.intValue()).getName());
+        }
     }
 }

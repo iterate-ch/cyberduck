@@ -38,7 +38,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     private final DefaultHostnameVerifier verifier
             = new DefaultHostnameVerifier();
 
-    private TerminalPromptReader prompt;
+    private final TerminalPromptReader prompt;
 
     public TerminalCertificateStore() {
         this.prompt = new InteractiveTerminalPromptReader();

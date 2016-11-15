@@ -27,9 +27,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-/**
- * @version $Id$
- */
 public class TerminalStreamListenerTest  {
 
     @Test

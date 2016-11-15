@@ -705,16 +705,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.ActiveGetterPath = value; }
         }
 
-        public void AddTranscriptEntry(bool request, string entry)
+        public void AddTranscriptEntry(TranscriptListener.Type request, string entry)
         {
             transcriptBox.SelectionFont = FixedFont;
-            if (request)
+            if (request == TranscriptListener.Type.request)
             {
                 transcriptBox.SelectionColor = Color.Black;
             }
-            else
+            else if (request == TranscriptListener.Type.response)
             {
-                transcriptBox.SelectionColor = Color.DarkGray;
                 transcriptBox.SelectionColor = Color.DarkGray;
             }
             if (transcriptBox.TextLength > 0)
@@ -1039,7 +1038,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             button.FlatAppearance.BorderSize = 0;
             button.FlatStyle = FlatStyle.Flat;
 
-            button.Text = " " + LocaleFactory.localizedString("Get a donation key!", "License") + " ";
+            button.Text = " " + LocaleFactory.localizedString("Get a registration key!", "License") + " ";
             button.Click +=
                 delegate { BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")); };
             menu.Items.Add(button);
@@ -1577,7 +1576,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem, newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripMenuItem, newBookmarkContextToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem1,
                     newBookmarkToolStripButton
                 },
                 new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
@@ -1590,7 +1590,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(
                 new ToolStripItem[]
                 {
-                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1, deleteBookmarkToolStripButton
+                    deleteBookmarkToolStripMenuItem, deleteBookmarkContextToolStripMenuItem1,
+                    deleteBookmarkToolStripButton
                 }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem}, (sender, args) => DeleteBookmark(),
                 () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[] {duplicateBookmarkToolStripMenuItem1, duplicateBookmarkToolStripMenuItem},

@@ -24,9 +24,6 @@ import ch.cyberduck.core.local.Application;
 import java.util.Collections;
 import java.util.List;
 
-/**
-* @version $Id$
-*/
 public final class DisabledSchemeHandler implements SchemeHandler {
     @Override
     public void setDefaultHandler(final List<Scheme> scheme, final Application application) {

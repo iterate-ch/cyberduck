@@ -27,7 +27,7 @@ import java.util.List;
 
 public class FTPDeleteFeature implements Delete {
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPDeleteFeature(final FTPSession session) {
         this.session = session;

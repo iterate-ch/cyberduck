@@ -27,7 +27,6 @@ import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
-import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
@@ -63,12 +62,12 @@ public class ProgressController extends BundleController implements TransferList
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
     /**
      * Formatter for file size
      */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     public ProgressController(final Transfer transfer) {
         this.transfer = transfer;
@@ -250,18 +249,8 @@ public class ProgressController extends BundleController implements TransferList
         final List<TransferItem> items = transfer.getRoots();
         for(int i = 0; i < items.size(); i++) {
             final TransferItem entry = items.get(i);
-            final NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(entry.remote.getName(), null, StringUtils.EMPTY);
-            if(i == 0) {
-                if(items.size() > 1) {
-                    item.setTitle(String.format("%s (%d more)", entry.remote.getName(), items.size() - 1));
-                }
-                else {
-                    item.setTitle(entry.remote.getName());
-                }
-            }
-            else {
-                item.setTitle(entry.remote.getName());
-            }
+            this.filesPopup.addItemWithTitle(i == 0 && items.size() > 1 ?
+                    String.format("%s (%d more)", entry.remote.getName(), items.size() - 1) : entry.remote.getName());
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
@@ -293,6 +282,7 @@ public class ProgressController extends BundleController implements TransferList
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
         this.progressField.setTextColor(NSColor.darkGrayColor());
+        this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
     @Outlet

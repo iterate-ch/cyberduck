@@ -35,9 +35,9 @@ import net.schmizz.sshj.userauth.UserAuthException;
 public class SFTPAgentAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
-    private AgentAuthenticator agent;
+    private final AgentAuthenticator agent;
 
     public SFTPAgentAuthentication(final SFTPSession session, final AgentAuthenticator agent) {
         this.session = session;
@@ -45,14 +45,14 @@ public class SFTPAgentAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, final CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
             throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using agent %s with credentials %s", agent, host.getCredentials()));
+            log.debug(String.format("Login using agent %s with credentials %s", agent, bookmark.getCredentials()));
         }
         for(Identity identity : agent.getIdentities()) {
             try {
-                session.getClient().auth(host.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
+                session.getClient().auth(bookmark.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
                 // Successfully authenticated
                 break;
             }

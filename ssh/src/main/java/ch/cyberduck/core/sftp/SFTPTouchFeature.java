@@ -29,7 +29,7 @@ import net.schmizz.sshj.sftp.RemoteFile;
 
 public class SFTPTouchFeature implements Touch {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPTouchFeature(final SFTPSession session) {
         this.session = session;

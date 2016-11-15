@@ -29,7 +29,7 @@ import net.schmizz.sshj.sftp.FileAttributes;
 
 public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature implements UnixPermission {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPUnixPermissionFeature(final SFTPSession session) {
         this.session = session;
@@ -59,6 +59,11 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
+    }
+
+    @Override
+    public Permission getUnixPermission(final Path file) throws BackgroundException {
+        return new SFTPAttributesFeature(session).find(file).getPermission();
     }
 
     @Override

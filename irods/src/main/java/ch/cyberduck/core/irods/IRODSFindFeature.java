@@ -29,7 +29,7 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 
 public class IRODSFindFeature implements Find {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     private PathCache cache;
 

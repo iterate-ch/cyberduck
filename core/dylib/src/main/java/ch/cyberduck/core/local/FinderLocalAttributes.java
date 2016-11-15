@@ -45,7 +45,7 @@ import org.rococoa.cocoa.foundation.NSError;
 public class FinderLocalAttributes extends LocalAttributes {
     private static final Logger log = Logger.getLogger(FinderLocalAttributes.class);
 
-    private FinderLocal local;
+    private final FinderLocal local;
 
     public FinderLocalAttributes(final FinderLocal local) {
         super(local.getAbsolute());

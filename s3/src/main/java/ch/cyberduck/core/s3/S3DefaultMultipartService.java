@@ -45,9 +45,9 @@ public class S3DefaultMultipartService implements S3MultipartService {
 
     private static final Logger log = Logger.getLogger(S3DefaultMultipartService.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3DefaultMultipartService(final S3Session session) {

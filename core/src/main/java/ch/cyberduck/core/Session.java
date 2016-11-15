@@ -48,10 +48,12 @@ import org.apache.log4j.Logger;
 public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
+    private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
+
     /**
      * Encapsulating all the information of the remote host
      */
-    protected Host host;
+    protected final Host host;
 
     protected C client;
 
@@ -62,7 +64,7 @@ public abstract class Session<C> implements TranscriptListener {
      */
     private State state = State.closed;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
@@ -144,8 +146,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     /**
      * Logout and close client connection
-     *
-     * @throws BackgroundException
      */
     public void close() throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -275,10 +275,8 @@ public abstract class Session<C> implements TranscriptListener {
      * @see TranscriptListener
      */
     @Override
-    public void log(final boolean request, final String message) {
-        if(log.isInfoEnabled()) {
-            log.info(message);
-        }
+    public void log(final Type request, final String message) {
+        transcript.log(request, message);
         switch(state) {
             case opening:
             case open:

@@ -162,9 +162,6 @@ public class DispatchExecutorService extends AbstractExecutorService {
     }
 
     public void execute(Runnable command) {
-        if(command == null) {
-            throw new NullPointerException("Tasks may not be null");
-        }
         try {
             shutdownLock.lock();
             if(state != State.RUNNING) {

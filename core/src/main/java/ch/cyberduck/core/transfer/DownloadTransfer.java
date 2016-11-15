@@ -65,14 +65,14 @@ import java.util.Map;
 public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
-    private Filter<Path> filter;
+    private final Filter<Path> filter;
 
-    private Comparator<Path> comparator;
+    private final Comparator<Path> comparator;
 
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private DownloadSymlinkResolver symlinkResolver;
+    private final DownloadSymlinkResolver symlinkResolver;
 
     private DownloadFilterOptions options = new DownloadFilterOptions();
 

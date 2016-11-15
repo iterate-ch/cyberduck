@@ -20,7 +20,7 @@ public class Proxy {
 
     private ID id;
 
-    private Object target;
+    private final Object target;
 
     public Proxy() {
         // Callback to self

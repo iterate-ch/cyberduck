@@ -34,7 +34,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVFindFeature implements Find {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     private PathCache cache;
 

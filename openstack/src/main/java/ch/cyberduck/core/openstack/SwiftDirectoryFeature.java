@@ -33,12 +33,12 @@ import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftDirectoryFeature implements Directory {
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftDirectoryFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));

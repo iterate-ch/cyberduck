@@ -37,13 +37,13 @@ import org.apache.log4j.Logger;
 public class TransferCollectionBackgroundAction extends TransferBackgroundAction {
     private static final Logger log = Logger.getLogger(TransferCollectionBackgroundAction.class);
 
-    private TransferQueue queue = TransferQueueFactory.get();
+    private final TransferQueue queue = TransferQueueFactory.get();
 
-    private Transfer transfer;
+    private final Transfer transfer;
 
-    private Session session;
+    private final Session session;
 
-    private ProgressListener progressListener;
+    private final ProgressListener progressListener;
 
     public TransferCollectionBackgroundAction(final Controller controller,
                                               final Session session,

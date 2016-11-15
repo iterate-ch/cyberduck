@@ -29,9 +29,6 @@ import ch.cyberduck.core.serializer.Writer;
 
 import java.util.Collection;
 
-/**
- * @version $Id$
- */
 public class PlistWriter<S extends Serializable> implements Writer<S> {
 
     @Override

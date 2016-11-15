@@ -22,7 +22,7 @@ import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
@@ -43,20 +43,10 @@ import java.util.EnumSet;
 
 public class DownloadController extends AlertController {
 
-    protected NSTextField urlField
+    protected final NSTextField urlField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
-    private PathKindDetector detector = new DefaultPathKindDetector();
-
-    @Override
-    protected void beginSheet(final NSWindow window) {
-        this.setAccessoryView(urlField);
-        this.updateField(urlField, url);
-        alert.setShowsHelp(true);
-        super.beginSheet(window);
-    }
-
-    private String url;
+    private final PathKindDetector detector = new DefaultPathKindDetector();
 
     public DownloadController(final WindowController parent) {
         this(parent, StringUtils.EMPTY);
@@ -70,7 +60,19 @@ public class DownloadController extends AlertController {
                 null,
                 LocaleFactory.localizedString("Cancel", "Download")
         ), NSAlert.NSInformationalAlertStyle);
-        this.url = url;
+        this.updateField(urlField, url);
+        this.alert.setShowsHelp(true);
+    }
+
+    @Override
+    public NSView getAccessoryView() {
+        return urlField;
+    }
+
+    @Override
+    protected void focus() {
+        super.focus();
+        urlField.selectText(null);
     }
 
     @Override
@@ -87,14 +89,7 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    protected void focus() {
-        // Focus accessory view.
-        urlField.selectText(null);
-        window.makeFirstResponder(urlField);
-    }
-
-    @Override
-    protected boolean validateInput() {
+    public boolean validate() {
         Host host = HostParser.parse(urlField.stringValue());
         return StringUtils.isNotBlank(host.getDefaultPath());
     }

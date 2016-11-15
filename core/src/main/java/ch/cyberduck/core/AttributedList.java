@@ -60,7 +60,7 @@ public class AttributedList<E extends Referenceable> extends ArrayList<E> {
     /**
      * Metadata of file listing
      */
-    private AttributedListAttributes<E> attributes
+    private final AttributedListAttributes<E> attributes
             = new AttributedListAttributes<E>().withTimestamp(System.currentTimeMillis());
 
     /**

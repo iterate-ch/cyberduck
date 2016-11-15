@@ -27,6 +27,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -56,6 +58,8 @@ import org.irods.jargon.core.pub.IRODSAccessObjectFactory;
 import org.irods.jargon.core.pub.IRODSFileSystem;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
@@ -83,10 +87,11 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
-        properties.setComputeAndVerifyChecksumAfterTransfer(false);
         properties.setEncoding(this.getEncoding());
         properties.setIrodsSocketTimeout(this.timeout());
         properties.setIrodsParallelSocketTimeout(this.timeout());
+        properties.setGetBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
+        properties.setPutBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure client %s with properties %s", client, properties));
         }
@@ -131,9 +136,25 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
             }
             final IRODSAccount account;
             try {
-                account = IRODSAccount.instance(host.getHostname(), host.getPort(),
-                        user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(),
-                        region, resource, scheme);
+                account = new IRODSAccount(host.getHostname(), host.getPort(),
+                        user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(), region, resource) {
+                    @Override
+                    public URI toURI(final boolean includePassword) throws JargonException {
+                        try {
+                            return new URI(String.format("irods://%s.%s%s@%s:%d%s",
+                                    this.getUserName(),
+                                    this.getZone(),
+                                    includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
+                                    this.getHost(),
+                                    this.getPort(),
+                                    URIEncoder.encode(this.getHomeDirectory())));
+                        }
+                        catch(URISyntaxException e) {
+                            throw new JargonException(e.getMessage());
+                        }
+                    }
+                };
+                account.setAuthenticationScheme(scheme);
             }
             catch(IllegalArgumentException e) {
                 throw new LoginFailureException(e.getMessage(), e);

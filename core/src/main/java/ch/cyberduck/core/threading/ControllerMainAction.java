@@ -22,7 +22,7 @@ import ch.cyberduck.core.Controller;
 
 public abstract class ControllerMainAction extends MainAction {
 
-    private Controller controller;
+    private final Controller controller;
 
     public ControllerMainAction(Controller c) {
         this.controller = c;

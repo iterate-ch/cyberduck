@@ -21,7 +21,6 @@ package ch.cyberduck.core.ftp.parser;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
- * @version $Id$
  * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser
  */
 public class RumpusFTPEntryParser extends CommonUnixFTPEntryParser {
@@ -82,7 +81,7 @@ public class RumpusFTPEntryParser extends CommonUnixFTPEntryParser {
      */
     @Override
     public FTPFile parseFTPEntry(String entry) {
-        if (matches(entry)) {
+        if(matches(entry)) {
             String typeStr = group(1);
             String filesize = group(18);
             String datestr = group(19) + " " + group(20);

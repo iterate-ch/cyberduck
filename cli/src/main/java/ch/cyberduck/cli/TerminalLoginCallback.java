@@ -36,7 +36,7 @@ public class TerminalLoginCallback implements LoginCallback {
 
     private final Console console = new Console();
 
-    private TerminalPromptReader prompt;
+    private final TerminalPromptReader prompt;
 
     public TerminalLoginCallback() {
         this.prompt = new InteractiveTerminalPromptReader();

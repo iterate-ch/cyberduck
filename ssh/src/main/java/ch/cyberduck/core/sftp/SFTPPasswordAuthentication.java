@@ -17,12 +17,15 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +40,7 @@ import net.schmizz.sshj.userauth.password.Resource;
 public class SFTPPasswordAuthentication implements SFTPAuthentication {
     private static final Logger log = Logger.getLogger(SFTPPasswordAuthentication.class);
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     public SFTPPasswordAuthentication(final SFTPSession session) {
         this.session = session;
@@ -68,9 +71,12 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
                 @Override
                 public char[] provideNewPassword(final Resource<?> resource, final String prompt) {
                     try {
-                        callback.prompt(bookmark, bookmark.getCredentials(), LocaleFactory.localizedString("Change Password", "Credentials"), prompt,
+                        final StringAppender message = new StringAppender().append(prompt);
+                        final Credentials credentials = bookmark.getCredentials();
+                        final Credentials changed = new Credentials(credentials.getUsername());
+                        callback.prompt(bookmark, changed, LocaleFactory.localizedString("Change Password", "Credentials"), message.toString(),
                                 new LoginOptions(bookmark.getProtocol()).anonymous(false).user(false).publickey(false));
-                        return bookmark.getCredentials().getPassword().toCharArray();
+                        return changed.getPassword().toCharArray();
                     }
                     catch(LoginCanceledException e) {
                         // Return null if user cancels
@@ -80,13 +86,14 @@ public class SFTPPasswordAuthentication implements SFTPAuthentication {
 
                 @Override
                 public boolean shouldRetry(final Resource<?> resource) {
-                    return false;
+                    return true;
                 }
             });
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
-            throw new SFTPExceptionMappingService().map(e);
+            final BackgroundException failure = new SFTPExceptionMappingService().map(e);
+            throw new LoginFailureException(failure.getDetail(), failure);
         }
     }
 }

@@ -26,12 +26,12 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class S3ThresholdCopyFeature extends S3CopyFeature {
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private S3Session session;
+    private final S3Session session;
 
-    private Long multipartThreshold
+    private final Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.threshold");
 
     public S3ThresholdCopyFeature(final S3Session session) {

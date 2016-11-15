@@ -29,7 +29,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVDirectoryFeature implements Directory {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVDirectoryFeature(final DAVSession session) {
         this.session = session;

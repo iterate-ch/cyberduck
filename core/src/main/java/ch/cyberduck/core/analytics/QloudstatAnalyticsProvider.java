@@ -20,6 +20,8 @@ package ch.cyberduck.core.analytics;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -33,7 +35,10 @@ import java.net.URLEncoder;
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private static final Logger log = Logger.getLogger(QloudstatAnalyticsProvider.class);
 
-    private String target;
+    private final String target;
+
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public QloudstatAnalyticsProvider() {
         this(PreferencesFactory.get().getProperty("analytics.provider.qloudstat.setup"));
@@ -49,11 +54,11 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     }
 
     @Override
-    public DescriptiveUrl getSetup(final String hostname, final Scheme method, final String container, final Credentials credentials) {
+    public DescriptiveUrl getSetup(final String hostname, final Scheme method, final Path container, final Credentials credentials) {
         final String setup = String.format("provider=%s,protocol=%s,endpoint=%s,key=%s,secret=%s",
                 hostname,
                 method.name(),
-                container,
+                containerService.getContainer(container).getName(),
                 credentials.getUsername(),
                 credentials.getPassword());
         final String encoded;

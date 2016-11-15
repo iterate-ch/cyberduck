@@ -20,9 +20,6 @@ package ch.cyberduck.core.notification;
 
 import ch.cyberduck.core.Factory;
 
-/**
- * @version $Id: GrowlFactory.java 5451 2009-10-09 08:34:10Z dkocher $
- */
 public class NotificationServiceFactory extends Factory<NotificationService> {
 
     private static NotificationService notifier;

@@ -18,7 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.ListDataSource;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSTableColumn;
@@ -43,9 +45,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ActivityController extends WindowController {
-    private static Logger log = Logger.getLogger(ActivityController.class);
+    private static final Logger log = Logger.getLogger(ActivityController.class);
 
-    private BackgroundActionRegistry registry
+    private final BackgroundActionRegistry registry
             = BackgroundActionRegistry.global();
 
     private final Map<BackgroundAction, TaskController> tasks

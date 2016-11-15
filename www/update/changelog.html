@@ -13,11 +13,8 @@
 
         p.mountainduck {
             display: block;
-            background-image: url(https://mountainduck.io/images/mountainduck_y_32.png);
-            background-repeat: no-repeat;
-            background-position: 5px 5px;
             padding: 15px 10px 15px 50px;
-            background-color: #E5E5DB;
+            background: #E5E5DB url(https://mountainduck.io/images/mountainduck_y_32.png) no-repeat 5px 5px;
             border: 1px solid #cccccc;
             color: black;
         }
@@ -27,8 +24,193 @@
 <body>
 
 <p class="mountainduck">
-    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file explorer for Mac &amp; Windows.
+    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file
+    explorer for Mac &amp; Windows.
 </p>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.3"><strong>Version 5.3</strong></a>
+</p>
+<ul>
+    <li>[Feature] Choose certificate in bookmark panel for mutual authentication with TLS</li>
+    <li>[Feature] Choose SSH private key from list in bookmark panel</li>
+    <li>[Bugfix] Repeated prompt for client certificate (WebDAV) (<a
+            href="https://trac.cyberduck.io/ticket/9746">#9746</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.2.2"><strong>Version 5.2.2</strong></a>
+</p>
+<ul>
+    <li>[Feature] Toggle transfer acceleration for bucket in Info panel (S3)</li>
+    <li>[Feature] Support OpenSSH private key format for ed25519 keys (SFTP) (<a
+            href="https://trac.cyberduck.io/ticket/8548">#8548</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.2.1"><strong>Version 5.2.1</strong></a>
+</p>
+<ul>
+    <li>[Feature] All embedded assemblies are cryptographically signed (Windows)</li>
+    <li>[Bugfix] Paginate directory listings (Dropbox)</li>
+    <li>[Bugfix] Ignore permission failure for reading transfer acceleration configuration (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9741">#9741</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.2"><strong>Version 5.2</strong></a>
+</p>
+<ul>
+    <li>[Feature] Support connecting to Dropbox (Dropbox) (<a
+            href="https://trac.cyberduck.io/ticket/6427">#6427</a>)
+    </li>
+    <li>[Feature] Tabbed windows (macOS 10.12) (<a
+            href="https://trac.cyberduck.io/ticket/5998">#5998</a>)
+    </li>
+    <li>[Feature] Support transfer acceleration (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9570">#9570</a>)
+    </li>
+    <li>[Feature] Provide URL references to Google Docs documents in browser (Google Drive)</li>
+    <li>[Feature] Support for US East (Ohio) region (S3)</li>
+    <li>[Feature] Support for Asia Pacific (Seoul) region (S3)</li>
+    <li>[Feature] Support for Asia Pacific (Mumbai) region (S3)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.1.4"><strong>Version 5.1.4</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Duplicate folders displayed in file browser (Backblaze B2) (<a
+            href="https://trac.cyberduck.io/ticket/9717">#9717</a>)
+    </li>
+    <li>[Bugfix] Updates to ACLs not showing up in Info window without refreshing (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9731">#9731</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.1.3"><strong>Version 5.1.3</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Normalize (NFC) filenames (SFTP)</li>
+    <li>[Bugfix] Overwriting file creates duplicate (Google Drive)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.1.2"><strong>Version 5.1.2</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (<a
+            href="https://trac.cyberduck.io/ticket/9672">#9672</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.1.1"><strong>Version 5.1.1</strong></a>
+</p>
+<ul>
+    <li>[Feature] Allow connections with AWS2 signature version using connection profile (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9667">#9667</a>)
+    </li>
+    <li>[Bugfix] Cleanup temporary files on application exit</li>
+    <li>[Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9668">#9668</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.1"><strong>Version 5.1</strong></a>
+</p>
+<ul>
+    <li>[Feature] Prompt when recursively applying permissions (<a
+            href="https://trac.cyberduck.io/ticket/9657">#9657</a>)
+    </li>
+    <li>[Feature] Default to signature version AWS4 when connecting to third party S3 providers</li>
+    <li>[Feature] Use batch operation to delete multiple files (Google Drive)</li>
+    <li>[Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (<a
+            href="https://trac.cyberduck.io/ticket/8595">#8595</a>)
+    </li>
+    <li>[Bugfix] Copy transfer from other connection fails (Spectra S3)</li>
+    <li>[Bugfix] Interoperability with Minio (S3)</li>
+    <li>[Bugfix] Repeated prompt to select private key for authentication (App Store) (SFTP)</li>
+    <li>[Bugfix] Repeated prompt for changed host key fingerprint (SFTP)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.11"><strong>Version 5.0.11</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Resuming file transfer starts over and errors out (Backblaze B2) (<a
+            href="https://trac.cyberduck.io/ticket/9598">#9598</a>)
+    </li>
+    <li>[Bugfix] Notification icon persists after application closed (Windows) (<a
+            href="https://trac.cyberduck.io/ticket/9613">#9613</a>)
+    </li>
+    <li>[Bugfix] Missing CDN URLs in copy menu item (Rackspace Cloudfiles) (<a
+            href="https://trac.cyberduck.io/ticket/9638">#9638</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.10"><strong>Version 5.0.10</strong></a>
+</p>
+<ul>
+    <li>[Feature] Handle URL events and open browser or start file transfer (Windows)</li>
+    <li>[Bugfix] Retain container permission when updating ACL after upload complete for file (Backblaze B2)</li>
+    <li>[Bugfix] Display incomplete multipart uploads as hidden files in browser (S3)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.9"><strong>Version 5.0.9</strong></a>
+</p>
+<ul>
+    <li>[Feature] Allow silent application update in background (Mac)</li>
+    <li>[Feature] Display in-progress multipart uploads in browser (S3)</li>
+    <li>[Feature] Importer for bookmarks from Transmit 4 (Mac)</li>
+    <li>[Bugfix] Allow to select encryption keys from KMS different from default us-east-1 region (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9617">#9617</a>)
+    </li>
+    <li>[Bugfix] Uncomfirmed reads are unbounded (SFTP) (<a
+            href="https://trac.cyberduck.io/ticket/9603">#9603</a>)
+    </li>
+    <li>[Bugfix] Mismatch for MD5 checksum when downloading large object (OpenStack Swift) (<a
+            href="https://trac.cyberduck.io/ticket/8861">#8861</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.8"><strong>Version 5.0.8</strong></a>
+</p>
+<ul>
+    <li>[Feature] Register protocol handler for irods:// (<a
+            href="https://trac.cyberduck.io/ticket/9614">#9614</a>)
+    </li>
+    <li>[Bugfix] Listing directory failure on folder with ~ in path (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9611">#9611</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.7"><strong>Version 5.0.7</strong></a>
+</p>
+<ul>
+    <li>[Bugfix] Missing upload notification after editing file (Mac) (<a
+            href="https://trac.cyberduck.io/ticket/9596">#9596</a>)
+    </li>
+    <li>[Bugfix] Stale entries in directory cache when deleting folder (<a
+            href="https://trac.cyberduck.io/ticket/9608">#9608</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.0.6"><strong>Version 5.0.6</strong></a>
+</p>
+<ul>
+    <li>[Feature] Signed application executable (Windows)</li>
+</ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0.5"><strong>Version 5.0.5</strong></a>
@@ -50,6 +232,7 @@
             href="https://trac.cyberduck.io/ticket/9585">#9585</a>)
     </li>
 </ul>
+
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0.2"><strong>Version 5.0.2</strong></a>
 </p>
@@ -61,6 +244,7 @@
             href="https://trac.cyberduck.io/ticket/9586">#9586</a>)
     </li>
 </ul>
+
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0.1"><strong>Version 5.0.1</strong></a>
 </p>
@@ -75,6 +259,7 @@
             href="https://trac.cyberduck.io/ticket/9578">#9578</a>)
     </li>
 </ul>
+
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.0"><strong>Version 5.0</strong></a>
 </p>
@@ -88,7 +273,9 @@
             href="https://trac.cyberduck.io/ticket/9426">#9426</a>)
     </li>
     <li>[Feature] Default to use AWS4 signature version for authentication (S3)</li>
-    <li>[Feature] Repeat failed transfers for single segments of multipart large file transfer (S3, OpenStack Swift, Backblaze B2)</li>
+    <li>[Feature] Repeat failed transfers for single segments of multipart large file transfer (S3, OpenStack Swift,
+        Backblaze B2)
+    </li>
     <li>[Bugfix] Retry transfer for 421 error reply from server with a delay (FTP) (<a
             href="https://trac.cyberduck.io/ticket/9368">#9368</a>)
     </li>

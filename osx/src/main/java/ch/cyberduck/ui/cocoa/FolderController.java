@@ -53,9 +53,9 @@ public class FolderController extends FileController {
         this.view = view;
     }
 
-    private Set<Location.Name> regions;
+    private final Set<Location.Name> regions;
 
-    private BrowserController parent;
+    private final BrowserController parent;
 
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, NSAlert.alert(
@@ -71,10 +71,14 @@ public class FolderController extends FileController {
     }
 
     @Override
-    public void setAccessoryView(final NSView input) {
+    protected String getBundleName() {
+        return "Folder";
+    }
+
+    public NSView getAccessoryView() {
         if(this.hasLocation()) {
             // Override accessory view with location menu added
-            this.loadBundle("Folder");
+            this.loadBundle();
             for(Location.Name region : regions) {
                 regionPopup.addItemWithTitle(region.toString());
                 regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
@@ -82,11 +86,9 @@ public class FolderController extends FileController {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
             }
-            super.setAccessoryView(view);
+            return view;
         }
-        else {
-            super.setAccessoryView(input);
-        }
+        return super.getAccessoryView();
     }
 
     private boolean hasLocation() {
@@ -104,15 +106,13 @@ public class FolderController extends FileController {
     private void run(final Path directory, final String filename) {
         final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
         parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
-                new CreateDirectoryWorker(folder, hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
+                new CreateDirectoryWorker(folder, this.hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
                     public void cleanup(final Boolean done) {
-                        if(done) {
-                            if(filename.charAt(0) == '.') {
-                                parent.setShowHiddenFiles(true);
-                            }
-                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                        if(filename.charAt(0) == '.') {
+                            parent.setShowHiddenFiles(true);
                         }
+                        parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                     }
                 }));
     }

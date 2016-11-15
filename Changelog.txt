@@ -1,7 +1,83 @@
 Cyberduck
-http://cyberduck.io/
+https://cyberduck.io/
 
-Changelog. Last modified: $Date$
+5.3 [https://trac.cyberduck.io/milestone/5.3]
+- [Feature] Choose certificate in bookmark panel for mutual authentication with TLS
+- [Feature] Choose SSH private key from list in bookmark panel
+- [Bugfix] Repeated prompt for client certificate (WebDAV) (#9746)
+
+5.2.2 [https://trac.cyberduck.io/milestone/5.2.2]
+- [Feature] Toggle transfer acceleration for bucket in Info panel (S3)
+- [Feature] Support OpenSSH unencrypted private key format for ed25519 keys (SFTP) (#8548)
+
+5.2.1 [https://trac.cyberduck.io/milestone/5.2.1]
+- [Feature] All embedded assemblies are cryptographically signed (Windows)
+- [Bugfix] Paginate directory listings (Dropbox)
+- [Bugfix] Ignore permission failure for reading transfer acceleration configuration (S3) (#9741)
+
+5.2 [https://trac.cyberduck.io/milestone/5.2]
+- [Feature] Support connecting to Dropbox (Dropbox) (#6427)
+- [Feature] Tabbed windows (macOS 10.12) (#5998)
+- [Feature] Support transfer acceleration (S3) (#9570)
+- [Feature] Provide URL references to Google Docs documents in browser (Google Drive)
+- [Feature] Support for US East (Ohio) region (S3)
+- [Feature] Support for Asia Pacific (Seoul) region (S3)
+- [Feature] Support for Asia Pacific (Mumbai) region (S3)
+
+5.1.4 [https://trac.cyberduck.io/milestone/5.1.4]
+- [Bugfix] Duplicate folders displayed in file browser (Backblaze B2) (#9717)
+- [Bugfix] Updates to ACLs not showing up in Info window without refreshing (S3) (#9731)
+
+5.1.3 [https://trac.cyberduck.io/milestone/5.1.3]
+- [Bugfix] Normalize (NFC) filenames (SFTP)
+- [Bugfix] Overwriting file creates duplicate (Google Drive)
+
+5.1.2 [https://trac.cyberduck.io/milestone/5.1.2]
+- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
+
+5.1.1 [https://trac.cyberduck.io/milestone/5.1.1]
+- [Feature] Allow connections with AWS2 signature version using connection profile (S3) (#9667)
+- [Bugfix] Cleanup temporary files on application exit
+- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
+
+5.1 [https://trac.cyberduck.io/milestone/5.1]
+- [Feature] Prompt when recursively applying permissions (#9657)
+- [Feature] Default to signature version AWS4 when connecting to third party S3 providers
+- [Feature] Use batch operation to delete multiple files (Google Drive)
+- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
+- [Bugfix] Copy transfer from other connection fails (Spectra S3)
+- [Bugfix] Interoperability with Minio (S3)
+- [Bugfix] Repeated prompt to select private key for authentication (App Store) (SFTP)
+- [Bugfix] Repeated prompt for changed host key fingerprint (SFTP)
+
+5.0.11 [https://trac.cyberduck.io/milestone/5.0.11]
+- [Bugfix] Resuming file transfer starts over and errors out (Backblaze B2) (#9598)
+- [Bugfix] Notification icon persists after application closed (Windows) (#9613)
+- [Bugfix] Missing CDN URLs in copy menu item (Rackspace Cloudfiles) (#9638)
+
+5.0.10 [https://trac.cyberduck.io/milestone/5.0.10]
+- [Feature] Handle URL events and open browser or start file transfer (Windows)
+- [Bugfix] Retain container permission when updating ACL after upload complete for file (Backblaze B2)
+- [Bugfix] Display incomplete multipart uploads as hidden files in browser (S3)
+
+5.0.9 [https://trac.cyberduck.io/milestone/5.0.9]
+- [Feature] Allow silent application update in background (Mac)
+- [Feature] Display in-progress multipart uploads in browser (S3)
+- [Feature] Importer for bookmarks from Transmit 4 (Mac)
+- [Bugfix] Allow to select encryption keys from KMS different from default us-east-1 region (S3) (#9617)
+- [Bugfix] Uncomfirmed reads are unbounded (SFTP) (#9603)
+- [Bugfix] Mismatch for MD5 checksum when downloading large object (OpenStack Swift) (#8861)
+
+5.0.8 [https://trac.cyberduck.io/milestone/5.0.8]
+- [Feature] Register protocol handler for irods:// (#9614)
+- [Bugfix] Listing directory failure on folder with ~ in path (S3) (#9611)
+
+5.0.7 [https://trac.cyberduck.io/milestone/5.0.7]
+- [Bugfix] Missing upload notification after editing file (Mac) (#9596)
+- [Bugfix] Stale entries in directory cache when deleting folder (#9608)
+
+5.0.6 [https://trac.cyberduck.io/milestone/5.0.6]
+- [Feature] Signed application executable (Windows)
 
 5.0.5 [https://trac.cyberduck.io/milestone/5.0.5]
 - [Feature] Set modification date in metadata for uploads (Backblaze B2)

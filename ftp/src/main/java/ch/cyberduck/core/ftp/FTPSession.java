@@ -69,7 +69,7 @@ import java.util.TimeZone;
 public class FTPSession extends SSLSession<FTPClient> {
     private static final Logger log = Logger.getLogger(FTPSession.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private Timestamp timestamp;
@@ -82,7 +82,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     private Case casesensitivity = Case.sensitive;
 
-    private SocketFactory socketFactory;
+    private final SocketFactory socketFactory;
 
     public FTPSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());

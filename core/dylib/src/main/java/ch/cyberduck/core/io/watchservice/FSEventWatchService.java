@@ -59,13 +59,13 @@ public class FSEventWatchService extends AbstractWatchService {
 
     private final FSEvents library = FSEvents.library;
 
-    private Map<WatchKey, CFRunLoop> loops
+    private final Map<WatchKey, CFRunLoop> loops
             = new HashMap<WatchKey, CFRunLoop>();
 
-    private Map<WatchKey, FSEvents.FSEventStreamCallback> callbacks
+    private final Map<WatchKey, FSEvents.FSEventStreamCallback> callbacks
             = new HashMap<WatchKey, FSEvents.FSEventStreamCallback>();
 
-    private ThreadFactory threadFactory
+    private final ThreadFactory threadFactory
             = new NamedThreadFactory("fsevent");
 
     public FSEventWatchService() {

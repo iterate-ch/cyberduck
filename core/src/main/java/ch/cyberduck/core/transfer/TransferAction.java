@@ -61,7 +61,7 @@ public abstract class TransferAction {
         }
     }
 
-    private String name;
+    private final String name;
 
     public TransferAction(final String name) {
         registry.put(name, this);

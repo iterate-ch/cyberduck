@@ -55,7 +55,7 @@ import java.util.Set;
 public class FTPClient extends FTPSClient {
     private static final Logger log = Logger.getLogger(FTPClient.class);
 
-    private SSLSocketFactory sslSocketFactory;
+    private final SSLSocketFactory sslSocketFactory;
 
     private Protocol protocol;
 
@@ -64,7 +64,7 @@ public class FTPClient extends FTPSClient {
      */
     private Map<String, Set<String>> features;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public FTPClient(final Protocol protocol, final SSLSocketFactory f, final SSLContext c) {

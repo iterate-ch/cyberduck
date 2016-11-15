@@ -27,6 +27,7 @@ import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
@@ -58,6 +59,9 @@ public class CommandLinePathParser {
                 if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
                     attributes.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));
                 }
+        }
+        if(StringUtils.isBlank(host.getDefaultPath())) {
+            return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(detector.detect(host.getDefaultPath())));
         }
         return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
     }

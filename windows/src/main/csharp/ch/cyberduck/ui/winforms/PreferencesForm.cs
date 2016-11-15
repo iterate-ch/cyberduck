@@ -56,7 +56,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             sftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
-            googleDocsButton.Image = IconCache.Instance.IconForName("googledrive", 32);
 
             connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
             defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
@@ -741,47 +740,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler AutomaticUpdateChangedEvent = delegate { };
         public event VoidHandler CheckForUpdateEvent = delegate { };
 
-        public string DocumentExportFormat
-        {
-            get { return (string) gdDocumentsComboBox.SelectedValue; }
-            set { gdDocumentsComboBox.SelectedValue = value; }
-        }
-
-        public string PresentationExportFormat
-        {
-            get { return (string) gdPresentationsComboBox.SelectedValue; }
-            set { gdPresentationsComboBox.SelectedValue = value; }
-        }
-
         public int BookmarkSize
         {
             get { return (int) bookmarkSizeComboBox.SelectedValue; }
             set { bookmarkSizeComboBox.SelectedValue = value; }
         }
-
-        public string SpreadsheetExportFormat
-        {
-            get { return (string) gdSpreadsheetsComboBox.SelectedValue; }
-            set { gdSpreadsheetsComboBox.SelectedValue = value; }
-        }
-
-        public bool ConvertUploads
-        {
-            get { return gdConvertCheckBox.Checked; }
-            set { gdConvertCheckBox.Checked = value; }
-        }
-
-        public bool OcrUploads
-        {
-            get { return gdOCRcheckBox.Checked; }
-            set { gdOCRcheckBox.Checked = value; }
-        }
-
-        public event VoidHandler DocumentExportFormatChanged = delegate { };
-        public event VoidHandler PresentationExportFormatChanged = delegate { };
-        public event VoidHandler SpreadsheetExportFormatChanged = delegate { };
-        public event VoidHandler ConvertUploadsChanged = delegate { };
-        public event VoidHandler OcrUploadsChanged = delegate { };
 
         public string DefaultStorageClass
         {
@@ -830,32 +793,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultEncodingCombobox.DataSource = encodings;
         }
 
-        public void PopulateDocumentExportFormats(IList<KeyValuePair<string, string>> formats)
-        {
-            gdDocumentsComboBox.DataSource = formats;
-            gdDocumentsComboBox.ValueMember = "Key";
-            gdDocumentsComboBox.DisplayMember = "Value";
-        }
-
         public void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes)
         {
             bookmarkSizeComboBox.DataSource = sizes;
             bookmarkSizeComboBox.ValueMember = "Key";
             bookmarkSizeComboBox.DisplayMember = "Value";
-        }
-
-        public void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats)
-        {
-            gdPresentationsComboBox.DataSource = formats;
-            gdPresentationsComboBox.ValueMember = "Key";
-            gdPresentationsComboBox.DisplayMember = "Value";
-        }
-
-        public void PopulateSpreadsheetExportFormats(IList<KeyValuePair<string, string>> formats)
-        {
-            gdSpreadsheetsComboBox.DataSource = formats;
-            gdSpreadsheetsComboBox.ValueMember = "Key";
-            gdSpreadsheetsComboBox.DisplayMember = "Value";
         }
 
         public void PopulateTransferModes(List<KeyValuePair<string, Host.TransferType>> modes)
@@ -1364,17 +1306,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             DefaultStorageClassChangedEvent();
         }
-
-        private void googleDocsButton_Click(object sender, EventArgs e)
-        {
-            if (!googleDocsButton.Checked)
-            {
-                DisableAll();
-                googleDocsButton.Checked = true;
-                panelManager.SelectedPanel = managedGoogleDocsPanel;
-            }
-        }
-
+        
         private void updateButton_Click(object sender, EventArgs e)
         {
             if (!updateButton.Checked)
@@ -1393,31 +1325,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 languageButton.Checked = true;
                 panelManager.SelectedPanel = managedLanguagePanel;
             }
-        }
-
-        private void gdDocumentsComboBox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            DocumentExportFormatChanged();
-        }
-
-        private void gdPresentationsComboBox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            PresentationExportFormatChanged();
-        }
-
-        private void gdSpreadsheetsComboBox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            SpreadsheetExportFormatChanged();
-        }
-
-        private void gdConvertCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            ConvertUploadsChanged();
-        }
-
-        private void gdOCRcheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            OcrUploadsChanged();
         }
 
         private void languageComboBox_SelectionChangeCommitted(object sender, EventArgs e)

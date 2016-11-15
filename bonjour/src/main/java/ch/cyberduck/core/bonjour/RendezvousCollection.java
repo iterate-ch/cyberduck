@@ -20,14 +20,15 @@ package ch.cyberduck.core.bonjour;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
-/**
- * @version $Id$
- */
 public final class RendezvousCollection extends AbstractHostCollection implements RendezvousListener {
     private static final long serialVersionUID = 6468881403370416829L;
 
@@ -45,6 +46,8 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     private final Rendezvous rendezvous;
+
+    private final Comparator<String> comparator = new NaturalOrderComparator();
 
     private RendezvousCollection() {
         this(RendezvousFactory.instance());
@@ -119,5 +122,16 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     @Override
     public boolean allowsEdit() {
         return false;
+    }
+
+    @Override
+    protected synchronized void sort() {
+        Collections.sort(this, new Comparator<Host>() {
+            @Override
+            public int compare(final Host o1, final Host o2) {
+                return comparator.compare(BookmarkNameProvider.toString(o1),
+                        BookmarkNameProvider.toString(o2));
+            }
+        });
     }
 }

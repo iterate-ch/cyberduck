@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -94,7 +95,16 @@ public class B2ObjectListService implements ListService {
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
                            final B2ListFilesResponse response, final Map<String, Integer> revisions) {
         for(B2FileInfoResponse file : response.getFiles()) {
-            final PathAttributes attributes = this.parse(directory, file, revisions);
+            final PathAttributes attributes = this.parse(directory, file);
+            final Integer revision;
+            if(revisions.keySet().contains(file.getFileName())) {
+                // Later version already found
+                attributes.setDuplicate(true);
+                revision = revisions.get(file.getFileName()) + 1;
+            }
+            else {
+                revision = 1;
+            }
             if(attributes == null) {
                 // File is descendant but not directly from working directory
                 final Path virtual = this.virtual(directory, file.getFileName());
@@ -111,11 +121,18 @@ public class B2ObjectListService implements ListService {
                 }
             }
             else if(StringUtils.endsWith(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)) {
+                if(revisions.containsKey(file.getFileName())) {
+                    continue;
+                }
+                revisions.put(file.getFileName(), revision);
+                attributes.setRevision(revision);
                 objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)),
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
             }
             else {
                 attributes.setSize(file.getSize());
+                revisions.put(file.getFileName(), revision);
+                attributes.setRevision(revision);
                 objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
             }
         }
@@ -138,16 +155,15 @@ public class B2ObjectListService implements ListService {
     /**
      * @param directory Working directory
      * @param response  List filenames response from server
-     * @param revisions Counter for equal filenames
      * @return Null when respone filename is not child of working directory directory
      */
-    protected PathAttributes parse(final Path directory, final B2FileInfoResponse response, final Map<String, Integer> revisions) {
+    protected PathAttributes parse(final Path directory, final B2FileInfoResponse response) {
         if(this.skip(PathNormalizer.parent(StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER), directory)) {
             log.warn(String.format("Skip file %s", response));
             return null;
         }
         final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(Checksum.parse(response.getContentSha1()));
+        attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT)));
         final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
         attributes.setModificationDate(timestamp);
@@ -156,19 +172,9 @@ public class B2ObjectListService implements ListService {
             case hide:
             case start:
                 attributes.setDuplicate(true);
+                attributes.setSize(-1L);
                 break;
         }
-        final Integer revision;
-        if(revisions.keySet().contains(response.getFileName())) {
-            // Later version already found
-            attributes.setDuplicate(true);
-            revision = revisions.get(response.getFileName()) + 1;
-        }
-        else {
-            revision = 1;
-        }
-        revisions.put(response.getFileName(), revision);
-        attributes.setRevision(revision);
         return attributes;
     }
 
@@ -197,8 +203,8 @@ public class B2ObjectListService implements ListService {
     }
 
     private static final class Marker {
-        public String nextFilename;
-        public String nextFileId;
+        public final String nextFilename;
+        public final String nextFileId;
 
         public Marker(final String nextFilename, final String nextFileId) {
             this.nextFilename = nextFilename;

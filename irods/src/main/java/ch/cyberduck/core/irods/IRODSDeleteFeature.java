@@ -32,7 +32,7 @@ import java.util.List;
 
 public class IRODSDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSDeleteFeature(IRODSSession session) {
         this.session = session;

@@ -18,6 +18,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.Key;
@@ -42,29 +42,39 @@ import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 
-    private KeyStore store;
+    private final Host bookmark;
 
-    private CertificateStore callback;
+    private final CertificateStore callback;
 
-    public CertificateStoreX509KeyManager(final CertificateStore callback) {
-        this.callback = callback;
+    private final Preferences preferences = PreferencesFactory.get();
+
+    private KeyStore _keystore;
+
+    public CertificateStoreX509KeyManager(final CertificateStore callback, final Host bookmark) {
+        this(bookmark, callback, null);
     }
 
-    public CertificateStoreX509KeyManager(final CertificateStore callback, final KeyStore store) {
+    public CertificateStoreX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
+        this.bookmark = bookmark;
         this.callback = callback;
-        this.store = store;
+        this._keystore = store;
     }
 
-    public CertificateStoreX509KeyManager init() {
+    public CertificateStoreX509KeyManager init() throws IOException {
+        return this;
+    }
+
+    private synchronized KeyStore getKeystore() throws IOException {
         String type = null;
         try {
-            if(null == store) {
+            if(null == _keystore) {
                 // Get the key manager factory for the default algorithm.
                 final Preferences preferences = PreferencesFactory.get();
                 type = preferences.getProperty("connection.ssl.keystore.type");
@@ -76,14 +86,14 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
                 final String provider = preferences.getProperty("connection.ssl.keystore.provider");
                 if(StringUtils.isBlank(provider)) {
-                    store = KeyStore.getInstance(type);
+                    _keystore = KeyStore.getInstance(type);
                 }
                 else {
-                    store = KeyStore.getInstance(type, provider);
+                    _keystore = KeyStore.getInstance(type, provider);
                 }
+                // Load default key store
+                _keystore.load(null, null);
             }
-            // Load default key store
-            store.load(null, null);
         }
         catch(Exception e) {
             try {
@@ -91,25 +101,30 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info("Load default store of default type");
                 }
-                store = KeyStore.getInstance(KeyStore.getDefaultType());
-                store.load(null, null);
+                _keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                _keystore.load(null, null);
             }
-            catch(NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException ex) {
-                log.error(String.format("Initialization of key store failed %s", e.getMessage()));
+            catch(NoSuchAlgorithmException | KeyStoreException | CertificateException ex) {
+                log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
+                throw new IOException(e);
             }
         }
-        return this;
+        return _keystore;
     }
 
     @Override
-    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
-        return this.getClientAliases(new String[]{keyType}, issuers);
-    }
-
-    public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
+    public List<String> list() {
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure listing aliases. %s", e.getMessage()));
+                return Collections.emptyList();
+            }
             final Enumeration<String> aliases = store.aliases();
             while(aliases.hasMoreElements()) {
                 final String alias = aliases.nextElement();
@@ -120,13 +135,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found private key for %s", alias));
                     }
-                    // returns the first element of the certificate chain of that key entry
-                    final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
-                    if(null == cert) {
-                        log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
-                        continue;
-                    }
-                    log.info(String.format("Add X509 certificate entry %s to list", cert));
                     list.add(alias);
                 }
                 else {
@@ -137,15 +145,43 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         catch(KeyStoreException e) {
             log.error(String.format("Keystore not loaded %s", e.getMessage()));
         }
+        return list;
+    }
+
+    @Override
+    public String[] getClientAliases(final String keyType, final Principal[] issuers) {
+        return this.getClientAliases(new String[]{keyType}, issuers);
+    }
+
+    public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
+        // List of issuer distinguished name
+        final List<String> list = new ArrayList<String>();
         if(list.isEmpty()) {
-            // null if there were no matches
+            // Return null if there were no matches
             return null;
+        }
+        for(String alias : this.list()) {
+            // returns the first element of the certificate chain of that key entry
+            final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
+            if(null == cert) {
+                log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
+                continue;
+            }
+            log.info(String.format("Add X509 certificate entry %s to list", cert));
+            list.add(alias);
         }
         return list.toArray(new String[list.size()]);
     }
 
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             final Certificate cert = store.getCertificate(alias);
             if(this.matches(cert, keyTypes, issuers)) {
                 return (X509Certificate) cert;
@@ -168,40 +204,19 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         return null;
     }
 
-    /**
-     * @param issuers The list of acceptable CA issuer subject names or null if it does not matter which issuers are used
-     * @return True if certificate matches issuer and key type
-     */
-    protected boolean matches(final Certificate c, final String[] keyTypes, final Principal[] issuers) {
-        if(!(c instanceof X509Certificate)) {
-            log.warn(String.format("Certificate %s is not of type X509", c));
-            return false;
-        }
-        if(!Arrays.asList(keyTypes).contains(c.getPublicKey().getAlgorithm())) {
-            log.warn(String.format("Key type %s does not match any of %s", c.getPublicKey().getAlgorithm(),
-                    Arrays.toString(keyTypes)));
-            return false;
-        }
-        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
-            // null if it does not matter which issuers are used
-            return true;
-        }
-        final X500Principal issuer = ((X509Certificate) c).getIssuerX500Principal();
-        if(!Arrays.asList(issuers).contains(issuer)) {
-            log.warn(String.format("Issuer %s does not match", issuer));
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             final X509Certificate selected;
+            final String hostname = socket.getInetAddress().getHostName();
             try {
-                final String hostname = socket.getInetAddress().getHostName();
+                final String alias = bookmark.getCredentials().getCertificate();
+                if(StringUtils.isNotBlank(alias)) {
+                    log.info(String.format("Return saved certificate alias %s for host %s", alias, bookmark));
+                    return alias;
+                }
                 selected = callback.choose(keyTypes,
-                        issuers, hostname, MessageFormat.format(LocaleFactory.localizedString(
+                        issuers, bookmark, MessageFormat.format(LocaleFactory.localizedString(
                                 "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
                                 hostname));
             }
@@ -220,11 +235,19 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             }
             final String[] aliases = this.getClientAliases(keyTypes, issuers);
             if(null != aliases) {
+                final KeyStore store;
+                try {
+                    store = this.getKeystore();
+                }
+                catch(IOException e) {
+                    return null;
+                }
                 for(String alias : aliases) {
                     if(store.getCertificate(alias).equals(selected)) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Selected certificate alias %s for certificate %s", alias, selected));
                         }
+                        bookmark.getCredentials().setCertificate(alias);
                         return alias;
                     }
                 }
@@ -243,6 +266,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public X509Certificate[] getCertificateChain(final String alias) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             final List<X509Certificate> result = new ArrayList<X509Certificate>();
             final Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
@@ -280,6 +310,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public PrivateKey getPrivateKey(final String alias) {
         try {
+            final KeyStore store;
+            try {
+                store = this.getKeystore();
+            }
+            catch(IOException e) {
+                return null;
+            }
             if(store.isKeyEntry(alias)) {
                 final Key key = store.getKey(alias, "null".toCharArray());
                 if(key instanceof PrivateKey) {

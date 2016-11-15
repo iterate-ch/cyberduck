@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -34,30 +35,33 @@ import org.jets3t.service.model.StorageBucketLoggingStatus;
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
+
+    private final PathContainerService containerService
+            = new S3PathContainerService();
 
     public S3LoggingFeature(final S3Session session) {
         this.session = session;
     }
 
     @Override
-    public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
+    public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        if(bucket.isRoot()) {
+            return LoggingConfiguration.empty();
+        }
         try {
             final StorageBucketLoggingStatus status
-                    = session.getClient().getBucketLoggingStatusImpl(container.getName());
+                    = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
             return new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map("Cannot read bucket logging status", e);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
-            catch(AccessDeniedException l) {
-                log.warn(String.format("Missing permission to read logging configuration for %s %s", container, e.getMessage()));
-                return LoggingConfiguration.empty();
-            }
-            catch(InteroperabilityException i) {
-                log.warn(String.format("Not supported to read logging configuration for %s %s", container, e.getMessage()));
+            catch(AccessDeniedException | InteroperabilityException l) {
+                log.warn(String.format("Missing permission to read logging configuration for %s %s", bucket.getName(), e.getMessage()));
                 return LoggingConfiguration.empty();
             }
         }
@@ -65,18 +69,19 @@ public class S3LoggingFeature implements Logging {
 
 
     @Override
-    public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LoggingConfiguration configuration) throws BackgroundException {
+        // Logging target bucket
+        final Path bucket = containerService.getContainer(file);
         try {
-            // Logging target bucket
             final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
+                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName(), null);
             if(configuration.isEnabled()) {
                 status.setLogfilePrefix(PreferencesFactory.get().getProperty("s3.logging.prefix"));
             }
-            session.getClient().setBucketLoggingStatus(container.getName(), status, true);
+            session.getClient().setBucketLoggingStatus(bucket.getName(), status, true);
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }

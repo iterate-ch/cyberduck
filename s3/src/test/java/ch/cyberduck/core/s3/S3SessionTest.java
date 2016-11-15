@@ -183,12 +183,13 @@ public class S3SessionTest {
             }
         }, new TranscriptListener() {
             @Override
-            public void log(final boolean request, final String message) {
-                if(request) {
-                    if(message.contains("Host:")) {
-                        assertEquals("Host: cyberduck.io:443", message);
-                        set.set(true);
-                    }
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Host:")) {
+                            assertEquals("Host: cyberduck.io", message);
+                            set.set(true);
+                        }
                 }
             }
         });
@@ -223,11 +224,11 @@ public class S3SessionTest {
         assertNotNull(o.getFeature(AclPermission.class));
         assertNull(o.getFeature(Versioning.class));
         assertNull(o.getFeature(AnalyticsProvider.class));
-        assertNull(o.getFeature(Lifecycle.class));
+        assertNotNull(o.getFeature(Lifecycle.class));
         assertNotNull(o.getFeature(Location.class));
         assertNull(o.getFeature(Encryption.class));
-        assertNull(o.getFeature(Redundancy.class));
-        assertNull(o.getFeature(Logging.class));
+        assertNotNull(o.getFeature(Redundancy.class));
+        assertNotNull(o.getFeature(Logging.class));
         assertNotNull(o.getFeature(DistributionConfiguration.class));
         assertNull(o.getFeature(IdentityConfiguration.class));
         assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class).getClass());
@@ -295,7 +296,7 @@ public class S3SessionTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-                new KeychainX509KeyManager(new DisabledCertificateStore()));
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
@@ -304,6 +305,18 @@ public class S3SessionTest {
                 new DisabledTranscriptListener());
         c.connect(session, PathCache.empty());
         assertTrue(verified.get());
+        session.close();
+    }
+
+    @Test
+    @Ignore
+    public void testAuthenticationV4Thirdparty() throws Exception {
+        final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
+                "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+        ));
+        final S3Session session = new S3Session(host);
+        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

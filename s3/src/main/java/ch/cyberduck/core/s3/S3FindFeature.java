@@ -26,16 +26,18 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.model.S3Object;
 
 public class S3FindFeature implements Find {
     private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     private PathCache cache;
@@ -86,8 +88,9 @@ public class S3FindFeature implements Find {
                                 "in the authentication header.");
                         // Fallback to GET if HEAD fails with 400 response
                         try {
-                            session.getClient().getObject(containerService.getContainer(file).getName(),
-                                    containerService.getKey(file), null, null, null, null, 0L, 0L);
+                            final S3Object object = session.getClient().getObject(containerService.getContainer(file).getName(),
+                                    containerService.getKey(file), null, null, null, null, null, null);
+                            IOUtils.closeQuietly(object.getDataInputStream());
                             list.add(file);
                             return true;
                         }

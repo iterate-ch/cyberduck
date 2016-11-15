@@ -22,7 +22,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Product.wxs" />
+    <Compile Include="Cyberduck CLI-WiX.wxs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Cyberduck CLI.csproj">
@@ -62,9 +62,12 @@
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
-	<Target Name="BeforeBuild">
-	</Target>
-	<Target Name="AfterBuild">
-	</Target>
-	-->
+  -->
+  <ItemGroup>
+    <Assemblies Include="cli/windows/target/*.dll" />
+    <Assemblies Include="cli/windows/target/*.exe" />
+  </ItemGroup>
+  <Target Name="SignDLLs" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />
+  </Target>
 </Project>

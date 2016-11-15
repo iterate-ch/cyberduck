@@ -31,10 +31,10 @@ public class DefaultProxyFinder implements ProxyFinder {
     private final ProxySelector selector
             = ProxySelector.getDefault();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private HostUrlProvider provider
+    private final HostUrlProvider provider
             = new ProxyHostUrlProvider();
 
     @Override

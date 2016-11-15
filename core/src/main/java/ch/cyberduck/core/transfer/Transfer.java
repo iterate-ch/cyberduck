@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -42,7 +43,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Transfer implements Serializable {
@@ -51,7 +51,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Files and folders initially selected to be part of this transfer
      */
-    protected List<TransferItem> roots;
+    protected final List<TransferItem> roots;
 
     /**
      * The sum of the file length of all files in the <code>queue</code> or null if unknown
@@ -101,7 +101,7 @@ public abstract class Transfer implements Serializable {
 
     }
 
-    protected Host host;
+    protected final Host host;
 
     /**
      * In Bytes per second
@@ -123,7 +123,8 @@ public abstract class Transfer implements Serializable {
     /**
      * Unique identifier
      */
-    private String uuid;
+    protected String uuid
+            = new UUIDRandomStringService().random();
 
     /**
      * Transfer state
@@ -169,9 +170,13 @@ public abstract class Transfer implements Serializable {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
-        dict.setStringForKey(this.getUuid(), "UUID");
-        dict.setStringForKey(String.valueOf(this.getSize()), "Size");
-        dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
+        dict.setStringForKey(uuid, "UUID");
+        if(size != null) {
+            dict.setStringForKey(String.valueOf(size), "Size");
+        }
+        if(transferred != null) {
+            dict.setStringForKey(String.valueOf(transferred), "Current");
+        }
         if(timestamp != null) {
             dict.setStringForKey(String.valueOf(timestamp.getTime()), "Timestamp");
         }
@@ -391,9 +396,6 @@ public abstract class Transfer implements Serializable {
     }
 
     public String getUuid() {
-        if(null == uuid) {
-            uuid = UUID.randomUUID().toString();
-        }
         return uuid;
     }
 

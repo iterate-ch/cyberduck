@@ -32,7 +32,7 @@ import static ch.cyberduck.ui.cocoa.TransferToolbarFactory.TransferToolbarItem.*
 
 public class TransferToolbarValidator implements ToolbarValidator {
 
-    private TransferController controller;
+    private final TransferController controller;
 
     public TransferToolbarValidator(final TransferController controller) {
         this.controller = controller;

@@ -23,9 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class HostUrlProvider {
 
-    private boolean username;
+    private final boolean username;
 
-    private boolean path;
+    private final boolean path;
 
     public HostUrlProvider() {
         this(true, false);

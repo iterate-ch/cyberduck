@@ -28,7 +28,7 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 
 public class IRODSDirectoryFeature implements Directory {
 
-    private IRODSSession session;
+    private final IRODSSession session;
 
     public IRODSDirectoryFeature(final IRODSSession session) {
         this.session = session;

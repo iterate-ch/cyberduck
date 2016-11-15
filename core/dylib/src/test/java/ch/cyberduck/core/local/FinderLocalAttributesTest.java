@@ -22,11 +22,8 @@ import org.junit.Test;
 import java.io.File;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class FinderLocalAttributesTest {
 
     @Test

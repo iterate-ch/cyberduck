@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Find;
 
 public class SwiftFindFeature implements Find {
 
-    private SwiftMetadataFeature feature;
+    private final SwiftMetadataFeature feature;
 
     private PathCache cache;
 

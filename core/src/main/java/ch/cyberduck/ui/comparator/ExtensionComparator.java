@@ -29,7 +29,7 @@ import java.util.Locale;
 public class ExtensionComparator extends BrowserComparator {
     private static final long serialVersionUID = -7930478156003767294L;
 
-    private Collator impl = Collator.getInstance(Locale.getDefault());
+    private final Collator impl = Collator.getInstance(Locale.getDefault());
 
     public ExtensionComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

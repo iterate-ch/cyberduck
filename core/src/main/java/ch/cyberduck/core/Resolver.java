@@ -36,7 +36,7 @@ public class Resolver {
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("resolver");
 
-    private CountDownLatch signal = new CountDownLatch(1);
+    private final CountDownLatch signal = new CountDownLatch(1);
 
     /**
      * The IP address resolved for this hostname

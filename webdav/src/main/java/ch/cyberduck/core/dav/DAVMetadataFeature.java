@@ -39,7 +39,7 @@ import com.github.sardine.impl.SardineException;
 public class DAVMetadataFeature implements Headers {
     private static final Logger log = Logger.getLogger(DAVMetadataFeature.class);
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVMetadataFeature(final DAVSession session) {
         this.session = session;

@@ -32,7 +32,7 @@ import com.github.sardine.impl.SardineImpl;
 
 public class DAVClient extends SardineImpl {
 
-    private String uri;
+    private final String uri;
 
     public DAVClient(final String uri, final HttpClientBuilder http) {
         super(http);

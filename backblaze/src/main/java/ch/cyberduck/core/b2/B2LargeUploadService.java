@@ -19,12 +19,15 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
@@ -36,11 +39,16 @@ import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -65,9 +73,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
 
     private final B2Session session;
 
-    private final ThreadPool<B2UploadPartResponse> pool;
+    private final Long partSize;
 
-    private Long partSize;
+    private final Integer concurrency;
 
     public B2LargeUploadService(final B2Session session) {
         this(session, new B2PartWriteFeature(session));
@@ -90,7 +98,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         super(writer);
         this.session = session;
         this.partSize = partSize;
-        this.pool = new DefaultThreadPool<B2UploadPartResponse>(concurrency, "largeupload");
+        this.concurrency = concurrency;
     }
 
     @Override
@@ -99,6 +107,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                                        final StreamListener listener,
                                        final TransferStatus status,
                                        final ConnectionCallback callback) throws BackgroundException {
+        final DefaultThreadPool<B2UploadPartResponse> pool = new DefaultThreadPool<>(concurrency, "largeupload");
         try {
             final String fileid;
             // Get the results of the uploads in the order they were submitted
@@ -141,21 +150,22 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                                 log.info(String.format("Skip completed part number %d", partNumber));
                             }
                             skip = true;
+                            offset += c.getContentLength();
                             break;
                         }
                     }
                 }
-                final Long length = Math.min(Math.max((status.getLength() / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                 if(!skip) {
+                    final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(file, local, throttle, listener, status, partNumber, offset, length));
+                    parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Part %s submitted with size %d and offset %d",
                                 partNumber, length, offset));
                     }
+                    remaining -= length;
+                    offset += length;
                 }
-                offset += length;
-                remaining -= length;
             }
             try {
                 for(Future<B2UploadPartResponse> f : parts) {
@@ -189,7 +199,9 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 checksums.add(part.getContentSha1());
             }
             final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileid, checksums.toArray(new String[checksums.size()]));
-            log.info(String.format("Finished large file upload %s", response.getFileId()));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
+            }
             // Mark parent status as complete
             status.setComplete();
             return null;
@@ -202,7 +214,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
         }
     }
 
-    private Future<B2UploadPartResponse> submit(final Path file, final Local local,
+    private Future<B2UploadPartResponse> submit(final ThreadPool<B2UploadPartResponse> pool, final Path file, final Local local,
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus overall,
                                                 final int partNumber,
@@ -248,5 +260,51 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                 }
             }
         });
+    }
+
+    @Override
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+        if(null == digest) {
+            return super.decorate(in, null);
+        }
+        else {
+            return new DigestInputStream(super.decorate(in, digest), digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() throws IOException {
+        MessageDigest digest = null;
+        if(PreferencesFactory.get().getBoolean("b2.upload.checksum.verify")) {
+            try {
+                digest = MessageDigest.getInstance("SHA1");
+            }
+            catch(NoSuchAlgorithmException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        }
+        return digest;
+    }
+
+    @Override
+    protected void post(final Path file, final MessageDigest digest, final B2UploadPartResponse response) throws BackgroundException {
+        if(null == digest) {
+            log.debug(String.format("Digest disabled for file %s", file));
+            return;
+        }
+        this.verify(file, digest, Checksum.parse(response.getContentSha1()));
+    }
+
+    protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
+        if(null == digest) {
+            log.debug(String.format("Digest verification disabled for file %s", file));
+            return;
+        }
+        final String expected = Hex.encodeHexString(digest.digest());
+        if(!checksum.equals(Checksum.parse(expected))) {
+            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                            checksum.algorithm.toString(), expected, checksum.hash));
+        }
     }
 }

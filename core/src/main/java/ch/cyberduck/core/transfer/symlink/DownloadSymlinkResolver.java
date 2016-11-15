@@ -30,9 +30,9 @@ import java.util.List;
 public class DownloadSymlinkResolver extends AbstractSymlinkResolver<Path> {
     private static final Logger log = Logger.getLogger(DownloadSymlinkResolver.class);
 
-    private List<TransferItem> files;
+    private final List<TransferItem> files;
 
-    private Symlink feature;
+    private final Symlink feature;
 
     public DownloadSymlinkResolver(final List<TransferItem> files) {
         this.files = files;

@@ -19,8 +19,10 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
@@ -99,12 +101,10 @@ public final class TransferController extends WindowController implements NSTool
 
     private NSToolbar toolbar;
 
-    private RevealService reveal = RevealServiceFactory.get();
-
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private TransferCollection collection = TransferCollection.defaultCollection();
+    private final TransferCollection collection = TransferCollection.defaultCollection();
 
     public TransferController() {
         this.loadBundle();
@@ -179,6 +179,9 @@ public final class TransferController extends WindowController implements NSTool
         window.setContentMinSize(new NSSize(400d, 150d));
         window.setMovableByWindowBackground(true);
         window.setTitle(LocaleFactory.localizedString("Transfers"));
+        if(window.respondsToSelector(Foundation.selector("setTabbingIdentifier:"))) {
+            window.setTabbingIdentifier(preferences.getProperty("queue.window.tabbing.identifier"));
+        }
         super.setWindow(window);
     }
 
@@ -649,7 +652,7 @@ public final class TransferController extends WindowController implements NSTool
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-            this.alert(alert, new SheetCallback() {
+            this.alert(alert, new DisabledSheetCallback() {
                 @Override
                 public void callback(int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -770,7 +773,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         transcript.log(request, message);
     }
 
@@ -882,6 +885,7 @@ public final class TransferController extends WindowController implements NSTool
     public void revealButtonClicked(final ID sender) {
         final NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
+        final RevealService reveal = RevealServiceFactory.get();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             for(TransferItem l : transfer.getRoots()) {

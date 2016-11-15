@@ -25,6 +25,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ftp.parser.FTPExtendedFile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
@@ -37,9 +38,9 @@ import java.util.List;
 public class FTPListResponseReader implements FTPDataResponseReader {
     private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
 
-    private FTPFileEntryParser parser;
+    private final FTPFileEntryParser parser;
 
-    private boolean lenient;
+    private final boolean lenient;
 
     public FTPListResponseReader(final FTPFileEntryParser parser) {
         this(parser, false);
@@ -98,9 +99,14 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                     if(target.startsWith(String.valueOf(Path.DELIMITER))) {
                         parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
                     }
+                    else if(StringUtils.equals("..", target)) {
+                        parsed.setSymlinkTarget(directory);
+                    }
+                    else if(StringUtils.equals(".", target)) {
+                        parsed.setSymlinkTarget(parsed);
+                    }
                     else {
-                        parsed.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target),
-                                EnumSet.of(Path.Type.file)));
+                        parsed.setSymlinkTarget(new Path(directory, target, EnumSet.of(Path.Type.file)));
                     }
                     break;
             }

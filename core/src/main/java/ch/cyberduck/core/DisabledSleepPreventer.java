@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-/**
-* @version $Id$
-*/
 public final class DisabledSleepPreventer implements SleepPreventer {
     @Override
     public String lock() {

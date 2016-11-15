@@ -23,12 +23,12 @@ public class VersioningConfiguration {
         return new VersioningConfiguration();
     }
 
-    private boolean enabled;
+    private final boolean enabled;
 
     /**
      * Authentication
      */
-    private boolean multifactor;
+    private final boolean multifactor;
 
     public VersioningConfiguration() {
         this(false);

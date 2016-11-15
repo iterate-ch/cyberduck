@@ -32,18 +32,18 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TerminalStreamListener implements StreamListener {
 
-    private TransferSpeedometer meter;
+    private final TransferSpeedometer meter;
 
-    private Console console = new Console();
+    private final Console console = new Console();
 
-    private AtomicLong timestamp = new AtomicLong();
+    private final AtomicLong timestamp = new AtomicLong();
 
     private static final int DEFAULT_WIDTH = 30;
 
     /**
      * Progress bar fixed width in characters
      */
-    private int width;
+    private final int width;
 
     private final Semaphore lock
             = new Semaphore(1);

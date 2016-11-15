@@ -30,9 +30,6 @@ import org.apache.log4j.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-/**
- * @version $Id$
- */
 public final class SystemConfigurationProxy extends AbstractProxyFinder implements ProxyFinder {
     private static final Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
@@ -40,10 +37,10 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         Native.load("core");
     }
 
-    private HostUrlProvider provider
+    private final HostUrlProvider provider
             = new ProxyHostUrlProvider();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

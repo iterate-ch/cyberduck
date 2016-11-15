@@ -20,5 +20,5 @@ package ch.cyberduck.core.aquaticprime;
 
 public interface LicenseVerifier {
 
-    public boolean verify();
+    boolean verify();
 }

@@ -29,38 +29,30 @@ import ch.cyberduck.core.features.Redundancy;
 import java.text.MessageFormat;
 import java.util.List;
 
-/**
- * @version $Id:$
- */
 public class WriteRedundancyWorker extends Worker<Boolean> {
 
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Redundancy class
      */
-    private String level;
+    private final String level;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<String> callback;
+    private final RecursiveCallback<String> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WriteRedundancyWorker(final List<Path> files,
                                  final String level,
                                  final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, level, new RecursiveCallback<String>() {
-            @Override
-            public boolean recurse(final Path directory, final String value) {
-                return recursive;
-            }
-        }, listener);
+        this(files, level, new BooleanRecursiveCallback<String>(recursive), listener);
     }
 
     public WriteRedundancyWorker(final List<Path> files,
@@ -77,6 +69,9 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Redundancy feature = session.getFeature(Redundancy.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;
@@ -90,7 +85,6 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
             feature.setClass(file, level);
-            file.attributes().setStorageClass(level);
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, level)) {

@@ -33,7 +33,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
@@ -54,7 +54,7 @@ public class S3VersioningFeature implements Versioning {
 
     @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
-            = Collections.synchronizedMap(new LRUMap(10));
+            = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
 
     public S3VersioningFeature(final S3Session session) {
         this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
@@ -72,7 +72,8 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(current.isMultifactor()) {
@@ -80,17 +81,17 @@ public class S3VersioningFeature implements Versioning {
                 final Credentials factor = this.getToken(prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
-                        log.debug("Versioning already enabled for bucket " + container);
+                        log.debug(String.format("Versioning already enabled for bucket %s", container));
                     }
                     else {
                         // Enable versioning if not already active.
-                        log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                        log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
                                 factor.getUsername(), factor.getPassword());
                     }
                 }
                 else {
-                    log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                    log.debug(String.format("Suspend bucket versioning with MFA %s for %s", factor.getUsername(), container));
                     session.getClient().suspendBucketVersioningWithMFA(container.getName(),
                             factor.getUsername(), factor.getPassword());
                 }
@@ -133,7 +134,11 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public VersioningConfiguration getConfiguration(final Path container) throws BackgroundException {
+    public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return VersioningConfiguration.empty();
+        }
         if(cache.containsKey(container)) {
             return cache.get(container);
         }

@@ -37,12 +37,12 @@ import ch.iterate.openstack.swift.io.ContentLengthInputStream;
 public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftReadFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
@@ -52,6 +52,9 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
+            status.setChecksum(null);
+
             final ContentLengthInputStream stream;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);

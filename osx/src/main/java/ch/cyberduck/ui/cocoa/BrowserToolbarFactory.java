@@ -388,19 +388,19 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         }
     }
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     private final QuickLook quicklook = QuickLookFactory.get();
 
-    private BrowserController controller;
+    private final BrowserController controller;
 
     /**
      * Keep reference to weak toolbar items. A toolbar may ask again for a kind of toolbar
      * item already supplied to it, in which case this method may return the same toolbar
      * item it returned before
      */
-    private Map<String, NSToolbarItem> toolbarItems
+    private final Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
 
 

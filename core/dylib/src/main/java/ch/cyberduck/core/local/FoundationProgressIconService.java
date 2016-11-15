@@ -22,9 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-/**
- * @version $Id$
- */
 public final class FoundationProgressIconService implements IconService {
 
     static {

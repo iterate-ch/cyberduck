@@ -26,9 +26,9 @@ import ch.cyberduck.core.exception.ListCanceledException;
 
 public class ActionListProgressListener implements ListProgressListener {
 
-    private Worker worker;
+    private final Worker worker;
 
-    private ProgressListener delegate;
+    private final ProgressListener delegate;
 
     public ActionListProgressListener(final Worker worker, final ProgressListener delegate) {
         this.worker = worker;

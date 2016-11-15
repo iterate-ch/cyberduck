@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PromptLimitedListProgressListener extends LimitedListProgressListener {
 
-    private WindowController controller;
+    private final WindowController controller;
 
     private boolean suppressed;
 

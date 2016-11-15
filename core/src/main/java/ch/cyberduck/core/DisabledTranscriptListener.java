@@ -19,14 +19,11 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-/**
- * @version $Id:$
- */
 public class DisabledTranscriptListener implements TranscriptListener {
     private static final Logger log = Logger.getLogger(DisabledTranscriptListener.class);
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         if(log.isTraceEnabled()) {
             log.trace(message);
         }

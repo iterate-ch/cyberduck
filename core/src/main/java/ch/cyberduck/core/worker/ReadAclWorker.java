@@ -34,7 +34,7 @@ import java.util.List;
 
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
-    private List<Path> files;
+    private final List<Path> files;
 
     public ReadAclWorker(final List<Path> files) {
         this.files = files;
@@ -48,9 +48,7 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(Acl.EMPTY.equals(next.attributes().getAcl())) {
-                next.attributes().setAcl(feature.getPermission(next));
-            }
+            next.attributes().setAcl(feature.getPermission(next));
             for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
                 if(updated.contains(acl)) {
                     continue;

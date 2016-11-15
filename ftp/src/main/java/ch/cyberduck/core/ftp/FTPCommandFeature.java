@@ -30,7 +30,7 @@ import java.io.IOException;
 public class FTPCommandFeature implements Command {
     private static final Logger log = Logger.getLogger(FTPCommandFeature.class);
 
-    private FTPSession session;
+    private final FTPSession session;
 
     public FTPCommandFeature(final FTPSession session) {
         this.session = session;

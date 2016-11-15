@@ -39,14 +39,14 @@ import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftMultipleDeleteFeature implements Delete {
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private SwiftSegmentService segmentService;
+    private final SwiftSegmentService segmentService;
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftMultipleDeleteFeature(final SwiftSession session) {
         this(session, new SwiftSegmentService(session), new SwiftRegionService(session));

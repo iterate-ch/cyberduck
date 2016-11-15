@@ -36,7 +36,7 @@ import java.util.Set;
 
 public class TerminalOptionsInputValidator {
 
-    private Console console = new Console();
+    private final Console console = new Console();
 
     private final ProtocolFactory factory;
 

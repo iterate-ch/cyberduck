@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -178,7 +178,7 @@ public class SpectraBulkServiceTest {
             service.pre(Transfer.Type.download, files);
             fail();
         }
-        catch(ConflictException e) {
+        catch(BackgroundException e) {
             //
         }
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());

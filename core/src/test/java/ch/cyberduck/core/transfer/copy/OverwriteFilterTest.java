@@ -129,6 +129,11 @@ public class OverwriteFilterTest {
                         }
 
                         @Override
+                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        @Override
                         public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
                             assertEquals(new Permission(777), permission);
                             permissionWrite[0] = true;

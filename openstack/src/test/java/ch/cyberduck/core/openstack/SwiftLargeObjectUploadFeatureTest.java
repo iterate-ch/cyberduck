@@ -111,7 +111,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final String name = UUID.randomUUID().toString();
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final int length = 2 * 1024 * 1024;
         final byte[] random = new byte[length];
         new Random().nextBytes(random);
@@ -120,7 +121,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -137,14 +138,14 @@ public class SwiftLargeObjectUploadFeatureTest {
             interrupt.set(true);
         }
         assertTrue(interrupt.get());
-        assertEquals(1 * 1024L * 1024L, status.getOffset(), 0L);
+        assertEquals(1024L * 1024L, status.getOffset(), 0L);
         assertFalse(status.isComplete());
 
-        final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local,
+        final TransferStatus append = new TransferStatus().append(true).length(1024L * 1024L).skip(1024L * 1024L);
+        new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertEquals(1 * 1024L * 1024L, append.getOffset(), 0L);
+        assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize(), 0L);
@@ -165,7 +166,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                         System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final SwiftSession session = new SwiftSession(host);
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
@@ -210,75 +211,6 @@ public class SwiftLargeObjectUploadFeatureTest {
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        final List<Path> segments = new SwiftSegmentService(session).list(test);
-        assertFalse(segments.isEmpty());
-        assertEquals(3, segments.size());
-        assertEquals(1048576L, segments.get(0).attributes().getSize());
-        assertEquals(1048576L, segments.get(1).attributes().getSize());
-        assertEquals(1L, segments.get(2).attributes().getSize());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        local.delete();
-        session.close();
-    }
-
-    @Test
-    public void testUploadOracle() throws Exception {
-        final SwiftProtocol protocol = new SwiftProtocol() {
-            @Override
-            public String getContext() {
-                return "/auth/v1.0";
-            }
-        };
-        final Host host = new Host(protocol, "cyduck.storage.oraclecloud.com",
-                new Credentials(
-                        "Storage-cyduck:dkocher@cyberduck.io",
-                        "hooWoy3C"
-                )
-        );
-        final Path container = new Path("TRAC-9223", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-
-        final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-
-        // Each segment, except the last, must be larger than 1048576 bytes.
-        //2MB + 1
-        final byte[] content = new byte[1048576 + 1048576 + 1];
-        new Random().nextBytes(content);
-
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        out.close();
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-                regionService,
-                new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, "segments/"),
-                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 1);
-        final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
-        assertNull(Checksum.parse(object.getMd5sum()));
-        assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
-        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
-
-        assertTrue(status.isComplete());
-        assertFalse(status.isCanceled());
-        assertEquals(content.length, status.getOffset());
-
-        assertTrue(new SwiftFindFeature(session).find(test));
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        new StreamCopier(status, status).transfer(in, buffer);
-        in.close();
-        buffer.close();
-        assertArrayEquals(content, buffer.toByteArray());
-        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
-        assertFalse(metadata.isEmpty());
         final List<Path> segments = new SwiftSegmentService(session).list(test);
         assertFalse(segments.isEmpty());
         assertEquals(3, segments.size());

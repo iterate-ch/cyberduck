@@ -213,7 +213,7 @@ final class GroupHead extends AbstractHead {
     }
 
     private static final class OneCharacterPattern implements CharacterPattern {
-        private char expectedCharacter;
+        private final char expectedCharacter;
 
         OneCharacterPattern(final char c) {
             this.expectedCharacter = c;
@@ -228,7 +228,7 @@ final class GroupHead extends AbstractHead {
     private static final class PunctPattern implements CharacterPattern {
         static final GroupHead.PunctPattern INSTANCE = new PunctPattern();
 
-        private static String punctCharacters = "-!\"#$%&'()*+,./:;<=>?@[\\]_`{|}~";
+        private static final String punctCharacters = "-!\"#$%&'()*+,./:;<=>?@[\\]_`{|}~";
 
         @Override
         public boolean matches(char c) {

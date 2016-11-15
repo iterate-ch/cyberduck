@@ -19,11 +19,11 @@ package ch.cyberduck.core.transfer;
 
 public final class TransferProgress {
 
-    private Long size;
-    private Long transferred;
+    private final Long size;
+    private final Long transferred;
 
-    private String progress;
-    private Double speed;
+    private final String progress;
+    private final Double speed;
 
     public TransferProgress(final Long size, final Long transferred, final String progress, final Double speed) {
         this.size = size;

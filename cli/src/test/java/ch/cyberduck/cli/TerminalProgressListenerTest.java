@@ -19,9 +19,6 @@ package ch.cyberduck.cli;
 
 import org.junit.Test;
 
-/**
- * @version $Id$
- */
 public class TerminalProgressListenerTest  {
 
     @Test

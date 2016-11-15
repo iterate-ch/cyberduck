@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TerminalLoginService extends KeychainLoginService {
 
-    private CommandLine input;
+    private final CommandLine input;
 
     public TerminalLoginService(final CommandLine input, final LoginCallback prompt) {
         super(prompt, input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())

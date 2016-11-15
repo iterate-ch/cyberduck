@@ -48,21 +48,21 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private AbstractHostCollection collection;
+    private final AbstractHostCollection collection;
 
-    private int index;
+    private final int index;
 
-    private MenuCallback callback;
+    private final MenuCallback callback;
 
-    private NSMenu historyMenu = NSMenu.menu();
-
-    @Delegate
-    private HistoryMenuDelegate historyMenuDelegate;
-
-    private NSMenu rendezvousMenu = NSMenu.menu();
+    private final NSMenu historyMenu = NSMenu.menu();
 
     @Delegate
-    private RendezvousMenuDelegate rendezvousMenuDelegate;
+    private final HistoryMenuDelegate historyMenuDelegate;
+
+    private final NSMenu rendezvousMenu = NSMenu.menu();
+
+    @Delegate
+    private final RendezvousMenuDelegate rendezvousMenuDelegate;
 
     public BookmarkMenuDelegate() {
         this(new HistoryMenuDelegate(), new RendezvousMenuDelegate());

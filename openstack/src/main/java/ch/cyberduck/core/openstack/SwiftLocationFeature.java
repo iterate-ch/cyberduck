@@ -47,12 +47,12 @@ import ch.iterate.openstack.swift.model.Region;
 public class SwiftLocationFeature implements Location {
     private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Map<Path, Name> cache = new HashMap<Path, Name>();
+    private final Map<Path, Name> cache = new HashMap<Path, Name>();
 
     public SwiftLocationFeature(final SwiftSession session) {
         this.session = session;
@@ -87,6 +87,9 @@ public class SwiftLocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return unknown;
+        }
         if(cache.containsKey(container)) {
             return cache.get(container);
         }
@@ -101,7 +104,7 @@ public class SwiftLocationFeature implements Location {
                         );
                     }
                     catch(ContainerNotFoundException | AuthorizationException e) {
-                        log.warn(String.format("Failure finding container %s in region %s", container, r));
+                        log.warn(String.format("Failure finding container %s in region %s", container, r.getRegionId()));
                     }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);

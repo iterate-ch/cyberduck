@@ -19,9 +19,6 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface NSGraphics {
     /// <i>native declaration : :17</i>
     public static final int NSCompositeClear = 0;

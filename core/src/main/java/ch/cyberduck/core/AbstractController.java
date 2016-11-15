@@ -38,9 +38,9 @@ import java.util.concurrent.RejectedExecutionException;
 public abstract class AbstractController implements Controller {
     private static final Logger log = Logger.getLogger(AbstractController.class);
 
-    private ThreadPool singleExecutor;
+    private final ThreadPool singleExecutor;
 
-    private ThreadPool concurrentExecutor;
+    private final ThreadPool concurrentExecutor;
 
     protected AbstractController() {
         this(new LoggingUncaughtExceptionHandler());
@@ -64,7 +64,7 @@ public abstract class AbstractController implements Controller {
     /**
      * List of pending background tasks or this browser
      */
-    private BackgroundActionRegistry registry
+    private final BackgroundActionRegistry registry
             = new BackgroundActionRegistry();
 
     /**
@@ -142,7 +142,12 @@ public abstract class AbstractController implements Controller {
 
     @Override
     public void failure(final Exception trace, final Exception failure) {
-        trace.initCause(failure);
+        try {
+            trace.initCause(failure);
+        }
+        catch(IllegalStateException e) {
+            log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
+        }
         log.warn(String.format("Failure running background task %s", failure.getMessage()), trace);
     }
 
@@ -173,7 +178,7 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public void log(final boolean request, final String message) {
+    public void log(final Type request, final String message) {
         log.trace(message);
     }
 

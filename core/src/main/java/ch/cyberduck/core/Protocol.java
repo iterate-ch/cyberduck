@@ -67,6 +67,7 @@ public interface Protocol extends Comparable<Protocol> {
                 return true;
             }
         },
+        dropbox,
         googledrive {
             @Override
             public boolean validate(final Credentials credentials, final LoginOptions options) {
@@ -215,6 +216,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Authentication context path
      */
     String getContext();
+
+    /**
+     * @return Authentication header version
+     */
+    String getAuthorization();
 
     /**
      * @return Available regions

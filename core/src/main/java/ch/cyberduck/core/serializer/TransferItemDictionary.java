@@ -24,7 +24,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemDictionary {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public TransferItemDictionary() {
         this.deserializer = new DeserializerFactory();

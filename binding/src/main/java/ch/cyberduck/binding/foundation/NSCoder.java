@@ -23,9 +23,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import com.sun.jna.Pointer;
 
-/**
- * @version $Id:$
- */
 public abstract class NSCoder extends NSObject {
     /**
      * Original signature : <code>-(void)encodeValueOfObjCType:(const char*) at:(const void*)</code><br>

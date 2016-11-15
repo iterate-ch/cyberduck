@@ -66,19 +66,19 @@ import java.nio.charset.Charset;
 public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
-    private ConnectionSocketFactory socketFactory;
+    private final ConnectionSocketFactory socketFactory;
 
-    private ConnectionSocketFactory sslSocketFactory;
+    private final ConnectionSocketFactory sslSocketFactory;
 
-    private HttpClientBuilder builder
+    private final HttpClientBuilder builder
             = HttpClients.custom();
 
-    private ProxyFinder proxyFinder;
+    private final ProxyFinder proxyFinder;
 
-    private Host host;
+    private final Host host;
 
     public HttpConnectionPoolBuilder(final Host host,
                                      final ThreadLocalHostnameDelegatingTrustManager trust,

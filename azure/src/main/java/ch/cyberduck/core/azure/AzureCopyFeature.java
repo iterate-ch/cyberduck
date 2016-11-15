@@ -31,7 +31,6 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
@@ -39,11 +38,11 @@ import com.microsoft.azure.storage.blob.CloudBlockBlob;
 public class AzureCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureCopyFeature(final AzureSession session, final OperationContext context) {
@@ -59,7 +58,6 @@ public class AzureCopyFeature implements Copy {
             final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
                     .getBlockBlobReference(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
             options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
             final String id = target.startCopy(blob,
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);

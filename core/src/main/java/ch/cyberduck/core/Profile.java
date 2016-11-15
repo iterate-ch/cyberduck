@@ -21,7 +21,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
@@ -36,19 +37,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public class Profile implements Protocol, Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
-    private Deserializer<String> dict;
+    private final Deserializer<String> dict;
 
     /**
      * The actual protocol implementation registered
      */
-    private Protocol parent;
+    private final Protocol parent;
 
-    private Local image;
+    private final Local image;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
         this.parent = parent;
@@ -206,10 +206,9 @@ public class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"),
-                String.format("%s.ico", UUID.randomUUID().toString()));
+        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", new AlphanumericRandomStringService().random()));
         try {
-            file.delete(true);
+            new DefaultLocalTouchFeature().touch(file);
             final OutputStream out = file.getOutputStream(false);
             try {
                 IOUtils.write(favicon, out);
@@ -249,6 +248,15 @@ public class Profile implements Protocol, Serializable {
         final String v = this.value("Context");
         if(StringUtils.isBlank(v)) {
             return parent.getContext();
+        }
+        return v;
+    }
+
+    @Override
+    public String getAuthorization() {
+        final String v = this.value("Authorization");
+        if(StringUtils.isBlank(v)) {
+            return parent.getAuthorization();
         }
         return v;
     }
@@ -314,11 +322,7 @@ public class Profile implements Protocol, Serializable {
     }
 
     private String value(final String key) {
-        final String value = dict.stringForKey(key);
-        if(StringUtils.isBlank(value)) {
-            log.debug("No value for key:" + key);
-        }
-        return value;
+        return dict.stringForKey(key);
     }
 
     private List<String> list(final String key) {
@@ -351,6 +355,9 @@ public class Profile implements Protocol, Serializable {
         if(this.getContext() != null ? !this.getContext().equals(protocol.getContext()) : protocol.getContext() != null) {
             return false;
         }
+        if(this.getAuthorization() != null ? !this.getAuthorization().equals(protocol.getAuthorization()) : protocol.getAuthorization() != null) {
+            return false;
+        }
         if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
             return false;
         }
@@ -365,6 +372,7 @@ public class Profile implements Protocol, Serializable {
         int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getContext() != null ? this.getContext().hashCode() : 0);
+        result = 31 * result + (this.getAuthorization() != null ? this.getAuthorization().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
         result = 31 * result + (this.getDefaultHostname() != null ? this.getDefaultHostname().hashCode() : 0);
         return result;

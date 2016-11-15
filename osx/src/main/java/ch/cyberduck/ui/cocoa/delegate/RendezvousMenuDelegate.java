@@ -40,9 +40,9 @@ import org.rococoa.cocoa.foundation.NSInteger;
 public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
-    private AbstractHostCollection collection;
+    private final AbstractHostCollection collection;
 
-    private MenuCallback callback;
+    private final MenuCallback callback;
 
     private final Preferences preferences
             = PreferencesFactory.get();

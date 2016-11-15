@@ -9,9 +9,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-/**
- * @version $Id$
- */
 public class FireFtpBookmarkCollectionTest {
 
     @Test(expected = AccessDeniedException.class)

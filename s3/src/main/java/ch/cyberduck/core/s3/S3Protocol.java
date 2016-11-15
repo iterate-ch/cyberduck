@@ -19,15 +19,21 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public final class S3Protocol extends AbstractProtocol {
+    private static final Logger log = Logger.getLogger(S3Protocol.class);
+
     @Override
     public String getName() {
         return "S3";
@@ -41,11 +47,6 @@ public final class S3Protocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {
         return "s3";
-    }
-
-    @Override
-    public boolean isPortConfigurable() {
-        return false;
     }
 
     @Override
@@ -64,6 +65,11 @@ public final class S3Protocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPortConfigurable() {
+        return true;
+    }
+
+    @Override
     public String getDefaultHostname() {
         return "s3.amazonaws.com";
     }
@@ -72,13 +78,16 @@ public final class S3Protocol extends AbstractProtocol {
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
                 new S3LocationFeature.S3Region("us-east-1"),
-                new S3LocationFeature.S3Region("eu-west-1"),
-                new S3LocationFeature.S3Region("eu-central-1"),
+                new S3LocationFeature.S3Region("us-east-2"),
                 new S3LocationFeature.S3Region("us-west-1"),
                 new S3LocationFeature.S3Region("us-west-2"),
+                new S3LocationFeature.S3Region("eu-west-1"),
+                new S3LocationFeature.S3Region("eu-central-1"),
                 new S3LocationFeature.S3Region("ap-southeast-1"),
                 new S3LocationFeature.S3Region("ap-southeast-2"),
                 new S3LocationFeature.S3Region("ap-northeast-1"),
+                new S3LocationFeature.S3Region("ap-northeast-2"),
+                new S3LocationFeature.S3Region("ap-south-1"),
                 new S3LocationFeature.S3Region("sa-east-1")
         ));
     }
@@ -118,6 +127,22 @@ public final class S3Protocol extends AbstractProtocol {
             }
         };
 
+        public static AuthenticationHeaderSignatureVersion getDefault(final Protocol protocol) {
+            try {
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(protocol.getAuthorization());
+            }
+            catch(IllegalArgumentException e) {
+                log.warn(String.format("Unsupported authentication context %s", protocol.getAuthorization()));
+                return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
+                        PreferencesFactory.get().getProperty("s3.signature.version"));
+            }
+        }
+
         public abstract HashAlgorithm getHashAlgorithm();
+    }
+
+    @Override
+    public String getAuthorization() {
+        return PreferencesFactory.get().getProperty("s3.signature.version");
     }
 }

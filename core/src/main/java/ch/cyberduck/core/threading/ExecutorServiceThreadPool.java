@@ -79,7 +79,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
                 throw new ConnectionCanceledException(e);
             }
             catch(ExecutionException e) {
-                log.warn(String.format("Delete failed with execution failure %s", e.getMessage()));
+                log.warn(String.format("Task failed with execution failure %s", e.getMessage()));
                 if(e.getCause() instanceof BackgroundException) {
                     throw (BackgroundException) e.getCause();
                 }

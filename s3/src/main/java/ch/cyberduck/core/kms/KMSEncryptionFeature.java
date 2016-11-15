@@ -28,6 +28,7 @@ import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -48,6 +49,8 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMSClient;
 import com.amazonaws.services.kms.model.AliasListEntry;
 import com.amazonaws.services.kms.model.KeyListEntry;
@@ -55,7 +58,7 @@ import com.amazonaws.services.kms.model.KeyListEntry;
 public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
 
-    private final Host host;
+    private final S3Session session;
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -70,16 +73,16 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
-        host = session.getHost();
+        this.session = session;
         configuration = new ClientConfiguration();
         configuration.setConnectionTimeout(timeout);
         configuration.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgent(ua.get());
+        configuration.setUserAgentPrefix(ua.get());
         configuration.setMaxErrorRetry(0);
         configuration.setMaxConnections(1);
         configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(host);
+        final Proxy proxy = ProxyFactory.get().find(session.getHost());
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
@@ -96,11 +99,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         final LoginOptions options = new LoginOptions();
         try {
             final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(host, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            login.validate(session.getHost(), LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
             return run.call();
         }
         catch(LoginFailureException failure) {
-            prompt.prompt(host, host.getCredentials(),
+            prompt.prompt(session.getHost(), session.getHost().getCredentials(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options);
             return this.authenticated(run, prompt);
         }
@@ -143,8 +146,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
      * @return List of IDs of KMS managed keys
      */
     @Override
-    public Set<Algorithm> getKeys(final LoginCallback prompt) throws BackgroundException {
-        final Set<Algorithm> keys = super.getKeys(prompt);
+    public Set<Algorithm> getKeys(final Path file, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
+        final Set<Algorithm> keys = super.getKeys(container, prompt);
+        if(container.isRoot()) {
+            return keys;
+        }
         try {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
@@ -154,15 +161,18 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                             new com.amazonaws.auth.AWSCredentials() {
                                 @Override
                                 public String getAWSAccessKeyId() {
-                                    return host.getCredentials().getUsername();
+                                    return session.getHost().getCredentials().getUsername();
                                 }
 
                                 @Override
                                 public String getAWSSecretKey() {
-                                    return host.getCredentials().getPassword();
+                                    return session.getHost().getCredentials().getPassword();
                                 }
                             }, configuration
                     );
+                    final Location feature = session.getFeature(Location.class);
+                    final Location.Name region = feature.getLocation(container);
+                    client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {
@@ -170,7 +180,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                         }
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
-                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId())));
+                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId()), region));
                         }
                         return keys;
                     }
@@ -203,11 +213,13 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static class AliasedAlgorithm extends Algorithm {
         private final KeyListEntry entry;
         private final String alias;
+        private final Location.Name region;
 
-        public AliasedAlgorithm(final KeyListEntry entry, final String alias) {
+        public AliasedAlgorithm(final KeyListEntry entry, final String alias, final Location.Name region) {
             super(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, entry.getKeyArn());
             this.entry = entry;
             this.alias = alias;
+            this.region = region;
         }
 
         @Override
@@ -216,6 +228,10 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 return String.format("SSE-KMS (%s)", entry.getKeyArn());
             }
             return String.format("SSE-KMS (%s - %s)", alias, entry.getKeyArn());
+        }
+
+        public Location.Name getRegion() {
+            return region;
         }
     }
 }

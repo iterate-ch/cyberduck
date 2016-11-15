@@ -20,9 +20,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
 
-/**
-* @version $Id$
-*/
 public final class DisabledQuarantineService implements QuarantineService {
     @Override
     public void setQuarantine(final Local file, final String originUrl, final String dataUrl) {

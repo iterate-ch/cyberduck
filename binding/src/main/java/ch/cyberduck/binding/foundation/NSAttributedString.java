@@ -26,7 +26,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSAttributedString.h:9</i>
 public abstract class NSAttributedString extends NSObject {
-    private static _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAttributedString", _Class.class);
 
     public static NSAttributedString attributedString(String str) {
         if(null == str) {

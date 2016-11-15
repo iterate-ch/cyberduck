@@ -30,9 +30,9 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketCreateService {
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     public S3BucketCreateService(final S3Session session) {
@@ -40,9 +40,10 @@ public class S3BucketCreateService {
     }
 
     public void create(final Path bucket, final String location) throws BackgroundException {
-        // Create bucket
-        if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-            throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
+        if(!session.configure().getBoolProperty("s3service.disable-dns-buckets", false)) {
+            if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
+                throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
+            }
         }
         AccessControlList acl;
         if(PreferencesFactory.get().getProperty("s3.bucket.acl.default").equals("public-read")) {
@@ -59,6 +60,7 @@ public class S3BucketCreateService {
             else {
                 region = location;
             }
+            // Create bucket
             session.getClient().createBucket(containerService.getContainer(bucket).getName(), region, acl);
         }
         catch(ServiceException e) {

@@ -24,8 +24,8 @@ import org.apache.log4j.Logger;
 public final class Checksum {
     private static final Logger log = Logger.getLogger(Checksum.class);
 
-    public HashAlgorithm algorithm;
-    public String hash;
+    public final HashAlgorithm algorithm;
+    public final String hash;
 
     public Checksum(final HashAlgorithm algorithm, final String hash) {
         this.algorithm = algorithm;

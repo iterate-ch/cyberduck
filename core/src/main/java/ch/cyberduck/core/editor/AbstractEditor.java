@@ -58,14 +58,14 @@ public abstract class AbstractEditor implements Editor {
     /**
      * The edited path
      */
-    private Path remote;
+    private final Path remote;
 
-    private Local local;
+    private final Local local;
 
     /**
      * The editor application
      */
-    private Application application;
+    private final Application application;
 
     /**
      * Store checksum of downloaded file to detect modifications
@@ -75,13 +75,13 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Session for transfers
      */
-    private Session<?> session;
+    private final Session<?> session;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    private ApplicationLauncher applicationLauncher;
+    private final ApplicationLauncher applicationLauncher;
 
-    private ApplicationFinder applicationFinder;
+    private final ApplicationFinder applicationFinder;
 
     public AbstractEditor(final Application application,
                           final Session session,

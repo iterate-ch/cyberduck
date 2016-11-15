@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class DownloadGlobFilter extends DownloadDuplicateFilter {
     private static final Logger log = Logger.getLogger(DownloadGlobFilter.class);
 
-    private Pattern pattern;
+    private final Pattern pattern;
 
     public DownloadGlobFilter(final String glob) {
         this.pattern = this.compile(glob);

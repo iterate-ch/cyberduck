@@ -25,6 +25,7 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -44,7 +45,7 @@ import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import org.apache.log4j.Logger;
 
 public final class MainApplication {
-    private static Logger log = Logger.getLogger(MainApplication.class);
+    private static final Logger log = Logger.getLogger(MainApplication.class);
 
     static {
         Thread.setDefaultUncaughtExceptionHandler(new LoggingUncaughtExceptionHandler());
@@ -80,6 +81,8 @@ public final class MainApplication {
                     new IRODSProtocol(),
                     new SpectraProtocol(),
                     new B2Protocol(),
+                    new DriveProtocol(),
+                    new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol()
             );

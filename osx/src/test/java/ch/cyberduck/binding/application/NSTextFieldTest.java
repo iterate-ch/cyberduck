@@ -24,9 +24,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * @version $Id$
- */
 public class NSTextFieldTest {
 
     @Test

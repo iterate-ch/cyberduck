@@ -33,9 +33,9 @@ import com.microsoft.azure.storage.StorageException;
 
 public class AzureLoggingFeature implements Logging {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
     public AzureLoggingFeature(final AzureSession session, final OperationContext context) {
         this.session = session;

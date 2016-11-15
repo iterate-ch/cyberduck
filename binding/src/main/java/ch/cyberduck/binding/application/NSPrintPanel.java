@@ -12,7 +12,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>, <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
 public abstract class NSPrintPanel extends org.rococoa.cocoa.foundation.NSObject implements org.rococoa.ObjCObject {
-    private static _Class CLASS = org.rococoa.Rococoa.createClass("NSPrintPanel", _Class.class);
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPrintPanel", _Class.class);
 
 
     /// Whether the print panel has separate controls (not in any accessory view) that allow the user to change the number of copies to print, which pages to print, paper size, orientation, and scaling, respectively.

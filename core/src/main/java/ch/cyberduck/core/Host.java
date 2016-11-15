@@ -25,17 +25,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.UUID;
 
 public class Host implements Serializable, Comparable<Host> {
 
     /**
+     * The credentials to authenticate with for the CDN
+     */
+    private final Credentials cloudfront = new DistributionCredentials();
+    /**
      * The protocol identifier.
      */
     private Protocol protocol;
-
     private String region;
-
     /**
      * The port number to connect to
      *
@@ -46,17 +47,10 @@ public class Host implements Serializable, Comparable<Host> {
      * The fully qualified hostname
      */
     private String hostname;
-
     /**
      * The credentials to authenticate with
      */
     private Credentials credentials = new HostCredentials(this);
-
-    /**
-     * The credentials to authenticate with for the CDN
-     */
-    private Credentials cloudfront = new DistributionCredentials();
-
     /**
      * Unique identifier
      */
@@ -261,6 +255,9 @@ public class Host implements Serializable, Comparable<Host> {
         if(StringUtils.isNotBlank(encoding)) {
             dict.setStringForKey(encoding, "Encoding");
         }
+        if(StringUtils.isNotBlank(credentials.getCertificate())) {
+            dict.setStringForKey(credentials.getCertificate(), "Client Certificate");
+        }
         if(null != credentials.getIdentity()) {
             dict.setStringForKey(credentials.getIdentity().getAbbreviatedPath(), "Private Key File");
             dict.setObjectForKey(credentials.getIdentity(), "Private Key File Dictionary");
@@ -299,39 +296,6 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(String.valueOf(readonly), "Readonly");
         }
         return dict.getSerialized();
-    }
-
-    public enum TransferType {
-        unknown {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Default");
-            }
-        },
-        browser {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Use browser connection");
-            }
-        },
-        newconnection {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Open new connection");
-            }
-        },
-        concurrent {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Open multiple connections");
-            }
-        },
-        udt {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)");
-            }
-        }
     }
 
     /**
@@ -390,7 +354,7 @@ public class Host implements Serializable, Comparable<Host> {
 
     public String getUuid() {
         if(null == uuid) {
-            uuid = UUID.randomUUID().toString();
+            uuid = new UUIDRandomStringService().random();
         }
         return uuid;
     }
@@ -689,5 +653,38 @@ public class Host implements Serializable, Comparable<Host> {
         sb.append(", protocol=").append(protocol);
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum TransferType {
+        unknown {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Default");
+            }
+        },
+        browser {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Use browser connection", "Transfer");
+            }
+        },
+        newconnection {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open new connection", "Transfer");
+            }
+        },
+        concurrent {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open multiple connections", "Transfer");
+            }
+        },
+        udt {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)", "Transfer");
+            }
+        }
     }
 }

@@ -40,7 +40,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     public ReadMetadataWorker(final List<Path> files) {
         this.files = files;
@@ -69,9 +69,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
                 throw new ConnectionCanceledException();
             }
             // Reading HTTP headers custom metadata
-            if(next.attributes().getMetadata().isEmpty()) {
-                next.attributes().setMetadata(feature.getMetadata(next));
-            }
+            next.attributes().setMetadata(feature.getMetadata(next));
             final Map<String, String> metadata = next.attributes().getMetadata();
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file.

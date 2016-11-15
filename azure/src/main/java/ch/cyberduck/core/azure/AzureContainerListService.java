@@ -32,7 +32,6 @@ import java.util.EnumSet;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
@@ -40,11 +39,11 @@ import com.microsoft.azure.storage.blob.ContainerListingDetails;
 
 public class AzureContainerListService implements RootListService {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     public AzureContainerListService(final AzureSession session, final OperationContext context) {
@@ -60,7 +59,6 @@ public class AzureContainerListService implements RootListService {
             final AttributedList<Path> containers = new AttributedList<Path>();
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
-                options.setRetryPolicyFactory(new RetryNoRetry());
                 result = session.getClient().listContainersSegmented(null, ContainerListingDetails.NONE,
                         preferences.getInteger("azure.listing.chunksize"), token,
                         options, context);

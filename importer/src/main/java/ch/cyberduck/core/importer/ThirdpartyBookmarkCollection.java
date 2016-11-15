@@ -42,9 +42,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
-/**
- * @version $Id$
- */
 public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollection {
     private static final Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
@@ -52,7 +49,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private PasswordStore keychain;
+    private final PasswordStore keychain;
 
     public ThirdpartyBookmarkCollection() {
         this.keychain = PasswordStoreFactory.get();

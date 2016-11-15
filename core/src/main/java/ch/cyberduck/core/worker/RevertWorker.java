@@ -30,7 +30,7 @@ import java.util.List;
 
 public class RevertWorker extends Worker<List<Path>> {
 
-    private List<Path> files;
+    private final List<Path> files;
 
     public RevertWorker(final List<Path> files) {
         this.files = files;

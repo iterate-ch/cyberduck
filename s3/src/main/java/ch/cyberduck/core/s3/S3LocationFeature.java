@@ -37,9 +37,9 @@ import java.util.Set;
 public class S3LocationFeature implements Location {
     private static final Logger log = Logger.getLogger(S3LocationFeature.class);
 
-    private S3Session session;
+    private final S3Session session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new S3PathContainerService();
 
     private RegionEndpointCache cache
@@ -66,22 +66,34 @@ public class S3LocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return unknown;
+        }
         if(cache.containsRegionForBucketName(container.getName())) {
             return new S3Region(cache.getRegionForBucketName(container.getName()));
         }
         try {
             final String location = session.getClient().getBucketLocation(container.getName());
+            final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn(String.format("No region known for bucket %s", container.getName()));
-                return new S3Region("us-east-1");
+                region = new S3Region("us-east-1");
             }
-            if("US".equals(location)) {
-                return new S3Region("us-east-1");
+            else {
+                switch(location) {
+                    case "US":
+                        region = new S3Region("us-east-1");
+                        break;
+                    case "EU":
+                        region = new S3Region("eu-west-1");
+                        break;
+                    default:
+                        region = new S3Region(location);
+                        break;
+                }
             }
-            if("EU".equals(location)) {
-                return new S3Region("eu-west-1");
-            }
-            return new S3Region(location);
+            cache.putRegionForBucketName(container.getName(), region.getIdentifier());
+            return region;
         }
         catch(ServiceException e) {
             try {

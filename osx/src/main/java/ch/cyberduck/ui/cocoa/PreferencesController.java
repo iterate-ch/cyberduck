@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.ToolbarWindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -51,7 +52,6 @@ import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -81,17 +81,13 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class PreferencesController extends ToolbarWindowController {
-    private static Logger log = Logger.getLogger(PreferencesController.class);
+    private static final Logger log = Logger.getLogger(PreferencesController.class);
 
     private final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
-
-    public PreferencesController() {
-        this.loadBundle();
-    }
 
     @Override
     protected String getBundleName() {
@@ -112,8 +108,6 @@ public class PreferencesController extends ToolbarWindowController {
     private NSView panelSFTP;
     @Outlet
     private NSView panelS3;
-    @Outlet
-    private NSView panelGoogle;
     @Outlet
     private NSView panelBandwidth;
     @Outlet
@@ -145,10 +139,6 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setPanelS3(NSView v) {
         this.panelS3 = v;
-    }
-
-    public void setPanelGoogle(NSView v) {
-        this.panelGoogle = v;
     }
 
     public void setPanelTransfer(NSView v) {
@@ -376,20 +366,18 @@ public class PreferencesController extends ToolbarWindowController {
             }
         }
         editorCombobox.setTarget(this.id());
-        final Selector action = Foundation.selector("editorComboboxClicked:");
-        editorCombobox.setAction(action);
+        editorCombobox.setAction(Foundation.selector("editorComboboxClicked:"));
         editorCombobox.menu().addItem(NSMenuItem.separatorItem());
-        editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        editorCombobox.lastItem().setTarget(this.id());
+        editorCombobox.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
     @Outlet
     private NSOpenPanel editorPathPanel;
-    private ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
+    private final ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
 
     @Action
-    public void editorComboboxClicked(NSPopUpButton sender) {
-        if(sender.title().equals(CHOOSE)) {
+    public void editorComboboxClicked(NSMenuItem sender) {
+        if(null == sender.representedObject()) {
             editorPathPanel = NSOpenPanel.openPanel();
             editorPathPanel.setDelegate(editorPathPanelDelegate.id());
             editorPathPanel.setAllowsMultipleSelection(false);
@@ -398,7 +386,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            preferences.setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
+            preferences.setProperty("editor.bundleIdentifier", sender.representedObject());
             for(BrowserController controller : MainController.getBrowsers()) {
                 controller.validateToolbar();
             }
@@ -1149,35 +1137,30 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton downloadPathPopup;
 
-    private static final String CHOOSE = LocaleFactory.localizedString("Choose") + "…";
-
     // The currently set download folder
     private final Local DEFAULT_DOWNLOAD_FOLDER = LocalFactory.get(preferences.getProperty("queue.download.folder"));
 
     public void setDownloadPathPopup(NSPopUpButton b) {
         this.downloadPathPopup = b;
         this.downloadPathPopup.setTarget(this.id());
-        final Selector action = Foundation.selector("downloadPathPopupClicked:");
-        this.downloadPathPopup.setAction(action);
+        this.downloadPathPopup.setAction(Foundation.selector("downloadPathPopupClicked:"));
         this.downloadPathPopup.removeAllItems();
         // Default download folder
-        this.addDownloadPath(action, DEFAULT_DOWNLOAD_FOLDER);
+        this.addDownloadPath(DEFAULT_DOWNLOAD_FOLDER);
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
         // Shortcut to the Desktop
-        this.addDownloadPath(action, LocalFactory.get("~/Desktop"));
+        this.addDownloadPath(LocalFactory.get("~/Desktop"));
         // Shortcut to user home
-        this.addDownloadPath(action, LocalFactory.get("~"));
+        this.addDownloadPath(LocalFactory.get("~"));
         // Shortcut to user downloads for 10.5
-        this.addDownloadPath(action, LocalFactory.get("~/Downloads"));
+        this.addDownloadPath(LocalFactory.get("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-        this.downloadPathPopup.lastItem().setTarget(this.id());
+        this.downloadPathPopup.addItemWithTitle(String.format("%s…", LocaleFactory.localizedString("Choose")));
     }
 
-    private void addDownloadPath(Selector action, Local f) {
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
-        this.downloadPathPopup.lastItem().setTarget(this.id());
+    private void addDownloadPath(final Local f) {
+        this.downloadPathPopup.addItemWithTitle(f.getDisplayName());
         this.downloadPathPopup.lastItem().setImage(
                 IconCacheFactory.<NSImage>get().fileIcon(f, 16)
         );
@@ -1191,7 +1174,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void downloadPathPopupClicked(final NSMenuItem sender) {
-        if(sender.title().equals(CHOOSE)) {
+        if(sender.title().equals(String.format("%s…", LocaleFactory.localizedString("Choose")))) {
             downloadPathPanel = NSOpenPanel.openPanel();
             downloadPathPanel.setCanChooseFiles(false);
             downloadPathPanel.setCanChooseDirectories(true);
@@ -1963,122 +1946,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultEncryptionPopupClicked(NSPopUpButton sender) {
         preferences.setProperty("s3.encryption.algorithm", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton documentExportFormatPopup;
-
-    public void setDocumentExportFormatPopup(NSPopUpButton b) {
-        this.documentExportFormatPopup = b;
-        this.documentExportFormatPopup.setAutoenablesItems(false);
-        this.documentExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.document.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String description = FileDescriptorFactory.get().getKind(format);
-            final String suffix = String.format(" (.%s)", format);
-            final StringBuilder title = new StringBuilder(description);
-            if(!description.endsWith(suffix)) {
-                title.append(suffix);
-            }
-            this.documentExportFormatPopup.addItemWithTitle(title.toString());
-            this.documentExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.document"))) {
-                this.documentExportFormatPopup.selectItemWithTitle(title.toString());
-            }
-        }
-        this.documentExportFormatPopup.setTarget(this.id());
-        this.documentExportFormatPopup.setAction(Foundation.selector("documentExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void documentExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.document", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton spreadsheetExportFormatPopup;
-
-    public void setSpreadsheetExportFormatPopup(NSPopUpButton b) {
-        this.spreadsheetExportFormatPopup = b;
-        this.spreadsheetExportFormatPopup.setAutoenablesItems(false);
-        this.spreadsheetExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.spreadsheet.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
-            this.spreadsheetExportFormatPopup.addItemWithTitle(title);
-            this.spreadsheetExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.spreadsheet"))) {
-                this.spreadsheetExportFormatPopup.selectItemWithTitle(title);
-            }
-        }
-        this.spreadsheetExportFormatPopup.setTarget(this.id());
-        this.spreadsheetExportFormatPopup.setAction(Foundation.selector("spreadsheetExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void spreadsheetExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.spreadsheet", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSPopUpButton presentationExportFormatPopup;
-
-    public void setPresentationExportFormatPopup(NSPopUpButton b) {
-        this.presentationExportFormatPopup = b;
-        this.presentationExportFormatPopup.setAutoenablesItems(false);
-        this.presentationExportFormatPopup.removeAllItems();
-        StringTokenizer formats = new StringTokenizer(
-                preferences.getProperty("google.docs.export.presentation.formats"), ",");
-        while(formats.hasMoreTokens()) {
-            String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
-            this.presentationExportFormatPopup.addItemWithTitle(title);
-            this.presentationExportFormatPopup.lastItem().setRepresentedObject(format);
-            if(format.equals(preferences.getProperty("google.docs.export.presentation"))) {
-                this.presentationExportFormatPopup.selectItemWithTitle(title);
-            }
-        }
-        this.presentationExportFormatPopup.setTarget(this.id());
-        this.presentationExportFormatPopup.setAction(Foundation.selector("presentationExportFormatPopupClicked:"));
-    }
-
-    @Action
-    public void presentationExportFormatPopupClicked(NSPopUpButton sender) {
-        preferences.setProperty("google.docs.export.presentation", sender.selectedItem().representedObject());
-    }
-
-    @Outlet
-    private NSButton convertUploadsCheckbox;
-
-    public void setConvertUploadsCheckbox(NSButton b) {
-        this.convertUploadsCheckbox = b;
-        this.convertUploadsCheckbox.setTarget(this.id());
-        this.convertUploadsCheckbox.setAction(Foundation.selector("convertUploadsCheckboxClicked:"));
-        this.convertUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.convert") ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Action
-    public void convertUploadsCheckboxClicked(NSButton sender) {
-        preferences.setProperty("google.docs.upload.convert", sender.state() == NSCell.NSOnState);
-    }
-
-    @Outlet
-    private NSButton ocrUploadsCheckbox;
-
-    public void setOcrUploadsCheckbox(NSButton b) {
-        this.ocrUploadsCheckbox = b;
-        this.ocrUploadsCheckbox.setTarget(this.id());
-        this.ocrUploadsCheckbox.setAction(Foundation.selector("ocrUploadsCheckboxClicked:"));
-        this.ocrUploadsCheckbox.setState(preferences.getBoolean("google.docs.upload.ocr") ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Action
-    public void ocrUploadsCheckboxClicked(NSButton sender) {
-        preferences.setProperty("google.docs.upload.ocr", sender.state() == NSCell.NSOnState);
     }
 
     @Outlet

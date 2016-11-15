@@ -36,7 +36,7 @@ import java.io.IOException;
 public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
-    private FileWatcher monitor
+    private final FileWatcher monitor
             = new FileWatcher(new NIOEventWatchService());
 
     public DefaultWatchEditor(final Application application,

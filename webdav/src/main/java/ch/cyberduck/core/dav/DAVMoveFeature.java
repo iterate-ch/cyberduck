@@ -32,7 +32,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVMoveFeature implements Move {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVMoveFeature(final DAVSession session) {
         this.session = session;

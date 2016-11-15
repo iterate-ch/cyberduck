@@ -33,7 +33,7 @@ import com.github.sardine.impl.SardineException;
 
 public class DAVDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private DAVSession session;
+    private final DAVSession session;
 
     public DAVDeleteFeature(final DAVSession session) {
         this.session = session;

@@ -48,7 +48,7 @@ import java.text.MessageFormat;
 public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private AbstractHttpWriteFeature<Output> writer;
+    private final AbstractHttpWriteFeature<Output> writer;
 
     public HttpUploadFeature(final AbstractHttpWriteFeature<Output> writer) {
         this.writer = writer;
@@ -69,8 +69,8 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
                          final StreamListener listener, final TransferStatus status,
                          final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         try {
-            InputStream in = null;
-            ResponseOutputStream<Output> out = null;
+            InputStream in;
+            ResponseOutputStream<Output> out;
             final Digest digest = this.digest();
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);
@@ -100,7 +100,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
         return null;
     }
 
-    protected void post(final Path file, final Digest pre, final Output response) throws BackgroundException {
+    protected void post(final Path file, final Digest digest, final Output response) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Received response %s", response));
         }

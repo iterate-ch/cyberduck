@@ -28,7 +28,7 @@ import java.net.Socket;
 public class DefaultSocketConfigurator implements SocketConfigurator {
     private static final Logger log = Logger.getLogger(DefaultSocketConfigurator.class);
 
-    private Preferences preferences
+    private final Preferences preferences
             = PreferencesFactory.get();
 
     @Override

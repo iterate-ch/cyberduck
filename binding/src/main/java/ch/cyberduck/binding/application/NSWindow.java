@@ -26,8 +26,10 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 
+import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -215,6 +217,17 @@ public abstract class NSWindow extends NSResponder {
          * <i>native declaration : :513</i>
          */
         NSButton standardWindowButton_forStyleMask(int b, int styleMask);
+
+        boolean setAllowsAutomaticWindowTabbing(boolean automatic);
+
+        boolean allowsAutomaticWindowTabbing();
+    }
+
+    public static void setAllowsAutomaticWindowTabbing(boolean automatic) {
+        if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
+                Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
+            CLASS.setAllowsAutomaticWindowTabbing(automatic);
+        }
     }
 
     public static interface Delegate {
@@ -1580,4 +1593,10 @@ public abstract class NSWindow extends NSResponder {
     public static final String WindowWillCloseNotification = "NSWindowWillCloseNotification";
     public static final String WindowWillMiniaturizeNotification = "NSWindowWillMiniaturizeNotification";
     public static final String WindowWillMoveNotification = "NSWindowWillMoveNotification";
+
+    public abstract void addTitlebarAccessoryViewController(NSTitlebarAccessoryViewController controller);
+
+    public abstract String tabbingIdentifier();
+
+    public abstract void setTabbingIdentifier(String identifier);
 }

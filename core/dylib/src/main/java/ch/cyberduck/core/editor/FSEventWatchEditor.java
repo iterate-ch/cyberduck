@@ -38,7 +38,7 @@ import java.io.IOException;
 public class FSEventWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
-    private FileWatcher monitor
+    private final FileWatcher monitor
             = new FileWatcher(new FSEventWatchService());
 
     /**

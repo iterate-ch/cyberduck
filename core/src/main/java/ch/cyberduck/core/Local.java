@@ -57,7 +57,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     /**
      * Absolute path in local file system
      */
-    protected final String path;
+    private String path;
 
     private final LocalAttributes attributes;
 
@@ -208,15 +208,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    /**
-     * Delete file
-     *
-     * @param deferred On application quit
-     */
-    public void delete(boolean deferred) throws AccessDeniedException {
-        this.delete();
-    }
-
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
@@ -308,6 +299,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     public void rename(final Local renamed) throws AccessDeniedException {
         try {
             Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
+            path = renamed.getAbsolute();
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Rename failed for %s", renamed), e);
@@ -423,21 +415,39 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             // Root cannot be a child of any other path
             return false;
         }
-        if(directory.isRoot()) {
-            // Any other path is a child
-            return true;
-        }
-        if(Objects.equals(PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()), PathNormalizer.parent(directory.getAbsolute(), this.getDelimiter()))) {
+        if(Objects.equals(this.parent(this.getAbsolute()), this.parent(directory.getAbsolute()))) {
             // Cannot be a child if the same parent
             return false;
         }
-        for(String parent = PathNormalizer.parent(this.getAbsolute(), this.getDelimiter()); !parent.equals(String.valueOf(this.getDelimiter())); parent = PathNormalizer.parent(parent, this.getDelimiter())) {
-            if(parent.equals(directory.getAbsolute())) {
+        final String prefix = FilenameUtils.getPrefix(this.getAbsolute());
+        String parent = this.getAbsolute();
+        while(!parent.equals(prefix)) {
+            parent = this.parent(parent);
+            if(directory.getAbsolute().equals(parent)) {
                 return true;
             }
         }
         return false;
     }
+
+    private String parent(final String absolute) {
+        final String prefix = FilenameUtils.getPrefix(absolute);
+        if(absolute.equals(prefix)) {
+            return null;
+        }
+        int index = absolute.length() - 1;
+        if(absolute.charAt(index) == this.getDelimiter()) {
+            if(index > 0) {
+                index--;
+            }
+        }
+        final int cut = absolute.lastIndexOf(this.getDelimiter(), index);
+        if(cut > FilenameUtils.getPrefixLength(absolute)) {
+            return absolute.substring(0, cut);
+        }
+        return String.valueOf(prefix);
+    }
+
 
     @Override
     public String toString() {

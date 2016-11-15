@@ -24,7 +24,6 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
@@ -45,17 +44,22 @@ import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
+import ch.cyberduck.core.importer.Expandrive5BookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
 import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
 import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
-import ch.cyberduck.core.importer.TransmitBookmarkCollection;
+import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -101,7 +105,7 @@ import java.util.concurrent.CountDownLatch;
  * Setting the main menu and implements application delegate methods
  */
 public class MainController extends BundleController implements NSApplication.Delegate {
-    private static Logger log = Logger.getLogger(MainController.class);
+    private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
      * Apple event constants<br>
@@ -127,71 +131,125 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final PeriodicUpdateChecker updater = PeriodicUpdateCheckerFactory.get();
+    private final PeriodicUpdateChecker updater
+            = PeriodicUpdateCheckerFactory.get();
 
-    public MainController() {
-        this.loadBundle();
-    }
-
-    @Override
-    public void awakeFromNib() {
-        NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
-                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
-
-        super.awakeFromNib();
-    }
-
-    private PathKindDetector detector = new DefaultPathKindDetector();
+    private final PathKindDetector detector = new DefaultPathKindDetector();
+    /**
+     *
+     */
+    private static final List<BrowserController> browsers
+            = new ArrayList<BrowserController>();
 
     /**
-     * Extract the URL from the Apple event and handle it here.
+     * Saved browsers
      */
-    public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
-        log.debug("Received URL from Apple Event:" + event);
-        final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
-        if(null == param) {
-            log.error("No URL parameter");
-            return;
-        }
-        final String url = param.stringValue();
-        if(StringUtils.isEmpty(url)) {
-            log.error("URL parameter is empty");
-            return;
-        }
-        if("x-cyberduck-action:update".equals(url)) {
-            this.updateMenuClicked(null);
-        }
-        else {
-            final Host h = HostParser.parse(url);
-            if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
-                TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())));
-            }
-            else {
-                for(BrowserController browser : MainController.getBrowsers()) {
-                    if(browser.isMounted()) {
-                        if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                new HostUrlProvider().get(h))) {
-                            // Handle browser window already connected to the same host. #4215
-                            browser.window().makeKeyAndOrderFront(null);
-                            return;
-                        }
-                    }
-                }
-                final BrowserController browser = newDocument(false);
-                browser.mount(h);
-            }
-        }
-    }
+    private final AbstractHostCollection sessions = new FolderBookmarkCollection(
+            LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
 
-    @Action
-    public void updateMenuClicked(ID sender) {
-        updater.check(false);
-    }
+    /**
+     * Display donation reminder dialog
+     */
+    private boolean displayDonationPrompt = true;
+
+    @Outlet
+    private WindowController donationController;
 
     @Outlet
     private NSMenu applicationMenu;
+    @Outlet
+    private NSMenu encodingMenu;
+    @Outlet
+    private NSMenu columnMenu;
+    @Outlet
+    private NSMenu editMenu;
+    @Delegate
+    private EditMenuDelegate editMenuDelegate;
+    @Outlet
+    private NSMenu urlMenu;
+    @Delegate
+    private URLMenuDelegate urlMenuDelegate;
+    @Outlet
+    private NSMenu openUrlMenu;
+    @Delegate
+    private URLMenuDelegate openUrlMenuDelegate;
+    @Outlet
+    private NSMenu archiveMenu;
+    @Delegate
+    private ArchiveMenuDelegate archiveMenuDelegate;
+    @Outlet
+    private NSMenu bookmarkMenu;
+    @Delegate
+    private BookmarkMenuDelegate bookmarkMenuDelegate;
+
+    /**
+     * @param frame Frame autosave name
+     */
+    public static BrowserController newDocument(final boolean force, final String frame) {
+        final List<BrowserController> browsers = getBrowsers();
+        if(!force) {
+            for(BrowserController controller : browsers) {
+                if(controller.getSession() == null) {
+                    controller.window().makeKeyAndOrderFront(null);
+                    return controller;
+                }
+            }
+        }
+        final BrowserController controller = new BrowserController();
+        controller.addListener(new WindowListener() {
+            @Override
+            public void windowWillClose() {
+                browsers.remove(controller);
+            }
+        });
+        if(StringUtils.isNotBlank(frame)) {
+            controller.window().setFrameUsingName(frame);
+        }
+        controller.window().makeKeyAndOrderFront(null);
+        browsers.add(controller);
+        return controller;
+    }
+
+    /**
+     * Makes a unmounted browser window the key window and brings it to the front
+     *
+     * @return A reference to a browser window
+     */
+    public static BrowserController newDocument() {
+        return newDocument(false);
+    }
+
+    public static List<BrowserController> getBrowsers() {
+        return browsers;
+    }
+
+    /**
+     * Browser with key focus
+     *
+     * @return Null if no browser window is open
+     */
+    public BrowserController getBrowser() {
+        for(BrowserController browser : browsers) {
+            if(browser.window().isKeyWindow()) {
+                return browser;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Makes a unmounted browser window the key window and brings it to the front
+     *
+     * @param force If true, open a new browser regardless of any unused browser window
+     */
+    public static BrowserController newDocument(final boolean force) {
+        return newDocument(force, null);
+    }
+
+    @Override
+    protected String getBundleName() {
+        return "Main";
+    }
 
     public void setApplicationMenu(NSMenu menu) {
         this.applicationMenu = menu;
@@ -202,7 +260,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Set name of key in menu item
      */
-    private void updateLicenseMenu() {
+    protected void updateLicenseMenu() {
         final License key = LicenseFactory.find();
         if(key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
@@ -228,18 +286,12 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
-    @Outlet
-    private NSMenu encodingMenu;
-
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
         for(String charset : new DefaultCharsetProvider().availableCharsets()) {
             this.encodingMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
         }
     }
-
-    @Outlet
-    private NSMenu columnMenu;
 
     public void setColumnMenu(NSMenu columnMenu) {
         this.columnMenu = columnMenu;
@@ -271,12 +323,6 @@ public class MainController extends BundleController implements NSApplication.De
         BrowserController.updateBrowserTableColumns();
     }
 
-    @Outlet
-    private NSMenu editMenu;
-
-    @Delegate
-    private EditMenuDelegate editMenuDelegate;
-
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
@@ -300,17 +346,11 @@ public class MainController extends BundleController implements NSApplication.De
 
             @Override
             protected ID getTarget() {
-                return MainController.getBrowser().id();
+                return MainController.this.getBrowser().id();
             }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
-
-    @Outlet
-    private NSMenu urlMenu;
-
-    @Delegate
-    private URLMenuDelegate urlMenuDelegate;
 
     public void setUrlMenu(NSMenu urlMenu) {
         this.urlMenu = urlMenu;
@@ -348,12 +388,6 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenu.setDelegate(urlMenuDelegate.id());
     }
 
-    @Outlet
-    private NSMenu openUrlMenu;
-
-    @Delegate
-    private URLMenuDelegate openUrlMenuDelegate;
-
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
@@ -390,23 +424,11 @@ public class MainController extends BundleController implements NSApplication.De
         this.openUrlMenu.setDelegate(openUrlMenuDelegate.id());
     }
 
-    @Outlet
-    private NSMenu archiveMenu;
-
-    @Delegate
-    private ArchiveMenuDelegate archiveMenuDelegate;
-
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
         this.archiveMenuDelegate = new ArchiveMenuDelegate();
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
-
-    @Outlet
-    private NSMenu bookmarkMenu;
-
-    @Delegate
-    private BookmarkMenuDelegate bookmarkMenuDelegate;
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
@@ -444,11 +466,6 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     @Action
-    public void forumMenuClicked(final ID sender) {
-        BrowserLauncherFactory.get().open(preferences.getProperty("website.forum"));
-    }
-
-    @Action
     public void donateMenuClicked(final ID sender) {
         BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
     }
@@ -483,13 +500,46 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
-        SheetController c = new DownloadController(TransferControllerFactory.get());
+        DownloadController c = new DownloadController(TransferControllerFactory.get());
         c.beginSheet();
     }
 
     @Action
     public void newBrowserMenuClicked(final ID sender) {
-        this.openDefaultBookmark(MainController.newDocument(true));
+        this.openDefaultBookmark(this.newDocument(true));
+    }
+
+    @Action
+    public void newWindowForTab(final ID sender) {
+        this.openDefaultBookmark(this.newDocument(true));
+    }
+
+    /**
+     * Mounts the default bookmark if any
+     */
+    protected void openDefaultBookmark(final BrowserController controller) {
+        String defaultBookmark = preferences.getProperty("browser.open.bookmark.default");
+        if(null == defaultBookmark) {
+            log.info("No default bookmark configured");
+            return; //No default bookmark given
+        }
+        final Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
+        if(null == bookmark) {
+            log.info("Default bookmark no more available");
+            return;
+        }
+        for(BrowserController browser : getBrowsers()) {
+            if(browser.getSession() != null) {
+                if(browser.getSession().getHost().equals(bookmark)) {
+                    log.debug("Default bookmark already mounted");
+                    return;
+                }
+            }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Mounting default bookmark %s", bookmark));
+        }
+        controller.mount(bookmark);
     }
 
     @Action
@@ -523,7 +573,7 @@ public class MainController extends BundleController implements NSApplication.De
                     if(null == bookmark) {
                         return false;
                     }
-                    MainController.newDocument().mount(bookmark);
+                    this.newDocument().mount(bookmark);
                     return true;
                 }
                 catch(AccessDeniedException e) {
@@ -546,7 +596,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 null
                         );
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                        if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
+                        if(alert.runModal() == SheetCallback.DEFAULT_OPTION) {
                             for(BrowserController c : MainController.getBrowsers()) {
                                 c.removeDonateWindowTitle();
                             }
@@ -560,7 +610,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 else {
                     final NSAlert alert = NSAlert.alert(
-                            LocaleFactory.localizedString("Not a valid donation key", "License"),
+                            LocaleFactory.localizedString("Not a valid registration key", "License"),
                             LocaleFactory.localizedString("This donation key does not appear to be valid.", "License"),
                             LocaleFactory.localizedString("Continue", "License"), //default
                             null, //other
@@ -577,7 +627,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
 
                     }.id());
-                    this.alert(alert);
+                    alert.runModal();
                 }
                 return true;
             }
@@ -593,7 +643,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                         ProtocolFactory.register(profile);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                        MainController.newDocument().addBookmark(host);
+                        this.newDocument().addBookmark(host);
                         // Register in application support
                         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
                                 PreferencesFactory.get().getProperty("profiles.folder.name"));
@@ -645,10 +695,10 @@ public class MainController extends BundleController implements NSApplication.De
         // Selected bookmark
         Host open = null;
         Path workdir = null;
-        for(BrowserController controller : MainController.getBrowsers()) {
-            if(controller.isMounted()) {
-                open = controller.getSession().getHost();
-                workdir = controller.workdir();
+        for(BrowserController browser : MainController.getBrowsers()) {
+            if(browser.isMounted()) {
+                open = browser.getSession().getHost();
+                workdir = browser.workdir();
                 if(1 == MainController.getBrowsers().size()) {
                     // If only one browser window upload to current working directory with no bookmark selection
                     this.upload(open, files, workdir);
@@ -702,7 +752,7 @@ public class MainController extends BundleController implements NSApplication.De
         final TransferController t = TransferControllerFactory.get();
         final Host mount = open;
         final Path destination = workdir;
-        AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
+        final AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
                                 : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
@@ -711,6 +761,11 @@ public class MainController extends BundleController implements NSApplication.De
                 LocaleFactory.localizedString("Cancel"),
                 null
         )) {
+            @Override
+            public NSView getAccessoryView() {
+                return bookmarksPopup;
+            }
+
             @Override
             public void callback(int returncode) {
                 if(DEFAULT_OPTION == returncode) {
@@ -738,11 +793,10 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             @Override
-            protected boolean validateInput() {
+            public boolean validate() {
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
-        alert.setAccessoryView(bookmarksPopup);
         alert.beginSheet();
         return true;
     }
@@ -796,34 +850,6 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     /**
-     * Mounts the default bookmark if any
-     */
-    private void openDefaultBookmark(BrowserController controller) {
-        String defaultBookmark = preferences.getProperty("browser.open.bookmark.default");
-        if(null == defaultBookmark) {
-            log.info("No default bookmark configured");
-            return; //No default bookmark given
-        }
-        Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
-        if(null == bookmark) {
-            log.info("Default bookmark no more available");
-            return;
-        }
-        for(BrowserController browser : getBrowsers()) {
-            if(browser.getSession() != null) {
-                if(browser.getSession().getHost().equals(bookmark)) {
-                    log.debug("Default bookmark already mounted");
-                    return;
-                }
-            }
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Mounting default bookmark %s", bookmark));
-        }
-        controller.mount(bookmark);
-    }
-
-    /**
      * These events are sent whenever the Finder reactivates an already running application
      * because someone double-clicked it again or used the dock to activate it. By default
      * the Application Kit will handle this event by checking whether there are any visible
@@ -851,15 +877,15 @@ public class MainController extends BundleController implements NSApplication.De
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
         if(MainController.getBrowsers().isEmpty() && !TransferControllerFactory.get().isVisible()) {
-            this.openDefaultBookmark(MainController.newDocument());
+            this.openDefaultBookmark(this.newDocument());
         }
         NSWindow miniaturized = null;
-        for(BrowserController controller : MainController.getBrowsers()) {
-            if(!controller.window().isMiniaturized()) {
+        for(BrowserController browser : MainController.getBrowsers()) {
+            if(!browser.window().isMiniaturized()) {
                 return false;
             }
             if(null == miniaturized) {
-                miniaturized = controller.window();
+                miniaturized = browser.window();
             }
         }
         if(null == miniaturized) {
@@ -884,11 +910,18 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Override
     public void applicationDidFinishLaunching(NSNotification notification) {
+        // Opt-in of automatic window tabbing
+        NSWindow.setAllowsAutomaticWindowTabbing(true);
+        // Load main menu
+        this.loadBundle();
+        // Open default windows
         if(preferences.getBoolean("browser.open.untitled")) {
-            MainController.newDocument();
+            final BrowserController c = this.newDocument();
+            c.window().makeKeyAndOrderFront(null);
         }
         if(preferences.getBoolean("queue.window.open.default")) {
-            this.showTransferQueueClicked(null);
+            TransferController c = TransferControllerFactory.get();
+            c.window().makeKeyAndOrderFront(null);
         }
         if(preferences.getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction<Void>() {
@@ -904,7 +937,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isInfoEnabled()) {
                             log.info(String.format("New browser for saved session %s", host));
                         }
-                        final BrowserController browser = MainController.newDocument(false, host.getUuid());
+                        final BrowserController browser = newDocument(false, host.getUuid());
                         browser.mount(host);
                     }
                     sessions.clear();
@@ -925,7 +958,7 @@ public class MainController extends BundleController implements NSApplication.De
             public void cleanup() {
                 if(preferences.getBoolean("browser.open.untitled")) {
                     if(preferences.getProperty("browser.open.bookmark.default") != null) {
-                        openDefaultBookmark(MainController.newDocument());
+                        openDefaultBookmark(newDocument());
                     }
                 }
                 // Set delegate for NSService
@@ -981,7 +1014,7 @@ public class MainController extends BundleController implements NSApplication.De
                 && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(
                     Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                    new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()))) {
+                    new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                         LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         LocaleFactory.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links " +
@@ -1001,7 +1034,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
                             Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                            new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString())
+                            new Application(preferences.getProperty("application.identifier"))
                     );
                 }
             }
@@ -1105,8 +1138,9 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
-                return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+                return Arrays.asList(new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
+                        new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection());
             }
         });
         if(updater.hasUpdatePrivileges()) {
@@ -1116,6 +1150,8 @@ public class MainController extends BundleController implements NSApplication.De
             }
             updater.register();
         }
+        NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
+                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
 
     /**
@@ -1139,20 +1175,6 @@ public class MainController extends BundleController implements NSApplication.De
             }
         }
     }
-
-    /**
-     * Saved browsers
-     */
-    private AbstractHostCollection sessions = new FolderBookmarkCollection(
-            LocalFactory.get(preferences.getProperty("application.support.path"), "Sessions"), "session");
-
-    /**
-     * Display donation reminder dialog
-     */
-    private boolean displayDonationPrompt = true;
-
-    @Outlet
-    private WindowController donationController;
 
     /**
      * Invoked from within the terminate method immediately before the
@@ -1327,6 +1349,9 @@ public class MainController extends BundleController implements NSApplication.De
         }
         this.invalidate();
 
+        // Clear temporary files
+        TemporaryFileServiceFactory.get().shutdown();
+
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();
 
@@ -1341,6 +1366,73 @@ public class MainController extends BundleController implements NSApplication.De
     public void applicationWillRestartAfterUpdate(ID updater) {
         // Disable donation prompt after udpate install
         displayDonationPrompt = false;
+    }
+
+    /**
+     * We are not a Windows application. Long live the application wide menu bar.
+     */
+    @Override
+    public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
+        return false;
+    }
+
+    @Action
+    public void updateMenuClicked(ID sender) {
+        updater.check(false);
+    }
+
+    /**
+     * Extract the URL from the Apple event and handle it here.
+     */
+    public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
+        log.debug("Received URL from Apple Event:" + event);
+        final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
+        if(null == param) {
+            log.error("No URL parameter");
+            return;
+        }
+        final String url = param.stringValue();
+        if(StringUtils.isEmpty(url)) {
+            log.error("URL parameter is empty");
+            return;
+        }
+        if(StringUtils.startsWith(url, "x-cyberduck-action:")) {
+            final String action = StringUtils.removeStart(url, "x-cyberduck-action:");
+            switch(action) {
+                case "update":
+                    updater.check(false);
+                    break;
+                default:
+                    if(StringUtils.startsWith(action, "oauth?token=")) {
+                        final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                        final String token = StringUtils.removeStart(action, "oauth?token=");
+                        oauth.notify(token);
+                        break;
+                    }
+            }
+        }
+        else {
+            final Host h = HostParser.parse(url);
+            if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
+                TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())));
+            }
+            else {
+                for(BrowserController browser : MainController.getBrowsers()) {
+                    if(browser.isMounted()) {
+                        if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
+                                new HostUrlProvider().get(h))) {
+                            // Handle browser window already connected to the same host. #4215
+                            browser.window().makeKeyAndOrderFront(null);
+                            return;
+                        }
+                    }
+                }
+                final BrowserController browser = newDocument(false);
+                browser.mount(h);
+            }
+        }
     }
 
     /**
@@ -1371,90 +1463,6 @@ public class MainController extends BundleController implements NSApplication.De
         if(log.isDebugEnabled()) {
             log.debug(String.format("Workspace will sleep with notification %s", notification));
         }
-    }
-
-    /**
-     * Makes a unmounted browser window the key window and brings it to the front
-     *
-     * @return A reference to a browser window
-     */
-    public static BrowserController newDocument() {
-        return MainController.newDocument(false);
-    }
-
-    /**
-     *
-     */
-    private static List<BrowserController> browsers
-            = new ArrayList<BrowserController>();
-
-    public static List<BrowserController> getBrowsers() {
-        return browsers;
-    }
-
-    /**
-     * Browser with key focus
-     *
-     * @return Null if no browser window is open
-     */
-    public static BrowserController getBrowser() {
-        for(BrowserController browser : MainController.getBrowsers()) {
-            if(browser.window().isKeyWindow()) {
-                return browser;
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Makes a unmounted browser window the key window and brings it to the front
-     *
-     * @param force If true, open a new browser regardless of any unused browser window
-     */
-    public static BrowserController newDocument(final boolean force) {
-        return newDocument(force, null);
-    }
-
-    /**
-     * @param frame Frame autosave name
-     */
-    public static BrowserController newDocument(final boolean force, final String frame) {
-        final List<BrowserController> browsers = MainController.getBrowsers();
-        if(!force) {
-            for(BrowserController controller : browsers) {
-                if(controller.getSession() == null) {
-                    controller.window().makeKeyAndOrderFront(null);
-                    return controller;
-                }
-            }
-        }
-        final BrowserController controller = new BrowserController();
-        controller.addListener(new WindowListener() {
-            @Override
-            public void windowWillClose() {
-                browsers.remove(controller);
-            }
-        });
-        if(StringUtils.isNotBlank(frame)) {
-            controller.window().setFrameUsingName(frame);
-        }
-        controller.window().makeKeyAndOrderFront(null);
-        browsers.add(controller);
-        return controller;
-    }
-
-    /**
-     * We are not a Windows application. Long live the application wide menu bar.
-     */
-    @Override
-    public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
-        return false;
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Main";
     }
 
 }

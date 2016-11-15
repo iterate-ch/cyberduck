@@ -44,7 +44,8 @@ public class S3EncryptionFeatureTest {
 
     @Test
     public void testGetAlgorithms() throws Exception {
-        assertEquals(2, new S3EncryptionFeature(null).getKeys(new DisabledLoginCallback()).size());
+        assertEquals(2, new S3EncryptionFeature(null).getKeys(
+                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback()).size());
     }
 
     @Test

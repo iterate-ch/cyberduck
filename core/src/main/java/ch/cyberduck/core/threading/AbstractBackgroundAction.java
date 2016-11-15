@@ -104,7 +104,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public boolean alert() {
+    public boolean alert(final BackgroundException e) {
         return false;
     }
 

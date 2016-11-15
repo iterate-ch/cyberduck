@@ -29,9 +29,9 @@ public class NamedThreadFactory implements ThreadFactory {
     private final AtomicInteger threadNumber
             = new AtomicInteger(1);
 
-    private String name;
+    private final String name;
 
-    private Thread.UncaughtExceptionHandler handler;
+    private final Thread.UncaughtExceptionHandler handler;
 
     public NamedThreadFactory(final String name) {
         this(name, new LoggingUncaughtExceptionHandler());

@@ -39,7 +39,7 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -66,12 +66,12 @@ public class SyncTransfer extends Transfer {
 
     private TransferAction action;
 
-    private TransferItem item;
+    private final TransferItem item;
 
     private PathCache cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private Map<TransferItem, Comparison> compareCache = Collections.<TransferItem, Comparison>synchronizedMap(new LRUMap(
+    private final Map<TransferItem, Comparison> compareCache = Collections.synchronizedMap(new LRUMap<TransferItem, Comparison>(
             PreferencesFactory.get().getInteger("transfer.cache.size")));
 
     public SyncTransfer(final Host host, final TransferItem item) {
@@ -110,7 +110,7 @@ public class SyncTransfer extends Transfer {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
-        dict.setStringForKey(this.getUuid(), "UUID");
+        dict.setStringForKey(uuid, "UUID");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
@@ -178,10 +178,17 @@ public class SyncTransfer extends Transfer {
         final Set<TransferItem> children = new HashSet<TransferItem>();
         final Find finder = new DefaultFindFeature(session).withCache(cache);
         if(finder.find(directory)) {
-            children.addAll(download.list(session, directory, local, listener));
+            final List<TransferItem> list = download.list(session, directory, local, listener);
+            for(TransferItem item : list) {
+                // Nullify attributes not available for local file to fix default comparison with DefaultPathReference.
+                item.remote.attributes().setVersionId(null);
+                item.remote.attributes().setRegion(null);
+            }
+            children.addAll(list);
         }
         if(local.exists()) {
-            children.addAll(upload.list(session, directory, local, listener));
+            final List<TransferItem> list = upload.list(session, directory, local, listener);
+            children.addAll(list);
         }
         return new ArrayList<TransferItem>(children);
     }

@@ -61,9 +61,6 @@ import java.util.List;
 
 import com.barchart.udt.ResourceUDT;
 
-/**
- * @version $Id$
- */
 public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
 
@@ -111,7 +108,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
     /**
      * Configure the HTTP Session to proxy through UDT
      */
-    public void configure(final HttpSession session) throws BackgroundException {
+    public HttpSession<?> configure(final HttpSession session) throws BackgroundException {
         // Add X-Qloudsonic-* headers
         final List<Header> headers = provider.headers();
         if(log.isInfoEnabled()) {
@@ -123,6 +120,7 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
                 = new UDTHttpConnectionPoolBuilder(session.getHost(), proxy, headers, trust, key, callback);
         // Inject connection builder into session
         session.setBuilder(builder);
+        return session;
     }
 
     private static final class CustomHeaderHttpRequestExecutor extends HttpRequestExecutor {
@@ -143,18 +141,18 @@ public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
 
     private static final class UDTHttpConnectionPoolBuilder extends HttpConnectionPoolBuilder {
 
-        private SocketConfigurator configurator
+        private final SocketConfigurator configurator
                 = new DefaultSocketConfigurator();
 
         private final Host proxy;
 
-        private X509TrustManager trust;
+        private final X509TrustManager trust;
 
-        private X509KeyManager key;
+        private final X509KeyManager key;
 
-        private UDTSocketCallback callback;
+        private final UDTSocketCallback callback;
 
-        private List<Header> headers;
+        private final List<Header> headers;
 
         public UDTHttpConnectionPoolBuilder(final Host host, final Host proxy, final List<Header> headers,
                                             final X509TrustManager trust, final X509KeyManager key,

@@ -28,7 +28,7 @@ import java.io.IOException;
 
 public class SFTPFindFeature implements Find {
 
-    private SFTPSession session;
+    private final SFTPSession session;
 
     private PathCache cache;
 

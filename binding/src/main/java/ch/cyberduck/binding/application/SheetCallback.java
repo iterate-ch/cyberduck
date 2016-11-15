@@ -18,9 +18,6 @@ package ch.cyberduck.binding.application;
  *  dkocher@cyberduck.ch
  */
 
-/**
- * @version $Id$
- */
 public interface SheetCallback {
 
     /**

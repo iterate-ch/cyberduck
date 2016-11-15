@@ -24,7 +24,7 @@ public abstract class DefaultMainAction extends MainAction {
         return true;
     }
 
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
     /**
      * No synchronization by default.

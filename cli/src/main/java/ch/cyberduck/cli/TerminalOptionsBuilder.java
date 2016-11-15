@@ -110,7 +110,7 @@ public final class TerminalOptionsBuilder {
         options.addOption(OptionBuilder
                 .withDescription("Long list format with modification date and permission mask")
                 .withLongOpt(Params.longlist.name())
-                .hasArg(false)
+                .hasArg(true).withArgName("url")
                 .isRequired(false)
                 .create('L'));
         options.addOption(OptionBuilder

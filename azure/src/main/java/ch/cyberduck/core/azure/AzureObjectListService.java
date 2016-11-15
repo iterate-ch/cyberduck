@@ -31,6 +31,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
@@ -39,7 +41,6 @@ import java.util.EnumSet;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.ResultContinuation;
 import com.microsoft.azure.storage.ResultSegment;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobListingDetails;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -50,11 +51,11 @@ import com.microsoft.azure.storage.blob.ListBlobItem;
 
 public class AzureObjectListService implements ListService {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureObjectListService(final AzureSession session, final OperationContext context) {
@@ -78,7 +79,6 @@ public class AzureObjectListService implements ListService {
             }
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
-                options.setRetryPolicyFactory(new RetryNoRetry());
                 result = container.listBlobsSegmented(
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
                         PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
@@ -93,7 +93,7 @@ public class AzureObjectListService implements ListService {
                         attributes.setModificationDate(blob.getProperties().getLastModified().getTime());
                         attributes.setETag(blob.getProperties().getEtag());
                         if(StringUtils.isNotBlank(blob.getProperties().getContentMD5())) {
-                            attributes.setChecksum(Checksum.parse(blob.getProperties().getContentMD5()));
+                            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(blob.getProperties().getContentMD5()))));
                         }
                     }
                     final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory

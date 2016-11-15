@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -31,35 +32,39 @@ import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class DeleteWorker extends Worker<Boolean> {
+public class DeleteWorker extends Worker<List<Path>> {
+
+    private final Cache<Path> cache;
 
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
-    private LoginCallback prompt;
+    private final LoginCallback prompt;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
-    private Filter<Path> filter;
+    private final Filter<Path> filter;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
-        this(prompt, files, listener, new NullFilter<Path>());
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
+        this(prompt, files, cache, new NullFilter<Path>(), listener);
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener, final Filter<Path> filter) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
         this.files = files;
         this.prompt = prompt;
         this.listener = listener;
         this.filter = filter;
+        this.cache = cache;
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
+    public List<Path> run(final Session<?> session) throws BackgroundException {
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
@@ -75,7 +80,7 @@ public class DeleteWorker extends Worker<Boolean> {
                         file.getName()));
             }
         });
-        return true;
+        return recursive;
     }
 
     protected List<Path> compile(final Session<?> session, final Path file) throws BackgroundException {
@@ -98,14 +103,24 @@ public class DeleteWorker extends Worker<Boolean> {
     }
 
     @Override
+    public void cleanup(final List<Path> deleted) {
+        for(Path f : deleted) {
+            if(f.isDirectory()) {
+                cache.remove(f);
+            }
+        }
+        super.cleanup(deleted);
+    }
+
+    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
                 this.toString(files));
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public List<Path> initialize() {
+        return Collections.emptyList();
     }
 
     @Override

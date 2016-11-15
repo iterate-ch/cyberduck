@@ -29,6 +29,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -39,9 +40,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * @version $Id$
- */
 public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
     private static final Logger log = Logger.getLogger(Keychain.class);
 
@@ -137,7 +135,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
      * @param certificates An array containing ASN.1 DER encoded certificates
      * @return True if chain is trusted
      */
-    private native boolean isTrustedNative(String hostname, Object[] certificates);
+    private synchronized native boolean isTrustedNative(String hostname, Object[] certificates);
 
     /**
      * @param certificates Chain of certificates
@@ -168,10 +166,16 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
-                                  final String hostname, final String prompt)
+                                  final Host bookmark, final String prompt)
             throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager().init();
+        final CertificateStoreX509KeyManager manager;
+        try {
+            manager = new KeychainX509KeyManager(bookmark).init();
+        }
+        catch(IOException e) {
+            throw new ConnectionCanceledException(e);
+        }
         final String[] aliases = manager.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));
@@ -185,7 +189,7 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
             final DefaultMainAction action = new DefaultMainAction() {
                 @Override
                 public void run() {
-                    select.set(chooseCertificateNative(encoded, hostname, prompt));
+                    select.set(chooseCertificateNative(encoded, bookmark.getHostname(), prompt));
                 }
             };
             proxy.invoke(action, action.lock(), true);

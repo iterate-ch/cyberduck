@@ -28,7 +28,7 @@ import java.text.MessageFormat;
 
 public class GoogleStorageUrlProvider implements UrlProvider {
 
-    private GoogleStorageSession session;
+    private final GoogleStorageSession session;
 
     public GoogleStorageUrlProvider(final GoogleStorageSession session) {
         this.session = session;

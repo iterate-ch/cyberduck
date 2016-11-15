@@ -20,37 +20,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 @Category(IntegrationTest.class)
 public class SwiftMultipleDeleteFeatureTest {
-
-    @Test
-    public void testDeleteRAX() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        container.attributes().setRegion("DFW");
-        this.delete(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(
-                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))), container);
-    }
-
-    protected void delete(final Host host, final Path container) throws Exception {
-        final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test1 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path test2 = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(test1);
-        new SwiftTouchFeature(session).touch(test2);
-        assertTrue(new SwiftFindFeature(session).find(test1));
-        assertTrue(new SwiftFindFeature(session).find(test2));
-        new SwiftMultipleDeleteFeature(session).delete(Arrays.asList(test1, test2), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        Thread.sleep(1000L);
-        assertFalse(new SwiftFindFeature(session).find(test1));
-        assertFalse(new SwiftFindFeature(session).find(test2));
-        session.close();
-    }
 
     @Test(expected = NotfoundException.class)
     @Ignore

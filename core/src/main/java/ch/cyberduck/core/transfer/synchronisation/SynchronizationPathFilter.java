@@ -35,17 +35,17 @@ import org.apache.log4j.Logger;
 public class SynchronizationPathFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
 
-    private ComparePathFilter comparison;
+    private final ComparePathFilter comparison;
 
     /**
      * Download delegate filter
      */
-    private TransferPathFilter downloadFilter;
+    private final TransferPathFilter downloadFilter;
 
     /**
      * Upload delegate filter
      */
-    private TransferPathFilter uploadFilter;
+    private final TransferPathFilter uploadFilter;
 
     /**
      * Direction

@@ -32,18 +32,17 @@ import java.util.List;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.DeleteSnapshotsOption;
 
 public class AzureDeleteFeature extends ThreadedDeleteFeature implements Delete {
 
-    private AzureSession session;
+    private final AzureSession session;
 
-    private OperationContext context;
+    private final OperationContext context;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new AzurePathContainerService();
 
     public AzureDeleteFeature(final AzureSession session, final OperationContext context) {
@@ -65,7 +64,6 @@ public class AzureDeleteFeature extends ThreadedDeleteFeature implements Delete 
                     callback.delete(file);
                     try {
                         final BlobRequestOptions options = new BlobRequestOptions();
-                        options.setRetryPolicyFactory(new RetryNoRetry());
                         session.getClient().getContainerReference(containerService.getContainer(file).getName())
                                 .getBlockBlobReference(containerService.getKey(file)).delete(
                                 DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
@@ -84,7 +82,6 @@ public class AzureDeleteFeature extends ThreadedDeleteFeature implements Delete 
             callback.delete(file);
             try {
                 final BlobRequestOptions options = new BlobRequestOptions();
-                options.setRetryPolicyFactory(new RetryNoRetry());
                 session.getClient().getContainerReference(containerService.getContainer(file).getName()).delete(
                         AccessCondition.generateEmptyCondition(), options, context);
             }

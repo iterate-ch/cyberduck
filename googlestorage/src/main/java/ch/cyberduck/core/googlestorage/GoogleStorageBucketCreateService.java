@@ -30,7 +30,7 @@ import org.jets3t.service.utils.ServiceUtils;
 
 public class GoogleStorageBucketCreateService {
 
-    private GoogleStorageSession session;
+    private final GoogleStorageSession session;
 
     public GoogleStorageBucketCreateService(final GoogleStorageSession session) {
         this.session = session;

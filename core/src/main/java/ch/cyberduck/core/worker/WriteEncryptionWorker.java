@@ -34,28 +34,23 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     /**
      * Selected files.
      */
-    private List<Path> files;
+    private final List<Path> files;
 
     /**
      * Algorithm
      */
-    private Encryption.Algorithm algorithm;
+    private final Encryption.Algorithm algorithm;
 
     /**
      * Descend into directories
      */
-    private RecursiveCallback<Encryption.Algorithm> callback;
+    private final RecursiveCallback<Encryption.Algorithm> callback;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
                                  final boolean recursive, final ProgressListener listener) {
-        this(files, algorithm, new RecursiveCallback<Encryption.Algorithm>() {
-            @Override
-            public boolean recurse(final Path directory, final Encryption.Algorithm value) {
-                return recursive;
-            }
-        }, listener);
+        this(files, algorithm, new BooleanRecursiveCallback<Encryption.Algorithm>(recursive), listener);
     }
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
@@ -70,6 +65,9 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;

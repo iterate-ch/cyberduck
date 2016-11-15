@@ -32,9 +32,9 @@ import java.io.OutputStream;
 public final class StreamCopier {
     private static final Logger log = Logger.getLogger(StreamCopier.class);
 
-    private StreamCancelation cancel;
+    private final StreamCancelation cancel;
 
-    private StreamProgress progress;
+    private final StreamProgress progress;
 
     private BytecountStreamListener listener
             = new BytecountStreamListener(new DisabledStreamListener());

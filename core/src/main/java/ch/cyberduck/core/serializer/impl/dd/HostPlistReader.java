@@ -26,7 +26,7 @@ import com.dd.plist.NSDictionary;
 
 public class HostPlistReader extends PlistReader<Host> {
 
-    private DeserializerFactory deserializer;
+    private final DeserializerFactory deserializer;
 
     public HostPlistReader() {
         this.deserializer = new DeserializerFactory();

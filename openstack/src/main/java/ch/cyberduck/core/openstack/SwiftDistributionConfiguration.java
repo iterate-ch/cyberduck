@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -56,15 +55,15 @@ import ch.iterate.openstack.swift.model.ContainerMetadata;
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
-    private SwiftSession session;
+    private final SwiftSession session;
 
-    private PathContainerService containerService
+    private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private Map<Path, Distribution> cache
+    private final Map<Path, Distribution> cache
             = new HashMap<Path, Distribution>();
 
-    private SwiftRegionService regionService;
+    private final SwiftRegionService regionService;
 
     public SwiftDistributionConfiguration(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -76,7 +75,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution configuration, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution configuration, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(regionService.lookup(container),
@@ -112,7 +112,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(regionService.lookup(container),
@@ -140,7 +141,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.<Path>singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+                distribution.setContainers(Collections.singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
                 cache.put(container, distribution);
                 return distribution;
             }
@@ -199,7 +200,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
 
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        return Arrays.asList(Distribution.DOWNLOAD);
+        return Collections.singletonList(Distribution.DOWNLOAD);
     }
 
     @Override
