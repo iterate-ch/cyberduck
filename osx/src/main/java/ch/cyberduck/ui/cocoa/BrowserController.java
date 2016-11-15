@@ -3401,6 +3401,7 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
+                session.close();
                 session = null;
                 editors.clear();
                 cache.clear();
