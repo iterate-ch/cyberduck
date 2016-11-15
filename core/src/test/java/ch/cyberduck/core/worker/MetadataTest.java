@@ -65,10 +65,11 @@ public class MetadataTest {
         // equal: value
         // removed: removed
         // diff: null
-        // Why is unique missing? It's existing on one file only skipping it in Return
+        // unique: null
         expectedReadMetadata.put("equal", "value");
         expectedReadMetadata.put("diff", null);
         expectedReadMetadata.put("removed", "removed");
+        expectedReadMetadata.put("unique", null);
 
         Map<String, String> expectedMetadataA = new HashMap<>();
         // result for written metadata on file A is
