@@ -38,7 +38,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
 public class DAVListService implements ListService {
-    private static final Logger log = Logger.getLogger(DAVReadFeature.class);
+    private static final Logger log = Logger.getLogger(DAVListService.class);
 
     private final DAVSession session;
 
