@@ -89,7 +89,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1805,7 +1804,6 @@ public class InfoController extends ToolbarWindowController {
                 Location.Name location;
                 LoggingConfiguration logging;
                 VersioningConfiguration versioning;
-                final Set<String> containers = new HashSet<String>();
                 // Available encryption keys in KMS
                 Set<Encryption.Algorithm> managedEncryptionKeys = new HashSet<Encryption.Algorithm>();
                 final Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
@@ -1821,9 +1819,6 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Logging.class) != null) {
                         logging = session.getFeature(Logging.class).getConfiguration(file);
-                        for(Path c : session.list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener())) {
-                            containers.add(c.getName());
-                        }
                     }
                     if(session.getFeature(Versioning.class) != null) {
                         versioning = session.getFeature(Versioning.class).getConfiguration(file);
@@ -1859,12 +1854,12 @@ public class InfoController extends ToolbarWindowController {
                     super.cleanup();
                     if(logging != null) {
                         bucketLoggingButton.setState(logging.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(!containers.isEmpty()) {
+                        if(!logging.getContainers().isEmpty()) {
                             bucketLoggingPopup.removeAllItems();
                         }
-                        for(String c : containers) {
-                            bucketLoggingPopup.addItemWithTitle(c);
-                            bucketLoggingPopup.lastItem().setRepresentedObject(c);
+                        for(Path c : logging.getContainers()) {
+                            bucketLoggingPopup.addItemWithTitle(c.getName());
+                            bucketLoggingPopup.lastItem().setRepresentedObject(c.getName());
                         }
                         if(logging.isEnabled()) {
                             bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());

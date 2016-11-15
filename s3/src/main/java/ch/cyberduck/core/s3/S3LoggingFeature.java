@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -31,6 +32,8 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
+
+import java.util.EnumSet;
 
 public class S3LoggingFeature implements Logging {
     private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
@@ -53,8 +56,17 @@ public class S3LoggingFeature implements Logging {
         try {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
-            return new LoggingConfiguration(status.isLoggingEnabled(),
+            final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
+            try {
+                configuration.setContainers(new S3BucketListService(session).list(
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                        new DisabledListProgressListener()));
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+            }
+            return configuration;
         }
         catch(ServiceException e) {
             try {
