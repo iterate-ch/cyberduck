@@ -85,7 +85,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            pool.release(session);
+            pool.release(session, null);
         }
         catch(IllegalStateException e) {
             log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));

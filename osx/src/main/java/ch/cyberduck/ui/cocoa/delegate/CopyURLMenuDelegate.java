@@ -73,7 +73,7 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
             return list;
         }
         finally {
-            pool.release(session);
+            pool.release(session, null);
         }
     }
 

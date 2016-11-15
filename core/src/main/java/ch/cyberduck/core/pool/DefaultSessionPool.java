@@ -144,7 +144,7 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public void release(final Session<?> session) {
+    public void release(final Session<?> session, final BackgroundException failure) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Release session %s to pool", session));
         }
@@ -237,7 +237,7 @@ public class DefaultSessionPool implements SessionPool {
             return session.getFeature(type);
         }
         finally {
-            this.release(session);
+            this.release(session, null);
         }
     }
 

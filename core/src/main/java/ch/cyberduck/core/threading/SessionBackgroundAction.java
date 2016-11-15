@@ -140,8 +140,12 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         try {
             return this.run(session);
         }
+        catch(BackgroundException e) {
+            pool.release(session, e);
+            throw e;
+        }
         finally {
-            pool.release(session);
+            pool.release(session, null);
         }
     }
 

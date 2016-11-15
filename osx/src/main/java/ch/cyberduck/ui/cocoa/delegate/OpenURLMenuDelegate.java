@@ -68,7 +68,7 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
             return list;
         }
         finally {
-            pool.release(session);
+            pool.release(session, null);
         }
     }
 

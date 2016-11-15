@@ -34,7 +34,7 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
-    public void release(final Session<?> session) {
+    public void release(final Session<?> session, final BackgroundException failure) {
         //
     }
 
