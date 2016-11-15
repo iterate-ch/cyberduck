@@ -69,7 +69,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
 			defaults.put("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
 			defaults.put("factory.temporaryfiles.class", typeof(WindowsTemporaryFileService).AssemblyQualifiedName);
-			defaults.put("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
 			defaults.put("factory.trash.class", typeof(RecycleLocalTrashFeature).AssemblyQualifiedName);
 			defaults.put("factory.symlink.class", typeof(NullLocalSymlinkFeature).AssemblyQualifiedName);
 			defaults.put("factory.terminalservice.class", typeof(SshTerminalService).AssemblyQualifiedName);
@@ -84,11 +83,13 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 			{
 				defaults.put("factory.applicationlauncher.class", typeof(WindowsUAPApplicationLauncher).AssemblyQualifiedName);
 				defaults.put("factory.browserlauncher.class", typeof(WindowsUAPBrowserLauncher).AssemblyQualifiedName);
+				defaults.put("factory.reveal.class", typeof(UAPExplorerRevealService).AssemblyQualifiedName);
 			}
 			else
 			{
 				defaults.put("factory.applicationlauncher.class", typeof(WindowsProcessApplicationLauncher).AssemblyQualifiedName);
 				defaults.put("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
+				defaults.put("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
 			}
 
 			defaults.put("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);

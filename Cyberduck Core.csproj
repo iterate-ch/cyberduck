@@ -130,6 +130,7 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RecycleLocalTrashFeature.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RegistryApplicationFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\SystemLocal.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\UAPExplorerRevealService.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\Win32FileDescriptor.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsUAPApplicationLauncher.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsProcessApplicationLauncher.cs" />
