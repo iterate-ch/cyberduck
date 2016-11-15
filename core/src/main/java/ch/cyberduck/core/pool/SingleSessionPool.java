@@ -49,12 +49,12 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
-    public int getNumActive() {
+    public Integer getNumActive() {
         return 1;
     }
 
     @Override
-    public int getNumIdle() {
+    public Integer getNumIdle() {
         return 1;
     }
 

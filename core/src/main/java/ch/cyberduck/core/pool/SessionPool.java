@@ -35,12 +35,12 @@ public interface SessionPool {
     /**
      * @return Number of active connections in pool
      */
-    int getNumActive();
+    Integer getNumActive();
 
     /**
      * @return Number of idle connections in pool
      */
-    int getNumIdle();
+    Integer getNumIdle();
 
     Session.State getState();
 

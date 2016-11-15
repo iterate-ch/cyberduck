@@ -210,12 +210,12 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public int getNumActive() {
+    public Integer getNumActive() {
         return pool.getNumActive();
     }
 
     @Override
-    public int getNumIdle() {
+    public Integer getNumIdle() {
         return pool.getNumIdle();
     }
 
