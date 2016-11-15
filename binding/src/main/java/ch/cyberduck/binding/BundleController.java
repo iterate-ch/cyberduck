@@ -21,6 +21,8 @@ import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSMutableParagraphStyle;
 import ch.cyberduck.binding.application.NSParagraphStyle;
 import ch.cyberduck.binding.application.NSText;
+import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
@@ -28,6 +30,7 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.FactoryException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public abstract class BundleController extends ProxyController {
@@ -131,5 +134,26 @@ public abstract class BundleController extends ProxyController {
 
     public int alert(final NSAlert alert) {
         return alert.runModal();
+    }
+
+    protected void updateField(final NSTextView f, final String value) {
+        if(null == f) {
+            return;
+        }
+        f.setString(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
+    }
+
+    protected void updateField(final NSTextField f, final String value) {
+        if(null == f) {
+            return;
+        }
+        f.setStringValue(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
+    }
+
+    protected void updateField(final NSTextField f, final String value, final NSDictionary attributes) {
+        if(null == f) {
+            return;
+        }
+        f.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY, attributes));
     }
 }

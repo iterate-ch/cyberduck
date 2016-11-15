@@ -220,7 +220,7 @@ public class Terminal {
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 // Already connect here because the tilde expander may need to use the current working directory
@@ -258,7 +258,7 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(new TerminalCertificateStore(reader))),
+                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))),
                             Collections.singletonMap(
                                     remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             )
@@ -326,11 +326,12 @@ public class Terminal {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
+        final Host host = session.getHost();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
-            session.getHost().setTransfer(Host.TransferType.concurrent);
+            host.setTransfer(Host.TransferType.concurrent);
         }
         else {
-            session.getHost().setTransfer(Host.TransferType.newconnection);
+            host.setTransfer(Host.TransferType.newconnection);
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.existing.name())) {
             prompt = new DisabledTransferPrompt() {
@@ -357,10 +358,10 @@ public class Terminal {
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter),
                 new CertificateStoreX509TrustManager(
-                        new DefaultTrustManagerHostnameCallback(session.getHost()),
+                        new DefaultTrustManagerHostnameCallback(host),
                         new TerminalCertificateStore(reader)
                 ),
-                new PreferencesX509KeyManager(new TerminalCertificateStore(reader)));
+                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;

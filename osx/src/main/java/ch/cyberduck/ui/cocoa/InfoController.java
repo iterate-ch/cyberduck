@@ -321,7 +321,6 @@ public class InfoController extends ToolbarWindowController {
     public void windowWillClose(final NSNotification notification) {
         cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
                 this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
-        this.window().endEditingFor(null);
         super.windowWillClose(notification);
     }
 
@@ -1580,10 +1579,10 @@ public class InfoController extends ToolbarWindowController {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
-            controller.background(new WorkerBackgroundAction<List<Permission>>(controller, session, cache,
+            controller.background(new WorkerBackgroundAction<PermissionOverwrite>(controller, session, cache,
                     new ReadPermissionWorker(files) {
                         @Override
-                        public void cleanup(final List<Permission> permissions) {
+                        public void cleanup(final PermissionOverwrite permissions) {
                             setPermissions(permissions);
                             togglePermissionSettings(true);
                         }
@@ -1592,53 +1591,38 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
-    private void setPermissions(final List<Permission> permissions) {
-        boolean overwrite = true;
-        for(Permission permission : permissions) {
-            updateCheckbox(ownerr, overwrite, permission.getUser().implies(Permission.Action.read));
-            updateCheckbox(ownerw, overwrite, permission.getUser().implies(Permission.Action.write));
-            updateCheckbox(ownerx, overwrite, permission.getUser().implies(Permission.Action.execute));
+    private void setPermissions(final PermissionOverwrite permissions) {
+        this.updateCheckbox(ownerr, permissions.user.read);
+        this.updateCheckbox(ownerw, permissions.user.write);
+        this.updateCheckbox(ownerx, permissions.user.execute);
 
-            updateCheckbox(groupr, overwrite, permission.getGroup().implies(Permission.Action.read));
-            updateCheckbox(groupw, overwrite, permission.getGroup().implies(Permission.Action.write));
-            updateCheckbox(groupx, overwrite, permission.getGroup().implies(Permission.Action.execute));
+        this.updateCheckbox(groupr, permissions.group.read);
+        this.updateCheckbox(groupw, permissions.group.write);
+        this.updateCheckbox(groupx, permissions.group.execute);
 
-            updateCheckbox(otherr, overwrite, permission.getOther().implies(Permission.Action.read));
-            updateCheckbox(otherw, overwrite, permission.getOther().implies(Permission.Action.write));
-            updateCheckbox(otherx, overwrite, permission.getOther().implies(Permission.Action.execute));
+        this.updateCheckbox(otherr, permissions.other.read);
+        this.updateCheckbox(otherw, permissions.other.write);
+        this.updateCheckbox(otherx, permissions.other.execute);
 
-            // For more than one file selected, take into account permissions of previous file
-            overwrite = false;
-        }
-        final int count = permissions.size();
-        if(count > 1) {
-            permissionsField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
+        if(this.numberOfFiles() > 1) {
+            permissionsField.setStringValue(permissions.toString());
+            octalField.setStringValue(permissions.getMode());
         }
         else {
-            for(Permission permission : permissions) {
-                permissionsField.setStringValue(permission.toString());
-                octalField.setStringValue(permission.getMode());
-            }
+            final Permission permission = permissions.resolve(Permission.EMPTY);
+            permissionsField.setStringValue(permission.toString());
+            octalField.setStringValue(permission.getMode());
         }
     }
 
     /**
-     * @param checkbox  The checkbox to update
-     * @param overwrite Overwrite previous state
-     * @param on        Set the checkbox to on state
+     * @param checkbox The checkbox to update
+     * @param enabled  Set the checkbox to on state
      */
-    private void updateCheckbox(NSButton checkbox, boolean overwrite, boolean on) {
+    private void updateCheckbox(NSButton checkbox, Boolean enabled) {
         // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
         // If necessary, this method also redraws the receiver.
-        if((checkbox.state() == NSCell.NSOffState || overwrite) && !on) {
-            checkbox.setState(NSCell.NSOffState);
-        }
-        else if((checkbox.state() == NSCell.NSOnState || overwrite) && on) {
-            checkbox.setState(NSCell.NSOnState);
-        }
-        else {
-            checkbox.setState(NSCell.NSMixedState);
-        }
+        checkbox.setState(enabled != null ? enabled ? NSCell.NSOnState : NSCell.NSOffState : NSCell.NSMixedState);
         checkbox.setEnabled(true);
     }
 
@@ -1698,7 +1682,7 @@ public class InfoController extends ToolbarWindowController {
                     new ReadSizeWorker(files) {
                         @Override
                         public void cleanup(final Long size) {
-                            updateSize(size);
+                            setSize(size);
                             toggleSizeSettings(true);
                         }
                     }
@@ -1706,7 +1690,7 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
-    private void updateSize(long size) {
+    private void setSize(final Long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                 SizeFormatterFactory.get().format(size, true),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
@@ -2113,15 +2097,17 @@ public class InfoController extends ToolbarWindowController {
             this.initPermissions();
         }
         else {
-            boolean change = false;
-            for(Path file : files) {
-                if(!file.attributes().getPermission().equals(permission)) {
-                    change = true;
-                }
-            }
-            if(change) {
-                this.setPermissions(Collections.singletonList(permission));
-                this.changePermissions(permission, false);
+            if(this.togglePermissionSettings(false)) {
+                controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                                new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
+                                    @Override
+                                    public void cleanup(final Boolean done) {
+                                        togglePermissionSettings(true);
+                                        initPermissions();
+                                    }
+                                }
+                        )
+                );
             }
         }
     }
@@ -2151,7 +2137,18 @@ public class InfoController extends ToolbarWindowController {
             this.initPermissions();
         }
         else {
-            this.changePermissions(permission, true);
+            if(this.togglePermissionSettings(false)) {
+                controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
+                                new WritePermissionWorker(files, permission, new AlertRecursiveCallback<Permission>(this), controller) {
+                                    @Override
+                                    public void cleanup(final Boolean done) {
+                                        togglePermissionSettings(true);
+                                        initPermissions();
+                                    }
+                                }
+                        )
+                );
+            }
         }
     }
 
@@ -2160,67 +2157,24 @@ public class InfoController extends ToolbarWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        final Permission p = this.getPermissionFromCheckboxes();
-        this.setPermissions(Collections.singletonList(p));
-        this.changePermissions(p, false);
-    }
-
-    /**
-     * Permission selection from checkboxes.
-     *
-     * @return Never null.
-     */
-    private Permission getPermissionFromCheckboxes() {
-        Permission.Action u = Permission.Action.none;
-        if(ownerr.state() == NSCell.NSOnState) {
-            u = u.or(Permission.Action.read);
-        }
-        if(ownerw.state() == NSCell.NSOnState) {
-            u = u.or(Permission.Action.write);
-        }
-        if(ownerx.state() == NSCell.NSOnState) {
-            u = u.or(Permission.Action.execute);
-        }
-        Permission.Action g = Permission.Action.none;
-        if(groupr.state() == NSCell.NSOnState) {
-            g = g.or(Permission.Action.read);
-        }
-        if(groupw.state() == NSCell.NSOnState) {
-            g = g.or(Permission.Action.write);
-        }
-        if(groupx.state() == NSCell.NSOnState) {
-            g = g.or(Permission.Action.execute);
-        }
-        Permission.Action o = Permission.Action.none;
-        if(otherr.state() == NSCell.NSOnState) {
-            o = o.or(Permission.Action.read);
-        }
-        if(otherw.state() == NSCell.NSOnState) {
-            o = o.or(Permission.Action.write);
-        }
-        if(otherx.state() == NSCell.NSOnState) {
-            o = o.or(Permission.Action.execute);
-        }
-        return new Permission(u, g, o);
-    }
-
-    /**
-     * @param permission UNIX permissions to apply to files
-     * @param recursive  Recursively apply to child of directories
-     */
-    private void changePermissions(final Permission permission, final boolean recursive) {
+        final PermissionOverwrite permission = new PermissionOverwrite(
+                new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
         if(this.togglePermissionSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session, cache,
-                    new WritePermissionWorker(files, permission, recursive ? new AlertRecursiveCallback<Permission>(this) : new BooleanRecursiveCallback<Permission>(false), controller) {
+                    new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<Permission>(false), controller) {
                                 @Override
                                 public void cleanup(final Boolean done) {
                                     togglePermissionSettings(true);
+                                    initPermissions();
                                 }
                             }
                     )
             );
         }
     }
+
 
     /**
      * Toggle settings before and after update
@@ -2509,7 +2463,7 @@ public class InfoController extends ToolbarWindowController {
                     new CalculateSizeWorker(files, controller) {
                         @Override
                         public void cleanup(final Long size) {
-                            updateSize(size);
+                            setSize(size);
                             toggleSizeSettings(true);
                         }
 
@@ -2518,7 +2472,7 @@ public class InfoController extends ToolbarWindowController {
                             invoke(new WindowMainAction(InfoController.this) {
                                 @Override
                                 public void run() {
-                                    updateSize(size);
+                                    setSize(size);
                                 }
                             });
                         }
@@ -2551,7 +2505,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     @Action
-    public void helpButtonClicked(final NSButton sender) {
+    public void helpButtonClicked(final ID sender) {
         final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
         switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
             case info:

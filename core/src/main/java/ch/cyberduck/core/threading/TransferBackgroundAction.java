@@ -125,7 +125,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                 LoginCallbackFactory.get(controller),
                 HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()),
                 controller, session, cache, listener, progress, transcript, transfer, options, prompt, error, meter, stream,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost()), controller), new KeychainX509KeyManager(controller));
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost()), controller), new KeychainX509KeyManager(session.getHost(), controller));
     }
 
     public TransferBackgroundAction(final LoginService login,

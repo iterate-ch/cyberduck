@@ -236,13 +236,11 @@ public abstract class Preferences {
         defaults.put("mail.feedback", "mailto:support@cyberduck.io");
 
         defaults.put("website.donate", "https://cyberduck.io/donate/");
-        defaults.put("website.home", "http://cyberduck.io/");
-        defaults.put("website.forum", "http://forum.cyberduck.io/");
-        defaults.put("website.help", "http://help.cyberduck.io/" + this.locale());
+        defaults.put("website.home", "https://cyberduck.io/");
+        defaults.put("website.help", "https://help.cyberduck.io/" + this.locale());
         defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
         defaults.put("website.cli", "https://duck.sh/");
-        defaults.put("website.qloudsonic", "https://qloudsonic.io/plans");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
@@ -851,10 +849,6 @@ public abstract class Preferences {
           Search for passphrases in Keychain
          */
         defaults.put("connection.login.useKeychain", String.valueOf(true));
-        /*
-          Add to Keychain option is checked in login prompt
-         */
-        defaults.put("connection.login.addKeychain", String.valueOf(true));
 
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", Scheme.ftp.name());

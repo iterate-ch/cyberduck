@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -50,10 +49,6 @@ public class DuplicateFileController extends FileController {
                 null,
                 LocaleFactory.localizedString("Cancel", "Duplicate")
         ));
-    }
-
-    @Override
-    protected void beginSheet(final NSWindow window) {
         final Path selected = this.getSelected();
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));
         String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
@@ -61,7 +56,6 @@ public class DuplicateFileController extends FileController {
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                 StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
         inputField.setStringValue(proposal);
-        super.beginSheet(window);
     }
 
     @Override

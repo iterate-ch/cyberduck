@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
@@ -75,7 +74,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
-        SheetController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(parent, alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
@@ -92,11 +91,11 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
                 new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
-        c.beginSheet();
-        if(c.returnCode() == SheetCallback.ALTERNATE_OPTION) {
+        final int option = c.beginSheet();
+        if(option == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
+        return option == SheetCallback.DEFAULT_OPTION;
     }
 
     @Override
@@ -113,7 +112,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
-        SheetController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(parent, alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -130,10 +129,10 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
                 new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
-        c.beginSheet();
-        if(c.returnCode() == SheetCallback.ALTERNATE_OPTION) {
+        final int option = c.beginSheet();
+        if(option == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
+        return option == SheetCallback.DEFAULT_OPTION;
     }
 }

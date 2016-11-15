@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateStoreFactory;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.Host;
 
 import java.net.Socket;
 import java.security.KeyStore;
@@ -34,20 +35,20 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
     private final Map<Key, String> memory
             = new HashMap<Key, String>();
 
-    public KeychainX509KeyManager() {
-        super(CertificateStoreFactory.get());
+    public KeychainX509KeyManager(final Host bookmark) {
+        super(CertificateStoreFactory.get(), bookmark);
     }
 
-    public KeychainX509KeyManager(final Controller controller) {
-        super(CertificateStoreFactory.get(controller));
+    public KeychainX509KeyManager(final Host bookmark, final Controller controller) {
+        super(CertificateStoreFactory.get(controller), bookmark);
     }
 
-    public KeychainX509KeyManager(final CertificateStore callback) {
-        super(callback);
+    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback) {
+        super(callback, bookmark);
     }
 
-    public KeychainX509KeyManager(final CertificateStore callback, final KeyStore store) {
-        super(callback, store);
+    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
+        super(bookmark, callback, store);
     }
 
     @Override

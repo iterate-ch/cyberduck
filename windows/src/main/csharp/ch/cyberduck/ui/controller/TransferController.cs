@@ -674,7 +674,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     controller,
                     SessionFactory.create(transfer.getHost(),
                         new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost())),
-                        new KeychainX509KeyManager()), controller.GetController(transfer),
+                        new KeychainX509KeyManager(transfer.getHost())), controller.GetController(transfer),
                     controller.GetController(transfer), controller, transfer, options)
             {
                 _transfer = transfer;
