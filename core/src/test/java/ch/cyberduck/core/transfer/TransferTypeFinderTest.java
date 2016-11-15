@@ -33,13 +33,8 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeSingleFile() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h") {
-            @Override
-            public TransferType getTransferType() {
-                return Host.TransferType.concurrent;
-            }
-        };
-        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
+        final Host host = new Host(new TestProtocol(), "h");
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.concurrent, new DownloadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.file)),
                 new NullLocal("/t")));
         assertEquals(Host.TransferType.concurrent, type);
@@ -47,14 +42,9 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeMultipleFilesConcurrent() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h") {
-            @Override
-            public TransferType getTransferType() {
-                return Host.TransferType.concurrent;
-            }
-        };
+        final Host host = new Host(new TestProtocol(), "h");
         Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.concurrent, new DownloadTransfer(host,
                 Arrays.asList(
                         new TransferItem(file, new DefaultTemporaryFileService().create(file)),
                         new TransferItem(file, new DefaultTemporaryFileService().create(file))
@@ -65,14 +55,9 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeMultipleFilesSingle() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h") {
-            @Override
-            public TransferType getTransferType() {
-                return Host.TransferType.newconnection;
-            }
-        };
+        final Host host = new Host(new TestProtocol(), "h");
         Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.newconnection, new DownloadTransfer(host,
                 Arrays.asList(
                         new TransferItem(file, new DefaultTemporaryFileService().create(file)),
                         new TransferItem(file, new DefaultTemporaryFileService().create(file))
@@ -83,13 +68,8 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeSingleFolder() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h") {
-            @Override
-            public TransferType getTransferType() {
-                return Host.TransferType.concurrent;
-            }
-        };
-        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new UploadTransfer(host,
+        final Host host = new Host(new TestProtocol(), "h");
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.concurrent, new UploadTransfer(host,
                 Collections.singletonList(
                         new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("/t"))
                 )
