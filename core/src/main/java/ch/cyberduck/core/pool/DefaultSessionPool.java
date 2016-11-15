@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.NoSuchElementException;
 
-public class DefaultSessionPool extends GenericObjectPool<Session> implements SessionPool {
+public class DefaultSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
@@ -53,6 +53,8 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
 
     private final Integer connections;
 
+    protected final GenericObjectPool<Session> pool;
+
     /**
      * The number of times this action has been run
      */
@@ -65,30 +67,18 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PathCache cache, final ProgressListener progress, final Host bookmark, final Integer connections) {
-        super(new PooledSessionFactory(connect, trust, key, cache, bookmark), new GenericObjectPoolConfig() {
-            @Override
-            public String toString() {
-                final StringBuilder sb = new StringBuilder("GenericObjectPoolConfig{");
-                sb.append("connections=").append(Integer.MAX_VALUE);
-                sb.append('}');
-                return sb.toString();
-            }
-        });
         this.bookmark = bookmark;
         this.retry = Integer.max(PreferencesFactory.get().getInteger("connection.retry"), connections);
         this.progress = progress;
         this.connections = connections;
-    }
-
-    @Override
-    public void setConfig(final GenericObjectPoolConfig configuration) {
+        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setMinIdle(0);
         configuration.setMaxTotal(connections);
         configuration.setMaxIdle(connections);
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        super.setConfig(configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark), configuration);
     }
 
     @Override
@@ -97,11 +87,11 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
             Session session;
             while(true) {
                 try {
-                    session = this.borrowObject();
+                    session = pool.borrowObject();
                     break;
                 }
                 catch(NoSuchElementException e) {
-                    if(this.isClosed()) {
+                    if(pool.isClosed()) {
                         throw new ConnectionCanceledException(e);
                     }
                     if(e.getCause() instanceof BackgroundException) {
@@ -109,17 +99,17 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
                         log.warn(String.format("Failure %s obtaining connection for %s", cause, this));
                         if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
                             // Downgrade pool to single connection
-                            final int max = this.getMaxTotal() - 1;
+                            final int max = pool.getMaxTotal() - 1;
                             log.warn(String.format("Lower maximum pool size to %d connections.", max));
-                            this.setMaxTotal(max);
-                            this.setMaxIdle(this.getMaxIdle() - 1);
+                            pool.setMaxTotal(max);
+                            pool.setMaxIdle(pool.getMaxIdle() - 1);
                             if(this.retry()) {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Connect failed with failure %s", e));
                                 }
                                 // This is an automated retry. Wait some time first.
                                 this.pause();
-                                if(!this.isClosed()) {
+                                if(!pool.isClosed()) {
                                     repeat.set(repeat.get() + 1);
                                     // Retry to connect
                                     continue;
@@ -159,7 +149,7 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            this.returnObject(session);
+            pool.returnObject(session);
         }
         catch(IllegalStateException e) {
             log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
@@ -172,7 +162,7 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
             if(log.isInfoEnabled()) {
                 log.info(String.format("Close connection pool %s", this));
             }
-            super.close();
+            pool.close();
         }
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
@@ -198,7 +188,7 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
         final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override
             public boolean isCanceled() {
-                return DefaultSessionPool.this.isClosed();
+                return pool.isClosed();
             }
 
             @Override
@@ -213,6 +203,46 @@ public class DefaultSessionPool extends GenericObjectPool<Session> implements Se
     @Override
     public Host getHost() {
         return bookmark;
+    }
+
+    public Integer getSize() {
+        return connections;
+    }
+
+    @Override
+    public int getNumActive() {
+        return pool.getNumActive();
+    }
+
+    @Override
+    public int getNumIdle() {
+        return pool.getNumIdle();
+    }
+
+    @Override
+    public Session.State getState() {
+        if(pool.isClosed()) {
+            return Session.State.closed;
+        }
+        return Session.State.open;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        final Session<?> session;
+        try {
+            session = this.borrow();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure obtaining feature. %s", e.getMessage()));
+            return null;
+        }
+        try {
+            return session.getFeature(type);
+        }
+        finally {
+            this.release(session);
+        }
     }
 
     @Override

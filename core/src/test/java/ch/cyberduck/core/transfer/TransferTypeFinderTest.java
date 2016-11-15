@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -34,13 +33,13 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeSingleFile() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h");
-        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+        final Host host = new Host(new TestProtocol(), "h") {
             @Override
-            public Host.TransferType getTransferType() {
+            public TransferType getTransferType() {
                 return Host.TransferType.concurrent;
             }
-        }, new DownloadTransfer(host,
+        };
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.file)),
                 new NullLocal("/t")));
         assertEquals(Host.TransferType.concurrent, type);
@@ -48,14 +47,14 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeMultipleFilesConcurrent() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h");
-        Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+        final Host host = new Host(new TestProtocol(), "h") {
             @Override
-            public Host.TransferType getTransferType() {
+            public TransferType getTransferType() {
                 return Host.TransferType.concurrent;
             }
-        }, new DownloadTransfer(host,
+        };
+        Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
                 Arrays.asList(
                         new TransferItem(file, new DefaultTemporaryFileService().create(file)),
                         new TransferItem(file, new DefaultTemporaryFileService().create(file))
@@ -66,14 +65,14 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeMultipleFilesSingle() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h");
-        Path file = new Path("/t", EnumSet.of(Path.Type.file));
-        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+        final Host host = new Host(new TestProtocol(), "h") {
             @Override
-            public Host.TransferType getTransferType() {
+            public TransferType getTransferType() {
                 return Host.TransferType.newconnection;
             }
-        }, new DownloadTransfer(host,
+        };
+        Path file = new Path("/t", EnumSet.of(Path.Type.file));
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new DownloadTransfer(host,
                 Arrays.asList(
                         new TransferItem(file, new DefaultTemporaryFileService().create(file)),
                         new TransferItem(file, new DefaultTemporaryFileService().create(file))
@@ -84,13 +83,13 @@ public class TransferTypeFinderTest {
 
     @Test
     public void testTypeSingleFolder() throws Exception {
-        final Host host = new Host(new TestProtocol(), "h");
-        final Host.TransferType type = new TransferTypeFinder().type(new NullSession(host) {
+        final Host host = new Host(new TestProtocol(), "h") {
             @Override
-            public Host.TransferType getTransferType() {
+            public TransferType getTransferType() {
                 return Host.TransferType.concurrent;
             }
-        }, new UploadTransfer(host,
+        };
+        final Host.TransferType type = new TransferTypeFinder().type(Host.TransferType.unknown, new UploadTransfer(host,
                 Collections.singletonList(
                         new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)), new NullLocal("/t"))
                 )

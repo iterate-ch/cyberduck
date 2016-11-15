@@ -42,6 +42,7 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -353,15 +354,11 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), session, cache,
+                new SingleSessionPool(session), cache,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter),
-                new CertificateStoreX509TrustManager(
-                        new DefaultTrustManagerHostnameCallback(host),
-                        new TerminalCertificateStore(reader)
-                ),
-                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+        );
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -371,7 +368,7 @@ public class Terminal {
 
     protected Exit mount(final Session session) {
         final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
-                controller, session, cache, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
+                controller, new SingleSessionPool(session), new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -383,8 +380,8 @@ public class Terminal {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, new TerminalHostKeyVerifier(reader), worker);
+                controller,
+                new SingleSessionPool(session), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -405,8 +402,8 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, new TerminalHostKeyVerifier(reader), worker);
+                controller,
+                new SingleSessionPool(session), worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -432,18 +429,16 @@ public class Terminal {
             throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                     String.format("No application found to edit %s", remote.getName()));
         }
-        final Editor editor = factory.create(controller, session, application, remote);
+        final SingleSessionPool pool = new SingleSessionPool(session);
+        final Editor editor = factory.create(controller, pool, application, remote);
         final CountDownLatch lock = new CountDownLatch(1);
         final Worker<Transfer> worker = editor.open(new ApplicationQuitCallback() {
             @Override
             public void callback() {
                 lock.countDown();
             }
-        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                controller, session, cache, new TerminalHostKeyVerifier(reader), worker
-        );
+        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, pool, editor));
+        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(controller, pool, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;

@@ -44,6 +44,31 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
+    public Integer getSize() {
+        return 1;
+    }
+
+    @Override
+    public int getNumActive() {
+        return 1;
+    }
+
+    @Override
+    public int getNumIdle() {
+        return 1;
+    }
+
+    @Override
+    public Session.State getState() {
+        return session.getState();
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        return session.getFeature(type);
+    }
+
+    @Override
     public Host getHost() {
         return session.getHost();
     }

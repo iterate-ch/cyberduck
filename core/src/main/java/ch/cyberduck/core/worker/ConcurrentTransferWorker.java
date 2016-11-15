@@ -19,17 +19,12 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
@@ -49,16 +44,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     private final ThreadPool<TransferStatus> completion;
 
-    public ConcurrentTransferWorker(final ConnectionService connect,
+    public ConcurrentTransferWorker(final SessionPool pool,
                                     final Transfer transfer, final TransferOptions options,
                                     final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
                                     final TransferItemCallback transferItemCallback, final ConnectionCallback connectionCallback,
-                                    final ProgressListener progressListener, final StreamListener streamListener,
-                                    final X509TrustManager trust, final X509KeyManager key, final PathCache cache,
-                                    final Integer connections) {
+                                    final ProgressListener progressListener, final StreamListener streamListener) {
         super(transfer, options, prompt, meter, error, transferItemCallback, progressListener, streamListener, connectionCallback);
-        pool = new DefaultSessionPool(connect, trust, key, cache, progressListener, transfer.getHost(), connections);
-        completion = new DefaultThreadPool<TransferStatus>(connections, "transfer");
+        this.pool = pool;
+        this.completion = new DefaultThreadPool<TransferStatus>(pool.getSize(), "transfer");
     }
 
     @Override

@@ -20,10 +20,10 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.pool.SessionPool;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
     }
 
     @Override
-    public Editor create(final ProgressListener listener, final Session session, final Application application, final Path file) {
+    public Editor create(final ProgressListener listener, final SessionPool session, final Application application, final Path file) {
         return new FSEventWatchEditor(application, session, file, listener);
     }
 }

@@ -183,7 +183,7 @@ public class TransferTableDataSource extends ListDataSource {
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            final Host host = pasteboard.getSession().getHost();
+            final Host host = pasteboard.getBookmark();
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(

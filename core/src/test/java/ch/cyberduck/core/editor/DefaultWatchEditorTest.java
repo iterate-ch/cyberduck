@@ -28,6 +28,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
+import ch.cyberduck.core.pool.SingleSessionPool;
 
 import org.junit.Test;
 
@@ -40,21 +41,21 @@ public class DefaultWatchEditorTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(null, new NullSession(new Host(new TestProtocol())),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(null, new SingleSessionPool(new NullSession(new Host(new TestProtocol()))),
                 new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplicationNoFile() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new NullSession(new Host(new TestProtocol())),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new NullSession(new Host(new TestProtocol()))),
                 new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new NullSession(new Host(new TestProtocol())),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new NullSession(new Host(new TestProtocol()))),
                 new Path("/remote.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         new DefaultLocalTouchFeature().touch(editor.getLocal());
         editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());

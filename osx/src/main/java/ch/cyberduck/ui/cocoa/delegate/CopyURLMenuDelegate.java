@@ -25,8 +25,11 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
@@ -50,15 +53,28 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     @Override
     protected List<DescriptiveUrl> getURLs(final Path selected) {
         final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
-        final UrlProvider provider = this.getSession().getFeature(UrlProvider.class);
-        if(provider != null) {
-            list.addAll(provider.toUrl(selected));
+        final SessionPool pool = this.getSession();
+        final Session<?> session;
+        try {
+            session = pool.borrow();
         }
-        final DistributionConfiguration feature = this.getSession().getFeature(DistributionConfiguration.class);
-        if(feature != null) {
-            list.addAll(feature.toUrl(selected));
+        catch(BackgroundException e) {
+            return list;
         }
-        return list;
+        try {
+            final UrlProvider provider = session.getFeature(UrlProvider.class);
+            if(provider != null) {
+                list.addAll(provider.toUrl(selected));
+            }
+            final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
+            if(feature != null) {
+                list.addAll(feature.toUrl(selected));
+            }
+            return list;
+        }
+        finally {
+            pool.release(session);
+        }
     }
 
     @Override

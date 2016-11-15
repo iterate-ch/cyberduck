@@ -17,18 +17,13 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
@@ -41,65 +36,18 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     private T result;
 
     public WorkerBackgroundAction(final Controller controller,
-                                  final Session session,
+                                  final SessionPool session,
                                   final Worker<T> worker) {
-        this(controller, session, PathCache.empty(), worker);
-    }
-
-    public WorkerBackgroundAction(final LoginService login,
-                                  final Controller controller,
-                                  final Session session,
-                                  final Cache<Path> cache,
-                                  final Worker<T> worker) {
-        super(login, controller, session, cache);
-        this.worker = worker;
-    }
-
-    public WorkerBackgroundAction(final LoginService login,
-                                  final Controller controller,
-                                  final Session session,
-                                  final Cache<Path> cache,
-                                  final HostKeyCallback key,
-                                  final Worker<T> worker) {
-        super(login, controller, session, cache, controller, controller, key);
-        this.worker = worker;
-    }
-
-    public WorkerBackgroundAction(final ConnectionService connection,
-                                  final Controller controller,
-                                  final Session session,
-                                  final Cache<Path> cache,
-                                  final Worker<T> worker) {
-        super(connection, controller, session, cache);
-        this.worker = worker;
-    }
-
-    public WorkerBackgroundAction(final ConnectionService connection,
-                                  final Controller controller,
-                                  final Session<?> session,
-                                  final Cache<Path> cache,
-                                  final Worker<T> worker,
-                                  final ProgressListener progress,
-                                  final TranscriptListener transcript) {
-        super(connection, controller, session, cache, progress, transcript);
+        super(controller, session);
         this.worker = worker;
     }
 
     public WorkerBackgroundAction(final Controller controller,
-                                  final Session session,
-                                  final Cache<Path> cache,
-                                  final Worker<T> worker) {
-        super(controller, session, cache);
-        this.worker = worker;
-    }
-
-    public WorkerBackgroundAction(final Controller controller,
-                                  final Session<?> session,
-                                  final Cache<Path> cache,
+                                  final SessionPool session,
                                   final Worker<T> worker,
                                   final ProgressListener progress,
                                   final TranscriptListener transcript) {
-        super(controller, session, cache, progress, transcript);
+        super(controller, session, progress, transcript);
         this.worker = worker;
     }
 
@@ -110,7 +58,7 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     }
 
     @Override
-    public T run() throws BackgroundException {
+    public T run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
         }

@@ -47,7 +47,7 @@ public class DisconnectWorker extends Worker<Void> {
             log.warn(String.format("Failure closing connection %s. %s", session, e.getMessage()));
         }
         finally {
-            PathPasteboardFactory.delete(session);
+            PathPasteboardFactory.delete(session.getHost());
         }
         return null;
     }

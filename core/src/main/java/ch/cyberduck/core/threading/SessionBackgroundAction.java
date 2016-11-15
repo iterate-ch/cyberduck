@@ -19,26 +19,15 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.text.MessageFormat;
 
 public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T>
         implements ProgressListener, TranscriptListener {
@@ -60,11 +49,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private StringBuilder transcript
             = new StringBuilder();
 
-    /**
-     * The number of times this action has been run
-     */
-    private int repeat = 0;
-
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
@@ -74,45 +58,13 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private final TranscriptListener transcriptListener;
 
-    protected final ConnectionService connection;
+    protected final SessionPool pool;
 
-    private final FailureDiagnostics<Exception> diagnostics
-            = new DefaultFailureDiagnostics();
-
-    protected final Session<?> session;
-
-    private final Cache<Path> cache;
-
-    public SessionBackgroundAction(final Session<?> session,
-                                   final Cache<Path> cache,
-                                   final AlertCallback alert,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript,
-                                   final LoginCallback prompt,
-                                   final HostKeyCallback key) {
-        this(new LoginConnectionService(prompt, key, PasswordStoreFactory.get(),
-                progress, transcript), session, cache, alert, progress, transcript);
-    }
-
-    public SessionBackgroundAction(final LoginService login,
-                                   final Session<?> session,
-                                   final Cache<Path> cache,
-                                   final AlertCallback alert,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript,
-                                   final HostKeyCallback key) {
-        this(new LoginConnectionService(login, key, progress, transcript), session, cache, alert, progress, transcript);
-    }
-
-    public SessionBackgroundAction(final ConnectionService connection,
-                                   final Session<?> session,
-                                   final Cache<Path> cache,
+    public SessionBackgroundAction(final SessionPool pool,
                                    final AlertCallback alert,
                                    final ProgressListener progress,
                                    final TranscriptListener transcript) {
-        this.connection = connection;
-        this.session = session;
-        this.cache = cache;
+        this.pool = pool;
         this.alert = alert;
         this.progressListener = progress;
         this.transcriptListener = transcript;
@@ -142,24 +94,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         this.message(this.getActivity());
     }
 
-    @Override
-    public void cancel() {
-        connection.cancel();
-        super.cancel();
-    }
-
-    /**
-     * The number of times a new connection attempt should be made. Takes into
-     * account the number of times already tried.
-     *
-     * @param failure Failure
-     * @return Greater than zero if a failed action should be repeated again
-     */
-    protected int retry(final BackgroundException failure) throws BackgroundException {
-        // The initial connection attempt does not count
-        return PreferencesFactory.get().getInteger("connection.retry") - repeat;
-    }
-
     protected void reset() throws BackgroundException {
         // Clear the transcript and exceptions
         transcript = new StringBuilder();
@@ -180,10 +114,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         try {
             // Reset status
             this.reset();
-            // Open connection
-            this.connect(session);
             // Run action
-            return super.call();
+            return this.run();
         }
         catch(ConnectionCanceledException e) {
             throw e;
@@ -192,20 +124,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             log.warn(String.format("Failure executing background action: %s", failure));
             exception = failure;
             failed = true;
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(this.retry(failure) > 0) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Retry failed background action %s", this));
-                    }
-                    // This is an automated retry. Wait some time first.
-                    this.pause(failure);
-                    if(!this.isCanceled()) {
-                        repeat++;
-                        // Re-run the action with the previous lock used
-                        return this.call();
-                    }
-                }
-            }
             throw failure;
         }
         catch(Exception e) {
@@ -216,18 +134,18 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
     }
 
-    protected boolean connect(final Session session) throws BackgroundException {
-        if(connection.check(session, cache, exception)) {
-            return true;
+    @Override
+    public T run() throws BackgroundException {
+        final Session<?> session = pool.borrow();
+        try {
+            return this.run(session);
         }
-        // Use existing connection
-        return false;
+        finally {
+            pool.release(session);
+        }
     }
 
-    protected void close(final Session session) throws BackgroundException {
-        session.close();
-        cache.clear();
-    }
+    public abstract T run(final Session<?> session) throws BackgroundException;
 
     @Override
     public boolean alert(final BackgroundException e) {
@@ -236,7 +154,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                 log.info(String.format("Display alert for failure %s", exception));
             }
             // Display alert if the action was not canceled intentionally
-            return alert.alert(session.getHost(), exception, transcript);
+            return alert.alert(pool.getHost(), exception, transcript);
         }
         return false;
     }
@@ -246,45 +164,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         this.message(StringUtils.EMPTY);
     }
 
-    /**
-     * Idle this action for some time. Blocks the caller.
-     *
-     * @param failure Failure
-     */
-    protected void pause(final BackgroundException failure) throws BackgroundException {
-        final int attempt = this.retry(failure);
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-            @Override
-            public boolean isCanceled() {
-                return SessionBackgroundAction.this.isCanceled();
-            }
-
-            @Override
-            public void progress(final Integer delay) {
-                SessionBackgroundAction.this.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                        delay, attempt));
-            }
-        });
-        pauser.await();
-    }
-
     @Override
     public String getName() {
-        return BookmarkNameProvider.toString(session.getHost());
-    }
-
-    /**
-     * @return The session instance
-     */
-    @Override
-    public Object lock() {
-        return session;
+        return BookmarkNameProvider.toString(pool.getHost());
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SessionBackgroundAction{");
-        sb.append("session=").append(session);
+        sb.append("pool=").append(pool);
         sb.append(", failed=").append(failed);
         sb.append(", exception=").append(exception);
         sb.append('}');

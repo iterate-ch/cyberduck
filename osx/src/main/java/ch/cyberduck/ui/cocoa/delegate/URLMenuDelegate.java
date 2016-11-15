@@ -32,7 +32,7 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +54,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    protected abstract Session<?> getSession();
+    protected abstract SessionPool getSession();
 
     /**
      * @return Path selected in the browser or current working directory.

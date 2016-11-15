@@ -203,16 +203,6 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return True if the control channel is either tunneled using TLS or SSH
-     */
-    public boolean isSecured() {
-        if(this.isConnected()) {
-            return host.getProtocol().isSecure();
-        }
-        return false;
-    }
-
-    /**
      * @return the host this session connects to
      */
     public Host getHost() {
@@ -244,14 +234,6 @@ public abstract class Session<C> implements TranscriptListener {
         insensitive
     }
 
-    public Host.TransferType getTransferType() {
-        switch(host.getTransfer()) {
-            case unknown:
-                return Host.TransferType.valueOf(preferences.getProperty("queue.transfer.type"));
-            default:
-                return host.getTransfer();
-        }
-    }
 
     /**
      * @return boolean True if the session has not yet been closed.

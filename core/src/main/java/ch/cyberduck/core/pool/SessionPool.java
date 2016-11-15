@@ -30,6 +30,22 @@ public interface SessionPool {
 
     Host getHost();
 
+    Integer getSize();
+
+    /**
+     * @return Number of active connections in pool
+     */
+    int getNumActive();
+
+    /**
+     * @return Number of idle connections in pool
+     */
+    int getNumIdle();
+
+    Session.State getState();
+
+    <T> T getFeature(final Class<T> type);
+
     interface Callback {
         boolean isCanceled();
     }

@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -63,9 +64,9 @@ public class CreateSymlinkController extends FileController {
 
     protected void run(final Path selected, final String symlink, final boolean edit) {
         final Path link = new Path(this.getWorkdir(), symlink, EnumSet.of(Path.Type.file));
-        parent.background(new RegistryBackgroundAction<Path>(parent, parent.getSession(), parent.getCache()) {
+        parent.background(new RegistryBackgroundAction<Path>(parent, parent.getSession()) {
             @Override
-            public Path run() throws BackgroundException {
+            public Path run(final Session<?> session) throws BackgroundException {
                 // Symlink pointing to existing file
                 final Symlink feature = session.getFeature(Symlink.class);
                 if(PreferencesFactory.get().getBoolean(
