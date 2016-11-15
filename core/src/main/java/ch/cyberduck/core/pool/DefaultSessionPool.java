@@ -144,7 +144,7 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public void release(final Session session) {
+    public void release(final Session<?> session) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Release session %s to pool", session));
         }

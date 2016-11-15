@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 public interface SessionPool {
     Session<?> borrow() throws BackgroundException;
 
-    void release(Session session);
+    void release(Session<?> session);
 
     void close();
 
