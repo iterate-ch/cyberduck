@@ -166,12 +166,7 @@ public class MetadataTest {
         // - equal values
 
         // setup write worker
-        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, updatedMetadata, false, new DisabledProgressListener()) {
-            @Override
-            public void cleanup(final Boolean result) {
-                fail();
-            }
-        };
+        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, updatedMetadata, false, new DisabledProgressListener());
 
         // execute write test
         writeWorker.run(testSession);
