@@ -67,8 +67,8 @@ public class MetadataTest {
         // diff: null
         // Why is unique missing? It's existing on one file only skipping it in Return
         expectedReadMetadata.put("equal", "value");
-        expectedReadMetadata.put("removed", "removed");
         expectedReadMetadata.put("diff", null);
+        expectedReadMetadata.put("removed", "removed");
 
         Map<String, String> expectedMetadataA = new HashMap<>();
         // result for written metadata on file A is
@@ -135,9 +135,12 @@ public class MetadataTest {
             }
         };
 
+        final Path fileA = new Path("a", EnumSet.of(Path.Type.file));
+        final Path fileB = new Path("b", EnumSet.of(Path.Type.file));
         final List<Path> files = Arrays.asList(
-                new Path("a", EnumSet.of(Path.Type.file)),
-                new Path("b", EnumSet.of(Path.Type.file)));
+                fileA,
+                fileB
+        );
 
         // setup reader
         ReadMetadataWorker readWorker = new ReadMetadataWorker(files);
@@ -146,11 +149,15 @@ public class MetadataTest {
 
         // check if actual is expected
         assertEquals(expectedReadMetadata, actualReadMetadata);
+        assertEquals(metadataAServer, fileA.attributes().getMetadata());
+        assertEquals(metadataBServer, fileB.attributes().getMetadata());
 
+
+        Map<String, String> updatedMetadata = new HashMap<>(actualReadMetadata);
         // put new value for key equal
-        actualReadMetadata.put("equal", "newvalue");
+        updatedMetadata.put("equal", "newvalue");
         // remove key "removed" (for writing)
-        actualReadMetadata.remove("removed");
+        updatedMetadata.remove("removed");
         // -> this checks multiple scenarios at once:
         // - Removing an entry
         // - updating a single property keeping everything else untouched
@@ -159,7 +166,7 @@ public class MetadataTest {
         // - equal values
 
         // setup write worker
-        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, actualReadMetadata, false, new DisabledProgressListener()) {
+        WriteMetadataWorker writeWorker = new WriteMetadataWorker(files, updatedMetadata, false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 fail();
