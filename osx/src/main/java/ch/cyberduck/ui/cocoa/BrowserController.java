@@ -21,9 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
+import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -2010,7 +2011,7 @@ public class BrowserController extends WindowController
                                 LocaleFactory.localizedString("Cancel"),
                                 null
                         );
-                        this.alert(alert, new SheetCallback() {
+                        this.alert(alert, new DisabledSheetCallback() {
                             @Override
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
@@ -2075,7 +2076,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void editBookmarkButtonClicked(final ID sender) {
-        final BookmarkController c = BookmarkControllerFactory.create(
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks,
                 bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue())
         );
         c.window().makeKeyAndOrderFront(null);
@@ -2129,7 +2130,7 @@ public class BrowserController extends WindowController
         final NSInteger index = new NSInteger(row);
         bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         bookmarkTable.scrollRowToVisible(index);
-        final BookmarkController c = BookmarkControllerFactory.create(item);
+        final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
         c.window().makeKeyAndOrderFront(null);
     }
 
@@ -2168,7 +2169,7 @@ public class BrowserController extends WindowController
                 LocaleFactory.localizedString("Delete"),
                 LocaleFactory.localizedString("Cancel"),
                 null);
-        this.alert(alert, new SheetCallback() {
+        this.alert(alert, new DisabledSheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -2558,32 +2559,32 @@ public class BrowserController extends WindowController
 
     @Action
     public void gotoButtonClicked(final ID sender) {
-        final SheetController sheet = new GotoController(this, cache);
+        final GotoController sheet = new GotoController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        final SheetController sheet = new CreateFileController(this, cache);
+        final CreateFileController sheet = new CreateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        final SheetController sheet = new CreateSymlinkController(this, cache);
+        final CreateSymlinkController sheet = new CreateSymlinkController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        final SheetController sheet = new DuplicateFileController(this, cache);
+        final DuplicateFileController sheet = new DuplicateFileController(this, cache);
         sheet.beginSheet();
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = session.getFeature(Location.class);
-        final SheetController sheet = new FolderController(this, cache,
+        final FolderController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
         sheet.beginSheet();
     }
@@ -2605,7 +2606,8 @@ public class BrowserController extends WindowController
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        SheetController sheet = new CommandController(this, session);
+        CommandController controller = new CommandController(this, session);
+        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller.window());
         sheet.beginSheet();
     }
 
@@ -2923,14 +2925,16 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final SheetController controller = ConnectionControllerFactory.create(this);
-        this.addListener(new WindowListener() {
+        final ConnectionController controller = ConnectionControllerFactory.create(this);
+        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
-            public void windowWillClose() {
-                controller.invalidate();
+            public void callback(final int returncode) {
+                if(returncode == SheetCallback.DEFAULT_OPTION) {
+                    mount(controller.getBookmark());
+                }
             }
-        });
-        controller.beginSheet();
+        }, this, controller.window());
+        sheet.beginSheet();
     }
 
     @Action
@@ -3341,7 +3345,7 @@ public class BrowserController extends WindowController
      * to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
-        return this.unmount(new SheetCallback() {
+        return this.unmount(new DisabledSheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -3372,7 +3376,7 @@ public class BrowserController extends WindowController
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new SheetCallback() {
+                this.alert(alert, new DisabledSheetCallback() {
                     @Override
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -3460,7 +3464,7 @@ public class BrowserController extends WindowController
     public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
-            if(!controller.unmount(new SheetCallback() {
+            if(!controller.unmount(new DisabledSheetCallback() {
                                        @Override
                                        public void callback(final int returncode) {
                                            if(returncode == DEFAULT_OPTION) { //Disconnect

@@ -29,7 +29,9 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WritePermissionWorker extends Worker<Boolean> {
 
@@ -41,28 +43,37 @@ public class WritePermissionWorker extends Worker<Boolean> {
     /**
      * Permissions to apply to files.
      */
-    private final PermissionOverwrite permissions;
+    private final Map<Path, Permission> permissions;
 
     /**
      * Descend into directories
      */
-    private final RecursiveCallback<PermissionOverwrite> callback;
+    private final RecursiveCallback<Permission> callback;
 
     private final ProgressListener listener;
 
     public WritePermissionWorker(final List<Path> files,
-                                 final PermissionOverwrite permissions,
-                                 final boolean recursive,
+                                 final Permission permission,
+                                 final RecursiveCallback<Permission> callback,
                                  final ProgressListener listener) {
-        this(files, permissions, new BooleanRecursiveCallback<>(recursive), listener);
+        this.files = files;
+        this.permissions = new HashMap<>();
+        for(Path f : files) {
+            this.permissions.put(f, permission);
+        }
+        this.callback = callback;
+        this.listener = listener;
     }
 
     public WritePermissionWorker(final List<Path> files,
-                                 final PermissionOverwrite permissions,
-                                 final RecursiveCallback<PermissionOverwrite> callback,
+                                 final PermissionOverwrite overwrite,
+                                 final RecursiveCallback<Permission> callback,
                                  final ProgressListener listener) {
         this.files = files;
-        this.permissions = permissions;
+        this.permissions = new HashMap<>();
+        for(Path f : files) {
+            this.permissions.put(f, overwrite.resolve(f.attributes().getPermission()));
+        }
         this.callback = callback;
         this.listener = listener;
     }
@@ -74,20 +85,19 @@ public class WritePermissionWorker extends Worker<Boolean> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            this.write(session, feature, file);
+            final Permission merged = permissions.get(file);
+            this.write(session, feature, file, merged);
         }
         return true;
     }
 
-    protected void write(final Session<?> session, final UnixPermission feature, final Path file) throws BackgroundException {
-        final Permission merged = permissions.resolve(file.attributes().getPermission());
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                file.getName(), merged));
-        feature.setUnixPermission(file, merged);
+    protected void write(final Session<?> session, final UnixPermission feature, final Path file, final Permission permission) throws BackgroundException {
+        listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"), file.getName(), permission));
+        feature.setUnixPermission(file, permission);
         if(file.isDirectory()) {
-            if(callback.recurse(file, permissions)) {
+            if(callback.recurse(file, permission)) {
                 for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
-                    this.write(session, feature, child);
+                    this.write(session, feature, child, permission);
                 }
             }
         }

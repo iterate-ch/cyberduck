@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.SheetController;
+import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAttributedString;
@@ -61,9 +61,25 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
 
-public abstract class TransferPromptController extends SheetController
-        implements TransferPrompt, ProgressListener, TranscriptListener {
+public abstract class TransferPromptController extends WindowController implements TransferPrompt, ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(TransferPromptController.class);
+
+    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
+            LocaleFactory.localizedString("Unknown"),
+            TRUNCATE_MIDDLE_ATTRIBUTES);
+
+    protected final Transfer transfer;
+
+    protected final Cache<TransferItem> cache
+            = new TransferItemCache(Integer.MAX_VALUE);
+
+    protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
+    protected final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
+    protected final NSImageCell imageCellPrototype = NSImageCell.imageCell();
+    protected final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
+
+    // Setting appearance attributes
+    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
 
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
@@ -71,34 +87,43 @@ public abstract class TransferPromptController extends SheetController
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
-            LocaleFactory.localizedString("Unknown"),
-            TRUNCATE_MIDDLE_ATTRIBUTES);
+    private final WindowController parent;
 
-    // Setting appearance attributes
-    final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+    private TransferAction action;
+
+    @Delegate
+    protected TransferPromptModel browserModel;
+    @Delegate
+    protected AbstractPathTableDelegate browserViewDelegate;
 
     /**
      * A browsable listing of duplicate files and folders
      */
     @Outlet
     private NSOutlineView browserView;
-
-    @Delegate
-    protected TransferPromptModel browserModel;
-
-    @Delegate
-    protected AbstractPathTableDelegate browserViewDelegate;
-
-    protected final Transfer transfer;
-
-    private TransferAction action;
-
-    protected final Cache<TransferItem> cache
-            = new TransferItemCache(Integer.MAX_VALUE);
+    @Outlet
+    private NSButton toggleDetailsButton;
+    @Outlet
+    private NSTextField remoteURLField;
+    @Outlet
+    private NSTextField remoteSizeField;
+    @Outlet
+    private NSTextField remoteModificationField;
+    @Outlet
+    private NSTextField localURLField;
+    @Outlet
+    private NSTextField localSizeField;
+    @Outlet
+    private NSTextField localModificationField;
+    @Outlet
+    private NSProgressIndicator statusIndicator;
+    @Outlet
+    private NSTextField statusLabel;
+    @Outlet
+    private NSPopUpButton actionPopup;
 
     public TransferPromptController(final WindowController parent, final Transfer transfer) {
-        super(parent);
+        this.parent = parent;
         this.transfer = transfer;
         this.action = TransferAction.forName(preferences.getProperty(
                 String.format("queue.prompt.%s.action.default", transfer.getType().name())));
@@ -114,9 +139,6 @@ public abstract class TransferPromptController extends SheetController
         window.setContentMinSize(window.frame().size);
         super.setWindow(window);
     }
-
-    @Outlet
-    private NSButton toggleDetailsButton;
 
     public void setToggleDetailsButton(NSButton toggleDetailsButton) {
         this.toggleDetailsButton = toggleDetailsButton;
@@ -145,17 +167,6 @@ public abstract class TransferPromptController extends SheetController
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    @Override
-    public void callback(final int returncode) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Callback with return code %d", returncode));
-        }
-        if(returncode == CANCEL_OPTION) { // Abort
-            action = TransferAction.cancel;
-        }
-        preferences.setProperty("transfer.toggle.details", this.toggleDetailsButton.state());
-    }
-
     /**
      * Reload the files in the prompt dialog
      */
@@ -175,7 +186,18 @@ public abstract class TransferPromptController extends SheetController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer));
         }
-        this.beginSheet();
+        new SheetInvoker(new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Callback with return code %d", returncode));
+                }
+                if(returncode == CANCEL_OPTION) { // Abort
+                    action = TransferAction.cancel;
+                }
+                preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
+            }
+        }, parent, window).beginSheet();
         return action;
     }
 
@@ -376,70 +398,38 @@ public abstract class TransferPromptController extends SheetController
         this.browserView.sizeToFit();
     }
 
-    protected final NSButtonCell buttonCellPrototype = NSButtonCell.buttonCell();
-    protected final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
-    protected final NSImageCell imageCellPrototype = NSImageCell.imageCell();
-    protected final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
-
-    @Outlet
-    private NSTextField remoteURLField;
-
     public void setRemoteURLField(final NSTextField f) {
         this.remoteURLField = f;
     }
-
-    @Outlet
-    private NSTextField remoteSizeField;
 
     public void setRemoteSizeField(final NSTextField f) {
         this.remoteSizeField = f;
     }
 
-    @Outlet
-    private NSTextField remoteModificationField;
-
     public void setRemoteModificationField(final NSTextField f) {
         this.remoteModificationField = f;
     }
-
-    @Outlet
-    private NSTextField localURLField;
 
     public void setLocalURLField(final NSTextField f) {
         this.localURLField = f;
     }
 
-    @Outlet
-    private NSTextField localSizeField;
-
     public void setLocalSizeField(final NSTextField f) {
         this.localSizeField = f;
     }
 
-    @Outlet
-    private NSTextField localModificationField;
-
     public void setLocalModificationField(final NSTextField f) {
         this.localModificationField = f;
     }
-
-    @Outlet
-    private NSProgressIndicator statusIndicator;
 
     public void setStatusIndicator(final NSProgressIndicator f) {
         this.statusIndicator = f;
         this.statusIndicator.setDisplayedWhenStopped(false);
     }
 
-    @Outlet
-    private NSTextField statusLabel;
-
     public void setStatusLabel(final NSTextField f) {
         this.statusLabel = f;
     }
-
-    @Outlet
-    private NSPopUpButton actionPopup;
 
     public void setActionPopup(final NSPopUpButton actionPopup) {
         this.actionPopup = actionPopup;

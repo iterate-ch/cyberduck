@@ -32,11 +32,14 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Default implementation to choose certificates from key store.
  */
-public class DefaultX509KeyManager implements X509KeyManager {
+public class DefaultX509KeyManager extends AbstractX509KeyManager implements X509KeyManager {
     private static final Logger log = Logger.getLogger(DefaultX509KeyManager.class);
 
     private javax.net.ssl.X509KeyManager _manager;
@@ -78,7 +81,37 @@ public class DefaultX509KeyManager implements X509KeyManager {
 
     @Override
     public X509Certificate getCertificate(final String alias, final String[] keyTypes, final Principal[] issuers) {
+        for(X509Certificate cert : _manager.getCertificateChain(alias)) {
+            if(this.matches(cert, keyTypes, issuers)) {
+                return cert;
+            }
+        }
         return null;
+    }
+
+    @Override
+    public List<String> list() {
+        final List<String> list = new ArrayList<String>();
+        try {
+            final javax.net.ssl.X509KeyManager manager = this.getKeystore();
+            {
+                final String[] aliases = manager.getClientAliases("RSA", null);
+                if(null != aliases) {
+                    Collections.addAll(list, aliases);
+                }
+            }
+            {
+                final String[] aliases = manager.getClientAliases("DSA", null);
+                if(null != aliases) {
+                    Collections.addAll(list, aliases);
+                }
+            }
+        }
+        catch(IOException e) {
+            log.warn(String.format("Failure listing aliases. %s", e.getMessage()));
+            return Collections.emptyList();
+        }
+        return list;
     }
 
     @Override
@@ -154,7 +187,7 @@ public class DefaultX509KeyManager implements X509KeyManager {
     }
 
     @Override
-    public PrivateKey getPrivateKey(String alias) {
+    public PrivateKey getPrivateKey(final String alias) {
         final javax.net.ssl.X509KeyManager manager;
         try {
             manager = this.getKeystore();

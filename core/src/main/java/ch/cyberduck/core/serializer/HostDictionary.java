@@ -100,6 +100,10 @@ public class HostDictionary {
             if(keyObj != null) {
                 bookmark.getCredentials().setIdentity(new LocalDictionary(deserializer).deserialize(keyObj));
             }
+            final Object certObj = dict.objectForKey("Client Certificate");
+            if(certObj != null) {
+                bookmark.getCredentials().setCertificate(certObj.toString());
+            }
             final Object portObj = dict.stringForKey("Port");
             if(portObj != null) {
                 bookmark.setPort(Integer.parseInt(portObj.toString()));

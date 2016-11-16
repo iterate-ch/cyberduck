@@ -46,10 +46,10 @@ public interface CertificateStore {
      *
      * @param keyTypes Encryption algorithms
      * @param issuers  Distinguished names. X500 Principal with distinguished name as in RFC 2253
-     * @param hostname Client hostname
+     * @param bookmark Client hostname
      * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    X509Certificate choose(String[] keyTypes, Principal[] issuers, String hostname, String prompt)
+    X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
             throws ConnectionCanceledException;
 }

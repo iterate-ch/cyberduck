@@ -66,11 +66,13 @@ public class DAVListServiceTest {
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        final Path directory = new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new DAVListService(session).list(directory,
                 new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        assertFalse(list.contains(new Path(directory, "trunk", EnumSet.of(Path.Type.directory))));
         for(Path p : list) {
-            assertEquals(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
+            assertEquals(directory, p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getCreationDate());
             assertNotNull(p.attributes().getSize());

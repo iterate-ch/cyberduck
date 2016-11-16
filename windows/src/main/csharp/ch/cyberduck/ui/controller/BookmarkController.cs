@@ -27,6 +27,8 @@ using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.sftp.openssh;
+using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
@@ -35,6 +37,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.log4j;
 using StructureMap;
 using Object = java.lang.Object;
+using Path = System.IO.Path;
 using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -45,12 +48,12 @@ namespace Ch.Cyberduck.Ui.Controller
         public const int SmallBookmarkSize = 16;
         public const int MediumBookmarkSize = 32;
         public const int LargeBookmarkSize = 64;
-        private static readonly string Auto = LocaleFactory.localizedString("Auto");
         private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
         private readonly Host _host;
+        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         private readonly Object _syncRootFavicon = new Object();
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerFavicon;
@@ -108,7 +111,7 @@ namespace Ch.Cyberduck.Ui.Controller
             modes.Add(new KeyValuePair<string, Host.TransferType>(unknown.toString(), unknown));
             foreach (
                 String name in
-                    Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+                Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
             {
                 Host.TransferType t = Host.TransferType.valueOf(name);
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
@@ -159,22 +162,14 @@ namespace Ch.Cyberduck.Ui.Controller
             Reachable();
         }
 
-        private void View_ChangedPublicKeyCheckboxEvent()
+        private void View_OpenPrivateKeyBrowserEvent()
         {
-            if (View.PkCheckboxState)
+            string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
+            if (null != _host.getCredentials().getIdentity())
             {
-                string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-                if (null != _host.getCredentials().getIdentity())
-                {
-                    selectedKeyFile = _host.getCredentials().getIdentity().getAbsolute();
-                }
-
-                View.ShowPrivateKeyBrowser(selectedKeyFile);
+                selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
             }
-            else
-            {
-                View_ChangedPrivateKey(this, new PrivateKeyArgs(null));
-            }
+            View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
         private void View_ChangedTransferEvent()
@@ -192,21 +187,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedTimezoneEvent()
         {
             string selected = View.SelectedTimezone;
-            if (selected.Equals(Auto))
+            string[] ids = TimeZone.getAvailableIDs();
+            foreach (string id in ids)
             {
-                _host.setTimezone(null);
-            }
-            else
-            {
-                string[] ids = TimeZone.getAvailableIDs();
-                foreach (string id in ids)
+                TimeZone tz;
+                if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
                 {
-                    TimeZone tz;
-                    if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
-                    {
-                        _host.setTimezone(tz);
-                        break;
-                    }
+                    _host.setTimezone(tz);
+                    break;
                 }
             }
             ItemChanged();
@@ -350,6 +338,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Favicon = IconCache.Instance.IconForName("site", 16);
 
             InitProtocols();
+            InitPrivateKeys();
+            InitClientCertificates();
             InitConnectModes();
             InitEncodings();
             InitTimezones();
@@ -365,9 +355,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
             View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
             View.ChangedTransferEvent += View_ChangedTransferEvent;
-            View.ChangedPublicKeyCheckboxEvent += View_ChangedPublicKeyCheckboxEvent;
-            View.ChangedPrivateKey += View_ChangedPrivateKey;
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
+            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
             View.ChangedNicknameEvent += View_ChangedNicknameEvent;
             View.ChangedWebURLEvent += View_ChangedWebURLEvent;
             View.ChangedCommentEvent += View_ChangedCommentEvent;
@@ -378,9 +369,40 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenWebUrl += View_OpenWebUrl;
         }
 
-        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
+        private void View_ChangedClientCertificateEvent()
         {
-            _host.getCredentials().setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
+            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
+        }
+
+        private void InitPrivateKeys()
+        {
+            foreach (
+                Local key in
+                Utils.ConvertFromJavaList<Local>(
+                    new OpenSSHPrivateKeyConfigurator(
+                        LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
+            {
+                _keys.Add(key.getAbsolute());
+            }
+            View.PopulatePrivateKeys(_keys);
+        }
+
+        private void InitClientCertificates()
+        {
+            List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
+            foreach (String certificate in Utils.ConvertFromJavaList<String>(new KeychainX509KeyManager(_host).list()))
+            {
+                keys.Add(certificate);
+            }
+            View.PopulateClientCertificates(keys);
+        }
+
+        private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
+        {
+            _host.getCredentials()
+                .setIdentity(null == e.KeyFile || e.KeyFile.Equals(LocaleFactory.localizedString("None"))
+                    ? null
+                    : LocalFactory.get(e.KeyFile));
             Update();
             ItemChanged();
         }
@@ -497,16 +519,30 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedConnectMode = _host.getFTPConnectMode();
             }
-            View.PkCheckboxEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+            View.PrivateKeyFieldEnabled = _host.getProtocol().getType() == Protocol.Type.sftp;
+
             if (_host.getCredentials().isPublicKeyAuthentication())
             {
-                View.PkCheckboxState = true;
-                View.PkLabel = _host.getCredentials().getIdentity().getAbbreviatedPath();
+                String key = _host.getCredentials().getIdentity().getAbsolute();
+                if (!_keys.Contains(key))
+                {
+                    _keys.Add(key);
+                    View.PopulatePrivateKeys(_keys);
+                }
+                View.SelectedPrivateKey = key;
             }
             else
             {
-                View.PkCheckboxState = false;
-                View.PkLabel = LocaleFactory.localizedString("No Private Key selected");
+                View.SelectedPrivateKey = LocaleFactory.localizedString("None");
+            }
+            View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https;
+            if (_host.getCredentials().isCertificateAuthentication())
+            {
+                View.SelectedClientCertificate = _host.getCredentials().getCertificate();
+            }
+            else
+            {
+                View.SelectedClientCertificate = LocaleFactory.localizedString("None");
             }
             View.WebUrlButtonToolTip = _host.getWebURL();
             View.WebURL = _host.getWebURL();
@@ -520,15 +556,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (PreferencesFactory.get().getBoolean("ftp.timezone.auto"))
-                    {
-                        View.SelectedTimezone = Auto;
-                    }
-                    else
-                    {
-                        View.SelectedTimezone =
-                            TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID();
-                    }
+                    View.SelectedTimezone =
+                        TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")).getID();
                 }
             }
             else
