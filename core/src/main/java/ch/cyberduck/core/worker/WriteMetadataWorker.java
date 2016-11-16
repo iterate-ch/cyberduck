@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Headers;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -83,14 +84,19 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             throw new ConnectionCanceledException();
         }
         // Read online metadata (storing non-edited metadata entries)
-        final Map<String, String> update = new HashMap<>(metadata);
-        // Iterate through cached metadata to remove stale entries
-        for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
+        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
+        // purge removed entries
+        for(Iterator<Map.Entry<String, String>> iterator = update.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, String> entry = iterator.next();
             if(!metadata.containsKey(entry.getKey())) {
-                update.remove(entry.getKey());
+                iterator.remove();
             }
-            else if(null == metadata.get(entry.getKey())) {
-                // Set cached value
+        }
+        // iterate all metadata entries and
+        for(Map.Entry<String, String> entry : metadata.entrySet()) {
+            // check if update is non-null (should not) && entry value is not null
+            if(update.get(entry.getKey()) != null && entry.getValue() != null) {
+                // update
                 update.put(entry.getKey(), entry.getValue());
             }
         }
