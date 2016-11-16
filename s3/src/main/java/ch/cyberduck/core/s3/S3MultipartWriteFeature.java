@@ -232,7 +232,7 @@ public class S3MultipartWriteFeature implements Write {
                 throw new IOException(e.getMessage(), e);
             }
             catch(ServiceException e) {
-                throw new IOException(e.getErrorMessage(), e);
+                throw new IOException(e.getErrorMessage(), new S3ExceptionMappingService().map(e));
             }
             finally {
                 close.set(true);
