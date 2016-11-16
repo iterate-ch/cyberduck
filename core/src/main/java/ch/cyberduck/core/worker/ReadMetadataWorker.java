@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
 import org.apache.log4j.Logger;
@@ -33,6 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
@@ -46,54 +47,51 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
         this.files = files;
     }
 
-    /**
-     * @return Metadata
-     */
     @Override
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
-        final Map<String, Integer> count = new HashMap<String, Integer>();
-        final Map<String, String> updated = new HashMap<String, String>() {
-            @Override
-            public String put(String key, String value) {
-                int n = 0;
-                if(count.containsKey(key)) {
-                    n = count.get(key);
-                }
-                count.put(key, ++n);
-                return super.put(key, value);
-            }
-        };
-        for(Path next : files) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
-            }
-            // Reading HTTP headers custom metadata
-            next.attributes().setMetadata(feature.getMetadata(next));
-            final Map<String, String> metadata = next.attributes().getMetadata();
+
+        // Map for File > Metadata Set
+        Map<Path, Map<String, String>> fullMetadata = new HashMap<>();
+        // Map for metadata entry key > File & Metadata Values
+        Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
+
+        for(Path file : files) {
+            // Read online metadata
+            final Map<String, String> metadata = feature.getMetadata(file);
+            file.attributes().setMetadata(metadata);
+            fullMetadata.put(file, new HashMap<>(metadata));
+            // take every entry of current metadata and store it in metaGraph
             for(Map.Entry<String, String> entry : metadata.entrySet()) {
-                // Prune metadata from entries which are unique to a single file.
-                // For example md5-hash
-                if(updated.containsKey(entry.getKey())) {
-                    if(!entry.getValue().equals(updated.get(entry.getKey()))) {
-                        log.info(String.format("Nullify %s from metadata because value is not equal for selected files.", entry));
-                        updated.put(entry.getKey(), null);
-                        continue;
-                    }
+                if(graphMetadata.containsKey(entry.getKey())) {
+                    // if existing, get map, put value
+                    graphMetadata.get(entry.getKey()).put(file, entry.getValue());
                 }
-                updated.put(entry.getKey(), entry.getValue());
+                else {
+                    // if not existent create hashmap and put it back
+                    Map<Path, String> map = new HashMap<>();
+                    graphMetadata.put(entry.getKey(), map);
+                    map.put(file, entry.getValue());
+                }
             }
         }
-        for(Map.Entry<String, Integer> entry : count.entrySet()) {
-            if(files.size() == entry.getValue()) {
-                // Every file has this metadata set.
-                continue;
+
+        // Store result metadata in hashmap
+        Map<String, String> metadata = new HashMap<>();
+        for(Map.Entry<String, Map<Path, String>> entry : graphMetadata.entrySet()) {
+            if(entry.getValue().size() != files.size()) {
+                metadata.put(entry.getKey(), null);
             }
-            // Not all files selected have this metadata. Remove for editing.
-            log.info(String.format("Remove %s from metadata not available for all selected files.", entry.getKey()));
-            updated.remove(entry.getKey());
+            else {
+                // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
+                Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
+                // Check count against 1, if it is use that value, otherwise use null
+                String value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+                // store it
+                metadata.put(entry.getKey(), value);
+            }
         }
-        return updated;
+        return metadata;
     }
 
     @Override
