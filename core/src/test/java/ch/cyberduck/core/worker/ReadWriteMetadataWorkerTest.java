@@ -184,7 +184,7 @@ public class ReadWriteMetadataWorkerTest {
         assertEquals(expectedReadMetadata, actualReadMetadata);
         assertEquals(metadataAServer, fileA.attributes().getMetadata());
         assertEquals(metadataBServer, fileB.attributes().getMetadata());
-        assertEquals(metadataCServer, fileB.attributes().getMetadata());
+        assertEquals(metadataCServer, fileC.attributes().getMetadata());
 
 
         Map<String, String> updatedMetadata = new HashMap<>(actualReadMetadata);
