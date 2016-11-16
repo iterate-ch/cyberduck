@@ -41,53 +41,78 @@ public class ReadWriteMetadataWorkerTest {
     @Test
     public void test() throws Exception {
         Map<String, String> metadataAServer = new HashMap<>();
-        // Initial Values for A:
-        // equal: value
-        // diff: diff1
-        // removed: removed
-        // unique: unique
-        metadataAServer.put("equal", "value");
-        metadataAServer.put("diff", "diff1");
-        metadataAServer.put("removed", "removed");
-        metadataAServer.put("unique", "unique");
-
+        {
+            // Initial Values for A:
+            // equal: value
+            // diff: diff1
+            // removed: removed
+            // unique: unique
+            metadataAServer.put("equal", "value");
+            metadataAServer.put("diff", "diff1");
+            metadataAServer.put("removed", "removed");
+            metadataAServer.put("unique", "unique");
+        }
         Map<String, String> metadataBServer = new HashMap<>();
-        // Initial Values for B:
-        // equal: value
-        // diff: diff2
-        // removed: removed
-        metadataBServer.put("equal", "value");
-        metadataBServer.put("diff", "diff2");
-        metadataBServer.put("removed", "removed");
-
+        {
+            // Initial Values for B:
+            // equal: value
+            // diff: diff2
+            // removed: removed
+            metadataBServer.put("equal", "value");
+            metadataBServer.put("diff", "diff2");
+            metadataBServer.put("removed", "removed");
+        }
+        Map<String, String> metadataCServer = new HashMap<>();
+        {
+            // Initial Values for C:
+            // equal: value
+            // diff: diff2
+            // removed: removed
+            metadataCServer.put("equal", "value");
+            metadataCServer.put("diff", "diff3");
+            metadataCServer.put("removed", "removed");
+            metadataCServer.put("uniqueremoved", "uniqueremoved");
+        }
         Map<String, String> expectedReadMetadata = new HashMap<>();
-        // expected values:
-        // equal: value
-        // removed: removed
-        // diff: null
-        // unique: null
-        expectedReadMetadata.put("equal", "value");
-        expectedReadMetadata.put("diff", null);
-        expectedReadMetadata.put("removed", "removed");
-        expectedReadMetadata.put("unique", null);
-
+        {
+            // expected values:
+            // equal: value
+            // removed: removed
+            // diff: null
+            // unique: null
+            expectedReadMetadata.put("equal", "value");
+            expectedReadMetadata.put("diff", null);
+            expectedReadMetadata.put("removed", "removed");
+            expectedReadMetadata.put("unique", null);
+            expectedReadMetadata.put("uniqueremoved", null);
+        }
         Map<String, String> expectedMetadataA = new HashMap<>();
-        // result for written metadata on file A is
-        // equal: newvalue
-        // diff: diff1
-        // unique: unique
-        // removed should have been removed by now
-        expectedMetadataA.put("equal", "newvalue");
-        expectedMetadataA.put("diff", "diff1");
-        expectedMetadataA.put("unique", "unique");
-
+        {
+            // result for written metadata on file A is
+            // equal: newvalue
+            // diff: diff1
+            // unique: unique
+            // removed should have been removed by now
+            expectedMetadataA.put("equal", "newvalue");
+            expectedMetadataA.put("diff", "diff1");
+            expectedMetadataA.put("unique", "unique");
+        }
         Map<String, String> expectedMetadataB = new HashMap<>();
-        // result for written metadata on file B is
-        // equal: newvalue
-        // diff: diff2
-        expectedMetadataB.put("equal", "newvalue");
-        expectedMetadataB.put("diff", "diff2");
-
+        {
+            // result for written metadata on file B is
+            // equal: newvalue
+            // diff: diff2
+            expectedMetadataB.put("equal", "newvalue");
+            expectedMetadataB.put("diff", "diff2");
+        }
+        Map<String, String> expectedMetadataC = new HashMap<>();
+        {
+            // result for written metadata on file C is
+            // equal: newvalue
+            // diff: diff3
+            expectedMetadataC.put("equal", "newvalue");
+            expectedMetadataC.put("diff", "diff3");
+        }
         // Setup session used for reader and writer.
         Session testSession = new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -109,6 +134,8 @@ public class ReadWriteMetadataWorkerTest {
                                     return metadataAServer;
                                 case "b":
                                     return metadataBServer;
+                                case "c":
+                                    return metadataCServer;
                                 default:
                                     fail();
                                     return null;
@@ -125,6 +152,9 @@ public class ReadWriteMetadataWorkerTest {
                                 case "b":
                                     assertEquals(expectedMetadataB, metadata);
                                     break;
+                                case "c":
+                                    assertEquals(expectedMetadataC, metadata);
+                                    break;
                                 default:
                                     fail();
                                     break;
@@ -138,9 +168,11 @@ public class ReadWriteMetadataWorkerTest {
 
         final Path fileA = new Path("a", EnumSet.of(Path.Type.file));
         final Path fileB = new Path("b", EnumSet.of(Path.Type.file));
+        final Path fileC = new Path("c", EnumSet.of(Path.Type.file));
         final List<Path> files = Arrays.asList(
                 fileA,
-                fileB
+                fileB,
+                fileC
         );
 
         // setup reader
@@ -152,13 +184,17 @@ public class ReadWriteMetadataWorkerTest {
         assertEquals(expectedReadMetadata, actualReadMetadata);
         assertEquals(metadataAServer, fileA.attributes().getMetadata());
         assertEquals(metadataBServer, fileB.attributes().getMetadata());
+        assertEquals(metadataCServer, fileB.attributes().getMetadata());
 
 
         Map<String, String> updatedMetadata = new HashMap<>(actualReadMetadata);
-        // put new value for key equal
-        updatedMetadata.put("equal", "newvalue");
-        // remove key "removed" (for writing)
-        updatedMetadata.remove("removed");
+        {
+            // put new value for key equal
+            updatedMetadata.put("equal", "newvalue");
+            // remove key "removed" (for writing)
+            updatedMetadata.remove("removed");
+            updatedMetadata.remove("uniqueremoved");
+        }
         // -> this checks multiple scenarios at once:
         // - Removing an entry
         // - updating a single property keeping everything else untouched
