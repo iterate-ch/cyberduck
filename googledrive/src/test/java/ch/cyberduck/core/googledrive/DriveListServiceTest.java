@@ -40,7 +40,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -114,14 +114,17 @@ public class DriveListServiceTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final String name = String.format("%s:name", UUID.randomUUID().toString());
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
         new DefaultTouchFeature(session).touch(file);
+        new DriveDirectoryFeature(session).mkdir(folder);
         file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
+        folder.attributes().setVersionId(new DriveFileidProvider(session).getFileid(folder));
         final AttributedList<Path> list = new DriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(file));
-        new DriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(list.contains(folder));
+        new DriveDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
