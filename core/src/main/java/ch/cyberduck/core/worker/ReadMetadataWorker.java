@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -77,33 +76,20 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
             }
         }
 
-        for(Iterator<Map.Entry<String, Map<Path, String>>> iter = graphMetadata.entrySet().iterator(); iter.hasNext(); ) {
-            Map.Entry<String, Map<Path, String>> entry = iter.next();
-            // Remove if current key is not  equal to number of files
-            if(entry.getValue().size() != files.size()) {
-                iter.remove();
-            }
-        }
-        // Iterate all Path->Metadata values
-        for(Map.Entry<Path, Map<String, String>> entry : fullMetadata.entrySet()) {
-            for(Iterator<Map.Entry<String, String>> iter = entry.getValue().entrySet().iterator(); iter.hasNext(); ) {
-                Map.Entry<String, String> pair = iter.next();
-                // if merged metadata does not contain this key, remove it
-                if(!graphMetadata.containsKey(pair.getKey())) {
-                    iter.remove();
-                }
-            }
-        }
-
         // Store result metadata in hashmap
         Map<String, String> metadata = new HashMap<>();
         for(Map.Entry<String, Map<Path, String>> entry : graphMetadata.entrySet()) {
-            // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
-            Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
-            // Check count against 1, if it is use that value, otherwise use null
-            String value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
-            // store it
-            metadata.put(entry.getKey(), value);
+            if(entry.getValue().size() != files.size()) {
+                metadata.put(entry.getKey(), null);
+            }
+            else {
+                // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
+                Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
+                // Check count against 1, if it is use that value, otherwise use null
+                String value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
+                // store it
+                metadata.put(entry.getKey(), value);
+            }
         }
         return metadata;
     }
