@@ -179,6 +179,7 @@ public class WriteMetadataWorkerTest {
 
         final Map<String, String> updated = new HashMap<String, String>();
         updated.put("equal", "equal-changed");
+        updated.put("unique", null);
         updated.put("different", null);
 
         WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
