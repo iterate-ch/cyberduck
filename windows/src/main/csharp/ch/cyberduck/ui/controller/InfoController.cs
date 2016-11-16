@@ -60,6 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof(InfoController).FullName);
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
+        private readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
