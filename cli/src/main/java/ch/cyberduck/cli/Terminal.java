@@ -354,7 +354,7 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
-                new SingleSessionPool(session), cache,
+                new SingleSessionPool(session),
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter)

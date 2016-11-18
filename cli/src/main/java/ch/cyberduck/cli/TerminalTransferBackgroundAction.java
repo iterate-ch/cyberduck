@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
@@ -32,13 +31,12 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
     public TerminalTransferBackgroundAction(final TerminalController controller,
                                             final TerminalPromptReader reader,
                                             final SessionPool session,
-                                            final PathCache cache,
                                             final Transfer transfer,
                                             final TransferOptions options,
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(new TerminalLoginCallback(reader), controller, session, cache,
+        super(new TerminalLoginCallback(reader), controller, session,
                 new TerminalTransferListener(), controller, transfer, options,
                 prompt, new TerminalTransferErrorCallback(reader), meter, listener);
     }

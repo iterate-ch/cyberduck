@@ -61,9 +61,9 @@ import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferQueueFactory;
@@ -705,13 +705,13 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
-        final PathCache cache = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+        final PathCache cache = new PathCache(preferences.getInteger("transfer.cache.size"));
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
                 SessionPoolFactory.create(this, cache, transfer.getHost()),
-                cache,
-                new TransferListener() {
+                new TransferAdapter() {
                     @Override
                     public void start(final Transfer transfer) {
+                        super.start(transfer);
                         progress.start(transfer);
                         invoke(new DefaultMainAction() {
                             @Override
@@ -723,6 +723,7 @@ public final class TransferController extends WindowController implements NSTool
 
                     @Override
                     public void stop(final Transfer transfer) {
+                        super.stop(transfer);
                         progress.stop(transfer);
                         invoke(new DefaultMainAction() {
                             @Override
@@ -734,9 +735,10 @@ public final class TransferController extends WindowController implements NSTool
 
                     @Override
                     public void progress(final TransferProgress status) {
+                        super.progress(status);
                         progress.progress(status);
                     }
-                }, progress, transfer, options) {
+                }, progress, transfer.withCache(cache), options) {
             @Override
             public void init() {
                 super.init();
