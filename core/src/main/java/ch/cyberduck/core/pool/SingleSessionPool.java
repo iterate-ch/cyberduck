@@ -44,16 +44,6 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
-    public Integer getNumActive() {
-        return 1;
-    }
-
-    @Override
-    public Integer getNumIdle() {
-        return 1;
-    }
-
-    @Override
     public Session.State getState() {
         return session.getState();
     }

@@ -30,16 +30,6 @@ public interface SessionPool {
 
     Host getHost();
 
-    /**
-     * @return Number of active connections in pool
-     */
-    Integer getNumActive();
-
-    /**
-     * @return Number of idle connections in pool
-     */
-    Integer getNumIdle();
-
     Session.State getState();
 
     <T> T getFeature(final Class<T> type);
