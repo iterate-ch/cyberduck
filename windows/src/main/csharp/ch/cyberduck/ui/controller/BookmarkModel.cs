@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Resources;
 
@@ -116,7 +117,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_controller.HasSession())
             {
-                Session session = _controller.Session;
+                SessionPool session = _controller.Session;
                 if (((Host) rowobject).Equals(session.getHost()))
                 {
                     if (session.getState().Equals(Session.State.open))

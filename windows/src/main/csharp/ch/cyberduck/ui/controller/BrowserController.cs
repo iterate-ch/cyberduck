@@ -30,6 +30,7 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
@@ -363,7 +364,7 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _comparator = value; }
         }
 
-        public Session Session { get; private set; }
+        public SessionPool Session { get; private set; }
 
         public void collectionLoaded()
         {
@@ -1088,11 +1089,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Certificate()
         {
-            if (Session is SSLSession)
+            if (Session.getFeature(typeof(X509TrustManager)) != null)
             {
-                SSLSession secured = (SSLSession) Session;
-                List certificates = secured.getAcceptedIssuers();
-                CertificateStoreFactory.get().display(certificates);
+                X509TrustManager feature = (X509TrustManager) Session.getFeature(typeof(X509TrustManager));
+                CertificateStoreFactory.get().display(Arrays.asList(feature.getAcceptedIssuers()));
             }
         }
 
@@ -1149,7 +1149,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectedEncoding = encoding;
             if (IsMounted())
             {
-                if (Session.getEncoding().Equals(encoding))
+                if (Session.getHost().getEncoding().Equals(encoding))
                 {
                     return;
                 }
@@ -2302,7 +2302,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, Session.getTransferType().equals(Host.TransferType.browser));
+            this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
@@ -2316,8 +2316,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this,
-                    this, transfer, new TransferOptions()));
+                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this, transfer, new TransferOptions()));
             }
             else
             {
@@ -2591,7 +2590,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
-                Session session = Init(host);
+                SessionPool session = Init(host);
                 background(new MountAction(this, session, host, _limitListener));
             };
             Unmount(callbackDelegate);
@@ -2603,16 +2602,14 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="host"></param>
         /// <returns>A session object bound to this browser controller</returns>
-        private Session Init(Host host)
+        private SessionPool Init(Host host)
         {
-            Session = SessionFactory.create(host,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host)),
-                new KeychainX509KeyManager(host));
+            Session = SessionPoolFactory.create(this, _cache, host);
             SetWorkdir(null);
-            View.SelectedEncoding = Session.getEncoding();
+            View.SelectedEncoding = host.getEncoding();
             View.ClearTranscript();
             _navigation.clear();
-            _pasteboard = PathPasteboardFactory.getPasteboard(Session);
+            _pasteboard = PathPasteboardFactory.getPasteboard(host);
             return Session;
         }
 
@@ -2626,7 +2623,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                return Session.isConnected();
+                return Session.getState() == ch.cyberduck.core.Session.State.open;
             }
             return false;
         }
@@ -3067,7 +3064,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class SearchAction : WorkerBackgroundAction
         {
             public SearchAction(BrowserController controller)
-                : base(controller, controller.Session, controller.Cache, new InnerSearchWorker(controller))
+                : base(controller, controller.Session, new InnerSearchWorker(controller))
             {
             }
 
@@ -3116,11 +3113,10 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public CallbackTransferBackgroundAction(TransferCallback callback, BrowserController controller,
-                TransferListener transferListener, ProgressListener progressListener,
-                TranscriptListener transcriptListener, Transfer transfer, TransferOptions options)
+                TransferListener transferListener, ProgressListener progressListener, Transfer transfer, TransferOptions options)
                 : base(
-                    controller, controller.Session, controller._cache, transferListener, progressListener,
-                    transcriptListener, transfer, options)
+                    controller, controller.Session, transferListener, progressListener,
+                    transfer, options)
             {
                 _callback = callback;
                 _transfer = transfer;
@@ -3150,9 +3146,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 _selected = selected;
             }
 
-            public override object run()
+            public override object run(Session session)
             {
-                ((Compress) BrowserController.Session.getFeature(typeof (Compress))).archive(_archive,
+                ((Compress) session.getFeature(typeof (Compress))).archive(_archive,
                     BrowserController.Workdir, _selectedJava, BrowserController, BrowserController);
                 return true;
             }
@@ -3210,45 +3206,22 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class DisconnectAction : WorkerBackgroundAction
+        private class DisconnectAction : DisconnectBackgroundAction
         {
             private readonly BrowserController _controller;
+            private readonly CallbackDelegate _callback;
 
             public DisconnectAction(BrowserController controller, CallbackDelegate callback)
-                : base(controller, controller.Session, controller.Cache, new InnerDisconnectWorker(controller, callback)
-                    )
+                : base(controller, controller.Session)
             {
                 _controller = controller;
+                _callback = callback;
             }
 
-            public override void prepare()
+            public override void cleanup()
             {
-                if (null == _controller.Session)
-                {
-                    throw new ConnectionCanceledException();
-                }
-                if (!_controller.Session.isConnected())
-                {
-                    throw new ConnectionCanceledException();
-                }
-                base.prepare();
-            }
-
-            private class InnerDisconnectWorker : DisconnectWorker
-            {
-                private readonly CallbackDelegate _callback;
-
-                public InnerDisconnectWorker(BrowserController controller, CallbackDelegate callback)
-                    : base(controller.Session.getHost())
-                {
-                    _callback = callback;
-                }
-
-                public override void cleanup(object wd)
-                {
-                    base.cleanup(wd);
-                    _callback();
-                }
+                base.cleanup();
+                _callback();
             }
         }
 
@@ -3257,7 +3230,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly Host _host;
 
-            public MountAction(BrowserController controller, Session session, Host host, ListProgressListener listener)
+            public MountAction(BrowserController controller, SessionPool session, Host host, ListProgressListener listener)
                 : base(controller, controller.Session, new InnerMountWorker(controller, session, listener))
             {
                 _controller = controller;
@@ -3274,9 +3247,9 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerMountWorker : MountWorker
             {
                 private readonly BrowserController _controller;
-                private readonly Session _session;
+                private readonly SessionPool _session;
 
-                public InnerMountWorker(BrowserController controller, Session session, ListProgressListener listener)
+                public InnerMountWorker(BrowserController controller, SessionPool session, ListProgressListener listener)
                     : base(session.getHost(), controller._cache, listener)
                 {
                     _controller = controller;
@@ -3297,8 +3270,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.SetWorkdir(workdir);
                         _controller.View.RefreshBookmark(_session.getHost());
                         _controller.ToggleView(BrowserView.File);
-                        _controller.View.SecureConnection = _session is SSLSession;
-                        _controller.View.CertBasedConnection = _session is SSLSession;
+                        _controller.View.SecureConnection = _session.getHost().getProtocol().isSecure();
+                        _controller.View.CertBasedConnection = _session.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                     }
                 }
@@ -3427,9 +3400,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 _selected = selected;
             }
 
-            public override object run()
+            public override object run(Session session)
             {
-                ((Compress) BrowserController.Session.getFeature(typeof (Compress))).unarchive(_archive, _selected,
+                ((Compress) session.getFeature(typeof (Compress))).unarchive(_archive, _selected,
                     BrowserController, BrowserController);
                 return true;
             }
