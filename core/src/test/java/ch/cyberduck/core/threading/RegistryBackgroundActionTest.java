@@ -3,6 +3,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -21,7 +22,7 @@ public class RegistryBackgroundActionTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 throw new UnsupportedOperationException();
             }
-        }, new SingleSessionPool(new NullSession(new Host(new TestProtocol())))) {
+        }, new SingleSessionPool(null, new NullSession(new Host(new TestProtocol())), PathCache.empty())) {
             @Override
             public Boolean run(final Session<?> session) throws BackgroundException {
                 return false;

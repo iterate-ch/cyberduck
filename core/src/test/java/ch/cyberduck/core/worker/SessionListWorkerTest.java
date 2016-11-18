@@ -62,7 +62,7 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(session), worker));
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(null, session, PathCache.empty()), worker));
         assertTrue(task.get().isEmpty());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
@@ -86,7 +86,7 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(session), worker));
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(null, session, PathCache.empty()), worker));
         assertNotNull(task.get());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
