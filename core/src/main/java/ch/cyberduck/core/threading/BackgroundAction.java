@@ -21,9 +21,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import java.util.concurrent.Callable;
-
-public interface BackgroundAction<T> extends Callable<T> {
+public interface BackgroundAction<T> {
 
     /**
      * Called before synchronized with other pending actions
@@ -41,8 +39,8 @@ public interface BackgroundAction<T> extends Callable<T> {
 
     /**
      * Called form a worker thread not blocking the user interface
+     *
      */
-    @Override
     T call() throws BackgroundException;
 
     /**
@@ -88,8 +86,8 @@ public interface BackgroundAction<T> extends Callable<T> {
     void removeListener(BackgroundActionListener listener);
 
     /**
-     * @return True to retry
      * @param e Connection failure
+     * @return True to retry
      */
     boolean alert(BackgroundException e);
 }

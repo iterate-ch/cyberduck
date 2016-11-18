@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -42,10 +43,10 @@ public class ArchiveController extends ProxyController {
         new OverwriteController(parent).overwrite(Collections.singletonList(format.getArchive(selected)), new DefaultMainAction() {
             @Override
             public void run() {
-                parent.background(new RegistryBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache()) {
+                parent.background(new RegistryBackgroundAction<Boolean>(parent, parent.getSession()) {
                     @Override
-                    public Boolean run() throws BackgroundException {
-                        final Compress feature = parent.getSession().getFeature(Compress.class);
+                    public Boolean run(final Session<?> session) throws BackgroundException {
+                        final Compress feature = session.getFeature(Compress.class);
                         feature.archive(format, parent.workdir(), selected, this, parent);
                         return true;
                     }
@@ -77,10 +78,10 @@ public class ArchiveController extends ProxyController {
             new OverwriteController(parent).overwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
                 @Override
                 public void run() {
-                    parent.background(new RegistryBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache()) {
+                    parent.background(new RegistryBackgroundAction<Boolean>(parent, parent.getSession()) {
                         @Override
-                        public Boolean run() throws BackgroundException {
-                            final Compress feature = parent.getSession().getFeature(Compress.class);
+                        public Boolean run(final Session<?> session) throws BackgroundException {
+                            final Compress feature = session.getFeature(Compress.class);
                             feature.unarchive(archive, s, this, parent);
                             return true;
                         }

@@ -18,9 +18,9 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
-import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -44,11 +44,8 @@ import org.junit.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
@@ -112,9 +109,6 @@ public class ConcurrentTransferWorkerTest {
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 5;
-        final CountDownLatch lock = new CountDownLatch(files);
-        final CountDownLatch d = new CountDownLatch(connections - 1);
-        final Set<Path> transferred = new HashSet<Path>();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
@@ -123,6 +117,7 @@ public class ConcurrentTransferWorkerTest {
         final Host host = new Host(new FTPProtocol(), "localhost", PORT_NUMBER, new Credentials("test", "test"));
         final Transfer transfer = new UploadTransfer(host, list);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                new DefaultSessionPool(
                 new LoginConnectionService(new DisabledLoginCallback() {
                     @Override
                     public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -134,17 +129,16 @@ public class ConcurrentTransferWorkerTest {
                         //
                     }
                 }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                        new DisabledProgressListener(), new DisabledTranscriptListener()),
+                        new DisabledProgressListener(), new DisabledTranscriptListener()), new DisabledX509TrustManager(),
+                        new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host, connections),
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
-                connections);
+                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
         assertTrue(worker.run(null));
         assertEquals(0L, transfer.getTransferred(), 0L);
     }

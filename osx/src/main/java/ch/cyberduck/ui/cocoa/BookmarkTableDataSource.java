@@ -37,6 +37,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
@@ -268,7 +269,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             return dict;
         }
         if(identifier.equals(Column.status.name())) {
-            final Session session = controller.getSession();
+            final SessionPool session = controller.getSession();
             if(session != null) {
                 if(host.equals(session.getHost())) {
                     switch(session.getState()) {

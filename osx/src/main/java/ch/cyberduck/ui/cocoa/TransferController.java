@@ -37,8 +37,8 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -705,9 +705,10 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
-        final Session session = SessionFactory.create(transfer.getHost());
+        final PathCache cache = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                session,
+                SessionPoolFactory.create(this, cache, transfer.getHost()),
+                cache,
                 new TransferListener() {
                     @Override
                     public void start(final Transfer transfer) {
@@ -735,7 +736,7 @@ public final class TransferController extends WindowController implements NSTool
                     public void progress(final TransferProgress status) {
                         progress.progress(status);
                     }
-                }, progress, transcript, transfer, options) {
+                }, progress, transfer, options) {
             @Override
             public void init() {
                 super.init();
@@ -794,10 +795,10 @@ public final class TransferController extends WindowController implements NSTool
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(
-                        new DownloadDirectoryFinder().find(pasteboard.getSession().getHost()),
+                        new DownloadDirectoryFinder().find(pasteboard.getBookmark()),
                         download.getName())));
             }
-            this.add(new DownloadTransfer(pasteboard.getSession().getHost(), downloads));
+            this.add(new DownloadTransfer(pasteboard.getBookmark(), downloads));
             pasteboard.clear();
         }
     }

@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -35,7 +36,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Preferences preferences
             = PreferencesFactory.get();
 
-    public TransferPrompt create(final Controller c, final Transfer transfer, final Session session) {
+    public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool session) {
         final String clazz = preferences.getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
         if(null == clazz) {
@@ -62,7 +63,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static TransferPrompt get(final Controller c, final Transfer transfer, final Session session) {
+    public static TransferPrompt get(final Controller c, final Transfer transfer, final SessionPool session) {
         return new TransferPromptControllerFactory().create(c, transfer, session);
     }
 }

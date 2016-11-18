@@ -44,8 +44,6 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -56,6 +54,7 @@ import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -146,7 +145,7 @@ public class BrowserController extends WindowController
     /**
      *
      */
-    private Session<?> session;
+    private SessionPool session;
 
     /**
      * Log Drawer
@@ -410,7 +409,7 @@ public class BrowserController extends WindowController
                     }
                 }
                 // Delay render until path is cached in the background
-                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
+                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
                                 new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
@@ -497,7 +496,7 @@ public class BrowserController extends WindowController
                     public void progress(final TransferProgress status) {
                         message(status.getProgress());
                     }
-                }, this, this, download, options,
+                }, this, download, options,
                         new TransferPrompt() {
                             @Override
                             public TransferAction prompt(final TransferItem item) {
@@ -806,7 +805,7 @@ public class BrowserController extends WindowController
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 return BrowserController.this.getSession();
             }
 
@@ -834,7 +833,7 @@ public class BrowserController extends WindowController
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 return BrowserController.this.getSession();
             }
 
@@ -2016,7 +2015,7 @@ public class BrowserController extends WindowController
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
                                     // Delay render until path is cached in the background
-                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session, cache,
+                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session,
                                             new SearchWorker(workdir, filenameFilter, cache, listener) {
                                                 @Override
                                                 public void cleanup(final AttributedList<Path> list) {
@@ -2336,7 +2335,7 @@ public class BrowserController extends WindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
-            if(session.getEncoding().equals(encoding)) {
+            if(session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
             session.getHost().setEncoding(encoding);
@@ -2864,7 +2863,7 @@ public class BrowserController extends WindowController
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, session.getTransferType().equals(Host.TransferType.browser));
+        this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
     }
 
     /**
@@ -2975,7 +2974,7 @@ public class BrowserController extends WindowController
     /**
      * @return This browser's session or null if not mounted
      */
-    public Session<?> getSession() {
+    public SessionPool getSession() {
         return session;
     }
 
@@ -2995,7 +2994,7 @@ public class BrowserController extends WindowController
      */
     public boolean isConnected() {
         if(this.isMounted()) {
-            return session.isConnected();
+            return true;
         }
         return false;
     }
@@ -3266,16 +3265,16 @@ public class BrowserController extends WindowController
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
      *
-     * @param host Bookmark
+     * @param bookmark Bookmark
      * @return A session object bound to this browser controller
      */
-    private Session init(final Host host) {
-        session = SessionFactory.create(host);
+    private SessionPool init(final Host bookmark) {
+        session = SessionPoolFactory.create(this, cache, bookmark);
         transcript.clear();
         navigation.clear();
-        pasteboard = PathPasteboardFactory.getPasteboard(session);
+        pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
         this.setWorkdir(null);
-        this.setEncoding(session.getEncoding());
+        this.setEncoding(bookmark.getEncoding());
         return session;
     }
 
@@ -3293,8 +3292,8 @@ public class BrowserController extends WindowController
             public void run() {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
-                final Session session = init(host);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
+                final SessionPool session = init(host);
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
                         new MountWorker(host, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -3319,7 +3318,7 @@ public class BrowserController extends WindowController
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
-                                    securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                                    securityLabel.setImage(host.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
                                     securityLabel.setEnabled(session instanceof SSLSession);
                                 }
@@ -3402,6 +3401,7 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
+                session.close();
                 session = null;
                 editors.clear();
                 cache.clear();
@@ -3425,20 +3425,7 @@ public class BrowserController extends WindowController
             c.window().close();
         }
         if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session.getHost())) {
-                @Override
-                public void prepare() throws ConnectionCanceledException {
-                    if(!session.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    super.prepare();
-                }
-
-                @Override
-                protected boolean connect(Session session) throws BackgroundException {
-                    return false;
-                }
-
+            this.background(new WorkerBackgroundAction<Void>(this, session, new DisconnectWorker(session.getHost())) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
@@ -3575,7 +3562,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {
-                item.setState(session.getEncoding().equalsIgnoreCase(
+                item.setState(session.getHost().getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {

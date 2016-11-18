@@ -17,86 +17,34 @@ package ch.cyberduck.core.pool;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.log4j.Logger;
+public interface SessionPool {
+    Session<?> borrow() throws BackgroundException;
 
-public class SessionPool extends BasePooledObjectFactory<Session> {
-    private static final Logger log = Logger.getLogger(SessionPool.class);
+    void release(Session<?> session, BackgroundException failure);
 
-    private final ConnectionService connect;
+    void close();
 
-    private final X509TrustManager trust;
+    Host getHost();
 
-    private final X509KeyManager key;
+    /**
+     * @return Number of active connections in pool
+     */
+    Integer getNumActive();
 
-    private final PathCache cache;
+    /**
+     * @return Number of idle connections in pool
+     */
+    Integer getNumIdle();
 
-    private final Host host;
+    Session.State getState();
 
-    public SessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                       final PathCache cache, final Host host) {
-        this.connect = connect;
-        this.trust = trust;
-        this.key = key;
-        this.cache = cache;
-        this.host = host;
-    }
+    <T> T getFeature(final Class<T> type);
 
-    @Override
-    public Session create() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new session for host %s in pool", host));
-        }
-        return SessionFactory.create(host, trust, key);
-    }
-
-    @Override
-    public PooledObject<Session> wrap(Session session) {
-        return new DefaultPooledObject<Session>(session);
-    }
-
-    @Override
-    public void activateObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Activate session %s", session));
-        }
-        connect.check(session, cache);
-    }
-
-    @Override
-    public void passivateObject(final PooledObject<Session> p) throws Exception {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Pause session %s", session));
-        }
-    }
-
-    @Override
-    public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Destroy session %s", session));
-        }
-        session.close();
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("SessionPool{");
-        sb.append("host=").append(host);
-        sb.append('}');
-        return sb.toString();
+    interface Callback {
+        boolean isCanceled();
     }
 }

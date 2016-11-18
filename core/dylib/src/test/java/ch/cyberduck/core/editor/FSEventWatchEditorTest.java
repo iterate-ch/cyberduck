@@ -25,6 +25,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.pool.SingleSessionPool;
 
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class FSEventWatchEditorTest {
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
-                new NullSession(new Host(new TestProtocol(), "h")), path, new DisabledListProgressListener());
+                new SingleSessionPool(new NullSession(new Host(new TestProtocol(), "h"))), path, new DisabledListProgressListener());
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
         assertEquals("t.txt", editor.getRemote().getName());
         final Local local = editor.getLocal();
@@ -55,7 +56,7 @@ public class FSEventWatchEditorTest {
         final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
         final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
-                new NullSession(new Host(new TestProtocol(), "h")), file, new DisabledListProgressListener());
+                new SingleSessionPool(new NullSession(new Host(new TestProtocol(), "h"))), file, new DisabledListProgressListener());
         assertEquals(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)), editor.getRemote());
     }
 }
