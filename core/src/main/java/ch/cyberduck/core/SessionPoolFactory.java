@@ -28,8 +28,13 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host target) {
-        return new DefaultSessionPool(new LoginConnectionService(LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller, target.getProtocol()),
-                PasswordStoreFactory.get(), controller, controller),
+        return new DefaultSessionPool(
+                new LoginConnectionService(
+                        LoginCallbackFactory.get(controller),
+                        HostKeyCallbackFactory.get(controller, target.getProtocol()),
+                        PasswordStoreFactory.get(),
+                        controller,
+                        controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
                 new KeychainX509KeyManager(target),
                 cache,
