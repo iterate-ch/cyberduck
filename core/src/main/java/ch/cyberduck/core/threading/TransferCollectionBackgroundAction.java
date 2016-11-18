@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -43,13 +42,11 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     public TransferCollectionBackgroundAction(final Controller controller,
                                               final SessionPool session,
-                                              final PathCache cache,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, session, cache,
-                transferListener, progressListener, transfer, options);
+        super(controller, session, transferListener, progressListener, transfer, options);
         this.transfer = transfer;
         this.progressListener = progressListener;
     }

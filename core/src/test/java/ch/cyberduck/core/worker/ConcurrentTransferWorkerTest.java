@@ -23,7 +23,6 @@ import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -73,7 +72,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), new DisabledProgressListener(), host, 1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         final Session<?> session = worker.borrow();
         worker.release(session);
@@ -101,7 +100,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), new DisabledProgressListener(), host, 2), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         assertNotSame(worker.borrow(), worker.borrow());
     }
@@ -127,7 +126,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), new DisabledProgressListener(), host, 1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         final Session<?> session = worker.borrow();
         worker.release(session);
@@ -235,7 +234,7 @@ public class ConcurrentTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
 
         assertTrue(worker.run(null));
@@ -261,7 +260,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), new DisabledProgressListener(), host, 1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         final Session<?> session = worker.borrow();
         assertNotNull(session);
@@ -303,7 +302,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), new DisabledProgressListener(), host, 1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);

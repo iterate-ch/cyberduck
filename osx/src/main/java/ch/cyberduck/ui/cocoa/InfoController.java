@@ -107,8 +107,6 @@ public class InfoController extends ToolbarWindowController {
 
     private final SessionPool session;
 
-    private final Cache<Path> cache;
-
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
@@ -292,7 +290,6 @@ public class InfoController extends ToolbarWindowController {
     public InfoController(final Controller controller, final SessionPool session, final Cache<Path> cache, final List<Path> files) {
         this.controller = controller;
         this.session = session;
-        this.cache = cache;
         this.files = files;
         this.loadBundle();
     }

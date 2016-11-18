@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
@@ -28,8 +27,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferItemCallback;
 import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -42,12 +39,10 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> implements TransferItemCallback {
+public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
     private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     private final Transfer transfer;
-
-    private final TransferOptions options;
 
     /**
      * Keeping track of the current transfer rate
@@ -59,8 +54,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
      */
     private ScheduledFuture progressTimer;
 
-    private ScheduledThreadPool timerPool
-            = new ScheduledThreadPool();
+    private ScheduledThreadPool timerPool;
 
     private final TransferListener listener;
 
@@ -68,11 +62,10 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool pool,
-                                    final PathCache cache,
                                     final TransferListener listener,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, pool, cache, listener, controller, transfer, options,
+        this(controller, pool, listener, controller, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, pool),
                 TransferErrorCallbackControllerFactory.get(controller),
                 new TransferSpeedometer(transfer), new DisabledStreamListener());
@@ -80,33 +73,29 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool pool,
-                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, pool, cache, listener, progress, transfer, options,
+        this(controller, pool, listener, progress, transfer, options,
                 TransferPromptControllerFactory.get(controller, transfer, pool),
-                TransferErrorCallbackControllerFactory.get(controller),
-                new TransferSpeedometer(transfer), new DisabledStreamListener());
+                TransferErrorCallbackControllerFactory.get(controller));
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool pool,
-                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
-        this(controller, pool, cache, listener, progress, transfer, options, prompt, error,
+        this(controller, pool, listener, progress, transfer, options, prompt, error,
                 new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
                                     final SessionPool pool,
-                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -116,14 +105,12 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         this(LoginCallbackFactory.get(controller),
-                controller, pool, cache, listener, progress, transfer, options, prompt, error, meter, stream
-        );
+                controller, pool, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
                                     final Controller controller,
                                     final SessionPool pool,
-                                    final PathCache cache,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -132,18 +119,11 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> im
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, pool, null);
-        this.worker = new ConcurrentTransferWorker(pool, transfer, options, meter, prompt, error, this, callback, progress, stream);
+        super(controller, pool, new ConcurrentTransferWorker(pool, transfer, options, meter, prompt, error, callback, progress, stream));
         this.meter = meter;
-        this.transfer = transfer.withCache(cache);
-        this.options = options;
+        this.transfer = transfer;
         this.listener = listener;
         this.prompt = prompt;
-    }
-
-    @Override
-    public void complete(final TransferItem item) {
-        //
     }
 
     @Override

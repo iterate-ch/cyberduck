@@ -40,7 +40,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferItemCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferPrompt;
@@ -75,8 +74,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
      */
     private final TransferErrorCallback error;
 
-    private final TransferItemCallback transferItemCallback;
-
     private final ConnectionCallback connectionCallback;
 
     private final TransferOptions options;
@@ -100,28 +97,25 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
                                   final TransferErrorCallback error,
-                                  final TransferItemCallback callback,
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback) {
-        this(transfer, options, prompt, meter, error, callback, progress, stream, connectionCallback, new TransferItemCache(Integer.MAX_VALUE));
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
                                   final TransferErrorCallback error,
-                                  final TransferItemCallback callback,
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, callback, progress, stream, connectionCallback, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, cache, new HashMap<Path, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
                                   final TransferErrorCallback error,
-                                  final TransferItemCallback callback,
                                   final ProgressListener progress,
                                   final StreamListener stream,
                                   final ConnectionCallback connectionCallback,
@@ -132,7 +126,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.prompt = prompt;
         this.meter = meter;
         this.error = error;
-        this.transferItemCallback = callback;
         this.progress = progress;
         this.stream = stream;
         this.connectionCallback = connectionCallback;
@@ -366,8 +359,6 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, connectionCallback, progress, stream);
-
-                                transferItemCallback.complete(item);
 
                                 // Recursive
                                 if(item.remote.isDirectory()) {

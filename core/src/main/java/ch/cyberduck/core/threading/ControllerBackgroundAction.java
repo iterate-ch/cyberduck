@@ -29,21 +29,11 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
 
     public ControllerBackgroundAction(final Controller controller,
                                       final SessionPool session) {
-        super(session, controller, controller, controller
-        );
+        super(session, controller, controller, controller);
         this.listener = controller;
     }
 
     public ControllerBackgroundAction(final Controller controller,
-                                      final SessionPool session,
-                                      final ProgressListener progress,
-                                      final TranscriptListener transcript) {
-        super(session, controller, progress, transcript
-        );
-        this.listener = controller;
-    }
-
-    public ControllerBackgroundAction(final BackgroundActionListener controller,
                                       final SessionPool session,
                                       final ProgressListener progress,
                                       final TranscriptListener transcript) {

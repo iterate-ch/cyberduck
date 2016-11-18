@@ -15,21 +15,28 @@
 
 package ch.cyberduck.core.pool;
 
+import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public class SingleSessionPool implements SessionPool {
 
+    private final ConnectionService connect;
     private final Session<?> session;
+    private final PathCache cache;
 
-    public SingleSessionPool(final Session<?> session) {
+    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache) {
+        this.connect = connect;
         this.session = session;
+        this.cache = cache;
     }
 
 
     @Override
     public Session<?> borrow() throws BackgroundException {
+        connect.check(session, cache);
         return session;
     }
 
@@ -41,16 +48,6 @@ public class SingleSessionPool implements SessionPool {
     @Override
     public void close() {
         //
-    }
-
-    @Override
-    public Integer getNumActive() {
-        return 1;
-    }
-
-    @Override
-    public Integer getNumIdle() {
-        return 1;
     }
 
     @Override
