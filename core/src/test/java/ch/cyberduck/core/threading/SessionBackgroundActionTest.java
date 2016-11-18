@@ -23,6 +23,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,7 +41,8 @@ public class SessionBackgroundActionTest {
 
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
-        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(null, new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new DisabledAlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -73,7 +75,8 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
-        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(null, new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -111,7 +114,8 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
-        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(null, new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -149,7 +153,9 @@ public class SessionBackgroundActionTest {
     @Test
     public void testRetrySocket() throws Exception {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
-        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(null, new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
+        SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
+                new TestLoginConnectionService(),
+                new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);

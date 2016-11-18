@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -53,16 +54,16 @@ public class AbstractEditorTest {
     public void testEquals() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         assertEquals(
-                new DisabledEditor(new Application("i"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("i"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/g", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/g", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("a"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(null, session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("a"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
     }
 
@@ -94,7 +95,7 @@ public class AbstractEditorTest {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new SingleSessionPool(null, session, PathCache.empty()), file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), file, new DisabledProgressListener()) {
             @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
                 e.set(true);

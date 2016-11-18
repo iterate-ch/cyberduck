@@ -24,6 +24,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -63,10 +64,12 @@ public class TransferBackgroundActionTest {
         };
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(null,
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
+                new TestLoginConnectionService(),
                 new NullSession(host), PathCache.empty()),
                 new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
-        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(null,
+        assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
+                new TestLoginConnectionService(),
                 new NullSession(host), PathCache.empty()),
                 new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
@@ -107,7 +110,8 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
         final Session session = new NullSession(host);
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(null, session, PathCache.empty()), new TransferListener() {
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
+                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -162,7 +166,8 @@ public class TransferBackgroundActionTest {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(null, session, PathCache.empty()), new TransferListener() {
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
+                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -208,7 +213,8 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Session session = new NullSession(host);
         final TransferOptions options = new TransferOptions();
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(null, session, PathCache.empty()) {
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
+                new TestLoginConnectionService(), session, PathCache.empty()) {
             @Override
             public Session<?> borrow() throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
