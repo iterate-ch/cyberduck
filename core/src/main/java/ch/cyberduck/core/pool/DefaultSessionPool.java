@@ -45,6 +45,7 @@ public class DefaultSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
+    private static final int POOL_WARNING_THRESHOLD = 5;
 
     private final ProgressListener progress;
 
@@ -111,6 +112,10 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow() throws BackgroundException {
+        final Integer numActive = pool.getNumActive();
+        if(numActive > POOL_WARNING_THRESHOLD) {
+            log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
+        }
         try {
             Session session;
             while(true) {
