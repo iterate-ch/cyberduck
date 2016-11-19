@@ -30,6 +30,10 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.AbandonedConfig;
+import org.apache.commons.pool2.impl.EvictionConfig;
+import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
@@ -46,6 +50,8 @@ public class DefaultSessionPool implements SessionPool {
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
+
+    private final PathCache cache;
 
     private final Host bookmark;
 
@@ -64,18 +70,43 @@ public class DefaultSessionPool implements SessionPool {
     };
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final PathCache cache, final ProgressListener progress, final Host bookmark, final Integer connections) {
+                              final PathCache cache, final ProgressListener progress, final Host bookmark) {
+        this.cache = cache;
         this.bookmark = bookmark;
-        this.retry = Integer.max(PreferencesFactory.get().getInteger("connection.retry"), connections);
+        this.retry = PreferencesFactory.get().getInteger("connection.retry");
         this.progress = progress;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setMinIdle(0);
-        configuration.setMaxTotal(connections);
-        configuration.setMaxIdle(connections);
-        configuration.setBlockWhenExhausted(true);
+        configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
+        configuration.setBlockWhenExhausted(false);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark), configuration);
+        final AbandonedConfig abandon = new AbandonedConfig();
+        abandon.setUseUsageTracking(true);
+        this.pool.setAbandonedConfig(abandon);
+    }
+
+    public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
+        public CustomPoolEvictionPolicy() {
+            //
+        }
+
+        @Override
+        public boolean evict(final EvictionConfig config, final PooledObject<Session<?>> underTest, final int idleCount) {
+            log.warn(String.format("Evict idle session %s from pool", underTest));
+            return true;
+        }
+    }
+
+    public DefaultSessionPool withMaxIdle(final int idle) {
+        pool.setMaxIdle(idle);
+        return this;
+    }
+
+    public DefaultSessionPool withMaxTotal(final int total) {
+        pool.setMaxTotal(total);
+        return this;
     }
 
     @Override
@@ -206,6 +237,12 @@ public class DefaultSessionPool implements SessionPool {
     public Session.State getState() {
         if(pool.isClosed()) {
             return Session.State.closed;
+        }
+        if(cache.isEmpty()) {
+            return Session.State.opening;
+        }
+        if(0 == pool.getNumIdle()) {
+            return Session.State.opening;
         }
         return Session.State.open;
     }

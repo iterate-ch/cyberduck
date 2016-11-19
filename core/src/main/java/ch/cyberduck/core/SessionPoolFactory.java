@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -36,10 +37,9 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
-                new KeychainX509KeyManager(target),
-                cache,
-                controller,
-                target,
-                Integer.MAX_VALUE);
+                new KeychainX509KeyManager(target), cache, controller, target
+        )
+                .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
+                .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
     }
 }

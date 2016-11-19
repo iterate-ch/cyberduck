@@ -115,8 +115,7 @@ public class ConcurrentTransferWorkerTest {
         }
         final Host host = new Host(new FTPProtocol(), "localhost", PORT_NUMBER, new Credentials("test", "test"));
         final Transfer transfer = new UploadTransfer(host, list);
-        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                new DefaultSessionPool(
+        final DefaultSessionPool pool = new DefaultSessionPool(
                 new LoginConnectionService(new DisabledLoginCallback() {
                     @Override
                     public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -129,7 +128,9 @@ public class ConcurrentTransferWorkerTest {
                     }
                 }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                         new DisabledProgressListener(), new DisabledTranscriptListener()), new DisabledX509TrustManager(),
-                        new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host, connections),
+                new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host);
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+                pool.withMaxTotal(connections),
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {

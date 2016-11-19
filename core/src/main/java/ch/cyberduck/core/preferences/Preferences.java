@@ -840,6 +840,12 @@ public abstract class Preferences {
         );
 
         /*
+         * Session pool
+         */
+        defaults.put("connection.pool.maxidle", String.valueOf(2));
+        defaults.put("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
+
+        /*
           Default login name
          */
         defaults.put("connection.login.name", StringUtils.EMPTY);
