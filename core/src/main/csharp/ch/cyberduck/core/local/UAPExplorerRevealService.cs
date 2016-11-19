@@ -10,12 +10,12 @@ using Windows.System;
 
 namespace Ch.Cyberduck.Core.Local
 {
-	public class UAPExplorerRevealService : RevealService
-	{
-		public bool reveal(ch.cyberduck.core.Local l)
-		{
-			StorageFolder folder = StorageFolder.GetFolderFromPathAsync(l.getAbsolute()).GetResults();
-			return Launcher.LaunchFolderAsync(folder).GetResults();
-		}
-	}
+    public class UAPExplorerRevealService : RevealService
+    {
+        public bool reveal(ch.cyberduck.core.Local l)
+        {
+            StorageFolder folder = StorageFolder.GetFolderFromPathAsync(l.getAbsolute()).AsTask().Result;
+            return Launcher.LaunchFolderAsync(folder).AsTask().Result;
+        }
+    }
 }

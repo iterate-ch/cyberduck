@@ -8,11 +8,11 @@ using Windows.System;
 
 namespace Ch.Cyberduck.Core.Local
 {
-	public class WindowsUAPBrowserLauncher : BrowserLauncher
-	{
-		public bool open(string str)
-		{
-			return Launcher.LaunchUriAsync(new Uri(str)).GetResults();
-		}
-	}
+    public class WindowsUAPBrowserLauncher : BrowserLauncher
+    {
+        public bool open(string str)
+        {
+            return Launcher.LaunchUriAsync(new Uri(str)).AsTask().Result;
+        }
+    }
 }

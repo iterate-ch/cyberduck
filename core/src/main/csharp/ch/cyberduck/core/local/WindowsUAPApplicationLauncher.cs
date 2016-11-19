@@ -9,27 +9,27 @@ using Windows.System;
 
 namespace Ch.Cyberduck.Core.Local
 {
-	public class WindowsUAPApplicationLauncher : ApplicationLauncher
-	{
-		public void bounce(Local l)
-		{
-			//
-		}
+    public class WindowsUAPApplicationLauncher : ApplicationLauncher
+    {
+        public void bounce(ch.cyberduck.core.Local l)
+        {
+            //
+        }
 
-		public bool open(Local l)
-		{
-			StorageFile file = StorageFile.GetFileFromPathAsync(l.getAbsolute()).GetResults();
-			return Launcher.LaunchFileAsync(file).GetResults();
-		}
+        public bool open(ch.cyberduck.core.Local l)
+        {
+            StorageFile file = StorageFile.GetFileFromPathAsync(l.getAbsolute()).AsTask().Result;
+            return Launcher.LaunchFileAsync(file).AsTask().Result;
+        }
 
-		public bool open(Application a, string str)
-		{
-			throw new NotImplementedException();
-		}
+        public bool open(Application a, string str)
+        {
+            throw new NotImplementedException();
+        }
 
-		public bool open(Local l, Application a, ApplicationQuitCallback aqc)
-		{
-			return open(l);
-		}
-	}
+        public bool open(ch.cyberduck.core.Local l, Application a, ApplicationQuitCallback aqc)
+        {
+            return open(l);
+        }
+    }
 }
