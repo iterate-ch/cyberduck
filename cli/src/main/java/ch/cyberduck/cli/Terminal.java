@@ -322,7 +322,7 @@ public class Terminal {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
-        final Host host = session.getHost();
+        final Host host = transfer.getHost();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             host.setTransfer(Host.TransferType.concurrent);
         }
