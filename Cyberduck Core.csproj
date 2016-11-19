@@ -89,7 +89,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(WINDIR)\Windows\Microsoft.NET\Framework\v4.0.30319\System.Runtime.WindowsRuntime.dll</HintPath>
+      <HintPath>$(MSBuildBinPath)\System.Runtime.WindowsRuntime.dll</HintPath>
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
@@ -99,7 +99,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Windows">
-      <HintPath>$(ProgramFiles)\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+      <HintPath>$(MSBuildExtensionsPath32)\..\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
