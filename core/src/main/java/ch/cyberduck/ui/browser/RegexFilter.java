@@ -32,9 +32,6 @@ public class RegexFilter implements Filter<Path> {
 
     @Override
     public boolean accept(final Path file) {
-        if(null == pattern) {
-            return true;
-        }
         if(pattern.matcher(file.getName()).matches()) {
             return false;
         }

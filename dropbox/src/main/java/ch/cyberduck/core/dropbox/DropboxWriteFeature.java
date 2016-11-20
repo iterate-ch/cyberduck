@@ -139,7 +139,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
                     this.next();
                 }
                 catch(DbxException e) {
-                    throw new IOException(e);
+                    throw new IOException(new DropboxExceptionMappingService().map(e));
                 }
             }
         }
@@ -181,8 +181,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             catch(IllegalStateException e) {
                 // Already closed
             }
-            catch(DbxException ex) {
-                throw new IOException("Upload failed.", ex);
+            catch(DbxException e) {
+                throw new IOException("Upload failed.", new DropboxExceptionMappingService().map(e));
             }
             finally {
                 super.close();
