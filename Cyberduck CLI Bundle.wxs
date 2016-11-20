@@ -9,7 +9,7 @@
     </BootstrapperApplicationRef>
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFilesFolder]Cyberduck CLI" />
     <Chain>
-      <PackageGroupRef Id="NetFx40ClientWeb" />
+      <PackageGroupRef Id="NetFx45Web" />
       <RollbackBoundary />
       <MsiPackage
         Id="Setup"
