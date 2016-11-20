@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using ch.cyberduck.core.local;
+using Windows.ApplicationModel;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.System;
 
@@ -18,16 +22,27 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool open(ch.cyberduck.core.Local l)
         {
-            StorageFile file = StorageFile.GetFileFromPathAsync(l.getAbsolute()).AsTask().Result;
-            return Launcher.LaunchFileAsync(file).AsTask().Result;
+            FileInfo fileInfo;
+
+            if (string.IsNullOrEmpty(Path.GetPathRoot(l.getAbsolute())))
+                fileInfo = new FileInfo(Path.Combine(Package.Current.InstalledLocation.Path, l.getAbsolute())); // root to installed location
+            else
+                fileInfo = new FileInfo(l.getAbsolute());
+
+            IAsyncOperation<StorageFile> fileOperation = StorageFile.GetFileFromPathAsync(fileInfo.FullName);
+            StorageFile file = fileOperation.AsTask().Result;
+            return Launcher.LaunchFileAsync(file, new LauncherOptions()
+            {
+                DisplayApplicationPicker = true
+            }).AsTask().Result;
         }
 
-        public bool open(Application a, string str)
+        public bool open(ch.cyberduck.core.local.Application a, string str)
         {
-            throw new NotImplementedException();
+            return true; // no exception
         }
 
-        public bool open(ch.cyberduck.core.Local l, Application a, ApplicationQuitCallback aqc)
+        public bool open(ch.cyberduck.core.Local l, ch.cyberduck.core.local.Application a, ApplicationQuitCallback aqc)
         {
             return open(l);
         }
