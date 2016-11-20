@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Cli
             defaults.put("factory.applicationresourcesfinder.class",
                 typeof (AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
             defaults.put("factory.editorfactory.class", typeof (SystemWatchEditorFactory).AssemblyQualifiedName);
-            defaults.put("factory.applicationlauncher.class", typeof (WindowsApplicationLauncher).AssemblyQualifiedName);
+            defaults.put("factory.applicationlauncher.class", typeof (WindowsProcessApplicationLauncher).AssemblyQualifiedName);
             defaults.put("factory.applicationfinder.class", typeof (RegistryApplicationFinder).AssemblyQualifiedName);
             defaults.put("factory.local.class", typeof (SystemLocal).AssemblyQualifiedName);
             defaults.put("factory.passwordstore.class", typeof (DataProtectorPasswordStore).AssemblyQualifiedName);
