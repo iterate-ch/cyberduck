@@ -39,8 +39,13 @@
         <available file="${env.ProgramFiles}"/>
     </condition>
 
-    <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
@@ -60,13 +65,11 @@
         </msbuild>
     </target>
 
-    <target name="package" depends="version">
+    <target name="verify" depends="version">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
-            <classpath path="${lib.ext}/xmltask.jar"/>
-        </taskdef>
+
         <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
@@ -83,21 +86,6 @@
 
         <mkdir dir="${build}/update"/>
 
-        <!-- prepare WinSparkle stuff -->
-        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
-            <remove path="//*[local-name()='minimumSystemVersion']"/>
-        </xmltask>
-        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
-            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
-        </xmltask>
-        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
-            <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
-        </xmltask>
-        <copy todir="${build}/update" overwrite="true">
-            <fileset dir="${www.update}">
-                <include name="changelog.html"/>
-            </fileset>
-        </copy>
         <replace dir="${build}/update" summary="true" encoding="UTF-8">
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
@@ -118,6 +106,29 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
+    </target>
+
+    <target name="deploy" depends="version">
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
+
+        <!-- prepare WinSparkle stuff -->
+        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
+            <remove path="//*[local-name()='minimumSystemVersion']"/>
+        </xmltask>
+        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
+            <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
+        </xmltask>
+        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
+            <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
+        </xmltask>
+        <copy todir="${build}/update" overwrite="true">
+            <fileset dir="${www.update}">
+                <include name="changelog.html"/>
+            </fileset>
+        </copy>
+
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">
                 <include name="*.msi"/>
