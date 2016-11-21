@@ -48,7 +48,7 @@ public class FTPListResponseReaderTest {
         assertEquals("/SunnyD", path.getAbsolute());
         final AttributedList<Path> list = new AttributedList<Path>();
         new FTPListResponseReader(new FTPParserSelector().getParser("UNIX")).read(path, Collections.singletonList(
-                        " drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD"), new DisabledListProgressListener()
+                " drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD"), new DisabledListProgressListener()
         );
     }
 
@@ -62,7 +62,7 @@ public class FTPListResponseReaderTest {
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX"))
                 .read(path, Collections.singletonList(
                         "lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk"), new DisabledListProgressListener()
-        );
+                );
 
         assertFalse(list.isEmpty());
         final Path parsed = list.get(0);
@@ -80,7 +80,7 @@ public class FTPListResponseReaderTest {
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX"), true)
                 .read(path, Collections.singletonList(
                         "lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk"), new DisabledListProgressListener()
-        );
+                );
     }
 
     @Test
@@ -88,8 +88,8 @@ public class FTPListResponseReaderTest {
         final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX"))
                 .read(new Path("/", EnumSet.of(Path.Type.directory)),
-                Collections.singletonList("-rwsrwSr-T 1 dkocher dkocher         0 Sep  6 22:27 t"), new DisabledListProgressListener()
-        );
+                        Collections.singletonList("-rwsrwSr-T 1 dkocher dkocher         0 Sep  6 22:27 t"), new DisabledListProgressListener()
+                );
         final Path parsed = list.get(new Path("/t", EnumSet.of(Path.Type.file)));
         assertNotNull(parsed);
         assertTrue(parsed.attributes().getPermission().isSticky());
@@ -228,5 +228,18 @@ public class FTPListResponseReaderTest {
         assertEquals(1, list.size());
         assertEquals("/public_html", list.get(0).getAbsolute());
         assertEquals("/public_html", list.get(0).getSymlinkTarget().getAbsolute());
+    }
+
+    @Test
+    public void testParseMD1766() throws Exception {
+        final List<String> lines = new FTPStatListService(null, null).parse(
+                211, new String[]{
+                        "lrwxrwxrwx 1 USER SSS 7 Nov 02 2015 bin -> script/",
+                        "lrwxrwxrwx 1 USER SSS 6 Nov 02 2015 home1 -> /home1",
+                        "lrwxrwxrwx 1 USER SSS 15 Nov 02 2015 vvvdev -> /fff/dev/vvvdev"
+                });
+        final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX Type: L8 Version: BSD-44"), true)
+                .read(new Path("/", EnumSet.of(Path.Type.directory)), lines, new DisabledListProgressListener());
+        assertEquals(3, list.size());
     }
 }
