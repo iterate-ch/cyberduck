@@ -83,12 +83,6 @@ namespace Ch.Cyberduck.Core.Sparkle
 
         public override bool hasUpdatePrivileges()
         {
-            if (Utils.IsUWPSupported)
-            {
-                Log.debug("Tried Update Privileges. Is UWP, won't continue.");
-                return false;
-            }
-
             var identity = WindowsIdentity.GetCurrent();
             if (identity == null)
             {

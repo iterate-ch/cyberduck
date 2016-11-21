@@ -25,6 +25,7 @@ using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Growl;
@@ -83,6 +84,11 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             }
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
             defaults.put("factory.schemehandler.class", typeof (URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+
+            if (!Cyberduck.Core.Utils.IsUWPSupported)
+            {
+                defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
+            }
         }
     }
 }
