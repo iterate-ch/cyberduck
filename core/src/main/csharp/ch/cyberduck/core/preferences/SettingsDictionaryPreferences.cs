@@ -368,6 +368,7 @@ namespace Ch.Cyberduck.Core.Preferences
             // UWP
             if (Utils.IsUWPSupported)
             {
+                defaults.put("update.check", $"{false}");
                 defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
             }
         }
