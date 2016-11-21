@@ -70,6 +70,7 @@
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
 
+        <move file="${build}/Cyberduck.Native.dll" tofile="${build}/Cyberduck.Native.dll.bak" />
         <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
@@ -78,6 +79,7 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
+        <move file="${build}/Cyberduck.Native.dll.bak" tofile="${build}/Cyberduck.Native.dll" />
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
