@@ -93,6 +93,14 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
+        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.0"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
+            <property name="CyberduckInstallerArgs" value="/Q /S" />
+        </msbuild>
     </target>
 
     <target name="deploy" depends="version">
@@ -130,6 +138,18 @@
                 <include name="changelog.html"/>
             </fileset>
         </copy>
+        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
+        </replace>
 
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">

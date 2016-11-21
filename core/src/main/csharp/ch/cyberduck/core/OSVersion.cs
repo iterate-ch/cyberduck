@@ -85,7 +85,7 @@ namespace Ch.Cyberduck.Core
         Vista,
         Win2008,
         Win2008R2,
-        Win7,
+        Win7
     }
 
     public enum OSArchitecture
@@ -166,7 +166,7 @@ namespace Ch.Cyberduck.Core
                                                                             OSProductType.Workstation, true);
 
         private int _BuildNumber = -1;
-        //		private int _PlatformId;
+        //        private int _PlatformId;
         private string _CSDVersion = String.Empty;
         private bool _ExtendedPropertiesAreSet;
         private bool _Locked;
@@ -377,17 +377,17 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        //		public int PlatformId
-        //		{
-        //			get { return _PlatformId; }
+        //        public int PlatformId
+        //        {
+        //            get { return _PlatformId; }
         //
-        //			set
-        //			{
-        //				CheckLock( "PlatformId" );
+        //            set
+        //            {
+        //                CheckLock( "PlatformId" );
         //
-        //				_PlatformId = value;
-        //			}
-        //		}
+        //                _PlatformId = value;
+        //            }
+        //        }
 
         public string OSCSDVersion
         {
@@ -478,39 +478,39 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        //		public UInt16 SuiteMask
-        //		{
-        //			get
-        //			{
-        //				CheckExtendedProperty( "SuiteMask" );
+        //        public UInt16 SuiteMask
+        //        {
+        //            get
+        //            {
+        //                CheckExtendedProperty( "SuiteMask" );
         //
-        //				return _SuiteMask;
-        //			}
+        //                return _SuiteMask;
+        //            }
         //
-        //			set
-        //			{
-        //				CheckLock( "SuiteMask" );
+        //            set
+        //            {
+        //                CheckLock( "SuiteMask" );
         //
-        //				_SuiteMask = value;
-        //			}
-        //		}
+        //                _SuiteMask = value;
+        //            }
+        //        }
 
-        //		public byte ProductType
-        //		{
-        //			get
-        //			{
-        //				CheckExtendedProperty( "ProductType" );
+        //        public byte ProductType
+        //        {
+        //            get
+        //            {
+        //                CheckExtendedProperty( "ProductType" );
         //
-        //				return _ProductType;
-        //			}
+        //                return _ProductType;
+        //            }
         //
-        //			set
-        //			{
-        //				CheckLock( "ProductType" );
+        //            set
+        //            {
+        //                CheckLock( "ProductType" );
         //
-        //				_ProductType = value;
-        //			}
-        //		}
+        //                _ProductType = value;
+        //            }
+        //        }
 
         public byte OSReserved
         {
@@ -643,8 +643,8 @@ namespace Ch.Cyberduck.Core
                 if (OSSuiteFlag(flags, OSSuites.Datacenter))
                     OSSuiteStringAdd(ref s, "Datacenter");
 
-                //				if ( OSSuiteFlag( flags, OSSuites.SingleUserTS ) )
-                //					OSSuiteStringAdd( ref s, "Single User Terminal Services" );
+                //                if ( OSSuiteFlag( flags, OSSuites.SingleUserTS ) )
+                //                    OSSuiteStringAdd( ref s, "Single User Terminal Services" );
 
                 if (OSSuiteFlag(flags, OSSuites.Personal))
                     OSSuiteStringAdd(ref s, "Home Edition");
@@ -1038,7 +1038,7 @@ namespace Ch.Cyberduck.Core
             _Reserved = o._Reserved;
 
             // state fields
-            //			_Locked                   = o._Locked                   ;
+            //            _Locked                   = o._Locked                   ;
             _Locked = false;
             _ExtendedPropertiesAreSet = o._ExtendedPropertiesAreSet;
         }
@@ -1189,6 +1189,8 @@ namespace Ch.Cyberduck.Core
             public const int Win2008 = 6;
             public const int Win2008R2 = 6;
             public const int Win32s = 0;
+            public const int Win10 = 10;
+            public const int Win8 = 6;
             public const int Win7 = 6;
             public const int Win95 = 4;
             public const int Win98 = 4;
@@ -1212,6 +1214,9 @@ namespace Ch.Cyberduck.Core
             public const int Win2008 = 0;
             public const int Win2008R2 = 1;
             public const int Win32s = 0;
+            public const int Win10 = 0;
+            public const int Win81 = 3;
+            public const int Win8 = 2;
             public const int Win7 = 1;
             public const int Win95 = 0;
             public const int Win98 = 10;
@@ -1253,7 +1258,7 @@ namespace Ch.Cyberduck.Core
             else
                 InitOsVersionInfoEx();
 
-            //			Lock();
+            //            Lock();
 
             InitArchitecture();
         }
@@ -1300,7 +1305,7 @@ namespace Ch.Cyberduck.Core
             OSMajorVersion = info.MajorVersion;
             OSMinorVersion = info.MinorVersion;
             BuildNumber = info.BuildNumber;
-            //			PlatformId     = info.PlatformId   ;
+            //            PlatformId     = info.PlatformId   ;
             OSCSDVersion = info.CSDVersion;
         }
 
@@ -1324,7 +1329,7 @@ namespace Ch.Cyberduck.Core
             OSMajorVersion = info.MajorVersion;
             OSMinorVersion = info.MinorVersion;
             BuildNumber = info.BuildNumber;
-            //			PlatformId         = info.PlatformId       ;
+            //            PlatformId         = info.PlatformId       ;
             OSCSDVersion = info.CSDVersion;
 
             OSSuiteFlags = GetOSSuiteFlags(info.SuiteMask);
@@ -1332,8 +1337,8 @@ namespace Ch.Cyberduck.Core
 
             OSServicePackMajor = info.ServicePackMajor;
             OSServicePackMinor = info.ServicePackMinor;
-            //			SuiteMask          = info.SuiteMask        ;
-            //			ProductType        = info.ProductType      ;
+            //            SuiteMask          = info.SuiteMask        ;
+            //            ProductType        = info.ProductType      ;
             OSReserved = info.Reserved;
 
             ExtendedPropertiesAreSet = true;
@@ -1418,13 +1423,13 @@ namespace Ch.Cyberduck.Core
                 [In, Out] OSVERSIONINFOEX osVersionInfoEx
                 );
 
-            //			[ DllImport( "kernel32.dll", SetLastError = true ) ]
-            //			public static extern bool VerifyVersionInfo
-            //				(
-            //					[ In ] OSVERSIONINFOEX VersionInfo,
-            //					UInt32 TypeMask,
-            //					UInt64 ConditionMask
-            //				);
+            //            [ DllImport( "kernel32.dll", SetLastError = true ) ]
+            //            public static extern bool VerifyVersionInfo
+            //                (
+            //                    [ In ] OSVERSIONINFOEX VersionInfo,
+            //                    UInt32 TypeMask,
+            //                    UInt64 ConditionMask
+            //                );
 
             [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
             public static extern void GetSystemInfo([MarshalAs(UnmanagedType.Struct)] ref SYSTEM_INFO lpSystemInfo);
