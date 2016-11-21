@@ -57,7 +57,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
-import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -70,6 +69,7 @@ import java.util.HashMap;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
+import com.microsoft.azure.storage.StorageCredentials;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -99,8 +99,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
-                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(),
-                    Base64.toBase64String("null".getBytes()));
+                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
@@ -155,8 +154,10 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         // Update credentials
-        ((StorageCredentialsAccountAndKey) client.getCredentials()).updateKey(
-                com.microsoft.azure.storage.core.Base64.decode(host.getCredentials().getPassword()));
+        final StorageCredentials credentials = client.getCredentials();
+        if(credentials instanceof StorageCredentialsAccountAndKey) {
+            ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
+        }
         final Path home = new AzureHomeFinderService(this).find();
         cache.put(home, this.list(home, new DisabledListProgressListener()));
     }
