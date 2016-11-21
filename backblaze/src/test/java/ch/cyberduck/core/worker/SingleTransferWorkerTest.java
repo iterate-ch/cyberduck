@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,15 +15,27 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.dav.DAVAttributesFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.TransferItemCache;
+import ch.cyberduck.core.b2.B2AttributesFeature;
+import ch.cyberduck.core.b2.B2DeleteFeature;
+import ch.cyberduck.core.b2.B2LargeUploadService;
+import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.b2.B2Session;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -32,7 +44,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,49 +71,48 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[100 * 1024 * 1024 + 1];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
+        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host) {
-            final DAVUploadFeature upload = new DAVUploadFeature(this) {
-                @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-                    if(failed.get()) {
-                        // Second attempt successful
-                        return in;
-                    }
-                    return new CountingInputStream(in) {
-                        @Override
-                        protected void beforeRead(final int n) throws IOException {
-                            super.beforeRead(n);
-                            if(this.getByteCount() >= 32768L) {
-                                failed.set(true);
-                                throw new SocketTimeoutException();
-                            }
-                        }
-                    };
-                }
-            };
-
+        final B2Session session = new B2Session(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) upload;
+                    return (T) new B2LargeUploadService(this, 100L * 1024L * 1024L) {
+                        @Override
+                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                            if(failed.get()) {
+                                // Second attempt successful
+                                return in;
+                            }
+                            return new CountingInputStream(in) {
+                                @Override
+                                protected void beforeRead(final int n) throws IOException {
+                                    super.beforeRead(n);
+                                    if(this.getByteCount() >= 100L * 1024L * 1024L) {
+                                        failed.set(true);
+                                        throw new SocketTimeoutException();
+                                    }
+                                }
+                            };
+                        }
+                    };
                 }
                 return super.getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         assertTrue(new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -115,9 +125,9 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertEquals(62768L, new DAVAttributesFeature(session).find(test).getSize());
+        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFeature(session).find(test).getSize());
+        assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
         assertTrue(failed.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

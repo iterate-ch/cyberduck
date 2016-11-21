@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,14 +15,29 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.b2.B2AttributesFeature;
-import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2LargeUploadService;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.b2.B2Session;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.TransferItemCache;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.ftp.FTPDeleteFeature;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -30,20 +45,18 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.output.CountingOutputStream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.security.MessageDigest;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Random;
@@ -59,48 +72,51 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[100 * 1024 * 1024 + 1];
+        final byte[] content = new byte[62768];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+        ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final B2Session session = new B2Session(host) {
+        final FTPSession session = new FTPSession(host) {
+            final FTPWriteFeature write = new FTPWriteFeature(this) {
+                @Override
+                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                    final OutputStream out = super.write(file, status);
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return out;
+                    }
+                    return new CountingOutputStream(out) {
+                        @Override
+                        protected void afterWrite(final int n) throws IOException {
+                            super.afterWrite(n);
+                            if(this.getByteCount() >= 42768L) {
+                                // Buffer size
+                                assertEquals(32768L, status.getOffset());
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                        }
+                    };
+                }
+            };
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
-                if(type == Upload.class) {
-                    return (T) new B2LargeUploadService(this, 100L * 1024L * 1024L) {
-                        @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-                            if(failed.get()) {
-                                // Second attempt successful
-                                return in;
-                            }
-                            return new CountingInputStream(in) {
-                                @Override
-                                protected void beforeRead(final int n) throws IOException {
-                                    super.beforeRead(n);
-                                    if(this.getByteCount() >= 100L * 1024L * 1024L) {
-                                        failed.set(true);
-                                        throw new SocketTimeoutException();
-                                    }
-                                }
-                            };
-                        }
-                    };
+                if(type == Write.class) {
+                    return (T) write;
                 }
                 return super.getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         assertTrue(new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -113,9 +129,9 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
-        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFeature(session).find(test).getSize());
-        assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
+        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(62768L, new DefaultAttributesFeature(session).find(test).getSize());
         assertTrue(failed.get());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
