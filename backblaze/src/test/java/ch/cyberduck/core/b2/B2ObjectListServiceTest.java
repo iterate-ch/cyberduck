@@ -39,6 +39,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -77,9 +78,9 @@ public class B2ObjectListServiceTest {
         assertTrue(list.contains(file));
         assertEquals("1", list.get(list.indexOf(file)).attributes().getRevision());
         assertEquals(0L, list.get(list.indexOf(file)).attributes().getSize());
-
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(file));
+        new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -160,13 +161,13 @@ public class B2ObjectListServiceTest {
             assertTrue(list.get(list.indexOf(file1)).attributes().isDuplicate());
             assertEquals(bucket, list.get(list.indexOf(file1)).getParent());
         }
-
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         {
             final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             assertFalse(list.contains(file1));
             assertFalse(list.contains(file2));
         }
+        new B2DeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
