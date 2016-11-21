@@ -39,8 +39,8 @@ public class AzureWriteFeatureTest {
     public void testWriteOverride() throws Exception {
         final OperationContext context
                 = new OperationContext();
-        final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+                "iterate", "JwWB+BcJA8gx/a2y2SJ6f82m/3rvwTaKdyqilRUH+tleib+0e2iTfNh6W0gehptZ2TXH/ch9Xh+UnABy7mawIg=="
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
