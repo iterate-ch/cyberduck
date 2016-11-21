@@ -244,5 +244,11 @@ public class FTPListResponseReaderTest {
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX Type: L8 Version: BSD-44"), true)
                 .read(new Path("/", EnumSet.of(Path.Type.directory)), lines, new DisabledListProgressListener());
         assertEquals(3, list.size());
+        assertNull(list.get(0).getSymlinkTarget());
+        assertFalse(list.get(0).isSymbolicLink());
+        assertNull(list.get(1).getSymlinkTarget());
+        assertFalse(list.get(1).isSymbolicLink());
+        assertNull(list.get(2).getSymlinkTarget());
+        assertFalse(list.get(2).isSymbolicLink());
     }
 }
