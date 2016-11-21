@@ -47,8 +47,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
-
 import javax.net.SocketFactory;
 import java.io.IOException;
 
@@ -56,7 +54,6 @@ import synapticloop.b2.B2ApiClient;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2Session extends HttpSession<B2ApiClient> {
-    private static final Logger log = Logger.getLogger(B2Session.class);
 
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());

@@ -22,15 +22,12 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2ReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(B2ReadFeature.class);
 
     private final B2Session session;
 
