@@ -1696,7 +1696,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")), () => true);
-            bool HasUpdatePrivilges = new PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
+            bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
                 (sender, args) => PeriodicUpdateCheckerFactory.get().check(false), () => HasUpdatePrivilges);
         }
