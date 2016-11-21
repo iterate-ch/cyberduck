@@ -10,7 +10,7 @@
         <PackageFiles>$(IntermediateOutputPath)Cyberduck/PackageFiles/</PackageFiles>
         <VFS>$(PackageFiles)VFS/</VFS>
 
-        <OutputFilename>$(OutputPath)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+        <OutputFilename>$(OutputPath)/$(Configuration)/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
     </PropertyGroup>
 
     <Target Name="UsesFrameworkSdk">
