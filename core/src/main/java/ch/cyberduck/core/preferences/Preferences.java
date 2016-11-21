@@ -241,6 +241,8 @@ public abstract class Preferences {
         defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
         defaults.put("website.cli", "https://duck.sh/");
+        defaults.put("website.license", "https://cyberduck.io/license");
+        defaults.put("website.acknowledgments", "https://cyberduck.io/acknowledgments");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
