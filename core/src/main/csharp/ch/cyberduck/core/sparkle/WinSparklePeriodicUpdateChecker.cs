@@ -64,19 +64,11 @@ namespace Ch.Cyberduck.Core.Sparkle
             SetAppcastURL();
             if (background)
             {
-                if (!Utils.IsUWPSupported)
-                {
-                    WinSparkle.CheckUpdateWithoutUi();
-                }
-                // silent ignore Update Check
-            }
-            else if (!Utils.IsUWPSupported)
-            {
-                WinSparkle.CheckUpdateWithUi();
+                WinSparkle.CheckUpdateWithoutUi();
             }
             else
             {
-                // TaskDialog for "Updater is unavailable in UWP"?
+                WinSparkle.CheckUpdateWithUi();
             }
             _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
         }
@@ -91,6 +83,12 @@ namespace Ch.Cyberduck.Core.Sparkle
 
         public override bool hasUpdatePrivileges()
         {
+            if (Utils.IsUWPSupported)
+            {
+                Log.debug("Tried Update Privileges. Is UWP, won't continue.");
+                return false;
+            }
+
             var identity = WindowsIdentity.GetCurrent();
             if (identity == null)
             {
