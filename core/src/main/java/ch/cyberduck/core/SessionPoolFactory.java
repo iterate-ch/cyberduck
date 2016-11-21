@@ -28,16 +28,25 @@ public class SessionPoolFactory {
         //
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host target) {
+    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
+        return create(controller, cache, bookmark,
+                LoginCallbackFactory.get(controller),
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()),
+                PasswordStoreFactory.get()
+        );
+    }
+
+    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
+                                     final LoginCallback login, final HostKeyCallback key, final HostPasswordStore keychain) {
         return new DefaultSessionPool(
                 new LoginConnectionService(
-                        LoginCallbackFactory.get(controller),
-                        HostKeyCallbackFactory.get(controller, target.getProtocol()),
-                        PasswordStoreFactory.get(),
+                        login,
+                        key,
+                        keychain,
                         controller,
                         controller),
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
-                new KeychainX509KeyManager(target), cache, controller, target
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
+                new KeychainX509KeyManager(bookmark), cache, controller, bookmark
         )
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                 .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
