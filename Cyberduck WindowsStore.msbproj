@@ -5,12 +5,12 @@
         <Platform Condition="'$(Platform)' == ''">x86</Platform>
 
         <OutputPath>windows/target/</OutputPath>
-        <IntermediateOutputPath>$(OutputPath)appx/$(Platform)</IntermediateOutputPath>
+        <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
 
         <PackageFiles>$(IntermediateOutputPath)Cyberduck/PackageFiles/</PackageFiles>
         <VFS>$(PackageFiles)VFS/</VFS>
 
-        <OutputFilename>$(OutputPath)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+        <OutputFilename>$(OutputPath)/$(Configuration)/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
     </PropertyGroup>
 
     <Target Name="UsesFrameworkSdk">
@@ -18,21 +18,14 @@
             <Output TaskParameter="Path" PropertyName="FrameworkSdkPath"/>
         </GetFrameworkSdkPath>
         <PropertyGroup>
-            <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)
-            </WinSDK>
-            <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
-                Kits\Installed Roots@KitsRoot10)
-            </WinSDK>
+            <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
+            <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
         </PropertyGroup>
     </Target>
     <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
         <PropertyGroup>
-            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">
-                $(FrameworkSdkPath)bin\signtool.exe
-            </SignToolPath>
-            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">
-                $(WinSDK)\bin\x86\signtool.exe
-            </SignToolPath>
+            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
+            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
         </PropertyGroup>
     </Target>
 

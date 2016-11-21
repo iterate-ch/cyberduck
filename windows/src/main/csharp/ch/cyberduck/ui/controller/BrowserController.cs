@@ -2143,7 +2143,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             View.EditIcon =
                                 IconCache.Instance.GetFileIconFromExecutable(
-                                    WindowsProcessApplicationLauncher.GetExecutableCommand(editCommand),
+                                    WindowsApplicationLauncher.GetExecutableCommand(editCommand),
                                     IconCache.IconSize.Large).ToBitmap();
                             return;
                         }

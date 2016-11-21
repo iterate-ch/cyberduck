@@ -28,6 +28,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Ui.Winforms;
@@ -271,7 +272,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CheckForUpdateEvent()
         {
-            new WinSparklePeriodicUpdateChecker().check(false);
+            PeriodicUpdateCheckerFactory.get().check(false);
         }
 
         private void View_AutomaticUpdateChangedEvent()
@@ -964,7 +965,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Update
 
-            View.UpdateEnabled = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
+            View.UpdateEnabled = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
             long lastCheck = PreferencesFactory.get().getLong("update.check.last");
             View.LastUpdateCheck = 0 == lastCheck
