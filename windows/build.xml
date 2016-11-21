@@ -84,6 +84,20 @@
             </fileset>
         </copy>
 
+        <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+        </msbuild>
+    </target>
+
+    <target name="deploy" depends="version">
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
+
         <mkdir dir="${build}/update"/>
 
         <replace dir="${build}/update" summary="true" encoding="UTF-8">
@@ -98,20 +112,6 @@
             <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
-
-        <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
-            <target name="Build"/>
-            <property name="Version" value="${normalized.version}.${revision}"/>
-            <property name="ShortVersion" value="${version} (${revision})"/>
-            <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-        </msbuild>
-    </target>
-
-    <target name="deploy" depends="version">
-        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
-            <classpath path="${lib.ext}/xmltask.jar"/>
-        </taskdef>
 
         <!-- prepare WinSparkle stuff -->
         <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
