@@ -109,6 +109,8 @@ public class ConcurrentTransferWorkerTest {
                 pool.withMaxTotal(1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
+        // Override default transfer queue size
+        pool.withMaxTotal(1);
         final Session<?> session = worker.borrow();
         worker.release(session);
         assertEquals(Session.State.closed, session.getState());
