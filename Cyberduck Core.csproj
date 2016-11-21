@@ -130,12 +130,9 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RecycleLocalTrashFeature.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\RegistryApplicationFinder.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\SystemLocal.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\UAPExplorerRevealService.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\Win32FileDescriptor.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsUAPApplicationLauncher.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsProcessApplicationLauncher.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsApplicationLauncher.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsTemporaryFileService.cs" />
-    <Compile Include="core\src\main\csharp\ch\cyberduck\core\local\WindowsUAPBrowserLauncher.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeConstants.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeListEnumerator.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeMethods.cs" />
