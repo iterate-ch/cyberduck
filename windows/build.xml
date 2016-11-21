@@ -39,8 +39,13 @@
         <available file="${env.ProgramFiles}"/>
     </condition>
 
-    <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
@@ -60,13 +65,12 @@
         </msbuild>
     </target>
 
-    <target name="package" depends="version">
+    <target name="verify" depends="version">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
             <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
-            <classpath path="${lib.ext}/xmltask.jar"/>
-        </taskdef>
+
+        <move file="${build}/Cyberduck.Native.dll" tofile="${build}/Cyberduck.Native.dll.bak" />
         <msbuild buildfile="${home}/Cyberduck.csproj">
             <target name="Build"/>
 
@@ -75,13 +79,48 @@
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
         </msbuild>
+        <move file="${build}/Cyberduck.Native.dll.bak" tofile="${build}/Cyberduck.Native.dll" />
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
             </fileset>
         </copy>
 
+        <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="ShortVersion" value="${version} (${revision})"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+        </msbuild>
+        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.${revision}"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+            <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
+            <property name="CyberduckInstallerArgs" value="/Q /S" />
+        </msbuild>
+    </target>
+
+    <target name="deploy" depends="version">
+        <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
+            <classpath path="${lib.ext}/xmltask.jar"/>
+        </taskdef>
+
         <mkdir dir="${build}/update"/>
+
+        <replace dir="${build}/update" summary="true" encoding="UTF-8">
+            <include name="changelog.rss"/>
+            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
+            <replacefilter token="${ARCHIVE}"
+                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
+            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
+            <replacefilter token="${REVISION}" value="${revision}"/>
+            <replacefilter token="${VERSION}" value="${version}"/>
+            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
+        </replace>
 
         <!-- prepare WinSparkle stuff -->
         <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
@@ -111,20 +150,6 @@
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
 
-        <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
-            <target name="Build"/>
-            <property name="Version" value="${normalized.version}.${revision}"/>
-            <property name="ShortVersion" value="${version} (${revision})"/>
-            <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-        </msbuild>
-        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
-            <target name="Build"/>
-            <property name="Version" value="${normalized.version}.${revision}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-            <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
-            <property name="CyberduckInstallerArgs" value="/Q /S" />
-        </msbuild>
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">
                 <include name="*.msi"/>

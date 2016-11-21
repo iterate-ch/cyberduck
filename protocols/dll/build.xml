@@ -32,7 +32,8 @@
         <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Protocols -->
         <ikvmc target="library" out="${build}/Cyberduck.Protocols.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="false" verbose="true">
+               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="false"
+               verbose="false">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">

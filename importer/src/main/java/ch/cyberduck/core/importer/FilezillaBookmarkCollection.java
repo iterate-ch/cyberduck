@@ -187,7 +187,6 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     }
                     break;
                 case "TimezoneOffset":
-                    ;
                     break;
                 case "Server":
                     add(current);

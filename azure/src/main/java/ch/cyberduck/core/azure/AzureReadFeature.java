@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -85,6 +86,10 @@ public class AzureReadFeature implements Read {
                     if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
                         log.warn(String.format("Ignore failure %s", e));
                         return;
+                    }
+                    final Throwable cause = ExceptionUtils.getRootCause(e);
+                    if(cause instanceof StorageException) {
+                        throw new IOException(e.getMessage(), new AzureExceptionMappingService().map((StorageException) cause));
                     }
                     throw e;
                 }

@@ -55,7 +55,6 @@ import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
@@ -450,14 +449,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void licenseMenuClicked(final ID sender) {
-        ApplicationLauncherFactory.get().open(
-                LocalFactory.get(NSBundle.mainBundle().pathForResource_ofType("License", "txt")));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.license"));
     }
 
     @Action
     public void acknowledgmentsMenuClicked(final ID sender) {
-        ApplicationLauncherFactory.get().open(
-                LocalFactory.get(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")));
+        BrowserLauncherFactory.get().open(preferences.getProperty("website.acknowledgments"));
     }
 
     @Action

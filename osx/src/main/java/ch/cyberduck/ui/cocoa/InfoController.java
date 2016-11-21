@@ -1179,10 +1179,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(identifier.equals(MetadataColumns.VALUE.name())) {
                         final String value = metadata.get(row.intValue()).getValue();
-                        if(StringUtils.isEmpty(value)) {
-                            return null;
-                        }
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : StringUtils.EMPTY);
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : LocaleFactory.localizedString("Multiple files"));
                     }
                 }
                 return null;

@@ -106,8 +106,10 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.containsKey("key1"));
-        assertFalse(map.containsKey("key2"));
+        assertTrue(map.containsKey("key1"));
+        assertTrue(map.containsKey("key2"));
+        assertNull(map.get("key1"));
+        assertNull(map.get("key2"));
     }
 
     @Test
@@ -167,8 +169,9 @@ public class ReadMetadataWorkerTest {
                 return super.getFeature(type);
             }
         });
-        assertFalse(map.containsKey("key1"));
+        assertTrue(map.containsKey("key1"));
         assertTrue(map.containsKey("key2"));
+        assertNull(map.get("key1"));
         assertNull(map.get("key2"));
         assertNotNull(map.get("key3"));
     }
