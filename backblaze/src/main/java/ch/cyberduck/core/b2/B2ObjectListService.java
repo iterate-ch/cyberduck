@@ -77,7 +77,9 @@ public class B2ObjectListService implements ListService {
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
-                        marker.nextFilename, marker.nextFileId, chunksize);
+                        marker.nextFilename, marker.nextFileId, chunksize,
+                        containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
+                        containerService.isContainer(directory) ? null : String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
@@ -93,8 +95,15 @@ public class B2ObjectListService implements ListService {
     }
 
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
-                           final B2ListFilesResponse response, final Map<String, Integer> revisions) {
+                           final B2ListFilesResponse response, final Map<String, Integer> revisions) throws BackgroundException {
         for(B2FileInfoResponse file : response.getFiles()) {
+            if(StringUtils.isBlank(file.getFileId())) {
+                // Common prefix
+                final Path placeholder = new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                placeholder.attributes().setVersionId(new B2FileidProvider(session).getFileid(placeholder));
+                objects.add(placeholder);
+                continue;
+            }
             final PathAttributes attributes = this.parse(directory, file);
             final Integer revision;
             if(revisions.keySet().contains(file.getFileName())) {
@@ -182,7 +191,7 @@ public class B2ObjectListService implements ListService {
      * Find placeholder name that is child of current working directory for the filename passed.
      *
      * @param directory Working directory
-     * @param filename  Filename
+     * @param filename  Filename ending with /.bzEmpty
      * @return Placeholder directory name
      */
     protected Path virtual(final Path directory, final String filename) {
