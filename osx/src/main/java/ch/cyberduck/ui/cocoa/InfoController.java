@@ -287,7 +287,7 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSTextField distributionAnalyticsSetupUrlField;
 
-    public InfoController(final Controller controller, final SessionPool session, final Cache<Path> cache, final List<Path> files) {
+    public InfoController(final Controller controller, final SessionPool session, final List<Path> files) {
         this.controller = controller;
         this.session = session;
         this.files = files;
