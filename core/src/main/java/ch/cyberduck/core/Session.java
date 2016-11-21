@@ -209,19 +209,6 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return The custom character encoding specified by the host
-     * of this session or the default encoding if not specified
-     * @see Preferences
-     * @see Host
-     */
-    public String getEncoding() {
-        if(null == host.getEncoding()) {
-            return preferences.getProperty("browser.charset.encoding");
-        }
-        return host.getEncoding();
-    }
-
-    /**
      * @return Case sensitivity of the underlying remote file system
      */
     public Case getCase() {
