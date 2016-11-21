@@ -46,7 +46,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Call background action %s", action));
             }
-            return action.run();
+            return action.call();
         }
         catch(ConnectionCanceledException e) {
             // Do not report as failed
