@@ -80,7 +80,7 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setJmxEnabled(false);
         configuration.setMinIdle(0);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
-        configuration.setBlockWhenExhausted(false);
+        configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
