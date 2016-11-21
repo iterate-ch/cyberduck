@@ -100,6 +100,18 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
+    public void evict(final BackgroundException failure) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Trying to evict idle sessions from pool %s", pool));
+        }
+        try {
+            pool.evict();
+        }
+        catch(final Exception e) {
+            log.warn(String.format("Failed to evict pool %s. %s", pool, e.getMessage()));
+        }
+    }
+
     public DefaultSessionPool withMaxIdle(final int idle) {
         pool.setMaxIdle(idle);
         return this;
@@ -236,6 +248,14 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public Host getHost() {
         return bookmark;
+    }
+
+    public int getNumActive() {
+        return pool.getNumActive();
+    }
+
+    public int getNumIdle() {
+        return pool.getNumIdle();
     }
 
     @Override
