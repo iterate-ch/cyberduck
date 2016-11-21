@@ -37,8 +37,10 @@ import synapticloop.b2.response.B2GetUploadUrlResponse;
 public class B2DirectoryFeature implements Directory {
 
     public static final String PLACEHOLDER = "/.bzEmpty";
+
     private final PathContainerService containerService
             = new B2PathContainerService();
+
     private final B2Session session;
 
     public B2DirectoryFeature(final B2Session session) {
