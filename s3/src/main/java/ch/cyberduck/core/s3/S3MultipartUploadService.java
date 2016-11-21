@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -52,11 +51,7 @@ import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -284,37 +279,5 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
         });
-    }
-
-    @Override
-    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-        if(null == digest) {
-            log.warn("MD5 calculation disabled");
-            return super.decorate(in, null);
-        }
-        else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
-        }
-    }
-
-    @Override
-    protected MessageDigest digest() throws IOException {
-        MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("s3.upload.md5")) {
-            try {
-                digest = MessageDigest.getInstance("MD5");
-            }
-            catch(NoSuchAlgorithmException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-        return digest;
-    }
-
-    @Override
-    protected void post(final Path file, final MessageDigest digest, final StorageObject multipart) throws BackgroundException {
-        if(null == multipart.getServerSideEncryptionAlgorithm()) {
-            this.verify(file, digest, Checksum.parse(multipart.getETag()));
-        }
     }
 }
