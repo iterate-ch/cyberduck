@@ -234,9 +234,12 @@ public class FTPListResponseReaderTest {
     public void testParseMD1766() throws Exception {
         final List<String> lines = new FTPStatListService(null, null).parse(
                 211, new String[]{
-                        "lrwxrwxrwx 1 USER SSS 7 Nov 02 2015 bin -> script/",
-                        "lrwxrwxrwx 1 USER SSS 6 Nov 02 2015 home1 -> /home1",
-                        "lrwxrwxrwx 1 USER SSS 15 Nov 02 2015 vvvdev -> /fff/dev/vvvdev"
+                        "lrwxrwxrwx 1 sss 7 Nov 2 2015 bin",
+                        "lrwxrwxrwx 1 sss 6 Nov 2 2015 home1",
+                        "lrwxrwxrwx 1 sss 15 Nov 2 2015 vvvdev"
+//                        "lrwxrwxrwx 1 USER SSS 7 Nov 02 2015 bin -> script/",
+//                        "lrwxrwxrwx 1 USER SSS 6 Nov 02 2015 home1 -> /home1",
+//                        "lrwxrwxrwx 1 USER SSS 15 Nov 02 2015 vvvdev -> /fff/dev/vvvdev"
                 });
         final AttributedList<Path> list = new FTPListResponseReader(new FTPParserSelector().getParser("UNIX Type: L8 Version: BSD-44"), true)
                 .read(new Path("/", EnumSet.of(Path.Type.directory)), lines, new DisabledListProgressListener());
