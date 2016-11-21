@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +39,6 @@ import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
             = new B2PathContainerService();

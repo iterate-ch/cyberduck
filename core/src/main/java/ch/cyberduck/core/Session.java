@@ -105,7 +105,6 @@ public abstract class Session<C> implements TranscriptListener {
      * @param key        Host identity verification callback
      * @param transcript Transcript
      * @return Client
-     * @throws BackgroundException
      */
     public C open(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
         if(log.isDebugEnabled()) {
