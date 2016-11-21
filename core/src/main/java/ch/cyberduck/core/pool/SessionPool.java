@@ -26,6 +26,8 @@ public interface SessionPool {
 
     void release(Session<?> session, BackgroundException failure);
 
+    void evict(BackgroundException failure);
+
     void close();
 
     Host getHost();

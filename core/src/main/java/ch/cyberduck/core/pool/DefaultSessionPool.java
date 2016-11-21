@@ -100,6 +100,7 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
+    @Override
     public void evict(final BackgroundException failure) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Trying to evict idle sessions from pool %s", pool));
