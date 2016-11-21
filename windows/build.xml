@@ -122,6 +122,7 @@
             <target name="Build"/>
             <property name="Version" value="${normalized.version}.${revision}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
             <property name="CyberduckInstallerArgs" value="/Q /S" />
         </msbuild>
