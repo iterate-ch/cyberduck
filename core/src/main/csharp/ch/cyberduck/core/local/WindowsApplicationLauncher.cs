@@ -22,18 +22,9 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public sealed class WindowsProcessApplicationLauncher : ApplicationLauncher
+    public sealed class WindowsApplicationLauncher : ApplicationLauncher
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(WindowsProcessApplicationLauncher).Name);
-
-        public static string GetExecutableCommand(string command)
-        {
-            if (Utils.IsNotBlank(command) && command.Contains(".exe"))
-            {
-                return command.Substring(0, command.LastIndexOf(".exe") + 4);
-            }
-            return command;
-        }
+        private static readonly Logger Log = Logger.getLogger(typeof (WindowsApplicationLauncher).Name);
 
         public void bounce(ch.cyberduck.core.Local local)
         {
@@ -71,6 +62,15 @@ namespace Ch.Cyberduck.Core.Local
                 process.StartInfo.Arguments = args;
             }
             return Utils.StartProcess(process);
+        }
+
+        public static string GetExecutableCommand(string command)
+        {
+            if (Utils.IsNotBlank(command) && command.Contains(".exe"))
+            {
+                return command.Substring(0, command.LastIndexOf(".exe") + 4);
+            }
+            return command;
         }
     }
 }
