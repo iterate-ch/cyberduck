@@ -64,11 +64,19 @@ namespace Ch.Cyberduck.Core.Sparkle
             SetAppcastURL();
             if (background)
             {
-                WinSparkle.CheckUpdateWithoutUi();
+                if (!Utils.IsUWPSupported)
+                {
+                    WinSparkle.CheckUpdateWithoutUi();
+                }
+                // silent ignore Update Check
+            }
+            else if (!Utils.IsUWPSupported)
+            {
+                WinSparkle.CheckUpdateWithUi();
             }
             else
             {
-                WinSparkle.CheckUpdateWithUi();
+                // TaskDialog for "Updater is unavailable in UWP"?
             }
             _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
         }
