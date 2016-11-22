@@ -59,6 +59,7 @@ using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
+using StructureMap;
 using ch.cyberduck.core.updater;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -671,8 +672,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Do not display if shown in the reminder interval
                     return true;
                 }
-                DonationController controller = new DonationController();
-                controller.Show();
+				ObjectFactory.GetInstance<IDonationController>().Show();
             }
             return true;
         }

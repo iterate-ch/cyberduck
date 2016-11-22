@@ -185,6 +185,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\DisabledDonationController.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
