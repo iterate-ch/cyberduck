@@ -16,11 +16,15 @@
 
         <OutputPath>windows/target/</OutputPath>
         <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
-
         <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
         <VFS>$(PackageFiles)VFS/</VFS>
+    </PropertyGroup>
 
-        <OutputFilename>$(OutputPath)/$(Configuration)/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <OutputFilename>$(OutputPath)debug/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <OutputFilename>$(OutputPath)release/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
     </PropertyGroup>
 
     <Target Name="UsesFrameworkSdk">
