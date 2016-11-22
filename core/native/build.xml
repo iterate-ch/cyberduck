@@ -23,8 +23,13 @@
 
     <import file="../../build.xml"/>
 
-    <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
 
     <target name="dll" if="platform.windows">
         <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
