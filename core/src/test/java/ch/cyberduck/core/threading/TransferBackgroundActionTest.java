@@ -200,36 +200,6 @@ public class TransferBackgroundActionTest {
     }
 
     @Test
-    public void testResumeOnPause() throws Exception {
-        final AbstractController controller = new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                runnable.run();
-            }
-        };
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
-        final TransferOptions options = new TransferOptions();
-        final DefaultSessionPool pool = new DefaultSessionPool(
-                new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
-            @Override
-            public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-                throw new ConnectionRefusedException("d", new SocketException());
-            }
-        };
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, pool, new TransferAdapter(),
-                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
-        assertFalse(options.resumeRequested);
-        try {
-            action.call();
-            fail();
-        }
-        catch(BackgroundException e) {
-            //
-        }
-        assertTrue(options.resumeRequested);
-    }
-
-    @Test
     public void testResumeOnRetryWithException() throws Exception {
         final AtomicBoolean alert = new AtomicBoolean();
         final AbstractController controller = new AbstractController() {
