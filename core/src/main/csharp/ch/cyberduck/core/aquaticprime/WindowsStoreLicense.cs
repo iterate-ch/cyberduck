@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ch.cyberduck.core.aquaticprime;
 using Windows.Services.Store;
 using Windows.System;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Core.AquaticPrime
 {
@@ -13,33 +14,32 @@ namespace Ch.Cyberduck.Core.AquaticPrime
     {
         public string getName()
         {
-            return (string)StoreContext.GetDefault().User.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result;
-        }
-
-        public string getValue(string str)
-        {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
             if (license == null)
             {
-                return "Invalid";
+                return LocaleFactory.localizedString("Unknown");
             }
-
             if (license.IsActive)
             {
                 if (license.IsTrial)
                 {
-                    return "Trial";
+                    return LocaleFactory.localizedString("Trial Version", "License");
                 }
                 else
                 {
-                    return "Full";
+                    return (string)StoreContext.GetDefault().User.GetPropertyAsync(KnownUserProperties.DisplayName).AsTask().Result;
                 }
             }
             else
             {
-                return "Invalid";
+                return LocaleFactory.localizedString("Unknown");
             }
+        }
+
+        public string getValue(string str)
+        {
+            return LocaleFactory.localizedString("Unknown");
         }
 
         public bool isReceipt()
