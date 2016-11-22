@@ -47,10 +47,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final ThreadPool<TransferStatus> completion;
 
     public ConcurrentTransferWorker(final SessionPool pool,
-                                    final Transfer transfer, final TransferOptions options,
-                                    final TransferSpeedometer meter, final TransferPrompt prompt, final TransferErrorCallback error,
+                                    final Transfer transfer,
+                                    final TransferOptions options,
+                                    final TransferSpeedometer meter,
+                                    final TransferPrompt prompt,
+                                    final TransferErrorCallback error,
                                     final ConnectionCallback connectionCallback,
-                                    final ProgressListener progressListener, final StreamListener streamListener) {
+                                    final ProgressListener progressListener,
+                                    final StreamListener streamListener) {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         if(pool instanceof DefaultSessionPool) {
             this.pool = ((DefaultSessionPool) pool).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
@@ -68,7 +72,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            Session session = pool.borrow(BackgroundActionState.running);
+            final Session session = pool.borrow(BackgroundActionState.running);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }
@@ -77,12 +81,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         catch(BackgroundException e) {
             throw e;
         }
-        catch(Exception e) {
-            if(e.getCause() instanceof BackgroundException) {
-                throw ((BackgroundException) e.getCause());
-            }
-            throw new BackgroundException(e.getMessage(), e);
-        }
     }
 
     @Override
@@ -90,12 +88,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         if(log.isInfoEnabled()) {
             log.info(String.format("Release session %s to pool", session));
         }
-        try {
-            pool.release(session, null);
-        }
-        catch(IllegalStateException e) {
-            log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
-        }
+        pool.release(session, null);
     }
 
     @Override
