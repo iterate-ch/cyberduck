@@ -4,10 +4,20 @@
     <PropertyGroup>
         <Platform Condition="'$(Platform)' == ''">x86</Platform>
 
+        <PackageName>iterate.37637C3DE32E5</PackageName>
+        <Publisher>CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4</Publisher>
+
+        <AppId>Cyberduck</AppId>
+        <AppDisplayName>Cyberduck</AppDisplayName>
+        <AppDescription>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows.</AppDescription>
+
+        <PackageDisplayName>Cyberduck</PackageDisplayName>
+        <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
+
         <OutputPath>windows/target/</OutputPath>
         <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
 
-        <PackageFiles>$(IntermediateOutputPath)Cyberduck/PackageFiles/</PackageFiles>
+        <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
         <VFS>$(PackageFiles)VFS/</VFS>
 
         <OutputFilename>$(OutputPath)/$(Configuration)/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
@@ -40,7 +50,7 @@
     </Target>
 
     <Target Name="ConvertInstaller">
-        <Exec Command="DesktopAppConverter -Installer &quot;$(CyberduckInstallerPath)&quot; -InstallerArguments &quot;$(CyberduckInstallerArgs)&quot; -Destination &quot;$(IntermediateOutputPath)&quot; -PackageName &quot;iterate.37637C3DE32E5&quot; -Publisher &quot;CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4&quot; -PackagePublisherDisplayName &quot;iterate&quot; -PackageArch &quot;$(Platform)&quot; -Version &quot;$(Version)&quot; -Verbose"/>
+        <Exec Command="DesktopAppConverter -Installer &quot;$(CyberduckInstallerPath)&quot; -InstallerArguments &quot;$(CyberduckInstallerArgs)&quot; -Destination &quot;$(IntermediateOutputPath)&quot; -PackageName &quot;$(PackageName)&quot; -Publisher &quot;$(Publisher)&quot; -Version &quot;$(Version)&quot; -AppId &quot;$(AppId)&quot; -AppDisplayName &quot;$(AppDisplayName)&quot; -AppDescription &quot;$(AppDescription)&quot; -PackageDisplayName &quot;$(PackageDisplayName)&quot; -PackagePublisherDisplayName &quot;$(PackagePublisherDisplayName)&quot; -Verbose" />
     </Target>
     <Target Name="DeleteOldIcons">
         <ItemGroup>
