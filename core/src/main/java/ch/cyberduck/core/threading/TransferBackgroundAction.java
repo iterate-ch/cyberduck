@@ -43,6 +43,8 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
 
     private final Transfer transfer;
 
+    private final SessionPool pool;
+
     private final TransferOptions options;
     /**
      * Keeping track of the current transfer rate
@@ -120,6 +122,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         super(controller, pool, new ConcurrentTransferWorker(pool, transfer, options, meter, prompt, error, callback, progress, stream));
+        this.pool = pool;
         this.options = options;
         this.meter = meter;
         this.transfer = transfer;
@@ -162,6 +165,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
 
     public void finish() {
         super.finish();
+        pool.shutdown();
         progressTimer.cancel(false);
         transfer.stop();
         listener.stop(transfer);

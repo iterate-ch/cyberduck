@@ -137,7 +137,11 @@ public class DefaultSessionPool implements SessionPool {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrow session from pool %s", pool));
                     }
-                    return pool.borrowObject();
+                    final Session session = pool.borrowObject();
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Borrowed session %s from pool %s", session, pool));
+                    }
+                    return session;
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);
@@ -240,7 +244,7 @@ public class DefaultSessionPool implements SessionPool {
     /**
      * Idle this action for some time. Blocks the caller.
      */
-    public void pause() {
+    private void pause() {
         final int attempt = retry - repeat.get();
         final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override

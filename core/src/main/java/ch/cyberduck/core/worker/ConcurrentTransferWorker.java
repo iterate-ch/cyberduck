@@ -22,7 +22,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
@@ -68,26 +67,21 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     protected Session<?> borrow() throws BackgroundException {
-        try {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
+        return pool.borrow(new BackgroundActionState() {
+            @Override
+            public boolean isCanceled() {
+                return ConcurrentTransferWorker.this.isCanceled();
             }
-            final Session session = pool.borrow(BackgroundActionState.running);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Borrow session %s from pool", session));
+
+            @Override
+            public boolean isRunning() {
+                return true;
             }
-            return session;
-        }
-        catch(BackgroundException e) {
-            throw e;
-        }
+        });
     }
 
     @Override
     protected void release(final Session session) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Release session %s to pool", session));
-        }
         pool.release(session, null);
     }
 
@@ -103,21 +97,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public void await() throws BackgroundException {
         completion.await();
     }
-
-    @Override
-    public void cleanup(final Boolean result) {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Close connection pool %s", pool));
-            }
-            pool.close();
-        }
-        catch(Exception e) {
-            log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
-        }
-        super.cleanup(result);
-    }
-
 
     @Override
     public String toString() {
