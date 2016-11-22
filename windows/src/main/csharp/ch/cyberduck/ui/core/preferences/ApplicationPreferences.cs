@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.aquaticprime;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -88,6 +89,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             if (!Cyberduck.Core.Utils.IsUWPSupported)
             {
                 defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
+                defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }
         }
     }
