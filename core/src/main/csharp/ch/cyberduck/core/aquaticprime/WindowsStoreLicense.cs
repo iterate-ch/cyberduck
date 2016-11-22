@@ -20,6 +20,11 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
+            if (license == null)
+            {
+                return "Invalid";
+            }
+
             if (license.IsActive)
             {
                 if (license.IsTrial)
@@ -46,6 +51,11 @@ namespace Ch.Cyberduck.Core.AquaticPrime
         {
             StoreContext storeContext = StoreContext.GetDefault();
             StoreAppLicense license = storeContext.GetAppLicenseAsync().AsTask().Result;
+            if (license == null)
+            {
+                return false;
+            }
+
             return license.IsActive;
         }
     }
