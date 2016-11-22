@@ -230,7 +230,7 @@ public class TransferBackgroundActionTest {
     }
 
     @Test
-    public void testResumeOnAutomatedRetryWithException() throws Exception {
+    public void testResumeOnRetryWithException() throws Exception {
         final AtomicBoolean alert = new AtomicBoolean();
         final AbstractController controller = new AbstractController() {
             @Override
@@ -240,8 +240,9 @@ public class TransferBackgroundActionTest {
 
             @Override
             public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+                final boolean alerted = alert.get();
                 alert.set(true);
-                return false;
+                return !alerted;
             }
         };
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
@@ -250,29 +251,15 @@ public class TransferBackgroundActionTest {
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
             @Override
-            protected boolean retry() {
-                if(retry.get()) {
-                    return false;
-                }
-                retry.set(true);
-                return true;
-            }
-
-            @Override
             public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
         }, new TransferAdapter(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
-        // Connect, prepare and run
-        try {
-            action.call();
-            fail();
-        }
-        catch(BackgroundException e) {
-            //
-        }
         assertFalse(alert.get());
+        // Connect, prepare and run
+        new BackgroundCallable<Boolean>(action, controller, BackgroundActionRegistry.global()).call();
+        assertTrue(alert.get());
         assertNotNull(action.getException());
         assertTrue(options.resumeRequested);
     }
