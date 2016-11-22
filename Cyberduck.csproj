@@ -180,6 +180,9 @@
     <Reference Include="VistaBridgeLibrary">
       <HintPath>windows\target\VistaBridgeLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Windows">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="Windows7.DesktopIntegration">
       <HintPath>windows\target\Windows7.DesktopIntegration.dll</HintPath>
     </Reference>

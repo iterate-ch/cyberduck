@@ -61,6 +61,8 @@ using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
 using StructureMap;
 using ch.cyberduck.core.updater;
+using Windows.Services.Store;
+using Ch.Cyberduck.Ui.Core.UWP;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -359,6 +361,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ApplicationDidFinishLaunching(object sender, StartupEventArgs e)
         {
             Logger.debug("ApplicationDidFinishLaunching");
+
+            /* UWP Registration, initialize as soon as possible */
+            if (Cyberduck.Core.Utils.IsUWPSupported)
+            {
+                var storeContext = StoreContext.GetDefault();
+                var initWindow = (IInitializeWithWindow)(object)storeContext;
+                initWindow.Initialize(MainForm.Handle);
+            }
+
             _controller.Background(delegate
             {
                 TransferCollection.defaultCollection().load();
@@ -672,7 +683,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Do not display if shown in the reminder interval
                     return true;
                 }
-				ObjectFactory.GetInstance<IDonationController>().Show();
+                ObjectFactory.GetInstance<IDonationController>().Show();
             }
             return true;
         }
