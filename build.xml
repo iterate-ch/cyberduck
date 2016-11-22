@@ -20,7 +20,6 @@
 
     <property environment="env"/>
 
-    <property name="debug" value="on"/>
     <property name="module" location="."/>
     <property name="build" value="${module}/target"/>
     <property name="build.compile.target" value="${ant.java.version}"/>
@@ -69,6 +68,9 @@
         </and>
     </condition>
 
+    <condition property="debug" value="on" else="off">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
     <target name="init" depends="timestamp">
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
