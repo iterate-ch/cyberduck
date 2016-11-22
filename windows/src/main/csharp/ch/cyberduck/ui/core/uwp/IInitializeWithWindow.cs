@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.core.uwp
+namespace Ch.Cyberduck.Ui.Core.UWP
 {
     [ComImport]
     [Guid("3E68D4BD-7135-4D10-8018-9FB6D9F33FA1")]
