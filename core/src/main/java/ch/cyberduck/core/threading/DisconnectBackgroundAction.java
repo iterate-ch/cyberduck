@@ -56,6 +56,9 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
 
     @Override
     public String getActivity() {
+        if(session == SessionPool.DISCONNECTED) {
+            return super.getActivity();
+        }
         return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                 BookmarkNameProvider.toString(session.getHost()));
     }
