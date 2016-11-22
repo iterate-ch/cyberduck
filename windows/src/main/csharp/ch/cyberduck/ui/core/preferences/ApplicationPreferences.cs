@@ -18,6 +18,7 @@
 
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
@@ -32,7 +33,6 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.log4j;
-using Ch.Cyberduck.Core.AquaticPrime;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
@@ -86,10 +86,13 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
             defaults.put("factory.schemehandler.class", typeof (URLSchemeHandlerConfiguration).AssemblyQualifiedName);
 
-            if (!Cyberduck.Core.Utils.IsUWPSupported)
+            if (Cyberduck.Core.Utils.IsUWPSupported)
+            {
+                defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
+            }
+            else
             {
                 defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
-                defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }
         }
     }
