@@ -30,22 +30,21 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
 
+    private final WindowController parent;
     /**
      * If using alert and no custom window
      */
     protected final NSAlert alert;
-
-    public final SheetInvoker invoker;
 
     public AlertController(final WindowController parent, final NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);
     }
 
     public AlertController(final WindowController parent, final NSAlert alert, final int style) {
+        this.parent = parent;
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
-        this.invoker = new SheetInvoker(this, parent, alert.window());
         this.setValidator(this);
         this.setWindow(alert.window());
     }
@@ -64,7 +63,7 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     public int beginSheet() {
         this.focus();
-        return invoker.beginSheet();
+        return new SheetInvoker(this, parent, alert.window()).beginSheet();
     }
 
     protected void focus() {
