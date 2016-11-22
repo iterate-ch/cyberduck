@@ -17,7 +17,6 @@
 //
 
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.aquaticprime;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Bonjour;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -33,6 +32,7 @@ using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using org.apache.log4j;
+using Ch.Cyberduck.Core.AquaticPrime;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
 {
