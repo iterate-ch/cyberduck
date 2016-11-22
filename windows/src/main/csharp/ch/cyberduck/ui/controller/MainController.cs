@@ -623,7 +623,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             foreach (BrowserController browser in Browsers)
             {
-                if (browser.isMounted())
+                if (browser.IsMounted())
                 {
                     if (bookmark.equals(browser.Session.getHost()))
                     {
