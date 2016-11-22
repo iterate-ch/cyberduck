@@ -42,8 +42,6 @@ import org.jets3t.service.Jets3tProperties;
 
 public class SpectraSession extends S3Session {
 
-    private final SpectraBulkService bulk = new SpectraBulkService(this);
-
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -64,7 +62,7 @@ public class SpectraSession extends S3Session {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Bulk.class) {
-            return (T) bulk;
+            return (T) new SpectraBulkService(this);
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
@@ -95,13 +93,13 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraWriteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new SpectraReadFeature(this, bulk);
+            return (T) new SpectraReadFeature(this, new SpectraBulkService(this));
         }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this), bulk);
+            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this), new SpectraBulkService(this));
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, bulk));
+            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, new SpectraBulkService(this)));
         }
         if(type == Headers.class) {
             return null;

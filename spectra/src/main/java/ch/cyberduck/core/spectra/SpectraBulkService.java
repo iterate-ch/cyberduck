@@ -74,8 +74,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
 
-    private MasterObjectList cache = new MasterObjectList();
-
     public SpectraBulkService(final SpectraSession session) {
         this(session, session.getFeature(Delete.class));
     }
@@ -83,7 +81,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     public SpectraBulkService(final SpectraSession session, final Delete delete) {
         this.session = session;
         this.delete = delete;
-        this.cache.setObjects(Collections.emptyList());
     }
 
     /**
@@ -193,7 +190,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query status for job %s", job));
             }
-            List<TransferStatus> chunks = this.query(file, status, job, cache);
+            final MasterObjectList list = new MasterObjectList();
+            list.setObjects(Collections.emptyList());
+            List<TransferStatus> chunks = this.query(file, status, job, list);
             if(chunks.isEmpty()) {
                 // Fetch current list from server
                 final Ds3Client client = new SpectraClientBuilder().wrap(session);
@@ -220,8 +219,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
                     log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
                 }
-                // Update cache
-                cache = master;
                 chunks = this.query(file, status, job, master);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
