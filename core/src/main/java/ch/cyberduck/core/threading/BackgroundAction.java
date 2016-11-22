@@ -21,7 +21,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-public interface BackgroundAction<T> {
+public interface BackgroundAction<T> extends BackgroundActionState {
 
     /**
      * Called before synchronized with other pending actions
@@ -50,8 +50,6 @@ public interface BackgroundAction<T> {
      */
     void finish();
 
-    boolean isRunning();
-
     /**
      * To be called from the main interface thread after the #run
      * has finished to allow calls to non-threadable view classes
@@ -62,8 +60,6 @@ public interface BackgroundAction<T> {
      * Mark this action as canceled. Will not execute if scheduled.
      */
     void cancel();
-
-    boolean isCanceled();
 
     /**
      * @return The name of the activity to display in the activity window
