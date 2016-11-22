@@ -21,6 +21,7 @@ import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
@@ -42,6 +43,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
 
     private final Transfer transfer;
 
+    private final TransferOptions options;
     /**
      * Keeping track of the current transfer rate
      */
@@ -118,6 +120,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         super(controller, pool, new ConcurrentTransferWorker(pool, transfer, options, meter, prompt, error, callback, progress, stream));
+        this.options = options;
         this.meter = meter;
         this.transfer = transfer;
         this.listener = listener;
@@ -138,6 +141,17 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
                 }
             }
         }, 100L, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public boolean alert(final BackgroundException e) {
+        if(super.alert(e)) {
+            // Upon retry do not suggest to overwrite already completed items from the transfer
+            options.reloadRequested = false;
+            options.resumeRequested = true;
+            return true;
+        }
+        return false;
     }
 
     @Override

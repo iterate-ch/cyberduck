@@ -61,6 +61,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
@@ -488,47 +489,7 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session.getHost(), downloads);
                 final TransferOptions options = new TransferOptions();
-                background(new TransferBackgroundAction(this, session, new TransferAdapter() {
-                    @Override
-                    public void progress(final TransferProgress status) {
-                        message(status.getProgress());
-                    }
-                }, this, download, options,
-                        new TransferPrompt() {
-                            @Override
-                            public TransferAction prompt(final TransferItem item) {
-                                return TransferAction.comparison;
-                            }
-
-                            @Override
-                            public boolean isSelected(final TransferItem file) {
-                                return true;
-                            }
-
-                            @Override
-                            public void message(final String message) {
-                                BrowserController.this.message(message);
-                            }
-                        }, new DisabledTransferErrorCallback()
-                ) {
-                    @Override
-                    public void cleanup() {
-                        super.cleanup();
-                        final List<Local> previews = new ArrayList<Local>();
-                        for(TransferItem download : downloads) {
-                            previews.add(download.local);
-                        }
-                        // Change files in Quick Look
-                        quicklook.select(previews);
-                        // Open Quick Look Preview Panel
-                        quicklook.open();
-                    }
-
-                    @Override
-                    public String getActivity() {
-                        return LocaleFactory.localizedString("Quick Look", "Status");
-                    }
-                });
+                this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, download, options, downloads));
             }
         }
     }
@@ -2897,21 +2858,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferBackgroundAction(this, session, new TransferAdapter() {
-                @Override
-                public void progress(final TransferProgress status) {
-                    message(status.getProgress());
-                    super.progress(status);
-                }
-            }, transfer, new TransferOptions()) {
-                @Override
-                public void finish() {
-                    if(transfer.isComplete()) {
-                        callback.complete(transfer);
-                    }
-                    super.finish();
-                }
-            });
+            this.background(new BrowserTransferBackgroundAction(this, session, transfer, callback));
         }
         else {
             TransferControllerFactory.get().start(transfer, new TransferOptions(), callback);
@@ -3679,5 +3626,55 @@ public class BrowserController extends WindowController
         notificationCenter.removeObserver(this.id());
 
         super.invalidate();
+    }
+
+    private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
+        private final QuickLook quicklook;
+        private final List<TransferItem> downloads;
+
+        public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
+                                                 final TransferOptions options, final List<TransferItem> downloads) {
+            super(controller, session, new TransferAdapter() {
+                @Override
+                public void progress(final TransferProgress status) {
+                    controller.message(status.getProgress());
+                }
+            }, controller, download, options, new TransferPrompt() {
+                @Override
+                public TransferAction prompt(final TransferItem item) {
+                    return TransferAction.comparison;
+                }
+
+                @Override
+                public boolean isSelected(final TransferItem file) {
+                    return true;
+                }
+
+                @Override
+                public void message(final String message) {
+                    controller.message(message);
+                }
+            }, new DisabledTransferErrorCallback());
+            this.quicklook = quicklook;
+            this.downloads = downloads;
+        }
+
+        @Override
+        public void cleanup() {
+            super.cleanup();
+            final List<Local> previews = new ArrayList<Local>();
+            for(TransferItem download : downloads) {
+                previews.add(download.local);
+            }
+            // Change files in Quick Look
+            quicklook.select(previews);
+            // Open Quick Look Preview Panel
+            quicklook.open();
+        }
+
+        @Override
+        public String getActivity() {
+            return LocaleFactory.localizedString("Quick Look", "Status");
+        }
     }
 }

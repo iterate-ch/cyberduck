@@ -2317,7 +2317,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferCallback callback = new ReloadTransferCallback(this, selected);
             if (browser)
             {
-                Background(new CallbackTransferBackgroundAction(callback, this, new ProgressTransferAdapter(this), this, transfer, new TransferOptions()));
+                Background(new BrowserTransferBackgroundAction(this, Session, transfer, callback));
             }
             else
             {
@@ -3101,31 +3101,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CallbackTransferBackgroundAction : TransferBackgroundAction
-        {
-            private readonly TransferCallback _callback;
-            private readonly Transfer _transfer;
-
-            public CallbackTransferBackgroundAction(TransferCallback callback, BrowserController controller,
-                TransferListener transferListener, ProgressListener progressListener, Transfer transfer, TransferOptions options)
-                : base(
-                    controller, controller.Session, transferListener, progressListener,
-                    transfer, options)
-            {
-                _callback = callback;
-                _transfer = transfer;
-            }
-
-            public override void finish()
-            {
-                if (_transfer.isComplete())
-                {
-                    _callback.complete(_transfer);
-                }
-                base.finish();
-            }
-        }
-
         private class CreateArchiveAction : BrowserControllerBackgroundAction
         {
             private readonly Archive _archive;
@@ -3297,21 +3272,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     _controller.Reload(_controller.Workdir, moved,
                         (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
-            }
-        }
-
-        private class ProgressTransferAdapter : TransferAdapter
-        {
-            private readonly BrowserController _controller;
-
-            public ProgressTransferAdapter(BrowserController controller)
-            {
-                _controller = controller;
-            }
-
-            public override void progress(TransferProgress status)
-            {
-                _controller.message(status.getProgress());
             }
         }
 
