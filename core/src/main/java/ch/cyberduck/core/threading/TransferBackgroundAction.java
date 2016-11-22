@@ -34,13 +34,11 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
-    private static final Logger log = Logger.getLogger(TransferBackgroundAction.class);
 
     private final Transfer transfer;
 

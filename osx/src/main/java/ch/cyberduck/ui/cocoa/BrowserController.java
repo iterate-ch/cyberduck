@@ -3416,10 +3416,7 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                if(null != session) {
-                    session.close();
-                }
-                session = null;
+                session.shutdown();
                 editors.clear();
                 cache.clear();
                 setWorkdir(null);
@@ -3441,19 +3438,14 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        if(session != null) {
-            this.background(new DisconnectBackgroundAction(this, session) {
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    window.setDocumentEdited(false);
-                    disconnected.run();
-                }
-            });
-        }
-        else {
-            disconnected.run();
-        }
+        this.background(new DisconnectBackgroundAction(this, session) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                window.setDocumentEdited(false);
+                disconnected.run();
+            }
+        });
     }
 
     @Action

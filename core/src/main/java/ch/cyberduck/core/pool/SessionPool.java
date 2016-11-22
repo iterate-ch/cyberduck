@@ -28,13 +28,15 @@ public interface SessionPool {
 
     void evict(BackgroundException failure);
 
-    void close();
+    void close() throws BackgroundException;
 
     Host getHost();
 
     Session.State getState();
 
     <T> T getFeature(final Class<T> type);
+
+    void shutdown();
 
     interface Callback {
         boolean isCanceled();

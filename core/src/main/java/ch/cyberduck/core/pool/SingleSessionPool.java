@@ -47,11 +47,15 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public void evict(final BackgroundException failure) {
-        //
     }
 
     @Override
-    public void close() {
+    public void close() throws BackgroundException {
+        session.close();
+    }
+
+    @Override
+    public void shutdown() {
         //
     }
 

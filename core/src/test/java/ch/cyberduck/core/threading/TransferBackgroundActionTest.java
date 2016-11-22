@@ -17,6 +17,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
@@ -28,7 +29,10 @@ import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -196,6 +200,30 @@ public class TransferBackgroundActionTest {
     }
 
     @Test
+    public void testResumeOnPause() throws Exception {
+        final AbstractController controller = new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        };
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
+        final TransferOptions options = new TransferOptions();
+        final DefaultSessionPool pool = new DefaultSessionPool(
+                new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
+            @Override
+            public Session<?> borrow() throws BackgroundException {
+                throw new ConnectionRefusedException("d", new SocketException());
+            }
+        };
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, pool, new TransferAdapter(),
+                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
+        assertEquals(false, options.resumeRequested);
+        pool.pause();
+        assertEquals(true, options.resumeRequested);
+    }
+
+    @Test
     public void testResumeOnAutomatedRetryWithException() throws Exception {
         final AtomicBoolean alert = new AtomicBoolean();
         final AbstractController controller = new AbstractController() {
@@ -211,19 +239,32 @@ public class TransferBackgroundActionTest {
             }
         };
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
-        final Session session = new NullSession(host);
         final TransferOptions options = new TransferOptions();
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty()) {
+        final AtomicBoolean paused = new AtomicBoolean();
+        final AtomicBoolean retry = new AtomicBoolean();
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
+                new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
+            @Override
+            public void pause() {
+                super.pause();
+                paused.set(true);
+            }
+
+            @Override
+            protected boolean retry() {
+                if(retry.get()) {
+                    return false;
+                }
+                retry.set(true);
+                return true;
+            }
+
             @Override
             public Session<?> borrow() throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
         }, new TransferAdapter(),
-                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))),
-                options) {
-
-        };
+                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
         // Connect, prepare and run
         try {
             action.call();
@@ -233,5 +274,7 @@ public class TransferBackgroundActionTest {
         }
         assertFalse(alert.get());
         assertNotNull(action.getException());
+        assertTrue(paused.get());
+        assertEquals(true, options.resumeRequested);
     }
 }

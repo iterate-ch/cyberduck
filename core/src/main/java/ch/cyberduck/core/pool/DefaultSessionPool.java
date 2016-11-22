@@ -204,6 +204,14 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public void close() {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Clear idle connections in pool %s", this));
+        }
+        pool.clear();
+    }
+
+    @Override
+    public void shutdown() {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Close connection pool %s", this));
