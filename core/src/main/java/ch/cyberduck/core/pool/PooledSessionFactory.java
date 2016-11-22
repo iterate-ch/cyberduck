@@ -42,23 +42,23 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
 
     private final PathCache cache;
 
-    private final Host host;
+    private final Host bookmark;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final PathCache cache, final Host host) {
+                                final PathCache cache, final Host bookmark) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;
         this.cache = cache;
-        this.host = host;
+        this.bookmark = bookmark;
     }
 
     @Override
     public Session create() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new session for host %s in pool", host));
+            log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
-        return SessionFactory.create(host, trust, key);
+        return SessionFactory.create(bookmark, trust, key);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SessionPool{");
-        sb.append("host=").append(host);
+        sb.append("host=").append(bookmark);
         sb.append('}');
         return sb.toString();
     }
