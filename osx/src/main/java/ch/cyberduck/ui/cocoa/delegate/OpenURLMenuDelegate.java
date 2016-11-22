@@ -21,10 +21,8 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.pool.SessionPool;
 
@@ -47,29 +45,17 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     protected List<DescriptiveUrl> getURLs(final Path selected) {
         final ArrayList<DescriptiveUrl> list = new ArrayList<DescriptiveUrl>();
         final SessionPool pool = this.getSession();
-        final Session<?> session;
-        try {
-            session = pool.borrow();
+        final UrlProvider provider = pool.getFeature(UrlProvider.class);
+        if(provider != null) {
+            list.addAll(provider.toUrl(selected).filter(
+                    DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                    DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent));
         }
-        catch(BackgroundException e) {
-            return list;
+        final DistributionConfiguration feature = pool.getFeature(DistributionConfiguration.class);
+        if(feature != null) {
+            list.addAll(feature.toUrl(selected));
         }
-        try {
-            final UrlProvider provider = session.getFeature(UrlProvider.class);
-            if(provider != null) {
-                list.addAll(provider.toUrl(selected).filter(
-                        DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated, DescriptiveUrl.Type.torrent));
-            }
-            final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
-            if(feature != null) {
-                list.addAll(feature.toUrl(selected));
-            }
-            return list;
-        }
-        finally {
-            pool.release(session, null);
-        }
+        return list;
     }
 
     @Override
