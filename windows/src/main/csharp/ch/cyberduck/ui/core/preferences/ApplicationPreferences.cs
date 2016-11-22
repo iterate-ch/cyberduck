@@ -1,20 +1,20 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core;
@@ -25,6 +25,7 @@ using Ch.Cyberduck.Core.I18n;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Proxy;
+using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Growl;
@@ -83,6 +84,11 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             }
             defaults.put("factory.filedescriptor.class", typeof (Win32FileDescriptor).AssemblyQualifiedName);
             defaults.put("factory.schemehandler.class", typeof (URLSchemeHandlerConfiguration).AssemblyQualifiedName);
+
+            if (!Cyberduck.Core.Utils.IsUWPSupported)
+            {
+                defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
+            }
         }
     }
 }

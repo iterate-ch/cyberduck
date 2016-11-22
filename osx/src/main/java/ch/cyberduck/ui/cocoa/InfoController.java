@@ -291,7 +291,6 @@ public class InfoController extends ToolbarWindowController {
         this.controller = controller;
         this.session = session;
         this.files = files;
-        this.loadBundle();
     }
 
     private Path getSelected() {

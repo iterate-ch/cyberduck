@@ -107,7 +107,6 @@ public final class TransferController extends WindowController implements NSTool
     private final TransferCollection collection = TransferCollection.defaultCollection();
 
     public TransferController() {
-        this.loadBundle();
         collection.addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionLoaded() {

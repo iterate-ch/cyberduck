@@ -10,8 +10,9 @@
     <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>duck</AssemblyName>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Ch.Cyberduck.Cli.WindowsTerminal</StartupObject>
@@ -25,6 +26,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>1</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>cli\windows\target</OutputPath>
@@ -34,6 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Cyberduck.Core">
@@ -120,6 +123,9 @@
       <Project>{ac161b73-0b4b-4a32-b0d7-205ac89d83a5}</Project>
       <Name>Windows Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

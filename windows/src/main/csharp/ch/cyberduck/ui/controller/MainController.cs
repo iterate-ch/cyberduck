@@ -59,6 +59,7 @@ using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
+using ch.cyberduck.core.updater;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -94,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
         private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
-        private WinSparklePeriodicUpdateChecker _updater;
+        private PeriodicUpdateChecker _updater;
 
         static MainController()
         {
@@ -535,7 +536,7 @@ namespace Ch.Cyberduck.Ui.Controller
             WinSparklePeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
-                _updater = new WinSparklePeriodicUpdateChecker();
+                _updater = PeriodicUpdateCheckerFactory.get();
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));

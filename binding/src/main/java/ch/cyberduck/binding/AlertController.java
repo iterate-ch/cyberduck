@@ -35,7 +35,7 @@ public abstract class AlertController extends SheetController implements SheetCa
      */
     protected final NSAlert alert;
 
-    public final SheetInvoker sheet;
+    public final SheetInvoker invoker;
 
     public AlertController(final WindowController parent, final NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);
@@ -45,7 +45,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
-        this.sheet = new SheetInvoker(this, parent, alert.window());
+        this.invoker = new SheetInvoker(this, parent, alert.window());
         this.setValidator(this);
         this.setWindow(alert.window());
     }
@@ -64,7 +64,7 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     public int beginSheet() {
         this.focus();
-        return sheet.beginSheet();
+        return invoker.beginSheet();
     }
 
     protected void focus() {

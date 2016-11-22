@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets"/>
+    <PropertyGroup>
+        <Platform Condition="'$(Platform)' == ''">x86</Platform>
+
+        <OutputPath>windows/target/</OutputPath>
+        <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
+
+        <PackageFiles>$(IntermediateOutputPath)Cyberduck/PackageFiles/</PackageFiles>
+        <VFS>$(PackageFiles)VFS/</VFS>
+
+        <OutputFilename>$(OutputPath)/$(Configuration)/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+    </PropertyGroup>
+
+    <Target Name="UsesFrameworkSdk">
+        <GetFrameworkSdkPath>
+            <Output TaskParameter="Path" PropertyName="FrameworkSdkPath"/>
+        </GetFrameworkSdkPath>
+        <PropertyGroup>
+            <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
+            <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
+        </PropertyGroup>
+    </Target>
+    <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
+        <PropertyGroup>
+            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
+            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="Build">
+        <CallTarget Targets="ConvertInstaller"/>
+        <CallTarget Targets="DeleteOldIcons"/>
+        <CallTarget Targets="CopyNewIcons"/>
+        <CallTarget Targets="UpdateManifest"/>
+        <CallTarget Targets="RemoveObsolete"/>
+        <CallTarget Targets="MakeAppx"/>
+        <CallTarget Targets="SignAppx"/>
+    </Target>
+
+    <Target Name="ConvertInstaller">
+        <Exec Command="DesktopAppConverter -Installer &quot;$(CyberduckInstallerPath)&quot; -InstallerArguments &quot;$(CyberduckInstallerArgs)&quot; -Destination &quot;$(IntermediateOutputPath)&quot; -PackageName &quot;Cyberduck&quot; -Publisher &quot;CN=iterate GmbH, O=iterate GmbH, L=Bern, S=Bern, C=CH&quot; -PackagePublisherDisplayName &quot;iterate GmbH&quot; -PackageArch &quot;$(Platform)&quot; -Version &quot;$(Version)&quot; -Verbose"/>
+    </Target>
+    <Target Name="DeleteOldIcons">
+        <ItemGroup>
+            <ObsoleteAppxIcons Include="$(PackageFiles)Assets/Sample*.png"/>
+        </ItemGroup>
+        <Attrib ReadOnly="False" Files="@(ObsoleteAppxIcons)"/>
+        <Delete Files="@(ObsoleteAppxIcons)"/>
+    </Target>
+    <Target Name="CopyNewIcons">
+        <ItemGroup>
+            <NewAppxIcons Include="windows/src/resources/CyberduckAppx*.png"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(NewAppxIcons)" DestinationFolder="$(PackageFiles)\Assets"/>
+        <ItemGroup>
+            <AppxIcons Include="$(PackageFiles)Assets/Cyberduck*.png"/>
+        </ItemGroup>
+        <Attrib ReadOnly="True" Archive="True" Files="@(AppxIcons)"/>
+    </Target>
+    <Target Name="UpdateManifest">
+        <FileUpdate
+                Files="$(PackageFiles)AppxManifest.xml"
+                Regex="Assets\\SampleAppx"
+                ReplacementText="Assets\CyberduckAppx"/>
+    </Target>
+    <Target Name="RemoveObsolete">
+        <RemoveDir Directories="$(VFS)/Common AppData;$(VFS)/Users"/>
+    </Target>
+    <Target Name="MakeAppx">
+        <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
+    </Target>
+    <Target Name="SignAppx" DependsOnTargets="UsesSignTool">
+        <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
+    </Target>
+</Project>

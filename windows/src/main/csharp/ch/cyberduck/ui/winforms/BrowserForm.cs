@@ -32,6 +32,7 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.updater;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
@@ -1695,9 +1696,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")), () => true);
-            bool HasUpdatePrivilges = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
+            bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => new WinSparklePeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
+                (sender, args) => PeriodicUpdateCheckerFactory.get().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()

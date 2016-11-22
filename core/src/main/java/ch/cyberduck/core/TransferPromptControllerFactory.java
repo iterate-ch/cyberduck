@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -33,11 +32,8 @@ import java.lang.reflect.InvocationTargetException;
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool session) {
-        final String clazz = preferences.getProperty(
+        final String clazz = PreferencesFactory.get().getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
