@@ -71,6 +71,10 @@
     <condition property="debug" value="on" else="off">
         <equals arg1="${configuration}" arg2="debug" />
     </condition>
+    <condition property="ikvm.debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+
     <target name="init" depends="timestamp">
         <echo message=""/>
         <echo message="	  ---------------------------------------------------------------"/>
