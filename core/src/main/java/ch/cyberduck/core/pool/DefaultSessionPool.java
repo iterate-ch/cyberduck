@@ -28,6 +28,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionPauser;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
@@ -125,17 +126,18 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public Session<?> borrow() throws BackgroundException {
+    public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final Integer numActive = pool.getNumActive();
         if(numActive > POOL_WARNING_THRESHOLD) {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
         }
         try {
-            Session session;
-            while(true) {
+            while(!callback.isCanceled()) {
                 try {
-                    session = pool.borrowObject();
-                    break;
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Borrow session from pool %s", pool));
+                    }
+                    return pool.borrowObject();
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);
@@ -177,10 +179,7 @@ public class DefaultSessionPool implements SessionPool {
                     throw new BackgroundException(e);
                 }
             }
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Borrow session %s from pool", session));
-            }
-            return session;
+            throw new ConnectionCanceledException();
         }
         catch(BackgroundException e) {
             throw e;

@@ -23,6 +23,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 import org.junit.Test;
 
@@ -33,6 +34,6 @@ public class DefaultSessionPoolTest {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
         pool.shutdown();
-        pool.borrow();
+        pool.borrow(BackgroundActionState.running);
     }
 }

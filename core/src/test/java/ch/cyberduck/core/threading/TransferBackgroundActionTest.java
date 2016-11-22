@@ -212,15 +212,21 @@ public class TransferBackgroundActionTest {
         final DefaultSessionPool pool = new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
             @Override
-            public Session<?> borrow() throws BackgroundException {
+            public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
         };
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, pool, new TransferAdapter(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
-        assertEquals(false, options.resumeRequested);
-        pool.pause();
-        assertEquals(true, options.resumeRequested);
+        assertFalse(options.resumeRequested);
+        try {
+            action.call();
+            fail();
+        }
+        catch(BackgroundException e) {
+            //
+        }
+        assertTrue(options.resumeRequested);
     }
 
     @Test
@@ -240,16 +246,9 @@ public class TransferBackgroundActionTest {
         };
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final TransferOptions options = new TransferOptions();
-        final AtomicBoolean paused = new AtomicBoolean();
         final AtomicBoolean retry = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
-            @Override
-            public void pause() {
-                super.pause();
-                paused.set(true);
-            }
-
             @Override
             protected boolean retry() {
                 if(retry.get()) {
@@ -260,7 +259,7 @@ public class TransferBackgroundActionTest {
             }
 
             @Override
-            public Session<?> borrow() throws BackgroundException {
+            public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
         }, new TransferAdapter(),
@@ -268,13 +267,13 @@ public class TransferBackgroundActionTest {
         // Connect, prepare and run
         try {
             action.call();
+            fail();
         }
         catch(BackgroundException e) {
             //
         }
         assertFalse(alert.get());
         assertNotNull(action.getException());
-        assertTrue(paused.get());
-        assertEquals(true, options.resumeRequested);
+        assertTrue(options.resumeRequested);
     }
 }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 public class SingleSessionPool implements SessionPool {
 
@@ -35,7 +36,7 @@ public class SingleSessionPool implements SessionPool {
 
 
     @Override
-    public Session<?> borrow() throws BackgroundException {
+    public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         connect.check(session, cache);
         return session;
     }

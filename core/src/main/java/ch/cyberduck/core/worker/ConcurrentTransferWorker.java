@@ -27,6 +27,7 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.Transfer;
@@ -67,7 +68,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            Session session = pool.borrow();
+            Session session = pool.borrow(BackgroundActionState.running);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Borrow session %s from pool", session));
             }

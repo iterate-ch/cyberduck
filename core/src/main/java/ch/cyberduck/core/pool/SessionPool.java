@@ -21,24 +21,52 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 public interface SessionPool {
     SessionPool DISCONNECTED = new DisconnectedSessionPool();
 
-    Session<?> borrow() throws BackgroundException;
+    /**
+     * Borrow session from pool
+     *
+     * @param callback Cancel callback
+     * @return Open connection
+     * @throws BackgroundException Failure if opening connection fails
+     */
+    Session<?> borrow(BackgroundActionState callback) throws BackgroundException;
 
+    /**
+     * Release session to pool for reuse
+     */
     void release(Session<?> session, BackgroundException failure);
 
     void evict(BackgroundException failure);
 
+    /**
+     * Close all idle connections in pool
+     *
+     * @throws BackgroundException Failure closing connection
+     */
     void close() throws BackgroundException;
 
+    /**
+     * @return Connection configuration
+     */
     Host getHost();
 
+    /**
+     * @return Current pool connection state
+     */
     Session.State getState();
 
+    /**
+     * Obtain feature from connection type
+     */
     <T> T getFeature(final Class<T> type);
 
+    /**
+     * Shutdown connection pool
+     */
     void shutdown();
 
     interface Callback {
@@ -47,7 +75,7 @@ public interface SessionPool {
 
     final class DisconnectedSessionPool implements SessionPool {
         @Override
-        public Session<?> borrow() throws BackgroundException {
+        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
             throw new ConnectionCanceledException();
         }
 
