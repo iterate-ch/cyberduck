@@ -9,7 +9,7 @@
 
         <AppId>Cyberduck</AppId>
         <AppDisplayName>Cyberduck</AppDisplayName>
-        <AppDescription>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows.</AppDescription>
+        <AppDescription>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure \&amp; OpenStack Swift browser for Mac and Windows.</AppDescription>
 
         <PackageDisplayName>Cyberduck</PackageDisplayName>
         <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
