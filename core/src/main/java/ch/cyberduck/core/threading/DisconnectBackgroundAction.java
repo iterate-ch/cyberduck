@@ -15,6 +15,7 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
@@ -34,6 +35,14 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
     }
 
     @Override
+    public void prepare() throws ConnectionCanceledException {
+        if(session == SessionPool.DISCONNECTED) {
+            throw new ConnectionCanceledException();
+        }
+        super.prepare();
+    }
+
+    @Override
     public Void run() throws BackgroundException {
         session.close();
         PathPasteboardFactory.delete(session.getHost());
@@ -48,6 +57,6 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                session.getHost().getHostname());
+                BookmarkNameProvider.toString(session.getHost()));
     }
 }
