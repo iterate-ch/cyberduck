@@ -137,6 +137,9 @@ public class DefaultSessionPool implements SessionPool {
                     session = pool.borrowObject();
                     break;
                 }
+                catch(IllegalStateException e) {
+                    throw new ConnectionCanceledException(e);
+                }
                 catch(NoSuchElementException e) {
                     if(pool.isClosed()) {
                         throw new ConnectionCanceledException(e);
