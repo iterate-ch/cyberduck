@@ -19,14 +19,17 @@ public final class PathPasteboardFactory {
     /**
      * Factory to create a pasteboard for a session
      *
-     * @param session Session instance
+     * @param bookmark Session instance
      * @return Pasteboard for a given session
      */
-    public static PathPasteboard getPasteboard(final Host session) {
-        if(!pasteboards.containsKey(session)) {
-            pasteboards.put(session, new PathPasteboard(session));
+    public static PathPasteboard getPasteboard(final Host bookmark) {
+        if(null == bookmark) {
+            return null;
         }
-        return pasteboards.get(session);
+        if(!pasteboards.containsKey(bookmark)) {
+            pasteboards.put(bookmark, new PathPasteboard(bookmark));
+        }
+        return pasteboards.get(bookmark);
     }
 
     /**
@@ -39,10 +42,10 @@ public final class PathPasteboardFactory {
     /**
      * Delete this pasteboard
      */
-    public static void delete(final Host session) {
-        if(pasteboards.containsKey(session)) {
-            pasteboards.get(session).clear();
+    public static void delete(final Host bookmark) {
+        if(pasteboards.containsKey(bookmark)) {
+            pasteboards.get(bookmark).clear();
         }
-        pasteboards.remove(session);
+        pasteboards.remove(bookmark);
     }
 }
