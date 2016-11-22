@@ -49,10 +49,7 @@ namespace Ch.Cyberduck.Ui
                 x.For<ITransferView>().Use<TransferForm>();
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
-                if (Utils.IsUWPSupported)
-                    x.For<IDonationController>().Use<DisabledDonationController>();
-                else
-                    x.For<IDonationController>().Use<DonationController>();
+                x.For<IDonationController>().Use<DonationController>();
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
