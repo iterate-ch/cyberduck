@@ -187,6 +187,7 @@
   <ItemGroup>
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\CommandController.cs" />
