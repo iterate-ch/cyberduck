@@ -207,9 +207,6 @@ public class LoginConnectionService implements ConnectionService {
             this.close(session);
             throw e;
         }
-        finally {
-            listener.message(StringUtils.EMPTY);
-        }
     }
 
     private void authenticate(final Session session, final Cache<Path> cache) throws BackgroundException {
