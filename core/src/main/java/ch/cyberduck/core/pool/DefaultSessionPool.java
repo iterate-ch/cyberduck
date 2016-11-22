@@ -21,6 +21,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -283,20 +284,7 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        final Session<?> session;
-        try {
-            session = this.borrow();
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Failure obtaining feature. %s", e.getMessage()));
-            return null;
-        }
-        try {
-            return session.getFeature(type);
-        }
-        finally {
-            this.release(session, null);
-        }
+        return SessionFactory.create(bookmark).getFeature(type);
     }
 
     @Override

@@ -85,6 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View = view;
 
+            Session = SessionPool.DISCONNECTED;
             ShowHiddenFiles = PreferencesFactory.get().getBoolean("browser.showHidden");
 
             _limitListener = new DialogLimitedListProgressListener(this);
@@ -1409,7 +1410,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 infoController.View.Close();
             }
-            if (HasSession())
+            if (IsMounted())
             {
                 Background(new DisconnectAction(this, runnable));
             }
@@ -2324,18 +2325,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns>true if a connection is being opened or is already initialized</returns>
-        public bool HasSession()
-        {
-            return Session != null;
-        }
-
         public bool IsMounted()
         {
-            return HasSession() && Workdir != null;
+            return Workdir != null;
         }
 
         /// <summary>
@@ -2714,6 +2706,7 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate run = delegate
             {
                 Session.shutdown();
+                Session = SessionPool.DISCONNECTED;
                 _cache.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
                 disconnected();

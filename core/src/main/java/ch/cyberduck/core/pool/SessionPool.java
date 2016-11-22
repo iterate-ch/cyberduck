@@ -20,8 +20,11 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface SessionPool {
+    SessionPool DISCONNECTED = new DisconnectedSessionPool();
+
     Session<?> borrow() throws BackgroundException;
 
     void release(Session<?> session, BackgroundException failure);
@@ -40,5 +43,47 @@ public interface SessionPool {
 
     interface Callback {
         boolean isCanceled();
+    }
+
+    final class DisconnectedSessionPool implements SessionPool {
+        @Override
+        public Session<?> borrow() throws BackgroundException {
+            throw new ConnectionCanceledException();
+        }
+
+        @Override
+        public void release(final Session<?> session, final BackgroundException failure) {
+            //
+        }
+
+        @Override
+        public void evict(final BackgroundException failure) {
+            //
+        }
+
+        @Override
+        public void close() throws BackgroundException {
+            throw new ConnectionCanceledException();
+        }
+
+        @Override
+        public Host getHost() {
+            return null;
+        }
+
+        @Override
+        public Session.State getState() {
+            return Session.State.closed;
+        }
+
+        @Override
+        public <T> T getFeature(final Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public void shutdown() {
+            //
+        }
     }
 }

@@ -270,15 +270,13 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         if(identifier.equals(Column.status.name())) {
             final SessionPool session = controller.getSession();
-            if(session != null) {
-                if(host.equals(session.getHost())) {
-                    switch(session.getState()) {
-                        case open:
-                            return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
-                        case opening:
-                        case closing:
-                            return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
-                    }
+            if(host.equals(session.getHost())) {
+                switch(session.getState()) {
+                    case open:
+                        return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
+                    case opening:
+                    case closing:
+                        return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
                 }
             }
             return null;

@@ -144,9 +144,9 @@ public class BrowserController extends WindowController
     public final BrowserToolbarValidator browserToolbarValidator = new BrowserToolbarValidator(this);
 
     /**
-     *
+     * Connection pool
      */
-    private SessionPool session;
+    private SessionPool session = SessionPool.DISCONNECTED;
 
     /**
      * Log Drawer
@@ -3001,7 +3001,10 @@ public class BrowserController extends WindowController
      * @return true if the remote file system has been mounted
      */
     public boolean isMounted() {
-        return session != null && workdir != null;
+        if(session == SessionPool.DISCONNECTED) {
+            return false;
+        }
+        return workdir != null;
     }
 
     /**
@@ -3417,6 +3420,7 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 session.shutdown();
+                session = SessionPool.DISCONNECTED;
                 editors.clear();
                 cache.clear();
                 setWorkdir(null);
