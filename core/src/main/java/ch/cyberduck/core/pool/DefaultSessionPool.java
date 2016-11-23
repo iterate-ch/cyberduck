@@ -292,6 +292,22 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
+        if(pool.getNumIdle() > 0) {
+            final Session<?> session;
+            try {
+                session = this.borrow(BackgroundActionState.running);
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure obtaining feature. %s", e.getMessage()));
+                return SessionFactory.create(bookmark).getFeature(type);
+            }
+            try {
+                return session.getFeature(type);
+            }
+            finally {
+                this.release(session, null);
+            }
+        }
         return SessionFactory.create(bookmark).getFeature(type);
     }
 
