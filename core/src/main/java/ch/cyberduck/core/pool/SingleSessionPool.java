@@ -22,7 +22,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 
+import org.apache.log4j.Logger;
+
 public class SingleSessionPool implements SessionPool {
+    private static final Logger log = Logger.getLogger(SingleSessionPool.class);
 
     private final ConnectionService connect;
     private final Session<?> session;
@@ -47,8 +50,13 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
-    public void evict() throws BackgroundException {
-        session.close();
+    public void evict() {
+        try {
+            session.close();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
+        }
     }
 
     @Override
