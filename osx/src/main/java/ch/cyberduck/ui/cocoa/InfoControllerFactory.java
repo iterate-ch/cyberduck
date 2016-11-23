@@ -35,6 +35,7 @@ public final class InfoControllerFactory {
                 super.windowWillClose(notification);
             }
         };
+        info.loadBundle();
         open.put(controller, info);
         return info;
     }
