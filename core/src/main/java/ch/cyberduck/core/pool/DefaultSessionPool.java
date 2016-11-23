@@ -60,7 +60,7 @@ public class DefaultSessionPool implements SessionPool {
 
     private final int retry;
 
-    protected final GenericObjectPool<Session> pool;
+    private final GenericObjectPool<Session> pool;
 
     /**
      * The number of times this action has been run
@@ -72,12 +72,15 @@ public class DefaultSessionPool implements SessionPool {
         }
     };
 
+    private final Session<?> features;
+
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.cache = cache;
         this.bookmark = bookmark;
         this.retry = PreferencesFactory.get().getInteger("connection.retry");
         this.progress = progress;
+        this.features = SessionFactory.create(bookmark);
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
@@ -299,7 +302,7 @@ public class DefaultSessionPool implements SessionPool {
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure obtaining feature. %s", e.getMessage()));
-                return SessionFactory.create(bookmark).getFeature(type);
+                return features.getFeature(type);
             }
             try {
                 return session.getFeature(type);
@@ -308,7 +311,7 @@ public class DefaultSessionPool implements SessionPool {
                 this.release(session, null);
             }
         }
-        return SessionFactory.create(bookmark).getFeature(type);
+        return features.getFeature(type);
     }
 
     @Override
