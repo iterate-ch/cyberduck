@@ -37,7 +37,7 @@ public final class SessionFactory {
         //
     }
 
-    public static Session create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create session for %s", host));
         }
@@ -65,7 +65,7 @@ public final class SessionFactory {
         }
     }
 
-    public static Session create(final Host target) {
+    public static Session<?> create(final Host target) {
         return create(target, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
                 new KeychainX509KeyManager(target));
     }

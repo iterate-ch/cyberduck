@@ -30,7 +30,6 @@ import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -94,7 +93,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         options.open = false;
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
+                new DisabledTransferPrompt(), callback,
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
         worker.run(session);
         if(!download.isComplete()) {

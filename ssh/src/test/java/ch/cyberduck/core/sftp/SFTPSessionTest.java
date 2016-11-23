@@ -48,13 +48,10 @@ public class SFTPSessionTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
-        assertFalse(session.isSecured());
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
-        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isSecured());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

@@ -55,7 +55,6 @@ public class FTPSessionTest {
         c.connect(session, PathCache.empty());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
-        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         assertNotNull(new FTPWorkdirService(session).find());
         session.close();
@@ -114,7 +113,6 @@ public class FTPSessionTest {
 //        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isSecured());
         final Path path = new FTPWorkdirService(session).find();
         assertNotNull(path);
         assertEquals(path, new FTPWorkdirService(session).find());

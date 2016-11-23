@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.CopyTransfer;
 
 public class CopyPromptController extends TransferPromptController {
 
-    public CopyPromptController(final WindowController parent, final CopyTransfer transfer, final Session session) {
+    public CopyPromptController(final WindowController parent, final CopyTransfer transfer, final SessionPool session) {
         super(parent, transfer);
         browserModel = new UploadPromptModel(this, session, transfer, cache);
     }

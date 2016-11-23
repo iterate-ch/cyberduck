@@ -22,7 +22,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -31,6 +32,8 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -51,16 +54,16 @@ public class AbstractEditorTest {
     public void testEquals() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         assertEquals(
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), session, new Path("/p/g", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/g", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("a"), session, new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), session, new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("a"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
     }
 
@@ -92,7 +95,7 @@ public class AbstractEditorTest {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), session, file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty()), file, new DisabledProgressListener()) {
             @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
                 e.set(true);
@@ -111,7 +114,7 @@ public class AbstractEditorTest {
     }
 
     private class DisabledEditor extends AbstractEditor {
-        public DisabledEditor(final Application application, final Session session, final Path file) {
+        public DisabledEditor(final Application application, final SessionPool session, final Path file) {
             super(application, session, file, new DisabledProgressListener());
         }
 

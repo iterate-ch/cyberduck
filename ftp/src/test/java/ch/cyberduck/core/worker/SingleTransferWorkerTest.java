@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,18 +15,30 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.ftp.FTPDeleteFeature;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.sftp.SFTPAttributesFeature;
-import ch.cyberduck.core.sftp.SFTPDeleteFeature;
-import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
-import ch.cyberduck.core.sftp.SFTPWriteFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -35,7 +47,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -66,12 +77,12 @@ public class SingleTransferWorkerTest {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final SFTPSession session = new SFTPSession(host) {
-            final SFTPWriteFeature write = new SFTPWriteFeature(this) {
+        final FTPSession session = new FTPSession(host) {
+            final FTPWriteFeature write = new FTPWriteFeature(this) {
                 @Override
                 public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                     final OutputStream out = super.write(file, status);
@@ -105,7 +116,7 @@ public class SingleTransferWorkerTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         assertTrue(new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -113,14 +124,14 @@ public class SingleTransferWorkerTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
         }.run(session));
         local.delete();
         assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(62768L, new DefaultAttributesFeature(session).find(test).getSize());
         assertTrue(failed.get());
-        assertEquals(62768L, new SFTPAttributesFeature(session).find(test).getSize());
-        new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

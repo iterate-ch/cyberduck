@@ -67,7 +67,6 @@ public class GoogleStorageSessionTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isSecured());
         session.close();
     }
 

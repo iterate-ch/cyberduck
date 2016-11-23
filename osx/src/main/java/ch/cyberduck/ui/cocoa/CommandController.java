@@ -32,12 +32,12 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.ControllerBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
@@ -58,9 +58,9 @@ public class CommandController extends WindowController implements TranscriptLis
 
     private final WindowController parent;
 
-    private final Session<?> session;
+    private final SessionPool session;
 
-    public CommandController(final WindowController parent, final Session session) {
+    public CommandController(final WindowController parent, final SessionPool session) {
         this.parent = parent;
         this.session = session;
     }
@@ -116,14 +116,14 @@ public class CommandController extends WindowController implements TranscriptLis
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new ControllerBackgroundAction<Void>(this, session, PathCache.empty()) {
+            parent.background(new ControllerBackgroundAction<Void>(this, session) {
                 @Override
                 public boolean alert(final BackgroundException e) {
                     return false;
                 }
 
                 @Override
-                public Void run() throws BackgroundException {
+                public Void run(final Session<?> session) throws BackgroundException {
                     final Command feature = session.getFeature(Command.class);
                     feature.send(command, this, CommandController.this);
                     return null;

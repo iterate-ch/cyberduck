@@ -72,7 +72,7 @@ public class MoveController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(), cache,
+                parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
                         new MoveWorker(selected, parent, cache) {
                                     @Override
                                     public void cleanup(final List<Path> moved) {

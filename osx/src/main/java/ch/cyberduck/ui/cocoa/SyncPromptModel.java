@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -32,7 +32,7 @@ public class SyncPromptModel extends TransferPromptModel {
 
     private final SyncTransfer transfer;
 
-    public SyncPromptModel(final TransferPromptController c, final Session session,
+    public SyncPromptModel(final TransferPromptController c, final SessionPool session,
                            final SyncTransfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
         this.transfer = transfer;

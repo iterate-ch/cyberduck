@@ -72,7 +72,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
             final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                     preferences.getInteger("connection.retry"));
             final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
-            options.setUseParallelTransfer(session.getTransferType().equals(Host.TransferType.concurrent));
+            options.setUseParallelTransfer(session.getHost().equals(Host.TransferType.concurrent));
             block.setTransferOptions(options);
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
