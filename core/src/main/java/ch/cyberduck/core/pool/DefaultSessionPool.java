@@ -158,11 +158,17 @@ public class DefaultSessionPool implements SessionPool {
                     if(pool.isClosed()) {
                         throw new ConnectionCanceledException(e);
                     }
-                    if(e.getCause() instanceof BackgroundException) {
+                    final Throwable cause = e.getCause();
+                    if(null == cause) {
+                        log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", this, BORROW_MAX_WAIT_INTERVAL));
+                        // Timeout
+                        continue;
+                    }
+                    if(cause instanceof BackgroundException) {
                         // fix null pointer
-                        final BackgroundException cause = (BackgroundException) e.getCause();
-                        log.warn(String.format("Failure %s obtaining connection for %s", cause, this));
-                        if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
+                        final BackgroundException failure = (BackgroundException) cause;
+                        log.warn(String.format("Failure %s obtaining connection for %s", failure, this));
+                        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                             // Downgrade pool to single connection
                             final int max = pool.getMaxTotal() - 1;
                             log.warn(String.format("Lower maximum pool size to %d connections.", max));
@@ -181,13 +187,7 @@ public class DefaultSessionPool implements SessionPool {
                                 }
                             }
                         }
-                        //todo
-                        throw cause;
-                    }
-                    if(null == e.getCause()) {
-                        log.warn(String.format("Timeout borrowing session from pool %s. Wait for another %dms", this, BORROW_MAX_WAIT_INTERVAL));
-                        // Timeout
-                        continue;
+                        throw failure;
                     }
                     log.error(String.format("Borrowing session from pool %s failed with %s", this, e));
                     throw new BackgroundException(e);
