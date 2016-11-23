@@ -72,7 +72,7 @@ public class DefaultSessionPool implements SessionPool {
         }
     };
 
-    private final Session<?> features;
+    private Session<?> features;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
@@ -80,7 +80,6 @@ public class DefaultSessionPool implements SessionPool {
         this.bookmark = bookmark;
         this.retry = PreferencesFactory.get().getInteger("connection.retry");
         this.progress = progress;
-        this.features = SessionFactory.create(bookmark);
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
@@ -143,6 +142,9 @@ public class DefaultSessionPool implements SessionPool {
                     final Session session = pool.borrowObject();
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
+                    }
+                    if(null == features) {
+                        features = session;
                     }
                     return session;
                 }
@@ -295,21 +297,8 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(pool.getNumIdle() > 0) {
-            final Session<?> session;
-            try {
-                session = this.borrow(BackgroundActionState.running);
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure obtaining feature. %s", e.getMessage()));
-                return features.getFeature(type);
-            }
-            try {
-                return session.getFeature(type);
-            }
-            finally {
-                this.release(session, null);
-            }
+        if(null == features) {
+            return SessionFactory.create(bookmark).getFeature(type);
         }
         return features.getFeature(type);
     }
