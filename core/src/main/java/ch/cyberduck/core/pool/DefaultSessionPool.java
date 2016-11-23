@@ -54,6 +54,8 @@ public class DefaultSessionPool implements SessionPool {
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
+    private final ConnectionService connect;
+
     private final PathCache cache;
 
     private final Host bookmark;
@@ -72,10 +74,11 @@ public class DefaultSessionPool implements SessionPool {
         }
     };
 
-    private Session<?> features;
+    private SessionPool features = DISCONNECTED;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
+        this.connect = connect;
         this.cache = cache;
         this.bookmark = bookmark;
         this.retry = PreferencesFactory.get().getInteger("connection.retry");
@@ -144,7 +147,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(null == features) {
-                        features = session;
+                        features = new SingleSessionPool(connect, session, cache);
                     }
                     return session;
                 }
@@ -297,7 +300,7 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(null == features) {
+        if(DISCONNECTED == features) {
             return SessionFactory.create(bookmark).getFeature(type);
         }
         return features.getFeature(type);
