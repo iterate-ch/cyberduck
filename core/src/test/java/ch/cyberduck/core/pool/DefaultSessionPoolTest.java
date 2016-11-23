@@ -15,12 +15,17 @@ package ch.cyberduck.core.pool;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -34,6 +39,18 @@ public class DefaultSessionPoolTest {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
         pool.shutdown();
+        pool.borrow(BackgroundActionState.running);
+    }
+
+    @Test(expected = ConnectionRefusedException.class)
+    public void testConnectRefuse() throws Exception {
+        final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService() {
+            @Override
+            public boolean check(final Session session, final Cache<Path> cache) throws BackgroundException {
+                throw new ConnectionRefusedException("t", new RuntimeException());
+            }
+        }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
         pool.borrow(BackgroundActionState.running);
     }
 }
