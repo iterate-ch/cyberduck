@@ -139,7 +139,7 @@ public class ConnectionController extends BookmarkController {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(PreferencesFactory.get().getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     public void keychainCheckboxClicked(final NSButton sender) {
