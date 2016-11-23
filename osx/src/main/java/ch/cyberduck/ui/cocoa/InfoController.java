@@ -293,7 +293,6 @@ public class InfoController extends ToolbarWindowController {
         this.session = session;
         this.cache = cache;
         this.files = files;
-        this.loadBundle();
     }
 
     private Path getSelected() {

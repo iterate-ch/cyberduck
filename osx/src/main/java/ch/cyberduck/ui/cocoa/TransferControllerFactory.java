@@ -40,6 +40,7 @@ public final class TransferControllerFactory {
         synchronized(NSApplication.sharedApplication()) {
             if(null == shared) {
                 shared = new TransferController();
+                shared.loadBundle();
             }
             return shared;
         }

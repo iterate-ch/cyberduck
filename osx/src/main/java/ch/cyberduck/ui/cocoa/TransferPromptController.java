@@ -197,7 +197,7 @@ public abstract class TransferPromptController extends WindowController implemen
                 }
                 preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
             }
-        }, parent, window).beginSheet();
+        }, parent, this).beginSheet();
         return action;
     }
 

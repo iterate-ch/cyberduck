@@ -46,9 +46,11 @@ public class SheetInvoker extends ProxyController {
      */
     private final NSWindow parent;
 
-    private final NSWindow window;
+    private NSWindow window;
 
     private final NSApplication application = NSApplication.sharedApplication();
+
+    private final WindowController controller;
 
     /**
      * Dismiss button clicked
@@ -71,13 +73,23 @@ public class SheetInvoker extends ProxyController {
      * @param sheet    Sheet
      */
     public SheetInvoker(final SheetCallback callback, final WindowController parent, final NSWindow sheet) {
-        this(callback, parent.window(), sheet);
+        this.callback = callback;
+        this.parent = parent.window();
+        this.window = sheet;
+        this.controller = null;
+    }
+
+    public SheetInvoker(final SheetCallback callback, final WindowController parent, final WindowController controller) {
+        this.callback = callback;
+        this.parent = parent.window();
+        this.controller = controller;
     }
 
     public SheetInvoker(final SheetCallback callback, final NSWindow parent, final NSWindow sheet) {
         this.callback = callback;
         this.parent = parent;
         this.window = sheet;
+        this.controller = null;
     }
 
     /**
@@ -91,15 +103,27 @@ public class SheetInvoker extends ProxyController {
         synchronized(parent) {
             if(NSThread.isMainThread()) {
                 // No need to call invoke on main thread
-                return this.beginSheet(window);
+                if(controller != null) {
+                    controller.loadBundle();
+                    return this.beginSheet(controller.window());
+                }
+                else {
+                    return this.beginSheet(window);
+                }
             }
             else {
-                final SheetInvoker controller = this;
+                final SheetInvoker invoker = this;
                 invoke(new ControllerMainAction(this) {
                     @Override
                     public void run() {
                         //Invoke again on main thread
-                        controller.beginSheet(window);
+                        if(controller != null) {
+                            controller.loadBundle();
+                            invoker.beginSheet(controller.window());
+                        }
+                        else {
+                            invoker.beginSheet(window);
+                        }
                     }
                 }, true);
                 if(log.isDebugEnabled()) {
