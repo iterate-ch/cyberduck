@@ -155,7 +155,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
-                transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransfer().name()));
+                transferPopup.selectItemAtIndex(transferPopup.indexOfItemWithRepresentedObject(bookmark.getTransferType().name()));
             }
         });
     }

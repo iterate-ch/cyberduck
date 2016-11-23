@@ -152,7 +152,7 @@ public class UploadTransferTest {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
         assertEquals(1, c.get());
     }
@@ -212,7 +212,7 @@ public class UploadTransferTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.rename;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
         assertEquals(1, c.get());
     }
@@ -246,7 +246,7 @@ public class UploadTransferTest {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 TransferAction.overwrite);
@@ -293,7 +293,7 @@ public class UploadTransferTest {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 TransferAction.resume);
@@ -412,7 +412,7 @@ public class UploadTransferTest {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(table.get(test));

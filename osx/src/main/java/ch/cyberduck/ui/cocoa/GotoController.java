@@ -33,7 +33,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
@@ -111,10 +110,6 @@ public class GotoController extends AlertController {
     @Override
     public boolean validate() {
         return StringUtils.isNotBlank(folderCombobox.stringValue());
-    }
-
-    protected Session getSession() {
-        return ((BrowserController) parent).getSession();
     }
 
     private final class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {

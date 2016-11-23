@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -94,15 +95,30 @@ public class TaskController extends BundleController {
         }
         this.task.addListener(new BackgroundActionListener() {
             public void start(BackgroundAction action) {
-                progress.startAnimation(null);
+                invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        progress.startAnimation(null);
+                    }
+                });
             }
 
             public void cancel(BackgroundAction action) {
-                progress.stopAnimation(null);
+                invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        progress.stopAnimation(null);
+                    }
+                });
             }
 
             public void stop(BackgroundAction action) {
-                progress.stopAnimation(null);
+                invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        progress.stopAnimation(null);
+                    }
+                });
                 action.removeListener(this);
             }
 

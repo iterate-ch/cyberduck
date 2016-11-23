@@ -19,8 +19,8 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
@@ -32,11 +32,11 @@ public class DefaultEditorListener implements FileWatcherListener {
 
     private final Controller controller;
 
-    private final Session session;
+    private final SessionPool session;
 
     private final Editor editor;
 
-    public DefaultEditorListener(final Controller controller, final Session session, final Editor editor) {
+    public DefaultEditorListener(final Controller controller, final SessionPool session, final Editor editor) {
         this.controller = controller;
         this.session = session;
         this.editor = editor;

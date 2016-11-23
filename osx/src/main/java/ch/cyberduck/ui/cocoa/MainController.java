@@ -59,6 +59,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -188,7 +189,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(controller.getSession() == null) {
+                if(!controller.isMounted()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
@@ -355,7 +356,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
@@ -391,7 +392,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
@@ -526,11 +527,9 @@ public class MainController extends BundleController implements NSApplication.De
             return;
         }
         for(BrowserController browser : getBrowsers()) {
-            if(browser.getSession() != null) {
-                if(browser.getSession().getHost().equals(bookmark)) {
-                    log.debug("Default bookmark already mounted");
-                    return;
-                }
+            if(bookmark.equals(browser.getSession().getHost())) {
+                log.debug("Default bookmark already mounted");
+                return;
             }
         }
         if(log.isDebugEnabled()) {

@@ -25,7 +25,7 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         private readonly BrowserController _controller;
 
         protected BrowserControllerBackgroundAction(BrowserController controller)
-            : base(controller, controller.Session, controller.Cache)
+            : base(controller, controller.Session)
         {
             _controller = controller;
         }

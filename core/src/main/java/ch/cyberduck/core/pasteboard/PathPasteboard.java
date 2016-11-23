@@ -20,22 +20,22 @@ package ch.cyberduck.core.pasteboard;
  */
 
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 
 public final class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
     private static final long serialVersionUID = -6390582952938739270L;
 
     private boolean cut;
 
-    private final Session session;
+    private final Host bookmark;
 
-    protected PathPasteboard(final Session session) {
-        this.session = session;
+    protected PathPasteboard(final Host bookmark) {
+        this.bookmark = bookmark;
     }
 
-    public Session getSession() {
-        return session;
+    public Host getBookmark() {
+        return bookmark;
     }
 
     public void setCut(boolean cut) {

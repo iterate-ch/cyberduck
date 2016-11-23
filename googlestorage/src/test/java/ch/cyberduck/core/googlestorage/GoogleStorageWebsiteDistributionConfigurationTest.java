@@ -97,7 +97,6 @@ public class GoogleStorageWebsiteDistributionConfigurationTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isSecured());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,

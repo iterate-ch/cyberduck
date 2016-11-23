@@ -21,11 +21,11 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +47,7 @@ public class FSEventWatchEditor extends AbstractEditor {
      * @param application Editor application
      * @param file        Remote file
      */
-    public FSEventWatchEditor(final Application application, final Session session,
+    public FSEventWatchEditor(final Application application, final SessionPool session,
                               final Path file, final ProgressListener listener) {
         super(application, session, file, listener);
     }

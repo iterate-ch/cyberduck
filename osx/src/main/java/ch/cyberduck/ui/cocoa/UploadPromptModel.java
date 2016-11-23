@@ -19,13 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 
 public class UploadPromptModel extends TransferPromptModel {
 
-    public UploadPromptModel(final TransferPromptController c, final Session session,
+    public UploadPromptModel(final TransferPromptController c, final SessionPool session,
                              final Transfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
     }

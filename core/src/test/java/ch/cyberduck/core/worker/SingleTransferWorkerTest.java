@@ -9,7 +9,6 @@ import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -73,7 +72,7 @@ public class SingleTransferWorkerTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -142,7 +141,7 @@ public class SingleTransferWorkerTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -225,7 +224,7 @@ public class SingleTransferWorkerTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -267,7 +266,7 @@ public class SingleTransferWorkerTest {
                 public TransferAction prompt(final TransferItem file) {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+            }, new DisabledTransferErrorCallback(),
                     new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
                 @Override
                 public void transfer(final TransferItem file, final TransferAction action) throws BackgroundException {

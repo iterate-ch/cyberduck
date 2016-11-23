@@ -28,13 +28,14 @@ public final class InfoControllerFactory {
                 return c;
             }
         }
-        final InfoController info = new InfoController(controller, controller.getSession(), controller.getCache(), files) {
+        final InfoController info = new InfoController(controller, controller.getSession(), files) {
             @Override
             public void windowWillClose(final NSNotification notification) {
                 open.remove(controller);
                 super.windowWillClose(notification);
             }
         };
+        info.loadBundle();
         open.put(controller, info);
         return info;
     }

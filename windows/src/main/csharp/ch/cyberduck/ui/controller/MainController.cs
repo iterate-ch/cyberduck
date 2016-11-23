@@ -636,9 +636,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             foreach (BrowserController browser in Browsers)
             {
-                if (browser.HasSession())
+                if (browser.IsMounted())
                 {
-                    if (browser.Session.getHost().equals(bookmark))
+                    if (bookmark.equals(browser.Session.getHost()))
                     {
                         Logger.debug("Default bookmark already mounted");
                         return;
@@ -797,7 +797,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (!c.HasSession())
+                    if (!c.IsMounted())
                     {
                         c.Invoke(delegate { c.View.BringToFront(); });
 

@@ -22,6 +22,7 @@ using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.pool;
 using java.util;
 using Microsoft.Win32;
 using org.apache.log4j;
@@ -47,7 +48,7 @@ namespace Ch.Cyberduck.Core.Editor
             return Utils.ConvertToJavaList(_registeredEditors);
         }
 
-        public override ch.cyberduck.core.editor.Editor create(ProgressListener listener, Session session, Application application, Path file)
+        public override ch.cyberduck.core.editor.Editor create(ProgressListener listener, SessionPool session, Application application, Path file)
         {
             return new SystemWatchEditor(application, session, file, listener);
         }

@@ -44,8 +44,6 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -56,13 +54,16 @@ import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -78,7 +79,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -119,6 +119,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -144,9 +145,9 @@ public class BrowserController extends WindowController
     public final BrowserToolbarValidator browserToolbarValidator = new BrowserToolbarValidator(this);
 
     /**
-     *
+     * Connection pool
      */
-    private Session<?> session;
+    private SessionPool session = SessionPool.DISCONNECTED;
 
     /**
      * Log Drawer
@@ -314,10 +315,6 @@ public class BrowserController extends WindowController
         }
     }
 
-    public boolean isShowHiddenFiles() {
-        return this.showHiddenFiles;
-    }
-
     /**
      * Marks the current browser as the first responder
      */
@@ -410,7 +407,7 @@ public class BrowserController extends WindowController
                     }
                 }
                 // Delay render until path is cached in the background
-                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
+                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
                                 new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
@@ -492,47 +489,7 @@ public class BrowserController extends WindowController
             if(downloads.size() > 0) {
                 final Transfer download = new DownloadTransfer(session.getHost(), downloads);
                 final TransferOptions options = new TransferOptions();
-                background(new TransferBackgroundAction(this, session, cache, new TransferAdapter() {
-                    @Override
-                    public void progress(final TransferProgress status) {
-                        message(status.getProgress());
-                    }
-                }, this, this, download, options,
-                        new TransferPrompt() {
-                            @Override
-                            public TransferAction prompt(final TransferItem item) {
-                                return TransferAction.comparison;
-                            }
-
-                            @Override
-                            public boolean isSelected(final TransferItem file) {
-                                return true;
-                            }
-
-                            @Override
-                            public void message(final String message) {
-                                BrowserController.this.message(message);
-                            }
-                        }, new DisabledTransferErrorCallback()
-                ) {
-                    @Override
-                    public void cleanup() {
-                        super.cleanup();
-                        final List<Local> previews = new ArrayList<Local>();
-                        for(TransferItem download : downloads) {
-                            previews.add(download.local);
-                        }
-                        // Change files in Quick Look
-                        quicklook.select(previews);
-                        // Open Quick Look Preview Panel
-                        quicklook.open();
-                    }
-
-                    @Override
-                    public String getActivity() {
-                        return LocaleFactory.localizedString("Quick Look", "Status");
-                    }
-                });
+                this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, download, options, downloads));
             }
         }
     }
@@ -667,6 +624,7 @@ public class BrowserController extends WindowController
         return contentSize;
     }
 
+    @Action
     public void setLogDrawer(NSDrawer drawer) {
         this.logDrawer = drawer;
         this.transcript = new TranscriptController() {
@@ -681,6 +639,7 @@ public class BrowserController extends WindowController
 
     private NSTitlebarAccessoryViewController accessoryView;
 
+    @Action
     public void setDonateButton(NSButton button) {
         if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
             button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
@@ -723,6 +682,7 @@ public class BrowserController extends WindowController
 
     private NSTabView browserTabView;
 
+    @Action
     public void setBrowserTabView(NSTabView browserTabView) {
         this.browserTabView = browserTabView;
     }
@@ -769,6 +729,7 @@ public class BrowserController extends WindowController
     @Delegate
     private EditMenuDelegate editMenuDelegate;
 
+    @Action
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
         this.editMenuDelegate = new EditMenuDelegate() {
@@ -802,11 +763,12 @@ public class BrowserController extends WindowController
     @Delegate
     private URLMenuDelegate urlMenuDelegate;
 
+    @Action
     public void setUrlMenu(NSMenu urlMenu) {
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 return BrowserController.this.getSession();
             }
 
@@ -830,11 +792,12 @@ public class BrowserController extends WindowController
     @Delegate
     private URLMenuDelegate openUrlMenuDelegate;
 
+    @Action
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
-            protected Session<?> getSession() {
+            protected SessionPool getSession() {
                 return BrowserController.this.getSession();
             }
 
@@ -858,18 +821,11 @@ public class BrowserController extends WindowController
     @Delegate
     private ArchiveMenuDelegate archiveMenuDelegate;
 
+    @Action
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
         this.archiveMenuDelegate = new ArchiveMenuDelegate();
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
-    }
-
-    private void setRecessedBezelStyle(final NSButton b) {
-        b.setBezelStyle(NSButton.NSRecessedBezelStyle);
-        b.setButtonType(NSButton.NSMomentaryPushButtonButton);
-        b.setImagePosition(NSCell.NSImageLeft);
-        b.setFont(NSFont.boldSystemFontOfSize(11f));
-        b.setShowsBorderOnlyWhileMouseInside(true);
     }
 
     @Action
@@ -914,6 +870,7 @@ public class BrowserController extends WindowController
         }
     }
 
+    @Action
     public void setBookmarkSwitchView(NSSegmentedControl bookmarkSwitchView) {
         this.bookmarkSwitchView = bookmarkSwitchView;
         this.bookmarkSwitchView.setSegmentCount(4);
@@ -1163,6 +1120,7 @@ public class BrowserController extends WindowController
             BrowserController.this.insideButtonClicked(sender);
         }
 
+        @Action
         public void spaceKeyPressed(final ID sender) {
             quicklookButtonClicked(sender);
         }
@@ -1301,6 +1259,7 @@ public class BrowserController extends WindowController
         quicklook.didEndQuickLook();
     }
 
+    @Action
     public void setBrowserOutlineView(NSOutlineView view) {
         browserOutlineView = view;
         // receive drag events from types
@@ -1449,6 +1408,7 @@ public class BrowserController extends WindowController
         }).id());
     }
 
+    @Action
     public void setBrowserListView(NSTableView view) {
         browserListView = view;
         // receive drag events from types
@@ -1697,6 +1657,7 @@ public class BrowserController extends WindowController
     @Delegate
     private AbstractTableDelegate<Host> bookmarkTableDelegate;
 
+    @Action
     public void setBookmarkTable(NSTableView view) {
         bookmarkTable = view;
         bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
@@ -1882,6 +1843,7 @@ public class BrowserController extends WindowController
 
     private final ProxyController quickConnectPopupModel = new QuickConnectModel();
 
+    @Action
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
         this.quickConnectPopup = quickConnectPopup;
         this.quickConnectPopup.setTarget(this.id());
@@ -1917,6 +1879,7 @@ public class BrowserController extends WindowController
         }
     }
 
+    @Action
     public void quickConnectWillPopUp(NSNotification notification) {
         int size = bookmarks.size();
         quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
@@ -1943,6 +1906,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSSearchField searchField;
 
+    @Action
     public void setSearchField(NSSearchField searchField) {
         this.searchField = searchField;
         if(this.searchField.respondsToSelector(Foundation.selector("setSendsWholeSearchString:"))) {
@@ -2016,7 +1980,7 @@ public class BrowserController extends WindowController
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
                                     // Delay render until path is cached in the background
-                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session, cache,
+                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session,
                                             new SearchWorker(workdir, filenameFilter, cache, listener) {
                                                 @Override
                                                 public void cleanup(final AttributedList<Path> list) {
@@ -2067,6 +2031,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSButton editBookmarkButton;
 
+    @Action
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
         this.editBookmarkButton = editBookmarkButton;
         this.editBookmarkButton.setEnabled(false);
@@ -2095,6 +2060,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSButton addBookmarkButton;
 
+    @Action
     public void setAddBookmarkButton(NSButton addBookmarkButton) {
         this.addBookmarkButton = addBookmarkButton;
         this.addBookmarkButton.setTarget(this.id());
@@ -2137,6 +2103,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSButton deleteBookmarkButton;
 
+    @Action
     public void setDeleteBookmarkButton(NSButton deleteBookmarkButton) {
         this.deleteBookmarkButton = deleteBookmarkButton;
         this.deleteBookmarkButton.setEnabled(false);
@@ -2210,6 +2177,7 @@ public class BrowserController extends WindowController
 
     private NSSegmentedControl navigationButton;
 
+    @Action
     public void setNavigationButton(NSSegmentedControl navigationButton) {
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
@@ -2260,6 +2228,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSSegmentedControl upButton;
 
+    @Action
     public void setUpButton(NSSegmentedControl upButton) {
         this.upButton = upButton;
         this.upButton.setTarget(this.id());
@@ -2279,6 +2248,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSPopUpButton pathPopupButton;
 
+    @Action
     public void setPathPopup(NSPopUpButton pathPopupButton) {
         this.pathPopupButton = pathPopupButton;
         this.pathPopupButton.setTarget(this.id());
@@ -2307,6 +2277,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSPopUpButton encodingPopup;
 
+    @Action
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
         this.encodingPopup = encodingPopup;
         this.encodingPopup.setTarget(this.id());
@@ -2336,7 +2307,7 @@ public class BrowserController extends WindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
-            if(session.getEncoding().equals(encoding)) {
+            if(session.getHost().getEncoding().equals(encoding)) {
                 return;
             }
             session.getHost().setEncoding(encoding);
@@ -2367,6 +2338,7 @@ public class BrowserController extends WindowController
     @Outlet
     protected NSProgressIndicator statusSpinner;
 
+    @Action
     public void setStatusSpinner(NSProgressIndicator statusSpinner) {
         this.statusSpinner = statusSpinner;
         this.statusSpinner.setDisplayedWhenStopped(false);
@@ -2376,17 +2348,15 @@ public class BrowserController extends WindowController
     @Outlet
     protected NSProgressIndicator browserSpinner;
 
+    @Action
     public void setBrowserSpinner(NSProgressIndicator browserSpinner) {
         this.browserSpinner = browserSpinner;
-    }
-
-    public NSProgressIndicator getBrowserSpinner() {
-        return browserSpinner;
     }
 
     @Outlet
     private NSTextField statusLabel;
 
+    @Action
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
     }
@@ -2462,6 +2432,7 @@ public class BrowserController extends WindowController
     @Outlet
     private NSButton securityLabel;
 
+    @Action
     public void setSecurityLabel(NSButton securityLabel) {
         this.securityLabel = securityLabel;
         this.securityLabel.setEnabled(false);
@@ -2471,15 +2442,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void securityLabelClicked(final ID sender) {
-        if(session instanceof SSLSession) {
-            final SSLSession<?> secured = (SSLSession) session;
-            final List<X509Certificate> certificates = secured.getAcceptedIssuers();
-            try {
-                CertificateStoreFactory.get(this).display(certificates);
-            }
-            catch(CertificateException e) {
-                log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
-            }
+        final List<X509Certificate> certificates = Arrays.asList(session.getFeature(X509TrustManager.class).getAcceptedIssuers());
+        try {
+            CertificateStoreFactory.get(this).display(certificates);
+        }
+        catch(CertificateException e) {
+            log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
         }
     }
 
@@ -2487,6 +2455,7 @@ public class BrowserController extends WindowController
     // Selector methods for the toolbar items
     // ----------------------------------------------------------
 
+    @Action
     public void quicklookButtonClicked(final ID sender) {
         if(quicklook.isOpen()) {
             quicklook.close();
@@ -2607,7 +2576,7 @@ public class BrowserController extends WindowController
     @Action
     public void sendCustomCommandClicked(final ID sender) {
         CommandController controller = new CommandController(this, session);
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller.window());
+        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller);
         sheet.beginSheet();
     }
 
@@ -2689,6 +2658,7 @@ public class BrowserController extends WindowController
                 Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
+    @Action
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -2720,6 +2690,7 @@ public class BrowserController extends WindowController
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"), null);
     }
 
+    @Action
     public void downloadAsPanelDidEnd_returnCode_contextInfo(final NSSavePanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -2761,6 +2732,7 @@ public class BrowserController extends WindowController
         );
     }
 
+    @Action
     public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -2822,10 +2794,12 @@ public class BrowserController extends WindowController
                 null);
     }
 
+    @Action
     public void uploadPanelSetShowHiddenFiles(ID sender) {
         uploadPanel.setShowsHiddenFiles(uploadPanelHiddenFilesCheckbox.state() == NSCell.NSOnState);
     }
 
+    @Action
     public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(this.id());
         if(returncode == SheetCallback.DEFAULT_OPTION) {
@@ -2864,7 +2838,7 @@ public class BrowserController extends WindowController
      */
     protected void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, session.getTransferType().equals(Host.TransferType.browser));
+        this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
     }
 
     /**
@@ -2884,20 +2858,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new TransferBackgroundAction(this, session, cache, new TransferAdapter() {
-                @Override
-                public void progress(final TransferProgress status) {
-                    message(status.getProgress());
-                }
-            }, transfer, new TransferOptions()) {
-                @Override
-                public void finish() {
-                    if(transfer.isComplete()) {
-                        callback.complete(transfer);
-                    }
-                    super.finish();
-                }
-            });
+            this.background(new BrowserTransferBackgroundAction(this, session, transfer, callback));
         }
         else {
             TransferControllerFactory.get().start(transfer, new TransferOptions(), callback);
@@ -2933,7 +2894,7 @@ public class BrowserController extends WindowController
                     mount(controller.getBookmark());
                 }
             }
-        }, this, controller.window());
+        }, this, controller);
         sheet.beginSheet();
     }
 
@@ -2975,7 +2936,7 @@ public class BrowserController extends WindowController
     /**
      * @return This browser's session or null if not mounted
      */
-    public Session<?> getSession() {
+    public SessionPool getSession() {
         return session;
     }
 
@@ -2987,7 +2948,10 @@ public class BrowserController extends WindowController
      * @return true if the remote file system has been mounted
      */
     public boolean isMounted() {
-        return session != null && workdir != null;
+        if(session == SessionPool.DISCONNECTED) {
+            return false;
+        }
+        return workdir != null;
     }
 
     /**
@@ -2995,7 +2959,7 @@ public class BrowserController extends WindowController
      */
     public boolean isConnected() {
         if(this.isMounted()) {
-            return session.isConnected();
+            return session.getState() == Session.State.open;
         }
         return false;
     }
@@ -3266,16 +3230,16 @@ public class BrowserController extends WindowController
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
      *
-     * @param host Bookmark
+     * @param bookmark Bookmark
      * @return A session object bound to this browser controller
      */
-    private Session init(final Host host) {
-        session = SessionFactory.create(host);
+    private SessionPool init(final Host bookmark) {
+        session = SessionPoolFactory.create(this, cache, bookmark);
         transcript.clear();
         navigation.clear();
-        pasteboard = PathPasteboardFactory.getPasteboard(session);
+        pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
         this.setWorkdir(null);
-        this.setEncoding(session.getEncoding());
+        this.setEncoding(bookmark.getEncoding());
         return session;
     }
 
@@ -3293,8 +3257,8 @@ public class BrowserController extends WindowController
             public void run() {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
-                final Session session = init(host);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
+                final SessionPool session = init(host);
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
                         new MountWorker(host, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
@@ -3319,9 +3283,9 @@ public class BrowserController extends WindowController
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
-                                    securityLabel.setImage(session.isSecured() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                                    securityLabel.setImage(host.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
-                                    securityLabel.setEnabled(session instanceof SSLSession);
+                                    securityLabel.setEnabled(session.getFeature(X509TrustManager.class) != null);
                                 }
                             }
                         }
@@ -3402,7 +3366,8 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                session = null;
+                session.shutdown();
+                session = SessionPool.DISCONNECTED;
                 editors.clear();
                 cache.clear();
                 setWorkdir(null);
@@ -3424,32 +3389,14 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        if(session != null) {
-            this.background(new WorkerBackgroundAction<Void>(this, session, cache, new DisconnectWorker(session.getHost())) {
-                @Override
-                public void prepare() throws ConnectionCanceledException {
-                    if(!session.isConnected()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    super.prepare();
-                }
-
-                @Override
-                protected boolean connect(Session session) throws BackgroundException {
-                    return false;
-                }
-
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    window.setDocumentEdited(false);
-                    disconnected.run();
-                }
-            });
-        }
-        else {
-            disconnected.run();
-        }
+        this.background(new DisconnectBackgroundAction(this, session) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                window.setDocumentEdited(false);
+                disconnected.run();
+            }
+        });
     }
 
     @Action
@@ -3575,7 +3522,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {
-                item.setState(session.getEncoding().equalsIgnoreCase(
+                item.setState(session.getHost().getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
@@ -3679,5 +3626,55 @@ public class BrowserController extends WindowController
         notificationCenter.removeObserver(this.id());
 
         super.invalidate();
+    }
+
+    private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
+        private final QuickLook quicklook;
+        private final List<TransferItem> downloads;
+
+        public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
+                                                 final TransferOptions options, final List<TransferItem> downloads) {
+            super(controller, session, new TransferAdapter() {
+                @Override
+                public void progress(final TransferProgress status) {
+                    controller.message(status.getProgress());
+                }
+            }, controller, download, options, new TransferPrompt() {
+                @Override
+                public TransferAction prompt(final TransferItem item) {
+                    return TransferAction.comparison;
+                }
+
+                @Override
+                public boolean isSelected(final TransferItem file) {
+                    return true;
+                }
+
+                @Override
+                public void message(final String message) {
+                    controller.message(message);
+                }
+            }, new DisabledTransferErrorCallback());
+            this.quicklook = quicklook;
+            this.downloads = downloads;
+        }
+
+        @Override
+        public void cleanup() {
+            super.cleanup();
+            final List<Local> previews = new ArrayList<Local>();
+            for(TransferItem download : downloads) {
+                previews.add(download.local);
+            }
+            // Change files in Quick Look
+            quicklook.select(previews);
+            // Open Quick Look Preview Panel
+            quicklook.open();
+        }
+
+        @Override
+        public String getActivity() {
+            return LocaleFactory.localizedString("Quick Look", "Status");
+        }
     }
 }

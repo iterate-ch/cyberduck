@@ -153,7 +153,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(socketFactory);
-        client.setControlEncoding(this.getEncoding());
+        client.setControlEncoding(host.getEncoding());
         client.setConnectTimeout(this.timeout());
         client.setDefaultTimeout(this.timeout());
         client.setDataTimeout(this.timeout());
@@ -270,7 +270,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     // Negotiate data connection security
                     client.execPROT(preferences.getProperty("ftp.tls.datachannel"));
                 }
-                if("UTF-8".equals(this.getEncoding())) {
+                if("UTF-8".equals(host.getEncoding())) {
                     if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
                             log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));

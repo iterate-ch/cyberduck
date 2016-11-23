@@ -188,7 +188,6 @@ public class DAVSessionTest {
         assertFalse(session.alert(new DisabledConnectionCallback()));
         try {
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-            assertTrue(session.isSecured());
             session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(BackgroundException e) {
@@ -383,13 +382,13 @@ public class DAVSessionTest {
     @Test(expected = LoginFailureException.class)
     public void testInteroperabilityDocumentsEpflTLSv1() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "documents.epfl.ch");
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager(), "TLSv1"));
+        final DisabledX509TrustManager trust = new DisabledX509TrustManager();
+        final DAVSession session = new DAVSession(host, trust, new DefaultX509KeyManager(),
+                new CustomTrustSSLProtocolSocketFactory(trust, new DefaultX509KeyManager(), "TLSv1"));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         assertTrue(session.isConnected());
-        assertTrue(session.isSecured());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(session.getAcceptedIssuers().isEmpty());
+        assertFalse(Arrays.asList(trust.getAcceptedIssuers()).isEmpty());
         session.close();
     }
 
@@ -420,7 +419,6 @@ public class DAVSessionTest {
         c.connect(session, PathCache.empty());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
-        assertFalse(session.isSecured());
         session.close();
     }
 

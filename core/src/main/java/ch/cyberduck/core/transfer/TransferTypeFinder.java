@@ -16,12 +16,11 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class TransferTypeFinder {
-    public Host.TransferType type(final Session<?> session, final Transfer transfer) {
-        switch(session.getTransferType()) {
+    public Host.TransferType type(final Host.TransferType type, final Transfer transfer) {
+        switch(type) {
             case concurrent:
                 switch(transfer.getType()) {
                     case copy:

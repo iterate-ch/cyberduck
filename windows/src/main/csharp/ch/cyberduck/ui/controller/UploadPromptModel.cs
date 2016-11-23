@@ -17,13 +17,14 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UploadPromptModel : TransferPromptModel
     {
-        public UploadPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+        public UploadPromptModel(TransferPromptController controller, SessionPool session, Transfer transfer)
             : base(controller, session, transfer)
         {
         }

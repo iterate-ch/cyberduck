@@ -24,11 +24,9 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.RegistryBackgroundAction;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.worker.CreateSymlinkWorker;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,41 +55,20 @@ public class CreateSymlinkController extends FileController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.run(this.getSelected(), inputField.stringValue(), false);
+            final Path selected = this.getSelected();
+            this.run(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
         }
     }
 
-    protected void run(final Path selected, final String symlink, final boolean edit) {
-        final Path link = new Path(this.getWorkdir(), symlink, EnumSet.of(Path.Type.file));
-        parent.background(new RegistryBackgroundAction<Path>(parent, parent.getSession(), parent.getCache()) {
+    protected void run(final Path selected, final Path link) {
+        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), new CreateSymlinkWorker(link, selected) {
             @Override
-            public Path run() throws BackgroundException {
-                // Symlink pointing to existing file
-                final Symlink feature = session.getFeature(Symlink.class);
-                if(PreferencesFactory.get().getBoolean(
-                        String.format("%s.symlink.absolute", session.getHost().getProtocol().getScheme().name()))) {
-                    feature.symlink(link, selected.getAbsolute());
-                }
-                else {
-                    feature.symlink(link, selected.getName());
-                }
-                return link;
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                        symlink);
-            }
-
-            @Override
-            public void cleanup() {
-                super.cleanup();
-                if(symlink.charAt(0) == '.') {
+            public void cleanup(final Path symlink) {
+                if(symlink.getName().startsWith(".")) {
                     parent.setShowHiddenFiles(true);
                 }
                 parent.reload(parent.workdir(), Collections.singletonList(link), Collections.singletonList(link));
             }
-        });
+        }));
     }
 }

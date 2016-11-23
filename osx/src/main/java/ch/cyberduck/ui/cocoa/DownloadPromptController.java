@@ -19,12 +19,12 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 
 public class DownloadPromptController extends TransferPromptController {
 
-    public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final Session session) {
+    public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final SessionPool session) {
         super(parent, transfer);
         browserModel = new DownloadPromptModel(this, session, transfer, cache);
     }

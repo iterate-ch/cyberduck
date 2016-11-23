@@ -105,7 +105,7 @@ public class FolderController extends FileController {
 
     private void run(final Path directory, final String filename) {
         final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(), parent.getCache(),
+        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
                 new CreateDirectoryWorker(folder, this.hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
                     @Override
                     public void cleanup(final Boolean done) {

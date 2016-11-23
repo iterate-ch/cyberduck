@@ -15,15 +15,27 @@
 
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestLoginConnectionService;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
-import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -58,24 +70,12 @@ public class ConcurrentTransferWorkerTest {
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
-                return true;
-            }
-
-            @Override
-            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
-                return true;
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
-                1);
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
         final Session<?> session = worker.borrow();
         worker.release(session);
         worker.release(session);
@@ -87,24 +87,12 @@ public class ConcurrentTransferWorkerTest {
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
-                return true;
-            }
-
-            @Override
-            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
-                return true;
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
-                2);
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
         assertNotSame(worker.borrow(), worker.borrow());
     }
 
@@ -114,24 +102,15 @@ public class ConcurrentTransferWorkerTest {
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
-                return true;
-            }
-
-            @Override
-            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
-                return true;
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
+        final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
-                1);
+                pool.withMaxTotal(1), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
+        // Override default transfer queue size
+        pool.withMaxTotal(1);
         final Session<?> session = worker.borrow();
         worker.release(session);
         assertEquals(Session.State.closed, session.getState());
@@ -218,29 +197,17 @@ public class ConcurrentTransferWorkerTest {
                 };
             }
         };
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public boolean check(Session session, Cache<Path> cache) throws BackgroundException {
-                return true;
-            }
-
-            @Override
-            public boolean check(Session session, Cache<Path> cache, BackgroundException failure) throws BackgroundException {
-                return true;
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(),
-                connections);
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
 
         assertTrue(worker.run(null));
         lock.await(1, TimeUnit.MINUTES);
@@ -255,18 +222,12 @@ public class ConcurrentTransferWorkerTest {
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
-                //
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(), 1);
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
         final Session<?> session = worker.borrow();
         assertNotNull(session);
         final CyclicBarrier lock = new CyclicBarrier(2);
@@ -297,18 +258,12 @@ public class ConcurrentTransferWorkerTest {
         final Transfer t = new UploadTransfer(host,
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new NullLocal("l"));
-        final LoginConnectionService connection = new LoginConnectionService(new DisabledLoginCallback(),
-                new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()) {
-            @Override
-            public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
-                //
-            }
-        };
+        final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                connection, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-                new DisabledTransferItemCallback(), new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(),
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new DisabledCertificateStore()),
-                new CertificateStoreX509KeyManager(new DisabledCertificateStore(), host), PathCache.empty(), 1);
+                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+                new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
+        );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);
         for(int i = 0; i < workers; i++) {
@@ -324,4 +279,5 @@ public class ConcurrentTransferWorkerTest {
         assertTrue(entry.getCount() == 0);
 
     }
+
 }
