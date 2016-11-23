@@ -80,7 +80,6 @@ public class DefaultSessionPool implements SessionPool {
         this.progress = progress;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
-        configuration.setMinIdle(0);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
@@ -102,13 +101,27 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
-    public DefaultSessionPool withMaxIdle(final int idle) {
-        pool.setMaxIdle(idle);
+    public DefaultSessionPool withMinIdle(final int count) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure with min idle %d", count));
+        }
+        pool.setMinIdle(count);
         return this;
     }
 
-    public DefaultSessionPool withMaxTotal(final int total) {
-        pool.setMaxTotal(total);
+    public DefaultSessionPool withMaxIdle(final int count) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure with max idle %d", count));
+        }
+        pool.setMaxIdle(count);
+        return this;
+    }
+
+    public DefaultSessionPool withMaxTotal(final int count) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure with max total %d", count));
+        }
+        pool.setMaxTotal(count);
         return this;
     }
 
@@ -160,6 +173,7 @@ public class DefaultSessionPool implements SessionPool {
                                 }
                             }
                         }
+                        //todo
                         throw cause;
                     }
                     if(null == e.getCause()) {
