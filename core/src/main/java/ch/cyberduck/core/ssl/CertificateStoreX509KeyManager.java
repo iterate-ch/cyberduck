@@ -156,10 +156,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
         // List of issuer distinguished name
         final List<String> list = new ArrayList<String>();
-        if(list.isEmpty()) {
-            // Return null if there were no matches
-            return null;
-        }
         for(String alias : this.list()) {
             // returns the first element of the certificate chain of that key entry
             final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
@@ -169,6 +165,10 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             }
             log.info(String.format("Add X509 certificate entry %s to list", cert));
             list.add(alias);
+        }
+        if(list.isEmpty()) {
+            // Return null if there were no matches
+            return null;
         }
         return list.toArray(new String[list.size()]);
     }
