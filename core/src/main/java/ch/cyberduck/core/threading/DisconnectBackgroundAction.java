@@ -44,7 +44,7 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
 
     @Override
     public Void run() throws BackgroundException {
-        session.close();
+        session.evict();
         PathPasteboardFactory.delete(session.getHost());
         return null;
     }

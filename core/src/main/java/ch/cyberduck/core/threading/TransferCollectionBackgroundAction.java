@@ -36,17 +36,20 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private final TransferQueue queue = TransferQueueFactory.get();
 
+    private final SessionPool pool;
+
     private final Transfer transfer;
 
     private final ProgressListener progressListener;
 
     public TransferCollectionBackgroundAction(final Controller controller,
-                                              final SessionPool session,
+                                              final SessionPool pool,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, session, transferListener, progressListener, transfer, options);
+        super(controller, pool, transferListener, progressListener, transfer, options);
+        this.pool = pool;
         this.transfer = transfer;
         this.progressListener = progressListener;
     }
@@ -64,8 +67,8 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
-        queue.remove(transfer);
         super.cancel();
+        queue.remove(transfer);
     }
 
     @Override
@@ -73,8 +76,9 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background action for transfer %s", transfer));
         }
-        queue.remove(transfer);
         super.finish();
+        queue.remove(transfer);
+        pool.shutdown();
     }
 
     @Override

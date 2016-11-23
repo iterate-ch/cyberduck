@@ -165,7 +165,6 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
 
     public void finish() {
         super.finish();
-        pool.shutdown();
         progressTimer.cancel(false);
         transfer.stop();
         listener.stop(transfer);

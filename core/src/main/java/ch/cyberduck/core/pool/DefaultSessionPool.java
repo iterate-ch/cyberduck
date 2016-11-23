@@ -102,19 +102,6 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
-    @Override
-    public void evict(final BackgroundException failure) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Trying to evict idle sessions from pool %s", pool));
-        }
-        try {
-            pool.evict();
-        }
-        catch(final Exception e) {
-            log.warn(String.format("Failed to evict pool %s. %s", pool, e.getMessage()));
-        }
-    }
-
     public DefaultSessionPool withMaxIdle(final int idle) {
         pool.setMaxIdle(idle);
         return this;
@@ -151,6 +138,7 @@ public class DefaultSessionPool implements SessionPool {
                         throw new ConnectionCanceledException(e);
                     }
                     if(e.getCause() instanceof BackgroundException) {
+                        // fix null pointer
                         final BackgroundException cause = (BackgroundException) e.getCause();
                         log.warn(String.format("Failure %s obtaining connection for %s", cause, this));
                         if(diagnostics.determine(cause) == FailureDiagnostics.Type.network) {
@@ -210,7 +198,7 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public void close() {
+    public void evict() {
         if(log.isInfoEnabled()) {
             log.info(String.format("Clear idle connections in pool %s", this));
         }

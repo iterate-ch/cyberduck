@@ -40,14 +40,12 @@ public interface SessionPool {
      */
     void release(Session<?> session, BackgroundException failure);
 
-    void evict(BackgroundException failure);
-
     /**
      * Close all idle connections in pool
      *
      * @throws BackgroundException Failure closing connection
      */
-    void close() throws BackgroundException;
+    void evict() throws BackgroundException;
 
     /**
      * @return Connection configuration
@@ -85,12 +83,7 @@ public interface SessionPool {
         }
 
         @Override
-        public void evict(final BackgroundException failure) {
-            //
-        }
-
-        @Override
-        public void close() throws BackgroundException {
+        public void evict() throws BackgroundException {
             throw new ConnectionCanceledException();
         }
 
