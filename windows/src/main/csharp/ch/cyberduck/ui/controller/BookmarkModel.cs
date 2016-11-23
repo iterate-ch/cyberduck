@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Resources;
 
@@ -114,20 +115,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetBookmarkStatusImage(object rowobject)
         {
-            if (_controller.HasSession())
+            SessionPool session = _controller.Session;
+            if (((Host) rowobject).Equals(session.getHost()))
             {
-                Session session = _controller.Session;
-                if (((Host) rowobject).Equals(session.getHost()))
+                if (session.getState().Equals(Session.State.open))
                 {
-                    if (session.getState().Equals(Session.State.open))
-                    {
-                        return IconCache.Instance.IconForName("statusGreen", 16);
-                    }
-                    if (session.getState().Equals(Session.State.closing) ||
-                        session.getState().Equals(Session.State.opening))
-                    {
-                        return IconCache.Instance.IconForName("statusYellow", 16);
-                    }
+                    return IconCache.Instance.IconForName("statusGreen", 16);
+                }
+                if (session.getState().Equals(Session.State.closing) ||
+                    session.getState().Equals(Session.State.opening))
+                {
+                    return IconCache.Instance.IconForName("statusYellow", 16);
                 }
             }
             return null;

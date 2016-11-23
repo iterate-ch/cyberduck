@@ -25,7 +25,6 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -77,10 +76,6 @@ public abstract class FileController extends AlertController {
 
     protected Path getSelected() {
         return parent.getSelectedPath();
-    }
-
-    protected Session getSession() {
-        return parent.getSession();
     }
 
     @Override

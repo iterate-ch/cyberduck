@@ -376,14 +376,14 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     continue;
                 }
                 if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
-                        || pasteboard.getSession().getHost().compareTo(controller.getSession().getHost()) != 0) {
+                        || pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path file : pasteboard) {
                         files.put(file, new Path(destination, file.getName(), file.getType()));
                     }
                     final Host target = controller.getSession().getHost();
-                    controller.transfer(new CopyTransfer(pasteboard.getSession().getHost(),
+                    controller.transfer(new CopyTransfer(pasteboard.getBookmark(),
                                     SessionFactory.create(target),
                                     files),
                             new ArrayList<Path>(files.values()), false);
@@ -480,7 +480,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                if(pasteboard.getSession().getHost().compareTo(controller.getSession().getHost()) == 0) {
+                if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) == 0) {
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         return NSDraggingInfo.NSDragOperationCopy;

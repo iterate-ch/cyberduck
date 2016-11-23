@@ -22,7 +22,7 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSText;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.SyncTransfer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ public class SyncPromptController extends TransferPromptController {
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
-    public SyncPromptController(final WindowController parent, final SyncTransfer transfer, final Session session) {
+    public SyncPromptController(final WindowController parent, final SyncTransfer transfer, final SessionPool session) {
         super(parent, transfer);
         browserModel = new SyncPromptModel(this, session, transfer, cache);
     }

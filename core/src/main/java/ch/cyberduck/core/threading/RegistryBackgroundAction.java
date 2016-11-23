@@ -17,16 +17,10 @@ package ch.cyberduck.core.threading;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostKeyCallbackFactory;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
@@ -34,51 +28,15 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
             = BackgroundActionRegistry.global();
 
     public RegistryBackgroundAction(final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache) {
-        super(controller, session, cache);
+                                    final SessionPool session) {
+        super(controller, session);
     }
 
     public RegistryBackgroundAction(final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache,
+                                    final SessionPool session,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript) {
-        super(controller, session, cache, progress, transcript);
-    }
-
-    public RegistryBackgroundAction(final ConnectionService connection,
-                                    final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache) {
-        super(connection, controller, session, cache, controller, controller);
-    }
-
-    public RegistryBackgroundAction(final ConnectionService connection,
-                                    final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache,
-                                    final ProgressListener progress,
-                                    final TranscriptListener transcript) {
-        super(connection, controller, session, cache, progress, transcript);
-    }
-
-    public RegistryBackgroundAction(final LoginService login,
-                                    final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache,
-                                    final ProgressListener progress,
-                                    final TranscriptListener transcript,
-                                    final HostKeyCallback key) {
-        super(login, controller, session, cache, progress, transcript, key);
-    }
-
-    public RegistryBackgroundAction(final LoginService login,
-                                    final Controller controller,
-                                    final Session<?> session,
-                                    final Cache<Path> cache) {
-        super(login, controller, session, cache, controller, controller,
-                HostKeyCallbackFactory.get(controller, session.getHost().getProtocol()));
+        super(controller, session, progress, transcript);
     }
 
     @Override

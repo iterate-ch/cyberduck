@@ -23,8 +23,9 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.threading;
+using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core.Resources;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -51,50 +52,38 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CreateSymlinkAction : BrowserControllerBackgroundAction
+        private class CreateSymlinkAction : WorkerBackgroundAction
         {
-            private readonly Path _link;
-            private readonly string _symlink;
-            private readonly string _target;
-            private readonly Path _workdir;
-
-            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink) : base(controller)
+            public CreateSymlinkAction(BrowserController controller, Path workdir, string symlink) 
+                : base(
+                      controller, controller.Session,
+                      new InnerCreateSymlinkWorker(controller,
+                          controller.SelectedPath,
+                          new Path(workdir, symlink, EnumSet.of(AbstractPath.Type.file))))
             {
-                _workdir = workdir;
-                _symlink = symlink;
-                _link = new Path(_workdir, _symlink, EnumSet.of(AbstractPath.Type.file));
-                if (
-                    PreferencesFactory.get()
-                        .getBoolean(String.Format("{0}.symlink.absolute",
-                            BrowserController.Session.getHost().getProtocol().getScheme().name())))
-                {
-                    _target = BrowserController.SelectedPath.getAbsolute();
-                }
-                else
-                {
-                    _target = BrowserController.SelectedPath.getName();
-                }
             }
 
-            public override object run()
+            private class InnerCreateSymlinkWorker : CreateSymlinkWorker
             {
-                // Symlink pointing to existing file
-                ((Symlink) BrowserController.Session.getFeature(typeof (Symlink))).symlink(_link, _target);
-                return true;
-            }
+                private readonly BrowserController _controller;
+                private readonly string _filename;
+                private readonly IList<Path> _files;
+                private readonly Path _symlink;
 
-            public override void cleanup()
-            {
-                if (_symlink.StartsWith("."))
+                public InnerCreateSymlinkWorker(BrowserController controller, Path selected, Path symlink) : base(symlink, selected)
                 {
-                    BrowserController.ShowHiddenFiles = true;
+                    _controller = controller;
+                    _symlink = symlink;
                 }
-                BrowserController.Reload(BrowserController.Workdir, new List<Path> {_link}, new List<Path> {_link});
-            }
 
-            public override string getActivity()
-            {
-                return String.Format(LocaleFactory.localizedString("Uploading {0}", "Status"), _symlink);
+                public override void cleanup(object result)
+                {
+                    if (_symlink.getName().StartsWith("."))
+                    {
+                        _controller.ShowHiddenFiles = true;
+                    }
+                    _controller.Reload(_controller.Workdir, new List<Path> { _symlink }, new List<Path> { _symlink });
+                }
             }
         }
     }

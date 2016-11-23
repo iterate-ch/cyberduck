@@ -62,9 +62,9 @@ public class SFTPCommandFeature implements Command {
             final Session.Command exec = sess.exec(command);
 
             final BufferedReader stdoutReader = new BufferedReader(
-                    new InputStreamReader(new StreamGobbler(exec.getInputStream()), Charset.forName(session.getEncoding())));
+                    new InputStreamReader(new StreamGobbler(exec.getInputStream()), Charset.forName(session.getHost().getEncoding())));
             final BufferedReader stderrReader = new BufferedReader(
-                    new InputStreamReader(new StreamGobbler(exec.getErrorStream()), Charset.forName(session.getEncoding())));
+                    new InputStreamReader(new StreamGobbler(exec.getErrorStream()), Charset.forName(session.getHost().getEncoding())));
 
             try {
                 // Here is the output from stdout

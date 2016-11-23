@@ -85,7 +85,7 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
         if(status.getLength() < udtThreshold) {
             return false;
         }
-        if(Host.TransferType.unknown == bookmark.getTransfer()) {
+        if(Host.TransferType.unknown == bookmark.getTransferType()) {
             if(!preferences.getBoolean(String.format("connection.qloudsonic.%s", bookmark.getHostname()))) {
                 final List<License> receipts = voucher.open();
                 if(receipts.isEmpty()) {
@@ -127,7 +127,7 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
                 }
             }
         }
-        return bookmark.getTransfer() == Host.TransferType.udt;
+        return bookmark.getTransferType() == Host.TransferType.udt;
     }
 
     @Override

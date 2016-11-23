@@ -37,8 +37,8 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -61,9 +61,9 @@ import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferQueueFactory;
@@ -704,12 +704,13 @@ public final class TransferController extends WindowController implements NSTool
      */
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
-        final Session session = SessionFactory.create(transfer.getHost());
+        final PathCache cache = new PathCache(preferences.getInteger("transfer.cache.size"));
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                session,
-                new TransferListener() {
+                SessionPoolFactory.create(this, cache, transfer.getHost()),
+                new TransferAdapter() {
                     @Override
                     public void start(final Transfer transfer) {
+                        super.start(transfer);
                         progress.start(transfer);
                         invoke(new DefaultMainAction() {
                             @Override
@@ -721,6 +722,7 @@ public final class TransferController extends WindowController implements NSTool
 
                     @Override
                     public void stop(final Transfer transfer) {
+                        super.stop(transfer);
                         progress.stop(transfer);
                         invoke(new DefaultMainAction() {
                             @Override
@@ -732,9 +734,10 @@ public final class TransferController extends WindowController implements NSTool
 
                     @Override
                     public void progress(final TransferProgress status) {
+                        super.progress(status);
                         progress.progress(status);
                     }
-                }, progress, transcript, transfer, options) {
+                }, progress, transfer.withCache(cache), options) {
             @Override
             public void init() {
                 super.init();
@@ -793,10 +796,10 @@ public final class TransferController extends WindowController implements NSTool
             final List<TransferItem> downloads = new ArrayList<TransferItem>();
             for(Path download : pasteboard) {
                 downloads.add(new TransferItem(download, LocalFactory.get(
-                        new DownloadDirectoryFinder().find(pasteboard.getSession().getHost()),
+                        new DownloadDirectoryFinder().find(pasteboard.getBookmark()),
                         download.getName())));
             }
-            this.add(new DownloadTransfer(pasteboard.getSession().getHost(), downloads));
+            this.add(new DownloadTransfer(pasteboard.getBookmark(), downloads));
             pasteboard.clear();
         }
     }

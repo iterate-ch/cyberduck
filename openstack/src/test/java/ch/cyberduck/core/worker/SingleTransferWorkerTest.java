@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,16 +15,28 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.b2.B2AttributesFeature;
-import ch.cyberduck.core.b2.B2DeleteFeature;
-import ch.cyberduck.core.b2.B2LargeUploadService;
-import ch.cyberduck.core.b2.B2Protocol;
-import ch.cyberduck.core.b2.B2Session;
+import ch.cyberduck.core.BytecountStreamListener;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.openstack.SwiftAttributesFeature;
+import ch.cyberduck.core.openstack.SwiftDeleteFeature;
+import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
+import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -32,7 +44,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -60,22 +71,21 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[100 * 1024 * 1024 + 1];
+        final byte[] content = new byte[2 * 1024 * 1024];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                ));
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final B2Session session = new B2Session(host) {
+        final SwiftSession session = new SwiftSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new B2LargeUploadService(this, 100L * 1024L * 1024L) {
+                    return (T) new SwiftLargeObjectUploadFeature(this, 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {
@@ -86,7 +96,7 @@ public class SingleTransferWorkerTest {
                                 @Override
                                 protected void beforeRead(final int n) throws IOException {
                                     super.beforeRead(n);
-                                    if(this.getByteCount() >= 100L * 1024L * 1024L) {
+                                    if(this.getByteCount() >= 1024L * 1024L) {
                                         failed.set(true);
                                         throw new SocketTimeoutException();
                                     }
@@ -100,8 +110,9 @@ public class SingleTransferWorkerTest {
         };
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
+        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         assertTrue(new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -109,14 +120,14 @@ public class SingleTransferWorkerTest {
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
         }.run(session));
         local.delete();
-        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFeature(session).find(test).getSize());
-        assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
+        assertEquals(2L * 1024L * 1024L, counter.getSent(), 0L);
+        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize());
         assertTrue(failed.get());
-        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

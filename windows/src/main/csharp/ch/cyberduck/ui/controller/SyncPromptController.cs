@@ -18,16 +18,17 @@
 
 using System.Collections.Generic;
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class SyncPromptController : TransferPromptController
     {
-        public SyncPromptController(WindowController parent, Transfer transfer, Session session)
+        public SyncPromptController(WindowController parent, Transfer transfer, SessionPool session)
             : base(parent, transfer, session)
         {
-            TransferPromptModel = new SyncPromptModel(this, Session, Transfer);
+            TransferPromptModel = new SyncPromptModel(this, session, Transfer);
         }
 
         protected override string TransferName

@@ -1,8 +1,8 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.threading;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,11 +13,22 @@ package ch.cyberduck.core.transfer;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
-public interface TransferItemCallback {
-    void complete(final TransferItem item);
+public interface BackgroundActionState {
+    boolean isCanceled();
+
+    boolean isRunning();
+
+    BackgroundActionState running = new BackgroundActionState() {
+        @Override
+        public boolean isCanceled() {
+            return false;
+        }
+
+        @Override
+        public boolean isRunning() {
+            return true;
+        }
+    };
 }

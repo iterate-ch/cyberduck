@@ -55,7 +55,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
             return null;
         }
         catch(BackgroundException e) {
-            controller.failure(client, e);
+            this.failure(client, e);
             // If there was any failure, display the summary now
             if(action.alert(e)) {
                 if(log.isDebugEnabled()) {
@@ -68,7 +68,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
             return null;
         }
         catch(Exception e) {
-            controller.failure(client, e);
+            this.failure(client, e);
             // Failed action yields no result
             return null;
         }
@@ -98,5 +98,15 @@ public final class BackgroundCallable<T> implements Callable<T> {
                 log.debug(String.format("Releasing lock for background runnable %s", action));
             }
         }
+    }
+
+    private void failure(final Exception trace, final Exception failure) {
+        try {
+            trace.initCause(failure);
+        }
+        catch(IllegalStateException e) {
+            log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
+        }
+        log.warn(String.format("Failure running background task %s", failure.getMessage()), trace);
     }
 }

@@ -29,9 +29,8 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -55,7 +54,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     private final TransferPromptController controller;
 
-    private final Session session;
+    private final SessionPool session;
 
     private final Transfer transfer;
 
@@ -89,7 +88,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(final TransferPromptController c, final Session session,
+    public TransferPromptModel(final TransferPromptController c, final SessionPool session,
                                final Transfer transfer, final Cache<TransferItem> cache) {
         this.controller = c;
         this.session = session;
@@ -143,7 +142,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory)) {
-            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session, PathCache.empty(),
+            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session,
                     new TransferPromptListWorker(transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
@@ -157,8 +156,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session, PathCache.empty(),
-                        new TransferPromptFilterWorker(transfer, action, cache, controller) {
+        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session,
+                new TransferPromptFilterWorker(transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;
