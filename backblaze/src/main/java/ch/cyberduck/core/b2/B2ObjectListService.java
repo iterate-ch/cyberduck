@@ -78,8 +78,8 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
                         marker.nextFilename, marker.nextFileId, chunksize,
-                        containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
-                        containerService.isContainer(directory) ? null : String.valueOf(Path.DELIMITER));
+                        null,
+                        null);
                 marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
