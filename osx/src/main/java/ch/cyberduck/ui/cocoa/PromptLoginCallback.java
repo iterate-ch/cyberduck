@@ -40,6 +40,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.ui.cocoa.controller.LoginController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
