@@ -48,4 +48,18 @@ public class ContentReader {
             IOUtils.closeQuietly(stream);
         }
     }
+
+    public byte[] readToByteArray(final Path path) throws BackgroundException {
+        final Read read = session.getFeature(Read.class);
+        final InputStream stream = read.read(path, new TransferStatus());
+        try {
+            return IOUtils.toByteArray(stream);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            IOUtils.closeQuietly(stream);
+        }
+    }
 }
