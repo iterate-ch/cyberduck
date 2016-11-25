@@ -23,19 +23,31 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ContentReader;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.security.SecureRandom;
+import java.security.Security;
 import java.util.EnumSet;
 
 public class SessionCryptomatorLoader {
     private static final Logger log = Logger.getLogger(SessionCryptomatorLoader.class);
+
+    static {
+        final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
+    }
 
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
