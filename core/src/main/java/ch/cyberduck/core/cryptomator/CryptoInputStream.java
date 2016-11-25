@@ -39,18 +39,17 @@ public class CryptoInputStream extends InputStream {
     private long chunkIndex = 0;
     private final int chunkSize;
 
-
     public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header) throws IOException {
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
-        chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
+        this.chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
     }
 
     @Override
     public int read() throws IOException {
         if(!buffer.hasRemaining()) {
-            this.nextChunk();
+            this.readNextChunk();
         }
         return buffer.get();
     }
@@ -63,7 +62,7 @@ public class CryptoInputStream extends InputStream {
     @Override
     public int read(final byte[] dst, final int off, final int len) throws IOException {
         if(!buffer.hasRemaining()) {
-            final int read = this.nextChunk();
+            final int read = this.readNextChunk();
             if(read == IOUtils.EOF) {
                 return IOUtils.EOF;
             }
@@ -73,7 +72,7 @@ public class CryptoInputStream extends InputStream {
         return read;
     }
 
-    private int nextChunk() throws IOException {
+    private int readNextChunk() throws IOException {
         final ByteBuffer ciphertextBuf = ByteBuffer.allocate(chunkSize);
         final int read = IOUtils.read(proxy, ciphertextBuf.array());
         if(read == 0) {
