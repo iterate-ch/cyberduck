@@ -196,9 +196,16 @@ public class DefaultSessionPool implements SessionPool {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Retry for failure %s", failure));
                 }
-                final int max = Math.max(1, pool.getMaxIdle() - 1);
-                log.warn(String.format("Lower pool maximum idle size to %d connections.", max));
-                pool.setMaxIdle(max);
+                {
+                    final int max = Math.max(1, pool.getMaxIdle() - 1);
+                    log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                    pool.setMaxIdle(max);
+                }
+                {
+                    final int max = Math.max(1, pool.getMaxTotal() - 1);
+                    log.warn(String.format("Lower maximum total pool size to %d connections.", max));
+                    pool.setMaxTotal(max);
+                }
                 // Clear pool from idle connections
                 pool.clear();
                 // This is an automated retry. Wait some time first.
