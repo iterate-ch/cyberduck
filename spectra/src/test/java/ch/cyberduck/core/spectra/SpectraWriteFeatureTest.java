@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Delete;
@@ -84,13 +83,6 @@ public class SpectraWriteFeatureTest {
             out.close();
         }
         assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
-        try {
-            bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
-            fail();
-        }
-        catch(AccessDeniedException e) {
-            // Conflict
-        }
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         {

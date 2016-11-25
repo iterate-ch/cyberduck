@@ -23,7 +23,6 @@ import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 import java.io.InputStream;
@@ -34,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class SpectraReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(SpectraReadFeature.class);
 
     private final PathContainerService containerService
             = new S3PathContainerService();
