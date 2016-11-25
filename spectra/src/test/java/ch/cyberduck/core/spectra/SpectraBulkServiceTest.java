@@ -167,13 +167,13 @@ public class SpectraBulkServiceTest {
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
-        assertEquals(2, list.size());
-        assertEquals(100000000000L, list.get(0).getLength());
-        assertEquals(0L, list.get(0).getOffset());
-        assertEquals("0", list.get(0).getParameters().get("offset"));
-        assertEquals(12640000000L, list.get(1).getLength());
-        assertEquals(100000000000L, list.get(1).getOffset());
-        assertEquals("100000000000", list.get(1).getParameters().get("offset"));
+        assertFalse(list.isEmpty());
+        long offset = 0;
+        for(TransferStatus s : list) {
+            assertEquals(offset, s.getOffset());
+            assertTrue(s.getLength() > 0);
+            offset += s.getLength();
+        }
         try {
             service.pre(Transfer.Type.download, files);
             fail();
@@ -214,13 +214,13 @@ public class SpectraBulkServiceTest {
         assertNotNull(status.getParameters().get("job"));
         for(Path file : files.keySet()) {
             final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
-            assertEquals(2, list.size());
-            assertEquals(100000000000L, list.get(0).getLength());
-            assertEquals(0L, list.get(0).getOffset());
-            assertEquals("0", list.get(0).getParameters().get("offset"));
-            assertEquals(18111600640L, list.get(1).getLength());
-            assertEquals(100000000000L, list.get(1).getOffset());
-            assertEquals("100000000000", list.get(1).getParameters().get("offset"));
+            assertFalse(list.isEmpty());
+            long offset = 0;
+            for(TransferStatus s : list) {
+                assertEquals(offset, s.getOffset());
+                offset += s.getLength();
+                assertTrue(s.getLength() > 0);
+            }
         }
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
