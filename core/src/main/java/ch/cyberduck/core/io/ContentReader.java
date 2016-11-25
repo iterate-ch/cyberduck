@@ -35,9 +35,9 @@ public class ContentReader {
         this.session = session;
     }
 
-    public String readToString(final Path path) throws BackgroundException {
+    public String readToString(final Path file) throws BackgroundException {
         final Read read = session.getFeature(Read.class);
-        final InputStream stream = read.read(path, new TransferStatus());
+        final InputStream stream = read.read(file, new TransferStatus());
         try {
             return IOUtils.toString(stream, "UTF-8");
         }
@@ -49,9 +49,9 @@ public class ContentReader {
         }
     }
 
-    public byte[] readToByteArray(final Path path) throws BackgroundException {
+    public byte[] readToByteArray(final Path file) throws BackgroundException {
         final Read read = session.getFeature(Read.class);
-        final InputStream stream = read.read(path, new TransferStatus());
+        final InputStream stream = read.read(file, new TransferStatus());
         try {
             return IOUtils.toByteArray(stream);
         }
