@@ -40,10 +40,6 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.RendezvousCollection;
-import ch.cyberduck.core.cryptomator.CryptoPathMapper;
-import ch.cyberduck.core.cryptomator.CryptoSessionListWorker;
-import ch.cyberduck.core.cryptomator.DirectoryIdProvider;
-import ch.cyberduck.core.cryptomator.LongFileNameProvider;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
@@ -85,6 +81,7 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
+import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.PathReloadFinder;
@@ -107,10 +104,6 @@ import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.KeyFile;
-import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -122,7 +115,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -232,21 +224,8 @@ public class BrowserController extends WindowController
     private final List<Editor> editors
             = new ArrayList<Editor>();
 
-    private CryptorProvider cryptorProvider;
-    private Cryptor cryptor;
-    private LongFileNameProvider longFileNameProvider;
-    private DirectoryIdProvider directoryIdProvider;
-    private CryptoPathMapper cryptoPathMapper;
-
     public BrowserController() {
         this.loadBundle();
-        cryptorProvider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
-        final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
-                + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
-                + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
-                + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
-        final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
-        cryptor = cryptorProvider.createFromKeyFile(keyFile, "coke4you", 5);
     }
 
     @Override
@@ -432,7 +411,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session, cache,
-                                new CryptoSessionListWorker(cache, folder, listener, cryptor, cryptoPathMapper, longFileNameProvider) {
+                        new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -3315,12 +3294,8 @@ public class BrowserController extends WindowController
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
                 final Session session = init(host);
-                Path defaultPath = new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory));
-                longFileNameProvider = new LongFileNameProvider(defaultPath, session);
-                directoryIdProvider = new DirectoryIdProvider(session);
-                cryptoPathMapper = new CryptoPathMapper(defaultPath, cryptor, longFileNameProvider, directoryIdProvider);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session, cache,
-                        new MountWorker(host, cache, listener, cryptor, cryptoPathMapper, longFileNameProvider) {
+                        new MountWorker(host, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
 

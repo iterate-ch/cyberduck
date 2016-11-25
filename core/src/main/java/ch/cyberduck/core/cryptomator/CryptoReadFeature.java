@@ -15,12 +15,12 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -31,25 +31,24 @@ import java.util.EnumSet;
 
 public class CryptoReadFeature implements Read {
 
-    private static final Logger log = Logger.getLogger(CryptoReadFeature.class);
-
     private final Read delegate;
-    private final Cryptor cryptor;
-    private final CryptoPathMapper pathMapper;
+    private final SessionCryptomatorLoader cryptomator;
 
-    public CryptoReadFeature(final Read delegate, final Cryptor cryptor, final CryptoPathMapper pathMapper) {
+    public CryptoReadFeature(final Read delegate, final SessionCryptomatorLoader cryptomator) {
         this.delegate = delegate;
-        this.cryptor = cryptor;
-        this.pathMapper = pathMapper;
+        this.cryptomator = cryptomator;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final CryptoPathMapper pathMapper = cryptomator.getCryptoPathMapper();
             final CryptoPathMapper.Directory ciphertextDirectory = pathMapper.getCiphertextDir(file.getParent());
             final String ciphertextFileName = pathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
             final Path cryptoPath = new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
 
+            // Header
+            final Cryptor cryptor = cryptomator.getCryptor();
             final ByteBuffer existingHeaderBuf = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
             final InputStream cryptoStream = delegate.read(cryptoPath, status);
             final int read = cryptoStream.read(existingHeaderBuf.array());
@@ -57,8 +56,7 @@ public class CryptoReadFeature implements Read {
             return new CryptoInputStream(cryptoStream, cryptor, header);
         }
         catch(IOException e) {
-            //TODO exception handling
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,23 +33,23 @@ import java.util.EnumSet;
 public class CryptoWriteFeature implements Write {
 
     private final Write delegate;
-    private final Cryptor cryptor;
-    private final CryptoPathMapper pathMapper;
+    private final SessionCryptomatorLoader cryptomator;
 
-    public CryptoWriteFeature(final Write delegate, final Cryptor cryptor, final CryptoPathMapper pathMapper) {
+    public CryptoWriteFeature(final Write delegate, final SessionCryptomatorLoader cryptomator) {
         this.delegate = delegate;
-        this.cryptor = cryptor;
-        this.pathMapper = pathMapper;
+        this.cryptomator = cryptomator;
     }
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            final CryptoPathMapper pathMapper = cryptomator.getCryptoPathMapper();
             final CryptoPathMapper.Directory ciphertextDirectory = pathMapper.getCiphertextDir(file.getParent());
             final String ciphertextFileName = pathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
             final Path cryptoPath = new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
 
-            // header
+            // hHeader
+            final Cryptor cryptor = cryptomator.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             header.setFilesize(-1);
             final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
@@ -59,8 +60,7 @@ public class CryptoWriteFeature implements Write {
             return new CryptoOutputStream(cryptoStream, cryptor, header);
         }
         catch(IOException e) {
-            //TODO exceptio handling
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

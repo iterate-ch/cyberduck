@@ -1,6 +1,7 @@
 package ch.cyberduck.core.cryptomator;
 
 /*
+ * Copyright (c) 2016 Sebastian Stenzel and others.
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
