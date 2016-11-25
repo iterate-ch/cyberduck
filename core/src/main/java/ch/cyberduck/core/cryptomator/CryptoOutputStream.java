@@ -42,8 +42,8 @@ public class CryptoOutputStream extends OutputStream {
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
-        payloadSize = cryptor.fileContentCryptor().cleartextChunkSize();
-        buffer = ByteBuffer.allocate(payloadSize);
+        this.payloadSize = cryptor.fileContentCryptor().cleartextChunkSize();
+        this.buffer = ByteBuffer.allocate(payloadSize);
     }
 
     @Override
@@ -63,8 +63,8 @@ public class CryptoOutputStream extends OutputStream {
             final int write = Math.min(toWrite, buffer.remaining());
             buffer.put(b, buffer.position(), write);
             if(buffer.remaining() == 0) {
-                encryptAndWriteBuffer();
-                ByteBuffer.allocate(payloadSize);
+                this.encryptAndWriteBuffer();
+                buffer = ByteBuffer.allocate(payloadSize);
             }
             toWrite -= write;
         }
@@ -78,7 +78,7 @@ public class CryptoOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        encryptAndWriteBuffer();
+        this.encryptAndWriteBuffer();
         proxy.close();
     }
 }
