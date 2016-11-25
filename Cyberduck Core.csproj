@@ -114,6 +114,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\aquaticprime\WindowsStoreLicense.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\aquaticprime\WindowsStoreLicenseFactory.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\AtomicBoolean.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\collections\LRUCache.cs" />

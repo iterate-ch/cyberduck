@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 // 
 
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -48,6 +49,7 @@ namespace Ch.Cyberduck.Ui
                 x.For<ITransferView>().Use<TransferForm>();
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
+                x.For<IDonationController>().Use<DonationController>();
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
