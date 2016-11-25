@@ -22,17 +22,24 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.ContentReader;
 
+import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.security.SecureRandom;
+import java.util.EnumSet;
 
 public class SessionCryptomatorLoader {
+    private static final Logger log = Logger.getLogger(SessionCryptomatorLoader.class);
 
-    private final Session session;
+    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+
+    private final Session<?> session;
 
     private Cryptor cryptor;
     private LongFileNameProvider longFileNameProvider;
@@ -51,11 +58,17 @@ public class SessionCryptomatorLoader {
      */
     public void load(final Path home, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
-
-        final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
-                + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
-                + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
-                + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Initialized crypto provider %s", provider));
+        }
+        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt to read master key from %s", file));
+        }
+        final String masterKey = new ContentReader(session).readToString(file);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Read master key %s", masterKey));
+        }
         final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
         final Credentials credentials = new Credentials();
         // Default to false for save in keychain
