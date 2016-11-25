@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
@@ -44,7 +45,7 @@ namespace Ch.Cyberduck.Ui.Controller
          * Selection status map in the prompt
          */
         private readonly IDictionary<TransferItem, CheckState> _selected = new Dictionary<TransferItem, CheckState>();
-        private readonly Session _session;
+        private readonly SessionPool _session;
         protected readonly Transfer Transfer;
         private readonly string UNKNOWN = LocaleFactory.localizedString("Unknown");
         private TransferAction _action;
@@ -54,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
           */
         protected Bitmap AlertIcon = IconCache.Instance.IconForName("alert");
 
-        protected TransferPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+        protected TransferPromptModel(TransferPromptController controller, SessionPool session, Transfer transfer)
         {
             _controller = controller;
             _session = session;
@@ -213,7 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FilterAction : WorkerBackgroundAction
         {
-            public FilterAction(TransferPromptModel model, TransferPromptController controller, Session session,
+            public FilterAction(TransferPromptModel model, TransferPromptController controller, SessionPool session,
                 Transfer transfer, TransferAction action, TransferItemCache cache)
                 : base(
                     controller, session,
@@ -247,7 +248,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
-                Session session, TransferItem directory, Transfer transfer, TransferItemCache cache)
+                SessionPool session, TransferItem directory, Transfer transfer, TransferItemCache cache)
                 : base(
                     controller, session,
                     new InnerTransferPromptListWorker(model, controller, transfer, directory, cache))

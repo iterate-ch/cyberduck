@@ -23,11 +23,9 @@ import ch.cyberduck.core.shared.DefaultAttributesFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 
 public class SpectraWriteFeature extends S3WriteFeature {
-    private static final Logger log = Logger.getLogger(SpectraWriteFeature.class);
 
     public SpectraWriteFeature(final SpectraSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));

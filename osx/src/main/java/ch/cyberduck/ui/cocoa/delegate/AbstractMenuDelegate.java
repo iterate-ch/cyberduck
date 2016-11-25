@@ -101,8 +101,8 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      *         equivalent to the event characters.
      */
     public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuHasKeyEquivalent_forEvent:" + menu);
+        if(log.isTraceEnabled()) {
+            log.trace("menuHasKeyEquivalent_forEvent:" + menu);
         }
         if(StringUtils.isBlank(this.getKeyEquivalent())) {
             return false;
@@ -114,15 +114,15 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     public ID menuKeyEquivalentTarget_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuKeyEquivalentTarget_forEvent:" + menu);
+        if(log.isTraceEnabled()) {
+            log.trace("menuKeyEquivalentTarget_forEvent:" + menu);
         }
         return this.getTarget();
     }
 
     public Selector menuKeyEquivalentAction_forEvent(NSMenu menu, NSEvent event) {
-        if(log.isDebugEnabled()) {
-            log.debug("menuKeyEquivalentAction_forEvent:" + menu);
+        if(log.isTraceEnabled()) {
+            log.trace("menuKeyEquivalentAction_forEvent:" + menu);
         }
         return this.getDefaultAction();
     }
@@ -131,7 +131,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * Menu needs revalidation before being displayed the next time
      */
     protected void setNeedsUpdate(boolean u) {
-        if(log.isDebugEnabled()) {
+        if(log.isTraceEnabled()) {
             log.trace("setNeedsUpdate:" + u);
         }
         update = u;

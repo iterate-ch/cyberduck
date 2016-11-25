@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import synapticloop.b2.response.B2FileResponse;
 
@@ -192,10 +191,13 @@ public class B2ObjectListServiceTest {
         new B2DirectoryFeature(session).mkdir(folder2);
         new B2TouchFeature(session).touch(file2);
         final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
-        assertEquals(2, list.size());
+        // Including
+        // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/.bzEmpty', type=[file]}
+        // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/b136e277-3ee0-49f0-b19f-4a66eb7d8f38', type=[directory, placeholder]}
+        // Path{path='/test-e9287cee-772a-4a69-86f5-05905a23a446/2b47b8c4-0d13-41e8-a76f-45e918dd88d6/c2cbb949-2877-416d-9eb5-0855279adde3', type=[file]}
+        assertEquals(3, list.size());
         file1.attributes().setVersionId(new B2FileidProvider(session).getFileid(file1));
         assertTrue(list.contains(file1));
-        folder2.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder2));
         assertTrue(list.contains(folder2));
         assertFalse(list.contains(file2));
         assertFalse(list.contains(folder1));
@@ -255,47 +257,6 @@ public class B2ObjectListServiceTest {
     }
 
     @Test
-    public void testFindPlaceholder() throws Exception {
-        final B2ObjectListService service = new B2ObjectListService(null);
-        {
-            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-d/2-d/3-f";
-            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-        {
-            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-d/2-d/.bzEmpty";
-            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-        {
-            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-d/2-d/.bzEmpty";
-            assertEquals(new Path("/bucket/1-d/2-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-        {
-            final Path directory = new Path("/bucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-d/2-f";
-            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-        {
-            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-d/.bzEmpty";
-            assertEquals(new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-        {
-            final Path directory = new Path("/bucket/1-d", EnumSet.of(Path.Type.directory, Path.Type.volume));
-            final String filename = "1-f";
-            assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
-                    service.virtual(directory, filename));
-        }
-    }
-
-    @Test
     public void testIdenticalNamingFileFolder() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
@@ -316,66 +277,8 @@ public class B2ObjectListServiceTest {
         assertEquals(2, list.size());
         file1.attributes().setVersionId(new B2FileidProvider(session).getFileid(file1));
         assertTrue(list.contains(file1));
-        folder1.attributes().setVersionId(new B2FileidProvider(session).getFileid(folder1));
         assertTrue(list.contains(folder1));
-
         new B2DeleteFeature(session).delete(Arrays.asList(file1, folder1, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
-    public void testMarkerOptimization() throws Exception {
-        final B2Session session = new B2Session(
-                new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                        )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
-
-//        a0.txt
-//        folder1/file1.txt
-//        folder1/file2.txt [...]
-//        folder1/file1000000.txt
-//        folder2/file1.txt
-//        z0.txt
-
-        final Path file1 = new Path(bucket, "a0", EnumSet.of(Path.Type.file));
-        final Path file2 = new Path(bucket, "z0", EnumSet.of(Path.Type.file));
-        final Path folder = new Path(bucket, "folder1", EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        new B2DirectoryFeature(session).mkdir(folder);
-        final Path file3 = new Path(folder, "file1", EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file1);
-        new B2TouchFeature(session).touch(file2);
-        new B2TouchFeature(session).touch(file3);
-
-        final AtomicBoolean skipped = new AtomicBoolean();
-        final AttributedList<Path> list = new B2ObjectListService(session, 1) {
-            @Override
-            protected boolean skip(final String filename, final Path directory) {
-                final boolean skip = super.skip(filename, directory);
-                switch(filename) {
-                    case "folder1":
-                        assertTrue(skip);
-                        skipped.set(true);
-                        break;
-                    case "folder1/file1":
-                        assertTrue(skip);
-                        skipped.set(true);
-                        break;
-                    default:
-                        assertFalse(skip);
-                        break;
-                }
-                return skip;
-            }
-        }.list(bucket, new DisabledListProgressListener());
-        assertEquals(3, list.size());
-        assertTrue(skipped.get());
-
-        new B2DeleteFeature(session).delete(Arrays.asList(file1, file2, file3, folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

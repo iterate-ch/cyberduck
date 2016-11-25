@@ -117,17 +117,6 @@ public class SFTPSession extends Session<SSHClient> {
         return false;
     }
 
-    /**
-     * @return True if authentication is complete
-     */
-    @Override
-    public boolean isSecured() {
-        if(super.isSecured()) {
-            return client.isAuthenticated();
-        }
-        return false;
-    }
-
     @Override
     public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
         try {

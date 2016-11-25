@@ -58,6 +58,9 @@ public class B2FileidProvider implements IdProvider {
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
+            else if(file.isPlaceholder()) {
+                return null;
+            }
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 2);

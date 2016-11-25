@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -419,6 +420,9 @@ public class Host implements Serializable, Comparable<Host> {
      * if the default encoding should be used
      */
     public String getEncoding() {
+        if(null == encoding) {
+            return PreferencesFactory.get().getProperty("browser.charset.encoding");
+        }
         return encoding;
     }
 
@@ -447,7 +451,11 @@ public class Host implements Serializable, Comparable<Host> {
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
      * if the default should be used
      */
-    public TransferType getTransfer() {
+    public TransferType getTransferType() {
+        switch(transfer) {
+            case unknown:
+                return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
+        }
         return transfer;
     }
 

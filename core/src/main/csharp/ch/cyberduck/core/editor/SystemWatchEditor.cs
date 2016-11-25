@@ -21,7 +21,7 @@ using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.pool;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Core.Editor
         private static readonly Logger Log = Logger.getLogger(typeof(SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public SystemWatchEditor(Application application, Session session, Path file, ProgressListener listener)
+        public SystemWatchEditor(Application application, SessionPool session, Path file, ProgressListener listener)
             : base(application, session, file, listener)
         {
         }

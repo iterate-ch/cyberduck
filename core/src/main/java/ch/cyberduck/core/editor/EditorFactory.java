@@ -22,10 +22,10 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -92,7 +92,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * @param path     File to edit
      * @return New editor instance for the given file type.
      */
-    public Editor create(final ProgressListener listener, final Session session, final Path path) {
+    public Editor create(final ProgressListener listener, final SessionPool session, final Path path) {
         return this.create(listener, session, this.getEditor(path.getName()), path);
     }
 
@@ -102,7 +102,7 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
      * @param path        File to edit
      * @return New editor instance for the given file type.
      */
-    public abstract Editor create(ProgressListener listener, Session session, Application application, Path path);
+    public abstract Editor create(ProgressListener listener, SessionPool session, Application application, Path path);
 
     /**
      * Determine the default editor set

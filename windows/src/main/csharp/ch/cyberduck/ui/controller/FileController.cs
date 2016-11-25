@@ -19,6 +19,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core.Resources;
 using java.util;
 
@@ -60,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _input = value; }
         }
 
-        protected Session Session
+        protected SessionPool Session
         {
             get { return BrowserController.Session; }
         }

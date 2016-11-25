@@ -1,6 +1,6 @@
 package ch.cyberduck.core.pasteboard;
 
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Host;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,8 +9,8 @@ import java.util.Map;
 
 public final class PathPasteboardFactory {
 
-    private static final Map<Session, PathPasteboard> pasteboards
-            = new HashMap<Session, PathPasteboard>();
+    private static final Map<Host, PathPasteboard> pasteboards
+            = new HashMap<Host, PathPasteboard>();
 
     private PathPasteboardFactory() {
         //
@@ -19,14 +19,17 @@ public final class PathPasteboardFactory {
     /**
      * Factory to create a pasteboard for a session
      *
-     * @param session Session instance
+     * @param bookmark Session instance
      * @return Pasteboard for a given session
      */
-    public static PathPasteboard getPasteboard(final Session session) {
-        if(!pasteboards.containsKey(session)) {
-            pasteboards.put(session, new PathPasteboard(session));
+    public static PathPasteboard getPasteboard(final Host bookmark) {
+        if(null == bookmark) {
+            return null;
         }
-        return pasteboards.get(session);
+        if(!pasteboards.containsKey(bookmark)) {
+            pasteboards.put(bookmark, new PathPasteboard(bookmark));
+        }
+        return pasteboards.get(bookmark);
     }
 
     /**
@@ -39,10 +42,10 @@ public final class PathPasteboardFactory {
     /**
      * Delete this pasteboard
      */
-    public static void delete(final Session session) {
-        if(pasteboards.containsKey(session)) {
-            pasteboards.get(session).clear();
+    public static void delete(final Host bookmark) {
+        if(pasteboards.containsKey(bookmark)) {
+            pasteboards.get(bookmark).clear();
         }
-        pasteboards.remove(session);
+        pasteboards.remove(bookmark);
     }
 }

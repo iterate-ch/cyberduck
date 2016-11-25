@@ -28,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -86,7 +85,7 @@ public class EditSaveWorker extends Worker<Transfer> {
         }
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
+                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
         worker.run(session);
         if(!upload.isComplete()) {
