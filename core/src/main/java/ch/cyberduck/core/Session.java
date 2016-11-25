@@ -105,7 +105,6 @@ public abstract class Session<C> implements TranscriptListener {
      * @param key        Host identity verification callback
      * @param transcript Transcript
      * @return Client
-     * @throws BackgroundException
      */
     public C open(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -203,33 +202,10 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return True if the control channel is either tunneled using TLS or SSH
-     */
-    public boolean isSecured() {
-        if(this.isConnected()) {
-            return host.getProtocol().isSecure();
-        }
-        return false;
-    }
-
-    /**
      * @return the host this session connects to
      */
     public Host getHost() {
         return host;
-    }
-
-    /**
-     * @return The custom character encoding specified by the host
-     * of this session or the default encoding if not specified
-     * @see Preferences
-     * @see Host
-     */
-    public String getEncoding() {
-        if(null == host.getEncoding()) {
-            return preferences.getProperty("browser.charset.encoding");
-        }
-        return host.getEncoding();
     }
 
     /**
@@ -244,14 +220,6 @@ public abstract class Session<C> implements TranscriptListener {
         insensitive
     }
 
-    public Host.TransferType getTransferType() {
-        switch(host.getTransfer()) {
-            case unknown:
-                return Host.TransferType.valueOf(preferences.getProperty("queue.transfer.type"));
-            default:
-                return host.getTransfer();
-        }
-    }
 
     /**
      * @return boolean True if the session has not yet been closed.

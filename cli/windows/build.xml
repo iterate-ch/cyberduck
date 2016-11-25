@@ -19,8 +19,13 @@
     <import file="../../build.xml"/>
     <import file="../../archive.xml"/>
 
-    <property name="msbuild.configuration" value="release"/>
     <property name="msbuild.architecture" value="x86"/>
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 

@@ -26,8 +26,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Upload<Output> {
 
-    Output upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                  final TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
+    Output upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
+                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     Write.Append append(Path file, Long length, PathCache cache) throws BackgroundException;
 }

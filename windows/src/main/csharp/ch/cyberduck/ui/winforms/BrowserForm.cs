@@ -32,6 +32,7 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.updater;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
@@ -1684,27 +1685,20 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             //direct commands
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
-                (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")),
-                () => true);
+                (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
-                (sender, args) =>
-                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")), () => true);
+                (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
-                (sender, args) =>
-                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
-                () => true);
+                (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")), () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
-                (sender, args) =>
-                    BrowserLauncherFactory.get()
-                        .open(String.Format(PreferencesFactory.get().getProperty("website.bug"),
-                            PreferencesFactory.get().getProperty("application.version"))), () => true);
+                (sender, args) => BrowserLauncherFactory.get().open(String.Format(PreferencesFactory.get().getProperty("website.bug"), PreferencesFactory.get().getProperty("application.version"))), () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
-                (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
+                (sender, args) => BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")), () => true);
+            bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => new WinSparklePeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
+                (sender, args) => PeriodicUpdateCheckerFactory.get().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()

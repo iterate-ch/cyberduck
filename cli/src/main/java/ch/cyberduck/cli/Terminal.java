@@ -42,6 +42,8 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -50,6 +52,7 @@ import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
+import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -62,7 +65,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.DeleteWorker;
-import ch.cyberduck.core.worker.DisconnectWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 import ch.cyberduck.fs.FilesystemFactory;
@@ -207,7 +209,7 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        Session<?> session = null;
+        SessionPool session = null;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
             if(null == action) {
@@ -215,16 +217,16 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input).parse(uri);
-            session = SessionFactory.create(host,
+            final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
+                    new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
+            session = new SingleSessionPool(connect, SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))), cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
-                // Already connect here because the tilde expander may need to use the current working directory
-                this.connect(session);
                 final Home home = session.getFeature(Home.class);
                 remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
@@ -286,12 +288,6 @@ public class Terminal {
         return Exit.failure;
     }
 
-    protected void connect(final Session session) throws BackgroundException {
-        final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-        connect.check(session, cache);
-    }
-
     protected void configure(final CommandLine input) {
         final boolean preserve = input.hasOption(TerminalOptionsBuilder.Params.preserve.name());
         preferences.setProperty("queue.upload.permissions.change", preserve);
@@ -322,11 +318,11 @@ public class Terminal {
         }
     }
 
-    protected Exit transfer(final Transfer transfer, final Session session) {
+    protected Exit transfer(final Transfer transfer, final SessionPool session) {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
-        final Host host = session.getHost();
+        final Host host = transfer.getHost();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             host.setTransfer(Host.TransferType.concurrent);
         }
@@ -353,15 +349,11 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), session, cache,
+                session,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
-                        ? new DisabledStreamListener() : new TerminalStreamListener(meter),
-                new CertificateStoreX509TrustManager(
-                        new DefaultTrustManagerHostnameCallback(host),
-                        new TerminalCertificateStore(reader)
-                ),
-                new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)));
+                        ? new DisabledStreamListener() : new TerminalStreamListener(meter)
+        );
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -369,9 +361,9 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit mount(final Session session) {
+    protected Exit mount(final SessionPool session) {
         final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
-                controller, session, cache, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
+                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -379,12 +371,12 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit list(final Session session, final Path remote, final boolean verbose) {
+    protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
                 new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, new TerminalHostKeyVerifier(reader), worker);
+                controller,
+                session, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -392,7 +384,7 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit delete(final Session session, final Path remote) throws BackgroundException {
+    protected Exit delete(final SessionPool session, final Path remote) throws BackgroundException {
         final List<Path> files = new ArrayList<Path>();
         for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
             files.add(i.remote);
@@ -405,8 +397,8 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)), controller,
-                session, cache, new TerminalHostKeyVerifier(reader), worker);
+                controller,
+                session, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -414,7 +406,7 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit edit(final Session session, final Path remote) throws BackgroundException {
+    protected Exit edit(final SessionPool session, final Path remote) throws BackgroundException {
         final EditorFactory factory = EditorFactory.instance();
         final Application application;
         final ApplicationFinder finder = ApplicationFinderFactory.get();
@@ -440,10 +432,7 @@ public class Terminal {
                 lock.countDown();
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(
-                new TerminalLoginService(input, new TerminalLoginCallback(reader)),
-                controller, session, cache, new TerminalHostKeyVerifier(reader), worker
-        );
+        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -457,10 +446,9 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected void disconnect(final Session session) {
+    protected void disconnect(final SessionPool session) {
         if(session != null) {
-            final DisconnectWorker close = new DisconnectWorker(session.getHost());
-            close.run(session);
+            controller.background(new DisconnectBackgroundAction(controller, session));
         }
     }
 

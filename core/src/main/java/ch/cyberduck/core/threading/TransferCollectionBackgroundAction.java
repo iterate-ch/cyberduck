@@ -18,13 +18,10 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferListener;
@@ -39,23 +36,21 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private final TransferQueue queue = TransferQueueFactory.get();
 
-    private final Transfer transfer;
+    private final SessionPool pool;
 
-    private final Session session;
+    private final Transfer transfer;
 
     private final ProgressListener progressListener;
 
     public TransferCollectionBackgroundAction(final Controller controller,
-                                              final Session session,
+                                              final SessionPool pool,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
-                                              final TranscriptListener transcriptListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, session, new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")),
-                transferListener, progressListener, transcriptListener, transfer, options);
+        super(controller, pool, transferListener, progressListener, transfer, options);
+        this.pool = pool;
         this.transfer = transfer;
-        this.session = session;
         this.progressListener = progressListener;
     }
 
@@ -72,8 +67,8 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background action for transfer %s", transfer));
         }
-        queue.remove(transfer);
         super.cancel();
+        queue.remove(transfer);
     }
 
     @Override
@@ -81,18 +76,9 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background action for transfer %s", transfer));
         }
-        queue.remove(transfer);
         super.finish();
-    }
-
-    @Override
-    public Boolean run() throws BackgroundException {
-        if(super.run()) {
-            // We have our own session independent of any browser.
-            this.close(session);
-            return true;
-        }
-        return false;
+        queue.remove(transfer);
+        pool.shutdown();
     }
 
     @Override

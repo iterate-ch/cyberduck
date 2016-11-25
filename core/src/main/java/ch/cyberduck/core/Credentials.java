@@ -50,7 +50,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean keychained;
+    private boolean persist;
 
     /**
      * Passed authentication successfully
@@ -122,7 +122,7 @@ public class Credentials implements Comparable<Credentials> {
      * @return true if the password will be added to the system keychain when logged in successfully
      */
     public boolean isSaved() {
-        return this.keychained;
+        return this.persist;
     }
 
     /**
@@ -132,7 +132,7 @@ public class Credentials implements Comparable<Credentials> {
      *              successful login
      */
     public void setSaved(final boolean saved) {
-        this.keychained = saved;
+        this.persist = saved;
     }
 
     public boolean isPassed() {

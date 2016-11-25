@@ -28,5 +28,5 @@ public interface Directory {
      * @param region Location
      * @param status Transfer status
      */
-    void mkdir(Path file, String region, final TransferStatus status) throws BackgroundException;
+    void mkdir(Path file, String region, TransferStatus status) throws BackgroundException;
 }

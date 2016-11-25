@@ -97,7 +97,7 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void close() {
-        panel.orderOut(null);
+        panel.close();
     }
 
     @Override

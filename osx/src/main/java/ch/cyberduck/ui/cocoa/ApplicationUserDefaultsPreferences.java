@@ -24,8 +24,12 @@ import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AlertTransferErrorCallback;
-import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.cocoa.controller.AlertHostKeyController;
+import ch.cyberduck.ui.cocoa.controller.CopyPromptController;
+import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
+import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
+import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -37,10 +41,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         // Parent defaults
         super.setDefaults();
 
-        if(null == Updater.getFeed()) {
-            defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
-        }
-        else {
+        if(null != Updater.getFeed()) {
             defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
         }
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
@@ -78,6 +79,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
         defaults.put("browser.sort.column", Column.filename.name());
     }
+
     @Override
     protected void post() {
         super.post();

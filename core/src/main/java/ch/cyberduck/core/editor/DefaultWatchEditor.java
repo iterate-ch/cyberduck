@@ -21,13 +21,13 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
@@ -40,14 +40,14 @@ public class DefaultWatchEditor extends AbstractEditor {
             = new FileWatcher(new NIOEventWatchService());
 
     public DefaultWatchEditor(final Application application,
-                              final Session session,
+                              final SessionPool session,
                               final Path file,
                               final ProgressListener listener) {
         super(application, session, file, listener);
     }
 
     public DefaultWatchEditor(final Application application,
-                              final Session session,
+                              final SessionPool session,
                               final Path file,
                               final ApplicationLauncher launcher,
                               final ApplicationFinder finder,

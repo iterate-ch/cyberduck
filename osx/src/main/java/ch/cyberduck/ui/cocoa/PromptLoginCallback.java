@@ -40,6 +40,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.ui.cocoa.controller.LoginController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -99,8 +100,7 @@ public final class PromptLoginCallback implements LoginCallback {
             log.debug(String.format("Prompt for credentials for %s", bookmark));
         }
         final LoginController controller = new LoginController(title, reason, bookmark, credentials, options);
-        controller.loadBundle();
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, controller.window());
+        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();

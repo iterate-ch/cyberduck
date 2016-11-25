@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core</RootNamespace>
     <AssemblyName>Cyberduck.Core.Native</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>1</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>core\native\target</OutputPath>
@@ -30,6 +32,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="core">
@@ -84,6 +87,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(MSBuildBinPath)\System.Runtime.WindowsRuntime.dll</HintPath>
+    </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -91,6 +98,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Windows">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Bonjour">
@@ -189,10 +199,16 @@
        Other similar extension points exist, see Microsoft.Common.targets. -->
   <!-- Import of the MSBuildCommunityTask targets -->
   <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets" />
+  <Target Name="ResolveNETCore">
+    <GetReferenceAssemblyPaths BypassFrameworkInstallChecks="False" TargetFrameworkMoniker=".NETCore,Version=v4.5">
+      <Output TaskParameter="FullFrameworkReferenceAssemblyPaths" PropertyName="NETCore45" />
+    </GetReferenceAssemblyPaths>
+  </Target>
   <Target Name="AssemblyInfo">
     <AssemblyInfo CodeLanguage="CS" OutputFile="core\target\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." AssemblyCompany="iterate GmbH" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(Version)" Condition="$(Version) != '0' " />
   </Target>
   <Target Name="BeforeBuild">
+    <CallTarget Targets="ResolveNETCore" />
     <CallTarget Targets="AssemblyInfo" />
   </Target>
   <Target Name="AfterBuild">

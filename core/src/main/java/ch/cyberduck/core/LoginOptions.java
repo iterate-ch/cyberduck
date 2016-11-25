@@ -17,16 +17,13 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 public final class LoginOptions {
 
     public boolean user = true;
     public boolean password = true;
-    public boolean keychain
-            = PreferencesFactory.get().getBoolean("connection.login.useKeychain");
-    public boolean publickey;
-    public boolean anonymous;
+    public boolean keychain = true;
+    public boolean publickey = false;
+    public boolean anonymous = false;
 
     public LoginOptions() {
         //

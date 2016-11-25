@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -51,7 +50,7 @@ public class BackgroundActionPauser {
         this.delay = delay;
     }
 
-    public void await(final ProgressListener listener) {
+    public void await() {
         if(0 == delay) {
             log.info("No pause between retry");
             return;
@@ -59,7 +58,7 @@ public class BackgroundActionPauser {
         final Timer wakeup = new Timer();
         final CyclicBarrier wait = new CyclicBarrier(2);
         // Schedule for immediate execution with an interval of 1s
-        wakeup.scheduleAtFixedRate(new PauserTimerTask(listener, wait), 0, 1000);
+        wakeup.scheduleAtFixedRate(new PauserTimerTask(wait), 0, 1000);
         try {
             // Wait for notify from wakeup timer
             wait.await();
@@ -70,11 +69,9 @@ public class BackgroundActionPauser {
     }
 
     private final class PauserTimerTask extends TimerTask {
-        private final ProgressListener listener;
         private final CyclicBarrier wait;
 
-        public PauserTimerTask(final ProgressListener listener, final CyclicBarrier wait) {
-            this.listener = listener;
+        public PauserTimerTask(final CyclicBarrier wait) {
             this.wait = wait;
         }
 

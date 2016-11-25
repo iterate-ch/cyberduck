@@ -30,6 +30,7 @@ using java.security;
 using java.util;
 using org.apache.log4j;
 using sun.security.mscapi;
+using Windows.Storage;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -362,6 +363,13 @@ namespace Ch.Cyberduck.Core.Preferences
                 {
                     // The name of this computer cannot be obtained.
                 }
+            }
+
+            // UWP
+            if (Utils.IsUWPSupported)
+            {
+                defaults.put("update.check", $"{false}");
+                defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
             }
         }
 

@@ -32,7 +32,8 @@
         <mkdir dir="${build}"/>
         <!-- Create DLL Cyberduck.Core -->
         <ikvmc target="library" out="${build}/Cyberduck.Core.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="false" verbose="true">
+               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="${ikvm.debug}"
+               verbose="false">
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
                 <include name="*.jre/Contents/Home/lib/ext/sunec.jar"/>

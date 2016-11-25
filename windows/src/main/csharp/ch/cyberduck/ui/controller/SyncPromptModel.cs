@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.synchronization;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core.Resources;
@@ -25,7 +26,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptModel : TransferPromptModel
     {
-        public SyncPromptModel(TransferPromptController controller, Session session, Transfer transfer)
+        public SyncPromptModel(TransferPromptController controller, SessionPool session, Transfer transfer)
             : base(controller, session, transfer)
         {
         }

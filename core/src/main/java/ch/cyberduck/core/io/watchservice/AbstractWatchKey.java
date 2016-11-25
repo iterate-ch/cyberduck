@@ -38,7 +38,7 @@ abstract class AbstractWatchKey implements WatchKey {
     /**
      * Possible key states
      */
-    private static enum State {
+    private enum State {
         READY, SIGNALLED
     }
 

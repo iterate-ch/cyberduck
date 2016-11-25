@@ -12,7 +12,7 @@
         <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
         <Chain>
-            <PackageGroupRef Id="NetFx40ClientRedist"/>
+            <PackageGroupRef Id="NetFx45Web"/>
             <RollbackBoundary/>
             <MsiPackage
                     Id="Setup"

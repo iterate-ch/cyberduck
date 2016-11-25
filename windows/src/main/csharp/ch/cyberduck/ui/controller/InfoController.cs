@@ -33,6 +33,7 @@ using ch.cyberduck.core.identity;
 using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.threading;
@@ -63,12 +64,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
         private readonly LoginCallback _prompt;
         private readonly PathContainerService containerService = new PathContainerService();
-        private PermissionOverwrite permissions = new PermissionOverwrite();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
+        private PermissionOverwrite permissions = new PermissionOverwrite();
 
         private InfoController(BrowserController controller, IList<Path> files)
         {
@@ -179,14 +180,14 @@ namespace Ch.Cyberduck.Ui.Controller
             TreeMap map = new TreeMap();
             foreach (CustomHeaderEntry header in _metadata)
             {
-                map.Add(header.Name, header.Value);
+                map.Add(header.Name, header.ActualValue);
             }
             return map;
         }
 
         private void ConfigureToolbar()
         {
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             if (session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
@@ -273,7 +274,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if progress animation has started and settings are toggled</returns>
         private bool ToggleMetadataSettings(bool stop)
         {
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(Headers)) != null;
             View.MetadataTableEnabled = stop && enable;
@@ -308,7 +309,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     case ListChangedType.ItemChanged:
                         if (args.NewIndex < _metadata.Count && Utils.IsNotBlank(_metadata[args.NewIndex].Name) &&
-                            Utils.IsNotBlank(_metadata[args.NewIndex].Value))
+                            Utils.IsNotBlank(_metadata[args.NewIndex].ActualValue))
                         {
                             if (ToggleMetadataSettings(false))
                             {
@@ -472,7 +473,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (file.isFile())
                         {
                             DescriptiveUrl authenticated =
-                                ((UrlProvider)_controller.Session.getFeature(typeof(UrlProvider))).toUrl(file)
+                                ((UrlProvider) _controller.Session.getFeature(typeof(UrlProvider))).toUrl(file)
                                     .find(DescriptiveUrl.Type.authenticated);
                             if (!authenticated.equals(DescriptiveUrl.EMPTY))
                             {
@@ -489,7 +490,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAclUsers()
         {
-            AclPermission feature = (AclPermission)_controller.Session.getFeature(typeof(AclPermission));
+            AclPermission feature = (AclPermission) _controller.Session.getFeature(typeof(AclPermission));
             IDictionary<string, SyncDelegate> mapping = new Dictionary<string, SyncDelegate>();
             List aclUsers = feature.getAvailableAclUsers();
             for (int i = 0; i < aclUsers.size(); i++)
@@ -503,7 +504,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAclRoles()
         {
-            AclPermission feature = (AclPermission)_controller.Session.getFeature(typeof(AclPermission));
+            AclPermission feature = (AclPermission) _controller.Session.getFeature(typeof(AclPermission));
             IList<string> roles = Utils.ConvertFromJavaList(
                 feature.getAvailableAclRoles(Utils.ConvertToJavaList(Files)), item => ((Acl.Role)item).getName());
             View.PopulateAclRoles(roles);
@@ -545,7 +546,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if progress animation has started and settings are toggled</returns>
         private bool ToggleAclSettings(bool stop)
         {
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(AclPermission)) != null;
             View.AclTableEnabled = stop && enable;
@@ -637,10 +638,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if controls are enabled for the given protocol in idle state</returns>
         private bool ToggleDistributionSettings(bool stop)
         {
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             DistributionConfiguration cdn =
-                (DistributionConfiguration)session.getFeature(typeof(DistributionConfiguration));
+                (DistributionConfiguration) session.getFeature(typeof(DistributionConfiguration));
             bool enable = !credentials.isAnonymousLogin() && cdn != null;
             Path container = containerService.getContainer(SelectedPath);
             if (enable)
@@ -674,9 +675,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   null;
             if (enable)
             {
-                AnalyticsProvider analyticsFeature = (AnalyticsProvider)session.getFeature(typeof(AnalyticsProvider));
+                AnalyticsProvider analyticsFeature = (AnalyticsProvider) session.getFeature(typeof(AnalyticsProvider));
                 IdentityConfiguration identityFeature =
-                    (IdentityConfiguration)session.getFeature(typeof(IdentityConfiguration));
+                    (IdentityConfiguration) session.getFeature(typeof(IdentityConfiguration));
 
                 if (null == analyticsFeature || null == identityFeature)
                 {
@@ -998,7 +999,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller.background(new WritePermissionBackgroundAction(_controller, this, recursive));
             }
         }
-		
+
         private void InitGeneral()
         {
             int count = NumberOfFiles;
@@ -1010,7 +1011,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Filename = Name;
 
                 View.FilenameEnabled = (1 == count &&
-                                        ((Move)_controller.Session.getFeature(typeof(Move))).isSupported(file));
+                                        ((Move) _controller.Session.getFeature(typeof(Move))).isSupported(file));
                 string path;
                 if (file.isSymbolicLink())
                 {
@@ -1118,7 +1119,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="stop">Enable controls and stop progress spinner</param>
         private bool ToggleS3Settings(bool stop)
         {
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
                           session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
@@ -1152,9 +1153,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.EncryptionEnabled = stop && enable && encryption;
 
             IdentityConfiguration identityFeature =
-                (IdentityConfiguration)_controller.Session.getFeature(typeof(IdentityConfiguration));
+                (IdentityConfiguration) _controller.Session.getFeature(typeof(IdentityConfiguration));
             AnalyticsProvider analyticsFeature =
-                (AnalyticsProvider)_controller.Session.getFeature(typeof(AnalyticsProvider));
+                (AnalyticsProvider) _controller.Session.getFeature(typeof(AnalyticsProvider));
             if (analytics && ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials))
             {
                 // No need to create new IAM credentials when same as session credentials
@@ -1206,9 +1207,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty)
             });
 
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             DistributionConfiguration cdn =
-                (DistributionConfiguration)session.getFeature(typeof(DistributionConfiguration));
+                (DistributionConfiguration) session.getFeature(typeof(DistributionConfiguration));
             View.DistributionTitle = String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                 cdn.getName());
             methods = new List<KeyValuePair<string, Distribution.Method>>();
@@ -1260,7 +1261,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 DetachPermissionHandlers();
             }
-            Session session = _controller.Session;
+            SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(UnixPermission)) != null;
             View.RecursivePermissionsEnabled = stop && enable;
@@ -1305,7 +1306,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 DescriptiveUrl http =
-                    ((UrlProvider)_controller.Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
+                    ((UrlProvider) _controller.Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
                         .find(DescriptiveUrl.Type.http);
                 if (!http.Equals(DescriptiveUrl.EMPTY))
                 {
@@ -1404,15 +1405,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public string Value
             {
-                get { return _value; }
+                get { return _value == null ? _multipleFilesString : _value; }
                 set
                 {
-                    if (Utils.IsNotBlank(value))
-                    {
-                        _value = value;
-                        NotifyPropertyChanged("Value");
-                    }
+                    _value = value;
+                    NotifyPropertyChanged("Value");
                 }
+            }
+
+            public string ActualValue
+            {
+                get { return _value; }
             }
 
             public event PropertyChangedEventHandler PropertyChanged;
@@ -1497,7 +1500,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     IInfoView view = _infoController.View;
-                    var permission = (PermissionOverwrite)obj;
+                    var permission = (PermissionOverwrite) obj;
                     _infoController.permissions = permission;
 
                     view.OwnerRead = GetCheckState(permission.user.read);
@@ -1525,15 +1528,18 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.TogglePermissionSettings(true);
                 }
 
-                private static CheckState GetCheckState(java.lang.Boolean state) =>
-                    state != null ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked : CheckState.Indeterminate; // if count = 0: unchecked, count = permission count: checked, else: indeterminate
+                private static CheckState GetCheckState(Boolean state) =>
+                    state != null
+                        ? state.booleanValue() ? CheckState.Checked : CheckState.Unchecked
+                        : CheckState.Indeterminate;
+
+                // if count = 0: unchecked, count = permission count: checked, else: indeterminate
             }
         }
 
         private class FetchS3BackgroundAction : BrowserControllerBackgroundAction
         {
             private readonly Path _container;
-            private readonly HashSet<string> _containers = new HashSet<string>();
 
             private readonly HashSet<KeyValuePair<string, string>> _encryptionKeys =
                 new HashSet<KeyValuePair<string, string>>();
@@ -1567,39 +1573,32 @@ namespace Ch.Cyberduck.Ui.Controller
                 _container = _infoController.containerService.getContainer(_selected);
             }
 
-            public override object run()
+            public override object run(Session session)
             {
-                Session s = BrowserController.Session;
-                if (s.getFeature(typeof(Location)) != null)
+                if (session.getFeature(typeof(Location)) != null)
                 {
-                    _location = ((Location)s.getFeature(typeof(Location))).getLocation(_container);
+                    _location = ((Location) session.getFeature(typeof(Location))).getLocation(_container);
                 }
-                if (s.getFeature(typeof(Logging)) != null)
+                if (session.getFeature(typeof(Logging)) != null)
                 {
-                    _logging = ((Logging)s.getFeature(typeof(Logging))).getConfiguration(_container);
-                    AttributedList children = _infoController._controller.Session.list(_container.getParent(),
-                        new DisabledListProgressListener());
-                    foreach (AbstractPath c in children)
-                    {
-                        _containers.Add(c.getName());
-                    }
+                    _logging = ((Logging) session.getFeature(typeof(Logging))).getConfiguration(_container);
                 }
-                if (s.getFeature(typeof(Versioning)) != null)
+                if (session.getFeature(typeof(Versioning)) != null)
                 {
-                    _versioning = ((Versioning)s.getFeature(typeof(Versioning))).getConfiguration(_container);
+                    _versioning = ((Versioning) session.getFeature(typeof(Versioning))).getConfiguration(_container);
                 }
-                if (s.getFeature(typeof(Lifecycle)) != null)
+                if (session.getFeature(typeof(Lifecycle)) != null)
                 {
-                    _lifecycle = ((Lifecycle)s.getFeature(typeof(Lifecycle))).getConfiguration(_container);
+                    _lifecycle = ((Lifecycle) session.getFeature(typeof(Lifecycle))).getConfiguration(_container);
                 }
-                if (s.getFeature(typeof(AnalyticsProvider)) != null &&
-                    s.getFeature(typeof(IdentityConfiguration)) != null)
+                if (session.getFeature(typeof(AnalyticsProvider)) != null &&
+                    session.getFeature(typeof(IdentityConfiguration)) != null)
                 {
                     _credentials =
-                        ((IdentityConfiguration)s.getFeature(typeof(IdentityConfiguration))).getCredentials(
-                            ((AnalyticsProvider)s.getFeature(typeof(AnalyticsProvider))).getName());
+                        ((IdentityConfiguration) session.getFeature(typeof(IdentityConfiguration))).getCredentials(
+                            ((AnalyticsProvider) session.getFeature(typeof(AnalyticsProvider))).getName());
                 }
-                Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof(Redundancy));
+                Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof(Redundancy));
                 if (redundancyFeature != null)
                 {
                     List list = redundancyFeature.getClasses();
@@ -1623,7 +1622,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _storageClass = "Multiple";
                     }
                 }
-                Encryption encryptionFeature = (Encryption)s.getFeature(typeof(Encryption));
+                Encryption encryptionFeature = (Encryption) session.getFeature(typeof(Encryption));
                 if (encryptionFeature != null)
                 {
                     HashSet<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
@@ -1654,7 +1653,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
                 TransferAcceleration accelerationFeature =
-                    (TransferAcceleration)s.getFeature(typeof(TransferAcceleration));
+                    (TransferAcceleration) session.getFeature(typeof(TransferAcceleration));
                 if (accelerationFeature != null)
                 {
                     _acceleration = accelerationFeature.getStatus(_container);
@@ -1670,9 +1669,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (_logging != null)
                     {
                         _view.BucketLoggingCheckbox = _logging.isEnabled();
-                        if (_containers.Count > 0)
+                        if (_logging.getContainers().size() > 0)
                         {
-                            _view.PopulateBucketLogging(_containers.ToList());
+                            _view.PopulateBucketLogging(Utils.ConvertFromJavaList<String>(_logging.getContainers(),
+                                o => ((Path) o).getName()));
                         }
                         if (_logging.isEnabled())
                         {
@@ -1705,9 +1705,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (_credentials != null)
                     {
-                        Session s = BrowserController.Session;
+                        SessionPool s = BrowserController.Session;
                         _view.BucketAnalyticsSetupUrl =
-                            ((AnalyticsProvider)s.getFeature(typeof(AnalyticsProvider))).getSetup(
+                            ((AnalyticsProvider) s.getFeature(typeof(AnalyticsProvider))).getSetup(
                                 s.getHost().getProtocol().getDefaultHostname(), s.getHost().getProtocol().getScheme(),
                                 _container, _credentials).getUrl();
                     }
@@ -1766,7 +1766,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public InvalidateObjectsBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerDistributionPurgeWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
                         infoController._prompt, infoController.View.DistributionDeliveryMethod))
             {
@@ -1794,7 +1794,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public LifecycleBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteLifecycleWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
                         new LifecycleConfiguration(
                             infoController.View.LifecycleTransitionCheckbox
@@ -1862,7 +1862,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public ReadDistributionBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerReadDistributionWorker(infoController, browserController,
                         Utils.ConvertToJavaList(infoController.Files), infoController._prompt,
                         infoController.View.DistributionDeliveryMethod))
@@ -1891,7 +1891,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
                         DistributionConfiguration cdn =
                             (DistributionConfiguration)
-                                _controller.Session.getFeature(typeof(DistributionConfiguration));
+                            _controller.Session.getFeature(typeof(DistributionConfiguration));
                         view.DistributionTitle =
                             String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                                 cdn.getName(view.DistributionDeliveryMethod));
@@ -1933,10 +1933,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         AnalyticsProvider analyticsFeature =
                             (AnalyticsProvider)
-                                cdn.getFeature(typeof(AnalyticsProvider), view.DistributionDeliveryMethod);
+                            cdn.getFeature(typeof(AnalyticsProvider), view.DistributionDeliveryMethod);
                         IdentityConfiguration identityFeature =
                             (IdentityConfiguration)
-                                cdn.getFeature(typeof(IdentityConfiguration), view.DistributionDeliveryMethod);
+                            cdn.getFeature(typeof(IdentityConfiguration), view.DistributionDeliveryMethod);
                         if (analyticsFeature != null && identityFeature != null)
                         {
                             Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
@@ -2147,10 +2147,10 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetTransferAccelerationBackgroundAction(BrowserController browserController,
                 InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteTransferAccelerationWorker(infoController,
                         Utils.ConvertToJavaList(infoController.Files), infoController.View.TransferAccelerationCheckbox)
-                    )
+                )
             {
             }
 
@@ -2177,7 +2177,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetBucketAnalyticsUrlBackgroundAction(BrowserController browserController,
                 InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteIdentityWorker(infoController, infoController._prompt,
                         Boolean.valueOf(infoController.View.BucketAnalyticsCheckbox),
                         PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
@@ -2206,7 +2206,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteLoggingWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
                         new LoggingConfiguration(infoController.View.BucketLoggingCheckbox,
                             infoController.View.BucketLoggingPopup)))
@@ -2236,11 +2236,11 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController,
                 InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteVersioningWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
                         infoController._prompt,
                         new VersioningConfiguration(infoController.View.BucketVersioning, infoController.View.BucketMfa))
-                    )
+                )
             {
             }
 
@@ -2267,7 +2267,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
                 InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteIdentityWorker(infoController, infoController._prompt,
                         Boolean.valueOf(infoController.View.DistributionAnalyticsCheckbox),
                         PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
@@ -2297,9 +2297,9 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController,
                 IList<Path> files, Encryption.Algorithm algorithm)
                 : base(
-                    controller, controller.Session, controller.Cache,
+                    controller, controller.Session,
                     new InnerWriteEncryptionWorker(controller, infoController, Utils.ConvertToJavaList(files), algorithm)
-                    )
+                )
             {
             }
 
@@ -2327,7 +2327,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public SetStorageClassBackgroundAction(BrowserController controller, InfoController infoController,
                 IList<Path> files, String redundancy)
                 : base(
-                    controller, controller.Session, controller.Cache,
+                    controller, controller.Session,
                     new InnerWriteRedundancyWorker(controller, infoController, Utils.ConvertToJavaList(files),
                         redundancy))
             {
@@ -2433,7 +2433,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(
-                    browserController, browserController.Session, browserController.Cache,
+                    browserController, browserController.Session,
                     new InnerWriteDistributionWorker(infoController, Utils.ConvertToJavaList(infoController.Files),
                         infoController._prompt, GetDistribution(infoController.View)))
             {
@@ -2499,7 +2499,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class WritePermissionBackgroundAction : WorkerBackgroundAction
         {
-            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController, bool recursive)
+            public WritePermissionBackgroundAction(BrowserController browserController, InfoController infoController,
+                bool recursive)
                 : base(
                     browserController, browserController.Session,
                     new InnerWritePermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files),
@@ -2513,7 +2514,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly InfoController _infoController;
 
-                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback) : base(files, infoController.permissions, callback, infoController._controller)
+                public InnerWritePermissionWorker(InfoController infoController, List files, RecursiveCallback callback)
+                    : base(files, infoController.permissions, callback, infoController._controller)
                 {
                     _infoController = infoController;
                 }

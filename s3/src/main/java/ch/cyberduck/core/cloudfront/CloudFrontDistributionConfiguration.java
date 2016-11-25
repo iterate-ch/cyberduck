@@ -41,8 +41,10 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
@@ -54,8 +56,6 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -94,7 +94,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             = new HashMap<Path, Distribution>();
     public final Preferences preferences = PreferencesFactory.get();
 
-    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
+    public CloudFrontDistributionConfiguration(final S3Session session) {
         this.session = session;
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         configuration = new ClientConfiguration();
@@ -783,9 +783,14 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
-                distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()));
+                try {
+                    distribution.setContainers(new S3BucketListService(session).list(
+                            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                            new DisabledListProgressListener()));
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+                }
             }
             return distribution;
         }
