@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface Compress {
 
-    void archive(Archive archive, final Path workdir, List<Path> files, ProgressListener listener, final TranscriptListener transcript) throws BackgroundException;
+    void archive(Archive archive, Path workdir, List<Path> files, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;
 
-    void unarchive(Archive archive, Path file, ProgressListener listener, final TranscriptListener transcript) throws BackgroundException;
+    void unarchive(Archive archive, Path file, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;
 }

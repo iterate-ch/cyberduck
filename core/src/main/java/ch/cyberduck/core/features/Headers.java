@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.Map;
 
 public interface Headers {
-    Map<String, String> getDefault(final Local local);
+    Map<String, String> getDefault(Local local);
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 

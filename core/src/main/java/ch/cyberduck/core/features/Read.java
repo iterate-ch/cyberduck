@@ -33,5 +33,5 @@ public interface Read {
      * @param file File
      * @return True if read with offset is supported
      */
-    boolean offset(final Path file) throws BackgroundException;
+    boolean offset(Path file) throws BackgroundException;
 }
