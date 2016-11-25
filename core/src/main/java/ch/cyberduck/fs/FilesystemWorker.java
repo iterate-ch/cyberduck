@@ -46,7 +46,7 @@ public class FilesystemWorker extends MountWorker {
     }
 
     public FilesystemWorker(final Filesystem fs, final Cache<Path> cache, final ListProgressListener listener) {
-        super(fs.getHost(), cache, listener, null, null, null);
+        super(fs.getHost(), cache, listener);
         this.fs = fs;
     }
 
