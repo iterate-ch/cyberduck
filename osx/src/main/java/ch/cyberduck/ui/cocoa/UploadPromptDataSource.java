@@ -23,10 +23,10 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 
-public class DownloadPromptModel extends TransferPromptModel {
+public class UploadPromptDataSource extends TransferPromptDataSource {
 
-    public DownloadPromptModel(final TransferPromptController c, final SessionPool session,
-                               final Transfer transfer, final Cache<TransferItem> cache) {
+    public UploadPromptDataSource(final TransferPromptController c, final SessionPool session,
+                                  final Transfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
     }
 }

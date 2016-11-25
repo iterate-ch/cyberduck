@@ -28,12 +28,12 @@ import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class SyncPromptModel extends TransferPromptModel {
+public class SyncPromptDataSource extends TransferPromptDataSource {
 
     private final SyncTransfer transfer;
 
-    public SyncPromptModel(final TransferPromptController c, final SessionPool session,
-                           final SyncTransfer transfer, final Cache<TransferItem> cache) {
+    public SyncPromptDataSource(final TransferPromptController c, final SessionPool session,
+                                final SyncTransfer transfer, final Cache<TransferItem> cache) {
         super(c, session, transfer, cache);
         this.transfer = transfer;
     }

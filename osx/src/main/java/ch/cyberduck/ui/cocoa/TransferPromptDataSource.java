@@ -49,8 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class TransferPromptModel extends OutlineDataSource {
-    private static final Logger log = Logger.getLogger(TransferPromptModel.class);
+public abstract class TransferPromptDataSource extends OutlineDataSource {
+    private static final Logger log = Logger.getLogger(TransferPromptDataSource.class);
 
     private final TransferPromptController controller;
 
@@ -88,8 +88,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptModel(final TransferPromptController c, final SessionPool session,
-                               final Transfer transfer, final Cache<TransferItem> cache) {
+    public TransferPromptDataSource(final TransferPromptController c, final SessionPool session,
+                                    final Transfer transfer, final Cache<TransferItem> cache) {
         this.controller = c;
         this.session = session;
         this.transfer = transfer;

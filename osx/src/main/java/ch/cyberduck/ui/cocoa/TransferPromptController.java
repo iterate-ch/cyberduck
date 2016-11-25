@@ -93,7 +93,7 @@ public abstract class TransferPromptController extends SheetController implement
     private TransferAction action;
 
     @Delegate
-    protected TransferPromptModel browserModel;
+    protected TransferPromptDataSource browserModel;
     @Delegate
     protected AbstractPathTableDelegate browserViewDelegate;
 
@@ -213,7 +213,7 @@ public abstract class TransferPromptController extends SheetController implement
         this.browserView.setRowHeight(new CGFloat(layoutManager.defaultLineHeightForFont(
                 NSFont.systemFontOfSize(preferences.getFloat("browser.font.size"))).intValue() + 2));
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.Column.filename.name());
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptDataSource.Column.filename.name());
             c.headerCell().setStringValue(LocaleFactory.localizedString("Filename"));
             c.setMinWidth(100f);
             c.setWidth(220f);
@@ -225,7 +225,7 @@ public abstract class TransferPromptController extends SheetController implement
             this.browserView.setOutlineTableColumn(c);
         }
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.Column.size.name());
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptDataSource.Column.size.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(50f);
             c.setWidth(80f);
@@ -236,7 +236,7 @@ public abstract class TransferPromptController extends SheetController implement
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.Column.warning.name());
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptDataSource.Column.warning.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -248,7 +248,7 @@ public abstract class TransferPromptController extends SheetController implement
             this.browserView.addTableColumn(c);
         }
         {
-            NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.Column.include.name());
+            NSTableColumn c = tableColumnsFactory.create(TransferPromptDataSource.Column.include.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -267,7 +267,7 @@ public abstract class TransferPromptController extends SheetController implement
         }
         this.browserView.setDataSource(this.browserModel.id());
         this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate(
-                browserView.tableColumnWithIdentifier(TransferPromptModel.Column.filename.name())
+                browserView.tableColumnWithIdentifier(TransferPromptDataSource.Column.filename.name())
         ) {
 
             @Override
@@ -361,10 +361,10 @@ public abstract class TransferPromptController extends SheetController implement
                 final String identifier = column.identifier();
                 final TransferItem file = cache.lookup(new NSObjectPathReference(item));
                 final TransferStatus status = browserModel.getStatus(file);
-                if(identifier.equals(TransferPromptModel.Column.include.name())) {
+                if(identifier.equals(TransferPromptDataSource.Column.include.name())) {
                     cell.setEnabled(!status.isRejected() && status.isExists());
                 }
-                if(identifier.equals(TransferPromptModel.Column.filename.name())) {
+                if(identifier.equals(TransferPromptDataSource.Column.filename.name())) {
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCacheFactory.<NSImage>get().fileIcon(file.remote, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {

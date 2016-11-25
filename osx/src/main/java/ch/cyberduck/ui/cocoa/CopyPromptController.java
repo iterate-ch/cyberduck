@@ -25,6 +25,6 @@ public class CopyPromptController extends TransferPromptController {
 
     public CopyPromptController(final WindowController parent, final CopyTransfer transfer, final SessionPool session) {
         super(parent, transfer);
-        browserModel = new UploadPromptModel(this, session, transfer, cache);
+        browserModel = new UploadPromptDataSource(this, session, transfer, cache);
     }
 }

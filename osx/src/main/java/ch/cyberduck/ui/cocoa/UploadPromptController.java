@@ -26,6 +26,6 @@ public class UploadPromptController extends TransferPromptController {
 
     public UploadPromptController(final WindowController parent, final UploadTransfer transfer, final SessionPool session) {
         super(parent, transfer);
-        browserModel = new UploadPromptModel(this, session, transfer, cache);
+        browserModel = new UploadPromptDataSource(this, session, transfer, cache);
     }
 }

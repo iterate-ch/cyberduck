@@ -26,6 +26,6 @@ public class DownloadPromptController extends TransferPromptController {
 
     public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final SessionPool session) {
         super(parent, transfer);
-        browserModel = new DownloadPromptModel(this, session, transfer, cache);
+        browserModel = new DownloadPromptDataSource(this, session, transfer, cache);
     }
 }

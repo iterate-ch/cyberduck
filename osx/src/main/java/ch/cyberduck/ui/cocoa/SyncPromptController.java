@@ -34,14 +34,14 @@ public class SyncPromptController extends TransferPromptController {
 
     public SyncPromptController(final WindowController parent, final SyncTransfer transfer, final SessionPool session) {
         super(parent, transfer);
-        browserModel = new SyncPromptModel(this, session, transfer, cache);
+        browserModel = new SyncPromptDataSource(this, session, transfer, cache);
     }
 
     @Override
     public void setBrowserView(NSOutlineView view) {
         super.setBrowserView(view);
         {
-            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.Column.sync.name());
+            NSTableColumn c = tableColumnsFactory.create(SyncPromptDataSource.Column.sync.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
@@ -53,7 +53,7 @@ public class SyncPromptController extends TransferPromptController {
             view.addTableColumn(c);
         }
         {
-            NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.Column.create.name());
+            NSTableColumn c = tableColumnsFactory.create(SyncPromptDataSource.Column.create.name());
             c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
