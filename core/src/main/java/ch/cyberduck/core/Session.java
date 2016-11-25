@@ -45,7 +45,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-public abstract class Session<C> implements TranscriptListener {
+public abstract class Session<C> implements TranscriptListener, ListService {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -289,6 +289,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param directory Directory
      * @param listener  Callback
      */
+    @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
@@ -325,6 +326,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
+        }
+        if(type == ListService.class) {
+            return (T) this;
         }
         return null;
     }
