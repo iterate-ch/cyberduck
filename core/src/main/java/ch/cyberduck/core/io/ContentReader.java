@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.io;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
