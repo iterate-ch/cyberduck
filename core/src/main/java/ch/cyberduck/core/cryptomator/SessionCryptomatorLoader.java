@@ -25,11 +25,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ContentReader;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
@@ -93,9 +93,8 @@ public class SessionCryptomatorLoader {
         try {
             cryptor = provider.createFromKeyFile(keyFile, credentials.getPassword(), 5);
         }
-        catch(IllegalArgumentException e) {
-            throw new CryptoAuthenticationException("Failure to decrypt master key file",
-                    ExceptionUtils.getRootCause(e));
+        catch(InvalidPassphraseException e) {
+            throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
         longFileNameProvider = new LongFileNameProvider(home, session);
         directoryIdProvider = new DirectoryIdProvider(session);
