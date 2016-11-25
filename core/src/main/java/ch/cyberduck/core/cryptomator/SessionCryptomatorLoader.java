@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ContentReader;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -77,7 +78,13 @@ public class SessionCryptomatorLoader {
                 LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
                 new LoginOptions().user(false).anonymous(false));
-        cryptor = provider.createFromKeyFile(keyFile, credentials.getPassword(), 5);
+        try {
+            cryptor = provider.createFromKeyFile(keyFile, credentials.getPassword(), 5);
+        }
+        catch(IllegalArgumentException e) {
+            throw new CryptoAuthenticationException("Failure to decrypt master key file",
+                    ExceptionUtils.getRootCause(e));
+        }
         longFileNameProvider = new LongFileNameProvider(home, session);
         directoryIdProvider = new DirectoryIdProvider(session);
         cryptoPathMapper = new CryptoPathMapper(home, cryptor, longFileNameProvider, directoryIdProvider);
