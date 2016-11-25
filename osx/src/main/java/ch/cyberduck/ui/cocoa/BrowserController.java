@@ -2660,7 +2660,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
-        sheet.orderOut(this.id());
+        sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
@@ -2692,7 +2692,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void downloadAsPanelDidEnd_returnCode_contextInfo(final NSSavePanel sheet, final int returncode, final ID contextInfo) {
-        sheet.orderOut(this.id());
+        sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
@@ -2734,7 +2734,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
-        sheet.orderOut(this.id());
+        sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
@@ -2801,7 +2801,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
-        sheet.orderOut(this.id());
+        sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             final Path destination = new UploadTargetFinder(workdir).find(this.getSelectedPath());
             // Selected files on the local filesystem
