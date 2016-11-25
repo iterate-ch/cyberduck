@@ -35,7 +35,7 @@ public class MountWorkerTest {
             }
         };
         final Cache<Path> cache = new PathCache(2);
-        final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener(), null, null, null);
+        final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener());
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), worker.run(session));
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
         assertFalse(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));

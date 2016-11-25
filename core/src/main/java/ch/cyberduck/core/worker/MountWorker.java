@@ -26,15 +26,11 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoPathMapper;
-import ch.cyberduck.core.cryptomator.CryptoSessionListWorker;
-import ch.cyberduck.core.cryptomator.LongFileNameProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -47,18 +43,11 @@ public class MountWorker extends Worker<Path> {
     private final Cache<Path> cache;
 
     private final ListProgressListener listener;
-    private final Cryptor cryptor;
-    private final CryptoPathMapper pathMapper;
-    private final LongFileNameProvider longFileNameProvider;
 
-    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener, final Cryptor cryptor, final CryptoPathMapper pathMapper,
-                           final LongFileNameProvider longFileNameProvider) {
+    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
         this.bookmark = bookmark;
         this.cache = cache;
         this.listener = listener;
-        this.cryptor = cryptor;
-        this.pathMapper = pathMapper;
-        this.longFileNameProvider = longFileNameProvider;
     }
 
     /**
@@ -74,7 +63,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            list = new CryptoSessionListWorker(cache, home, listener, cryptor, pathMapper, longFileNameProvider).run(session);
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
@@ -84,7 +73,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            list = new CryptoSessionListWorker(cache, home, listener, cryptor, pathMapper, longFileNameProvider).run(session);
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         cache.put(home, list);
         return home;
