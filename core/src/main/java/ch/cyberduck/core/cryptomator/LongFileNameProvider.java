@@ -41,6 +41,8 @@ public class LongFileNameProvider {
     private static final int MAX_CACHE_SIZE = 5000;
     private static final String LONG_NAME_FILE_EXT = ".lng";
 
+    private static final int NAME_SHORTENING_THRESHOLD = 129;
+
     private final Path metadataRoot;
     private final Session<?> session;
     private final LoadingCache<String, String> ids;
@@ -77,6 +79,9 @@ public class LongFileNameProvider {
     }
 
     public String deflate(final String longFileName) throws IOException {
+        if(longFileName.length() < NAME_SHORTENING_THRESHOLD) {
+            return longFileName;
+        }
         byte[] longFileNameBytes = longFileName.getBytes(UTF_8);
         byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
         String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;

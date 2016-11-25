@@ -51,19 +51,9 @@ public class CryptoPathMapper {
     }
 
     public String getCiphertextFileName(final String dirId, final String cleartextName, final EnumSet<AbstractPath.Type> type) throws IOException {
-        // TODO overheadhunter: cache ciphertext names
         final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
         final String ciphertextName = prefix + cryptor.fileNameCryptor().encryptFilename(cleartextName, dirId.getBytes(StandardCharsets.UTF_8));
-        if(ciphertextName.length() >= Constants.NAME_SHORTENING_THRESHOLD) {
-            return longFileNameProvider.deflate(ciphertextName);
-        }
-        else {
-            return ciphertextName;
-        }
-    }
-
-    public Path getCiphertextDirPath(final Path cleartextPath) throws IOException {
-        return getCiphertextDir(cleartextPath).path;
+        return longFileNameProvider.deflate(ciphertextName);
     }
 
     public Directory getCiphertextDir(final Path cleartextPath) throws IOException {
@@ -84,7 +74,7 @@ public class CryptoPathMapper {
         return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
 
-    public static class Directory {
+    public static final class Directory {
         public final String dirId;
         public final Path path;
 
