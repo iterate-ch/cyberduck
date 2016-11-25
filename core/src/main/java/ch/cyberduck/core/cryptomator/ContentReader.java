@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,7 +42,7 @@ public class ContentReader {
             return IOUtils.toString(stream, "UTF-8");
         }
         catch(IOException e) {
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
             IOUtils.closeQuietly(stream);
