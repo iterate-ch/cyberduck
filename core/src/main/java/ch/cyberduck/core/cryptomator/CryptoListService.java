@@ -98,7 +98,7 @@ public class CryptoListService implements ListService {
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
-                        "Failure to decrypt due to an unauthentic ciphertext");
+                        "Failure to decrypt due to an unauthentic ciphertext", e);
             }
         }
         else {
