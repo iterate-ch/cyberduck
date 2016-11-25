@@ -88,6 +88,9 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
+                if("too_many_buckets".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                    return new QuotaException(buffer.toString(), e);
+                }
                 if("bad_request".equalsIgnoreCase(e.getCode())) {
                     if("sha1 did not match data received".equalsIgnoreCase(e.getMessage())) {
                         return new ChecksumException(buffer.toString(), e);
