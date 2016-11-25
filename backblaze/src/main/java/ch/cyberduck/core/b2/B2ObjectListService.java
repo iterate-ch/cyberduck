@@ -79,7 +79,7 @@ public class B2ObjectListService implements ListService {
                         new B2FileidProvider(session).getFileid(containerService.getContainer(directory)),
                         marker.nextFilename, marker.nextFileId, chunksize,
                         containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
-                        containerService.isContainer(directory) ? null : String.valueOf(Path.DELIMITER));
+                        String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 listener.chunk(directory, objects);
             }
@@ -100,11 +100,10 @@ public class B2ObjectListService implements ListService {
             if(StringUtils.isBlank(file.getFileId())) {
                 // Common prefix
                 final Path placeholder = new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                placeholder.attributes().setVersionId(new B2FileidProvider(session).getFileid(placeholder));
                 objects.add(placeholder);
                 continue;
             }
-            final PathAttributes attributes = this.parse(directory, file);
+            final PathAttributes attributes = this.parse(file);
             final Integer revision;
             if(revisions.keySet().contains(file.getFileName())) {
                 // Later version already found
@@ -114,63 +113,22 @@ public class B2ObjectListService implements ListService {
             else {
                 revision = 1;
             }
-            if(attributes == null) {
-                // File is descendant but not directly from working directory
-                final Path virtual = this.virtual(directory, file.getFileName());
-                if(virtual.isChild(directory)) {
-                    // Found same root
-                    if(revisions.containsKey(containerService.getKey(virtual))) {
-                        continue;
-                    }
-                    if(revisions.containsKey(String.format("%s%s", containerService.getKey(virtual), B2DirectoryFeature.PLACEHOLDER))) {
-                        continue;
-                    }
-                    revisions.put(containerService.getKey(virtual), null);
-                    objects.add(virtual);
-                }
-            }
-            else if(StringUtils.endsWith(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)) {
-                if(revisions.containsKey(file.getFileName())) {
-                    continue;
-                }
-                revisions.put(file.getFileName(), revision);
-                attributes.setRevision(revision);
-                objects.add(new Path(directory, PathNormalizer.name(StringUtils.removeEnd(file.getFileName(), B2DirectoryFeature.PLACEHOLDER)),
-                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes));
-            }
-            else {
-                attributes.setSize(file.getSize());
-                revisions.put(file.getFileName(), revision);
-                attributes.setRevision(revision);
-                objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
-            }
+            attributes.setSize(file.getSize());
+            revisions.put(file.getFileName(), revision);
+            attributes.setRevision(revision);
+            objects.add(new Path(directory, PathNormalizer.name(file.getFileName()), EnumSet.of(Path.Type.file), attributes));
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
         }
-        if(this.skip(PathNormalizer.parent(response.getNextFileName(), Path.DELIMITER), directory)) {
-            // Because the list of files is sorted in ASCII table order. The character after ‘/‘ in the ASCII table is ‘0’
-            log.warn(String.format("Advance marker to %s", String.format("%s0", response.getNextFileName())));
-            return new Marker(String.format("%s0", response.getNextFileName()), null);
-        }
         return new Marker(response.getNextFileName(), response.getNextFileId());
     }
 
-    protected boolean skip(final String filename, final Path directory) {
-        return !StringUtils.equals(StringUtils.removeEnd(filename, PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)),
-                containerService.isContainer(directory) ? String.valueOf(Path.DELIMITER) : containerService.getKey(directory));
-    }
-
     /**
-     * @param directory Working directory
-     * @param response  List filenames response from server
+     * @param response List filenames response from server
      * @return Null when respone filename is not child of working directory directory
      */
-    protected PathAttributes parse(final Path directory, final B2FileInfoResponse response) {
-        if(this.skip(PathNormalizer.parent(StringUtils.removeEnd(response.getFileName(), PathNormalizer.name(B2DirectoryFeature.PLACEHOLDER)), Path.DELIMITER), directory)) {
-            log.warn(String.format("Skip file %s", response));
-            return null;
-        }
+    protected PathAttributes parse(final B2FileInfoResponse response) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT)));
         final long timestamp = response.getUploadTimestamp();
@@ -185,30 +143,6 @@ public class B2ObjectListService implements ListService {
                 break;
         }
         return attributes;
-    }
-
-    /**
-     * Find placeholder name that is child of current working directory for the filename passed.
-     *
-     * @param directory Working directory
-     * @param filename  Filename ending with /.bzEmpty
-     * @return Placeholder directory name
-     */
-    protected Path virtual(final Path directory, final String filename) {
-        // Look for same parent directory
-        String name = null;
-        String parent = StringUtils.removeEnd(filename, B2DirectoryFeature.PLACEHOLDER);
-        while(this.skip(parent, directory)) {
-            name = PathNormalizer.name(parent);
-            parent = PathNormalizer.parent(parent, Path.DELIMITER);
-            if(null == parent) {
-                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory));
-            }
-        }
-        if(StringUtils.isBlank(name)) {
-            return directory;
-        }
-        return new Path(directory, name, EnumSet.of(Path.Type.directory));
     }
 
     private static final class Marker {

@@ -163,7 +163,7 @@ public class SheetInvoker extends ProxyController {
      */
     public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, ID contextInfo) {
         sheet.endEditingFor(null);
-        sheet.orderOut(null);
+        sheet.close();
         this.returncode = returncode;
         callback.callback(returncode);
         signal.countDown();
