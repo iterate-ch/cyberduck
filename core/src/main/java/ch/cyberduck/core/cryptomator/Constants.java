@@ -17,8 +17,6 @@ package ch.cyberduck.core.cryptomator;
 
 final class Constants {
 
-    public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    public static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
     public static final String DATA_DIR_NAME = "d";
     public static final String METADATA_DIR_NAME = "m";
     public static final String DIR_PREFIX = "0";
