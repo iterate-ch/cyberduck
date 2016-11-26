@@ -52,16 +52,10 @@ public class SessionCryptomatorLoader {
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
-    private final Session<?> session;
-
     private Cryptor cryptor;
     private LongFileNameProvider longFileNameProvider;
     private DirectoryIdProvider directoryIdProvider;
     private CryptoPathMapper cryptoPathMapper;
-
-    public SessionCryptomatorLoader(final Session session) {
-        this.session = session;
-    }
 
     /**
      * @param home     Default path
@@ -69,7 +63,7 @@ public class SessionCryptomatorLoader {
      * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException                                Failure reading master key from server
      */
-    public void load(final Path home, final LoginCallback callback) throws BackgroundException {
+    public void load(final Session session, final Path home, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
