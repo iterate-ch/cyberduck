@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
@@ -40,7 +39,7 @@ public class HubicSessionTest {
     public void testConnectInvalidRefreshToken() throws Exception {
         final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         try {
             session.login(new DisabledPasswordStore() {
                 @Override
@@ -60,7 +59,7 @@ public class HubicSessionTest {
     public void testConnectInvalidAccessToken() throws Exception {
         final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {

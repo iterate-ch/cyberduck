@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -60,7 +59,7 @@ public class IRODSAttributesFeatureTest {
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         new IRODSAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
@@ -73,7 +72,7 @@ public class IRODSAttributesFeatureTest {
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

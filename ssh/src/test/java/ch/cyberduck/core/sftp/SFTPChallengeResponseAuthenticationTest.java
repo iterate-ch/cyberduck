@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.test.IntegrationTest;
@@ -40,7 +39,7 @@ public class SFTPChallengeResponseAuthenticationTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         assertFalse(new SFTPChallengeResponseAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }

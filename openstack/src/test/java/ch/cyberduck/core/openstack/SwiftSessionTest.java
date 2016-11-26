@@ -79,7 +79,7 @@ public class SwiftSessionTest {
                 "a", "s"
         ));
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -97,7 +97,7 @@ public class SwiftSessionTest {
                 System.getProperties().getProperty("oraclecloud.key"), System.getProperties().getProperty("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());

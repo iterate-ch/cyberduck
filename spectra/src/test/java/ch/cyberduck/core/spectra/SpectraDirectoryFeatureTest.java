@@ -19,12 +19,10 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3HomeFinderService;
@@ -58,7 +56,7 @@ public class SpectraDirectoryFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session);
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -82,17 +80,7 @@ public class SpectraDirectoryFeatureTest {
                 new DefaultX509KeyManager());
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                switch(request) {
-                    case request:
-                        if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
-                            b.set(true);
-                        }
-                }
-            }
-        });
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));

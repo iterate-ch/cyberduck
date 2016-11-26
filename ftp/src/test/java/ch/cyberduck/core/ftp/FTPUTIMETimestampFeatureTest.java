@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -51,7 +50,7 @@ public class FTPUTIMETimestampFeatureTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -71,7 +70,7 @@ public class FTPUTIMETimestampFeatureTest {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         assertNull(session.getFeature(Timestamp.class));

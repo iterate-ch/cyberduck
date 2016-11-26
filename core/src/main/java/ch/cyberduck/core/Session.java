@@ -45,7 +45,10 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-public abstract class Session<C> implements TranscriptListener, ListService {
+import java.util.HashSet;
+import java.util.Set;
+
+public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -57,7 +60,7 @@ public abstract class Session<C> implements TranscriptListener, ListService {
 
     protected C client;
 
-    private TranscriptListener listener;
+    private Set<TranscriptListener> listeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -81,6 +84,10 @@ public abstract class Session<C> implements TranscriptListener, ListService {
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
+    public void addTranscriptListener(final TranscriptListener transcript) {
+        listeners.add(transcript);
+    }
+
     public enum State {
         opening,
         open,
@@ -102,17 +109,15 @@ public abstract class Session<C> implements TranscriptListener, ListService {
     /**
      * Connect to host
      *
-     * @param key        Host identity verification callback
-     * @param transcript Transcript
+     * @param key Host identity verification callback
      * @return Client
      */
-    public C open(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+    public C open(final HostKeyCallback key) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        listener = transcript;
         client = this.connect(key);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
@@ -153,7 +158,6 @@ public abstract class Session<C> implements TranscriptListener, ListService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
-            listener = null;
         }
     }
 
@@ -169,7 +173,6 @@ public abstract class Session<C> implements TranscriptListener, ListService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
-            listener = null;
         }
     }
 
@@ -183,6 +186,7 @@ public abstract class Session<C> implements TranscriptListener, ListService {
      */
     protected void disconnect() {
         state = State.closed;
+        listeners.clear();
     }
 
     /**
@@ -240,7 +244,9 @@ public abstract class Session<C> implements TranscriptListener, ListService {
             case opening:
             case open:
             case closing:
-                listener.log(request, message);
+                for(TranscriptListener listener : listeners) {
+                    listener.log(request, message);
+                }
                 break;
         }
     }
@@ -249,7 +255,6 @@ public abstract class Session<C> implements TranscriptListener, ListService {
      * @param directory Directory
      * @param listener  Callback
      */
-    @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     @SuppressWarnings("unchecked")

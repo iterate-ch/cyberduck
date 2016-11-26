@@ -17,7 +17,20 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProfileReaderFactory;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,7 +61,7 @@ public class IRODSListServiceTest {
 
         final IRODSSession session = new IRODSSession(host);
 
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -71,7 +84,7 @@ public class IRODSListServiceTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final IRODSListService service = new IRODSListService(session);

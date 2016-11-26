@@ -23,11 +23,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -56,7 +54,7 @@ public class S3DirectoryFeatureTest {
         ));
         final S3Session session = new S3Session(host);
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3DirectoryFeature feature = new S3DirectoryFeature(session);
         for(Location.Name region : new S3Protocol().getRegions()) {
@@ -77,17 +75,7 @@ public class S3DirectoryFeatureTest {
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                switch(request) {
-                    case request:
-                        if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
-                            b.set(true);
-                        }
-                }
-            }
-        });
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
@@ -107,7 +95,7 @@ public class S3DirectoryFeatureTest {
         ));
         final S3Session session = new S3Session(host);
         final String name = String.format("%s=", UUID.randomUUID().toString());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));

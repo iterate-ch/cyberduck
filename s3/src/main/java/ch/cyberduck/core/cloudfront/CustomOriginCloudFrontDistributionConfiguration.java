@@ -77,7 +77,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
-            session.open(new DisabledHostKeyCallback(), transcript);
+            session.open(new DisabledHostKeyCallback());
         }
         return run.call();
     }

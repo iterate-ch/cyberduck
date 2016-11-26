@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -44,7 +43,7 @@ public class S3CopyFeatureTest {
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
@@ -64,7 +63,7 @@ public class S3CopyFeatureTest {
                 new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"))
         );
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test);

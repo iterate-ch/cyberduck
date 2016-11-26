@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -53,7 +52,7 @@ public class GoogleStorageSessionTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
@@ -77,7 +76,7 @@ public class GoogleStorageSessionTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
@@ -100,7 +99,7 @@ public class GoogleStorageSessionTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore() {
@@ -125,7 +124,7 @@ public class GoogleStorageSessionTest {
                 System.getProperties().getProperty("google.projectid") + "1", null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -146,7 +145,7 @@ public class GoogleStorageSessionTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
@@ -165,7 +164,7 @@ public class GoogleStorageSessionTest {
                 "a", "s"
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -188,7 +187,7 @@ public class GoogleStorageSessionTest {
                 "duck-1432", ""
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
@@ -199,7 +198,7 @@ public class GoogleStorageSessionTest {
                 "stellar-perigee-775", ""
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
