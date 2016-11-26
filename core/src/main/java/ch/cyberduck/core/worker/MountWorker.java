@@ -24,11 +24,15 @@ import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.VaultFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -39,15 +43,18 @@ public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
     private final Host bookmark;
-
     private final Cache<Path> cache;
-
     private final ListProgressListener listener;
+    private final PasswordStore keychain;
+    private final LoginCallback login;
 
-    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
+    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener,
+                       final PasswordStore keychain, LoginCallback login) {
         this.bookmark = bookmark;
         this.cache = cache;
         this.listener = listener;
+        this.keychain = keychain;
+        this.login = login;
     }
 
     /**
@@ -59,7 +66,7 @@ public class MountWorker extends Worker<Path> {
         Path home;
         AttributedList<Path> list;
         try {
-            home = session.getFeature(Home.class).find();
+            home = new VaultFinder(session.getFeature(Vault.class), session.getFeature(Home.class), keychain, login).find();
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path

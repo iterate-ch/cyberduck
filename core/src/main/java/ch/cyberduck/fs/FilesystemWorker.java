@@ -20,6 +20,8 @@ package ch.cyberduck.fs;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -37,16 +39,18 @@ public class FilesystemWorker extends MountWorker {
 
     private Filesystem.Options options = Filesystem.Options.readwrite;
 
-    public FilesystemWorker(final Filesystem fs) {
-        this(fs, PathCache.empty());
+    public FilesystemWorker(final Filesystem fs, final PasswordStore keychain, LoginCallback login) {
+        this(fs, PathCache.empty(), keychain, login);
     }
 
-    public FilesystemWorker(final Filesystem fs, final Cache<Path> cache) {
-        this(fs, cache, new DisabledListProgressListener());
+    public FilesystemWorker(final Filesystem fs, final Cache<Path> cache,
+                            final PasswordStore keychain, LoginCallback login) {
+        this(fs, cache, new DisabledListProgressListener(), keychain, login);
     }
 
-    public FilesystemWorker(final Filesystem fs, final Cache<Path> cache, final ListProgressListener listener) {
-        super(fs.getHost(), cache, listener);
+    public FilesystemWorker(final Filesystem fs, final Cache<Path> cache, final ListProgressListener listener,
+                            final PasswordStore keychain, LoginCallback login) {
+        super(fs.getHost(), cache, listener, keychain, login);
         this.fs = fs;
     }
 
