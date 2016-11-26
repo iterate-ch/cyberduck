@@ -32,7 +32,7 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        throw new UnsupportedOperationException();
+        delegate.mkdir(file);
     }
 
     @Override

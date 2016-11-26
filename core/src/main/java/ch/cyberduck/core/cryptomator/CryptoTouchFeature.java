@@ -31,7 +31,7 @@ public class CryptoTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file) throws BackgroundException {
-        throw new UnsupportedOperationException();
+        delegate.touch(file);
     }
 
     @Override
