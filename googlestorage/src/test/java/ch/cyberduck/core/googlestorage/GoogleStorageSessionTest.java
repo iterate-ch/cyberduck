@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -66,7 +67,7 @@ public class GoogleStorageSessionTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
 
@@ -90,7 +91,7 @@ public class GoogleStorageSessionTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
     @Test
@@ -115,7 +116,7 @@ public class GoogleStorageSessionTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -136,7 +137,7 @@ public class GoogleStorageSessionTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -155,7 +156,7 @@ public class GoogleStorageSessionTest {
                 Assert.assertEquals("OAuth2 Authentication", title);
                 throw new LoginCanceledException();
             }
-        }, null);
+        }, null, PathCache.empty());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -167,7 +168,7 @@ public class GoogleStorageSessionTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
     @Test
@@ -188,7 +189,7 @@ public class GoogleStorageSessionTest {
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
 
@@ -206,7 +207,7 @@ public class GoogleStorageSessionTest {
                 credentials.setUsername("");
                 credentials.setPassword("");
             }
-        }, new DisabledCancelCallback());
+        }, new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
 }

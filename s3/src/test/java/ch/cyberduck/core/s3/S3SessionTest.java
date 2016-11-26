@@ -127,7 +127,7 @@ public class S3SessionTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
     @Test
@@ -159,7 +159,7 @@ public class S3SessionTest {
         final S3Session session = new S3Session(host);
         try {
             session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         }
         catch(BackgroundException e) {
             assertTrue(e.getCause() instanceof UnknownHostException);
@@ -194,7 +194,7 @@ public class S3SessionTest {
             }
         });
         try {
-            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         }
         catch(BackgroundException e) {
             assertTrue(set.get());
@@ -275,7 +275,7 @@ public class S3SessionTest {
         final S3Session s = new S3Session(host);
         s.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
         try {
-            s.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            s.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         }
         catch(LoginFailureException e) {
             assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
@@ -316,7 +316,7 @@ public class S3SessionTest {
         ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
 }

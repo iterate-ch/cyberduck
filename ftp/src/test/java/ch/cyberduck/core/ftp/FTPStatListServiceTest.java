@@ -28,6 +28,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
@@ -56,7 +57,7 @@ public class FTPStatListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final ListService service = new FTPStatListService(session,
                 new CompositeFileEntryParser(Collections.singletonList(new UnixFTPEntryParser())));
         final Path directory = new FTPWorkdirService(session).find();

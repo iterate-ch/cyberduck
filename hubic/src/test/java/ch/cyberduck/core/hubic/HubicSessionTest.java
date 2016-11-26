@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -46,7 +47,7 @@ public class HubicSessionTest {
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                     return "1464730217WkCCqXpaGwQfxpUwI6wcXe6NvMCTJMg5lHrcBTRIaY4yAbRFBxvaSBparqNRsui9";
                 }
-            }, new DisabledLoginCallback(), new DisabledCancelCallback());
+            }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         }
         catch(LoginFailureException e) {
             assertEquals("Invalid refresh token. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -71,7 +72,7 @@ public class HubicSessionTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         session.close();
     }
 }
