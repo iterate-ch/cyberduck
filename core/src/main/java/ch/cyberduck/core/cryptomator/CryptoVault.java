@@ -47,8 +47,8 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
-public class SessionCryptomatorLoader {
-    private static final Logger log = Logger.getLogger(SessionCryptomatorLoader.class);
+public class CryptoVault {
+    private static final Logger log = Logger.getLogger(CryptoVault.class);
 
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
@@ -69,7 +69,7 @@ public class SessionCryptomatorLoader {
     private DirectoryIdProvider directoryIdProvider;
     private CryptoPathMapper cryptoPathMapper;
 
-    public SessionCryptomatorLoader(final Session<?> session) {
+    public CryptoVault(final Session<?> session) {
         this.session = session;
     }
 

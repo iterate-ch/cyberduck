@@ -36,12 +36,12 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
     private final Path directory;
     private final CryptoPathMapper.Directory ciphertextDirectory;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final SessionCryptomatorLoader cryptomator,
+    public DecryptingListProgressListener(final CryptoVault cryptomator,
                                           final Path directory, final ListProgressListener delegate) throws IOException {
         this.cryptomator = cryptomator;
         this.directory = directory;

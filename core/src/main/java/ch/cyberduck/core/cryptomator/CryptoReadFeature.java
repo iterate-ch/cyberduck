@@ -32,9 +32,9 @@ import java.util.EnumSet;
 public class CryptoReadFeature implements Read {
 
     private final Read delegate;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoReadFeature(final Read delegate, final SessionCryptomatorLoader cryptomator) {
+    public CryptoReadFeature(final Read delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

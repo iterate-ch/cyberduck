@@ -27,9 +27,9 @@ import java.io.IOException;
 public class CryptoListService implements ListService {
 
     private final ListService delegate;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoListService(final ListService delegate, final SessionCryptomatorLoader cryptomator) {
+    public CryptoListService(final ListService delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

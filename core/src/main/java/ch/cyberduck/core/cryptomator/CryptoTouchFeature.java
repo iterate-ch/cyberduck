@@ -22,9 +22,9 @@ import ch.cyberduck.core.features.Touch;
 public class CryptoTouchFeature implements Touch {
 
     private final Touch delegate;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoTouchFeature(final Touch delegate, final SessionCryptomatorLoader cryptomator) {
+    public CryptoTouchFeature(final Touch delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

@@ -33,9 +33,9 @@ import java.util.EnumSet;
 public class CryptoWriteFeature implements Write {
 
     private final Write delegate;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoWriteFeature(final Write delegate, final SessionCryptomatorLoader cryptomator) {
+    public CryptoWriteFeature(final Write delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

@@ -36,7 +36,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.fail;
 
-public class SessionCryptomatorLoaderTest {
+public class CryptoVaultTest {
 
     @Test
     public void testLoad() throws Exception {
@@ -64,7 +64,7 @@ public class SessionCryptomatorLoaderTest {
                 return super.getFeature(type);
             }
         };
-        final SessionCryptomatorLoader loader = new SessionCryptomatorLoader(session);
+        final CryptoVault loader = new CryptoVault(session);
         try {
             loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override

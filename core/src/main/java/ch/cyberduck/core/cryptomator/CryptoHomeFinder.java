@@ -43,7 +43,7 @@ public class CryptoHomeFinder implements Home {
     public Path find() throws BackgroundException {
         final Path home = delegate.find();
         try {
-            final SessionCryptomatorLoader loader = session.getCrypto();
+            final CryptoVault loader = session.getCrypto();
             loader.load(home, keychain, prompt);
         }
         catch(BackgroundException e) {

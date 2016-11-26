@@ -38,9 +38,9 @@ public class CryptoPathMapper {
 
     private final LoadingCache<String, Path> directoryPathCache;
     private final Path dataRoot;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoPathMapper(final Path vault, final SessionCryptomatorLoader cryptomator) {
+    public CryptoPathMapper(final Path vault, final CryptoVault cryptomator) {
         this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.cryptomator = cryptomator;
         this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolveDirectory));

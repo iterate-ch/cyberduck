@@ -23,9 +23,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class CryptoDirectoryFeature implements Directory {
 
     private final Directory delegate;
-    private final SessionCryptomatorLoader cryptomator;
+    private final CryptoVault cryptomator;
 
-    public CryptoDirectoryFeature(final Directory delegate, final SessionCryptomatorLoader cryptomator) {
+    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
