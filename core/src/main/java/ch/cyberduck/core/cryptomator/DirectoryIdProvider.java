@@ -38,15 +38,13 @@ public class DirectoryIdProvider {
 
     public DirectoryIdProvider(final Session<?> session) {
         this.session = session;
-        ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
+        this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
     }
 
     private class Loader extends CacheLoader<Path, String> {
-
         @Override
         public String load(final Path dirFilePath) throws BackgroundException {
             try {
-                //TODO schlauer machen, mind unterscheiden zwischen IO- und BackgroundException
                 return new ContentReader(session).readToString(dirFilePath);
             }
             catch(BackgroundException e) {
@@ -75,7 +73,8 @@ public class DirectoryIdProvider {
     }
 
     /**
-     * Transfers ownership from the id currently associated with <code>srcDirFilePath</code> to <code>dstDirFilePath</code>. Usefule during folder move operations.
+     * Transfers ownership from the id currently associated with <code>srcDirFilePath</code> to <code>dstDirFilePath</code>.
+     * Useful during folder move operations.
      * This method has no effect if the content of the source dirFile is not currently cached.
      *
      * @param srcDirFilePath The dirFile that contained the cached id until now.
