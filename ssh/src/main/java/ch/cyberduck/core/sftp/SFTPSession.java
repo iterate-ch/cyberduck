@@ -148,7 +148,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     protected SSHClient connect(final HostKeyCallback key, final Config configuration) throws IOException {
         final SSHClient connection = new SSHClient(configuration);
-        final int timeout = this.timeout();
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         connection.setTimeout(timeout);
         connection.setSocketFactory(socketFactory);
         connection.addHostKeyVerifier(new HostKeyVerifier() {
@@ -212,7 +212,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
         prompt.warn(host.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
-                        algorithm),
+                algorithm),
                 MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
                         LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
                 LocaleFactory.localizedString("Continue", "Credentials"),
@@ -320,7 +320,8 @@ public class SFTPSession extends Session<SSHClient> {
                     return super.request(req);
                 }
             }.init();
-            sftp.setTimeoutMs(this.timeout());
+            final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+            sftp.setTimeoutMs(timeout);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);

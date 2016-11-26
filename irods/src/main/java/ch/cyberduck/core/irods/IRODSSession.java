@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -65,6 +66,9 @@ import java.text.MessageFormat;
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private IRODSFileSystemAO filesystem;
 
     public IRODSSession(final Host h) {
@@ -88,8 +92,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
         properties.setEncoding(host.getEncoding());
-        properties.setIrodsSocketTimeout(this.timeout());
-        properties.setIrodsParallelSocketTimeout(this.timeout());
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        properties.setIrodsSocketTimeout(timeout);
+        properties.setIrodsParallelSocketTimeout(timeout);
         properties.setGetBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         properties.setPutBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
