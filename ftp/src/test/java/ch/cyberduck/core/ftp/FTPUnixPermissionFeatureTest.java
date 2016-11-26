@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -35,7 +36,7 @@ public class FTPUnixPermissionFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
         final Path home = workdir.find();
         final long modified = System.currentTimeMillis();

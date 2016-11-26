@@ -124,12 +124,6 @@ public abstract class Session<C> implements TranscriptListener, ListService {
 
     protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
-    public void login(final HostPasswordStore keychain,
-                      final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
-        this.login(keychain, prompt, cancel, PathCache.empty());
-    }
-
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
@@ -138,10 +132,7 @@ public abstract class Session<C> implements TranscriptListener, ListService {
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
      */
-    public abstract void login(HostPasswordStore keychain,
-                               LoginCallback prompt, CancelCallback cancel,
-                               Cache<Path> cache)
-            throws BackgroundException;
+    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache) throws BackgroundException;
 
     /**
      * Logout and close client connection

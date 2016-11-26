@@ -27,6 +27,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
@@ -50,7 +51,7 @@ public class DAVListServiceTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         new DAVListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         session.close();
@@ -65,7 +66,7 @@ public class DAVListServiceTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path directory = new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new DAVListService(session).list(directory,
                 new DisabledListProgressListener());
@@ -91,7 +92,7 @@ public class DAVListServiceTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/bookmarks", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
@@ -107,7 +108,7 @@ public class DAVListServiceTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         session.close();

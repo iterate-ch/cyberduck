@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
@@ -35,7 +36,7 @@ public class SFTPCompressFeatureTest {
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SFTPCompressFeature feature = new SFTPCompressFeature(session);
         for(Archive archive : Archive.getKnownArchives()) {
             final Path workdir = new SFTPHomeDirectoryService(session).find();

@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -71,7 +72,7 @@ public class S3SingleUploadServiceTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3SingleUploadService m = new S3SingleUploadService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

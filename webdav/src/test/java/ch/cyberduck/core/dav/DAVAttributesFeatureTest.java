@@ -9,6 +9,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
@@ -31,7 +32,7 @@ public class DAVAttributesFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFeature f = new DAVAttributesFeature(session);
         try {
@@ -50,7 +51,7 @@ public class DAVAttributesFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFeature f = new DAVAttributesFeature(session);
         final PathAttributes attributes = f.find(test);

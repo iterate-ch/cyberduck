@@ -17,20 +17,7 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -57,7 +44,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
@@ -80,7 +67,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.list);
         service.remove(FTPListService.Command.stat);
@@ -106,7 +93,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
@@ -122,7 +109,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
@@ -138,7 +125,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path l = new Path("/test.d", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -158,7 +145,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.lista);
         service.remove(FTPListService.Command.mlsd);
@@ -190,7 +177,7 @@ public class FTPListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.list(f, new DisabledListProgressListener());

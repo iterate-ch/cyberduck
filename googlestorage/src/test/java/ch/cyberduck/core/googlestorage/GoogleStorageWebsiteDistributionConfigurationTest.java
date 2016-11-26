@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -96,7 +97,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
@@ -124,7 +125,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));

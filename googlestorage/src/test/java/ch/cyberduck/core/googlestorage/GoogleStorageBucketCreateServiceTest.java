@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -60,7 +61,7 @@ public class GoogleStorageBucketCreateServiceTest {
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));

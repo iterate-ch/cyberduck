@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2FileidProvider;
 import ch.cyberduck.core.b2.B2Protocol;
@@ -53,7 +54,7 @@ public class DefaultFindFeatureTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
@@ -72,7 +73,7 @@ public class DefaultFindFeatureTest {
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket),

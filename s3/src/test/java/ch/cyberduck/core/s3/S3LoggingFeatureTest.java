@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,7 +49,7 @@ public class S3LoggingFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final LoggingConfiguration configuration = new S3LoggingFeature(session).getConfiguration(
                 new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         );
@@ -66,7 +67,7 @@ public class S3LoggingFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         new S3LoggingFeature(session).getConfiguration(
                 new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
         );
@@ -80,7 +81,7 @@ public class S3LoggingFeatureTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         new S3LoggingFeature(session).setConfiguration(
                 new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new LoggingConfiguration(false)
         );

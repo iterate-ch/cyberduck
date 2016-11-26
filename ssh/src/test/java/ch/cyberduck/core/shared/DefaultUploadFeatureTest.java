@@ -27,6 +27,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -60,7 +61,7 @@ public class DefaultUploadFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);
