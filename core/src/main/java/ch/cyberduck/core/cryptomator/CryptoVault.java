@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ContentReader;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -47,7 +48,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
-public class CryptoVault {
+public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
     static {
@@ -81,6 +82,7 @@ public class CryptoVault {
      * @param callback
      * @throws BackgroundException
      */
+    @Override
     public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         throw new NotfoundException(home.getAbsolute());
     }
@@ -95,6 +97,7 @@ public class CryptoVault {
      * @throws NotfoundException                                  No master key file in home
      * @throws CryptoAuthenticationException                      Failure opening master key file
      */
+    @Override
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
@@ -140,6 +143,7 @@ public class CryptoVault {
         }
     }
 
+    @Override
     public boolean isLoaded() {
         return cryptor != null;
     }
@@ -160,6 +164,7 @@ public class CryptoVault {
         return cryptoPathMapper;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
         if(this.isLoaded()) {

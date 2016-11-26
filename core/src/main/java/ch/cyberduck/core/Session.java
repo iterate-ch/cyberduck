@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFeature;
@@ -57,6 +59,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * Encapsulating all the information of the remote host
      */
     protected final Host host;
+
+    /**
+     * Cryptomator
+     */
+    protected final Vault vault = new CryptoVault(this);
 
     protected C client;
 
@@ -102,6 +109,10 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     public C getClient() {
         return client;
+    }
+
+    public Vault getVault() {
+        return vault;
     }
 
     /**
@@ -258,7 +269,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DefaultDownloadFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(this);
+            return vault.getFeature(type, (T) new DefaultTouchFeature(this));
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
@@ -273,7 +284,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DefaultAttributesFeature(this);
         }
         if(type == Home.class) {
-            return (T) new DefaultHomeFinderService(this);
+            return vault.getFeature(type, (T) new DefaultHomeFinderService(this));
         }
         if(type == Search.class) {
             return (T) new DefaultSearchFeature(this);
@@ -284,8 +295,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
         }
+        if(type == Vault.class) {
+            return (T) vault;
+        }
         if(type == ListService.class) {
-            return (T) this;
+            return vault.getFeature(type, (T) this);
         }
         return null;
     }
