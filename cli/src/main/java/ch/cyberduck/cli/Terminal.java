@@ -363,7 +363,8 @@ public class Terminal {
 
     protected Exit mount(final SessionPool session) {
         final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
-                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
+                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache),
+                PasswordStoreFactory.get(), new TerminalLoginCallback(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
