@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -55,7 +56,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
                 this.chunk(directory, list);
                 return list;
             }
-            return session.list(directory, this);
+            return session.getFeature(ListService.class).list(directory, this);
         }
         catch(ListCanceledException e) {
             return e.getChunk();
