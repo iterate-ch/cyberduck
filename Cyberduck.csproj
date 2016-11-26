@@ -180,12 +180,17 @@
     <Reference Include="VistaBridgeLibrary">
       <HintPath>windows\target\VistaBridgeLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Windows">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="Windows7.DesktopIntegration">
       <HintPath>windows\target\Windows7.DesktopIntegration.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\CommandController.cs" />

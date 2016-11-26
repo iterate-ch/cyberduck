@@ -26,7 +26,7 @@ using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class DonationController : WindowController<IDonationView>
+    public class DonationController : WindowController<IDonationView>, IDonationController
     {
         public DonationController() : this(ObjectFactory.GetInstance<IDonationView>())
         {
