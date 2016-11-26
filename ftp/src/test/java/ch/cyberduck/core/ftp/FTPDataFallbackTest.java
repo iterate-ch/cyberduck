@@ -52,12 +52,10 @@ public class FTPDataFallbackTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        final FTPSession session = new FTPSession(host) {
-            protected int timeout() {
-                return 2000;
-            }
-        };
+        final FTPSession session = new FTPSession(host);
         session.open(new DisabledHostKeyCallback());
+        session.getClient().setDefaultTimeout(2000);
+        session.getClient().setConnectTimeout(2000);
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();

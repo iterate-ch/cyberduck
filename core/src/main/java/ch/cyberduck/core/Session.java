@@ -190,13 +190,6 @@ public abstract class Session<C> implements TranscriptListener {
     }
 
     /**
-     * @return The timeout in milliseconds
-     */
-    protected int timeout() {
-        return preferences.getInteger("connection.timeout.seconds") * 1000;
-    }
-
-    /**
      * @return the host this session connects to
      */
     public Host getHost() {

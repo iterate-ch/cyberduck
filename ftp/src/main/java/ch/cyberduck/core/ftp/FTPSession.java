@@ -154,9 +154,10 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(socketFactory);
         client.setControlEncoding(host.getEncoding());
-        client.setConnectTimeout(this.timeout());
-        client.setDefaultTimeout(this.timeout());
-        client.setDataTimeout(this.timeout());
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
+        client.setDefaultTimeout(timeout);
+        client.setDataTimeout(timeout);
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(preferences.getBoolean("ftp.datachannel.verify"));
