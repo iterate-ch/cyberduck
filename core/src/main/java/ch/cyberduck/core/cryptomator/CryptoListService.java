@@ -44,5 +44,4 @@ public class CryptoListService implements ListService {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
 }
