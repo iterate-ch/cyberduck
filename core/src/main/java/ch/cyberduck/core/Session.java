@@ -262,6 +262,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        return vault.getFeature(type, this._getFeature(type));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
@@ -269,7 +274,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DefaultDownloadFeature(this);
         }
         if(type == Touch.class) {
-            return vault.getFeature(type, (T) new DefaultTouchFeature(this));
+            return (T) new DefaultTouchFeature(this);
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
@@ -284,7 +289,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DefaultAttributesFeature(this);
         }
         if(type == Home.class) {
-            return vault.getFeature(type, (T) new DefaultHomeFinderService(this));
+            return (T) new DefaultHomeFinderService(this);
         }
         if(type == Search.class) {
             return (T) new DefaultSearchFeature(this);
@@ -299,7 +304,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) vault;
         }
         if(type == ListService.class) {
-            return vault.getFeature(type, (T) this);
+            return (T) this;
         }
         return null;
     }

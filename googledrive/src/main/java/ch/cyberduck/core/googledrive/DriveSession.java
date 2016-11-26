@@ -159,7 +159,7 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(Class<T> type) {
+    protected <T> T _getFeature(Class<T> type) {
         if(type == Read.class) {
             return (T) new DriveReadFeature(this);
         }
