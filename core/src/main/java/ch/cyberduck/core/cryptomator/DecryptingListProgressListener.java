@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.apache.log4j.Logger;
@@ -100,6 +101,12 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
             throw new CryptoAuthenticationException(
                     String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
         }
+    }
+
+    @Override
+    public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
+        super.chunk(folder, list);
+        delegate.chunk(folder, list);
     }
 
     @Override
