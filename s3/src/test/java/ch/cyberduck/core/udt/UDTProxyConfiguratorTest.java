@@ -91,7 +91,7 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         try {
-            assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+            assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
             tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                     PathCache.empty());
         }
@@ -113,7 +113,7 @@ public class UDTProxyConfiguratorTest {
                 new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        tunneled.open(new DisabledHostKeyCallback());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -145,7 +145,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
     }
@@ -171,7 +171,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
 
         final TransferStatus status = new TransferStatus();
@@ -206,7 +206,7 @@ public class UDTProxyConfiguratorTest {
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
         tunneled.close();
@@ -224,7 +224,7 @@ public class UDTProxyConfiguratorTest {
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
@@ -280,7 +280,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());

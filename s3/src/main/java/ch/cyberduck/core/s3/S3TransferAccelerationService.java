@@ -114,7 +114,7 @@ public class S3TransferAccelerationService implements TransferAcceleration<S3Ses
                 return options;
             }
         };
-        final RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback(), session);
+        final RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback());
         // Swap credentials. No login required
         client.setProviderCredentials(session.getClient().getProviderCredentials());
         final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();

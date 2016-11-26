@@ -65,7 +65,7 @@ public class S3SessionCredentialsRetriever {
         final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address);
-        connection.open(new DisabledHostKeyCallback(), transcript);
+        connection.open(new DisabledHostKeyCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus());
         return this.parse(in);
     }

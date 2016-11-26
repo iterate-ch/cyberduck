@@ -26,7 +26,7 @@ public class NullSession extends Session<Void> {
     }
 
     @Override
-    public Void open(HostKeyCallback c, final TranscriptListener transcript) throws BackgroundException {
+    public Void open(HostKeyCallback c) throws BackgroundException {
         return null;
     }
 
