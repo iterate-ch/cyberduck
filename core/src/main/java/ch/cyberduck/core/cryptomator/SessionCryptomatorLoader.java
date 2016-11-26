@@ -24,6 +24,8 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.ContentReader;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -65,44 +67,49 @@ public class SessionCryptomatorLoader {
      * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException                                Failure reading master key from server
      */
-    public void load(final Session session, final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
+    public void load(final Session<?> session, final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", file));
+        if(!session.getFeature(Find.class).find(file)) {
+            throw new NotfoundException(file.getAbsolute());
         }
-        final String masterKey = new ContentReader(session).readToString(file);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Read master key %s", masterKey));
-        }
-        final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
-        final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
-        if(null == passphrase) {
-            final Credentials credentials = new Credentials();
-            // Default to false for save in keychain
-            credentials.setSaved(false);
-            callback.prompt(bookmark, credentials,
-                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                    LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
-                    new LoginOptions().user(false).anonymous(false));
-            if(credentials.isSaved()) {
-                keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt to read master key from %s", file));
             }
-            passphrase = credentials.getPassword();
+            final String masterKey = new ContentReader(session).readToString(file);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Read master key %s", masterKey));
+            }
+            final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
+            final Host bookmark = session.getHost();
+            String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
+            if(null == passphrase) {
+                final Credentials credentials = new Credentials();
+                // Default to false for save in keychain
+                credentials.setSaved(false);
+                callback.prompt(bookmark, credentials,
+                        LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                        LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
+                        new LoginOptions().user(false).anonymous(false));
+                if(credentials.isSaved()) {
+                    keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+                }
+                passphrase = credentials.getPassword();
+            }
+            try {
+                cryptor = provider.createFromKeyFile(keyFile, passphrase, 5);
+            }
+            catch(InvalidPassphraseException e) {
+                throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
+            }
+            longFileNameProvider = new LongFileNameProvider(home, session);
+            directoryIdProvider = new DirectoryIdProvider(session);
+            cryptoPathMapper = new CryptoPathMapper(home, cryptor, longFileNameProvider, directoryIdProvider);
         }
-        try {
-            cryptor = provider.createFromKeyFile(keyFile, passphrase, 5);
-        }
-        catch(InvalidPassphraseException e) {
-            throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
-        }
-        longFileNameProvider = new LongFileNameProvider(home, session);
-        directoryIdProvider = new DirectoryIdProvider(session);
-        cryptoPathMapper = new CryptoPathMapper(home, cryptor, longFileNameProvider, directoryIdProvider);
     }
 
     public Cryptor getCryptor() {
