@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -43,8 +44,8 @@ public class CryptoHomeFinder implements Home {
     public Path find() throws BackgroundException {
         final Path home = delegate.find();
         try {
-            final CryptoVault loader = session.getVault();
-            loader.load(home, keychain, prompt);
+            final Vault vault = session.getVault();
+            vault.load(home, keychain, prompt);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s", home));
