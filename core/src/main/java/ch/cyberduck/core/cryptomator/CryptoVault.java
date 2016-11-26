@@ -48,6 +48,9 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
 
+/**
+ * Cryptomator vault implementation
+ */
 public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
