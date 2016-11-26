@@ -33,15 +33,18 @@ public class DeleteWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T getFeature(final Class<T> type) {
-                return (T) new Delete() {
-                    @Override
-                    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
-                        assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
-                        assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
-                        assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
-                        assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
-                    }
-                };
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+                            assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
+                            assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
+                            assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
+                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
+                        }
+                    };
+                }
+                return (T) super.getFeature(type);
             }
 
             @Override
