@@ -174,6 +174,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         if(type == Quota.class) {
             return (T) new DropboxQuotaFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

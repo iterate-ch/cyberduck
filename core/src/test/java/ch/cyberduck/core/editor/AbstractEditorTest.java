@@ -73,7 +73,7 @@ public class AbstractEditorTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Read.class)) {
                     return (T) new Read() {
                         @Override
@@ -89,7 +89,7 @@ public class AbstractEditorTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         final AtomicBoolean e = new AtomicBoolean();

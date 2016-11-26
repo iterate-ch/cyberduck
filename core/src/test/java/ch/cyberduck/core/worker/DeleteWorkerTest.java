@@ -32,7 +32,7 @@ public class DeleteWorkerTest {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
@@ -44,7 +44,7 @@ public class DeleteWorkerTest {
                         }
                     };
                 }
-                return (T) super.getFeature(type);
+                return (T) super._getFeature(type);
             }
 
             @Override
@@ -75,7 +75,7 @@ public class DeleteWorkerTest {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
                     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {

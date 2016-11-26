@@ -158,6 +158,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Attributes.class) {
             return (T) new B2AttributesFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

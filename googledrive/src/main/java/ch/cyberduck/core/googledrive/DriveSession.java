@@ -202,6 +202,6 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

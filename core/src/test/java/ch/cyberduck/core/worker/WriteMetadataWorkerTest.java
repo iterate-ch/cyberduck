@@ -36,7 +36,7 @@ public class WriteMetadataWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -56,7 +56,7 @@ public class WriteMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -81,7 +81,7 @@ public class WriteMetadataWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -100,7 +100,7 @@ public class WriteMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -127,7 +127,7 @@ public class WriteMetadataWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -149,7 +149,7 @@ public class WriteMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -191,7 +191,7 @@ public class WriteMetadataWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -229,7 +229,7 @@ public class WriteMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }

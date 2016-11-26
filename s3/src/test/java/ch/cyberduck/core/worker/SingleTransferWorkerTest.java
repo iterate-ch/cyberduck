@@ -83,7 +83,7 @@ public class SingleTransferWorkerTest {
         final S3Session session = new S3Session(host) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
                     return (T) new S3MultipartUploadService(this, 5L * 1024L * 1024L, 1) {
                         @Override
@@ -105,7 +105,7 @@ public class SingleTransferWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());

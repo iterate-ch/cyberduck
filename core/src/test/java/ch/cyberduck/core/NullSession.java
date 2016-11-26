@@ -98,7 +98,7 @@ public class NullSession extends Session<Void> {
                 }
             };
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }
 

@@ -225,6 +225,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == AclPermission.class) {
             return (T) new AzureAclPermissionFeature(this, context);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

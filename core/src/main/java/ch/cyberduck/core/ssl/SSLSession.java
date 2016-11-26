@@ -57,6 +57,6 @@ public abstract class SSLSession<C> extends Session<C> {
         if(type == X509KeyManager.class) {
             return (T) key;
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

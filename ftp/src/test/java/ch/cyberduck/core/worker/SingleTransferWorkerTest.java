@@ -107,11 +107,11 @@ public class SingleTransferWorkerTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Write.class) {
                     return (T) write;
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());

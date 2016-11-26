@@ -3,6 +3,8 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
@@ -35,7 +37,8 @@ public class MountWorkerTest {
             }
         };
         final Cache<Path> cache = new PathCache(2);
-        final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener());
+        final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener(),
+                new DisabledPasswordStore(), new DisabledLoginCallback());
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), worker.run(session));
         assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
         assertFalse(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));

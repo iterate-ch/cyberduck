@@ -43,7 +43,7 @@ public class CryptoVaultTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
@@ -61,7 +61,7 @@ public class CryptoVaultTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         final CryptoVault loader = new CryptoVault(session);

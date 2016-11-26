@@ -55,11 +55,11 @@ public class OverwriteFilterTest {
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Find.class)) {
                     return (T) find;
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         }, files);
         assertTrue(f.accept(source, null, new TransferStatus().exists(true)));
@@ -105,7 +105,7 @@ public class OverwriteFilterTest {
         OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Timestamp.class)) {
                     return (T) new DefaultTimestampFeature() {
 
@@ -140,7 +140,7 @@ public class OverwriteFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
         final TransferStatus status = f.prepare(source, null, new TransferStatus());

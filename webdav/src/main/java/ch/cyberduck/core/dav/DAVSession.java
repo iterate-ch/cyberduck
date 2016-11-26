@@ -332,6 +332,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Lock.class) {
             return (T) new DAVLockFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

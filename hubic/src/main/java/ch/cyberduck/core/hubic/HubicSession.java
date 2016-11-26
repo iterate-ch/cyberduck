@@ -103,6 +103,6 @@ public class HubicSession extends SwiftSession {
         if(type == DistributionConfiguration.class) {
             return null;
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

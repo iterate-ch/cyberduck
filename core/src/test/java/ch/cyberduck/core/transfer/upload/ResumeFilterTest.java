@@ -54,7 +54,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
@@ -68,7 +68,7 @@ public class ResumeFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -118,11 +118,11 @@ public class ResumeFilterTest {
             }
 
             @Override
-            public <T> T getFeature(Class<T> type) {
+            public <T> T _getFeature(Class<T> type) {
                 if(type == Attributes.class) {
                     return (T) new DefaultAttributesFeature(this);
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         }, new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));

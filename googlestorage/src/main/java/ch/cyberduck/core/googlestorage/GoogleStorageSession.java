@@ -303,6 +303,6 @@ public class GoogleStorageSession extends S3Session {
         if(type == UrlProvider.class) {
             return (T) new GoogleStorageUrlProvider(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

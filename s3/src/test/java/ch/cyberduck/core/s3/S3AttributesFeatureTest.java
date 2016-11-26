@@ -41,11 +41,11 @@ public class S3AttributesFeatureTest {
             }
 
             @Override
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Versioning.class) {
                     return null;
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());
@@ -82,11 +82,11 @@ public class S3AttributesFeatureTest {
             }
 
             @Override
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Versioning.class) {
                     return null;
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());

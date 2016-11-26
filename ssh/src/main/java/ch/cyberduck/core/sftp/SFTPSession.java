@@ -415,7 +415,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(type == Quota.class) {
             return (T) new SFTPQuotaFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     private static final class StateDisconnectListener implements DisconnectListener {

@@ -288,6 +288,6 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

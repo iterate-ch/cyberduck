@@ -354,6 +354,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

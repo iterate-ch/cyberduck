@@ -230,7 +230,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         if(type == Home.class) {
             return (T) new IRODSHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     public final IRODSFileSystemAO filesystem() {
