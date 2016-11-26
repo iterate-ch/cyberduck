@@ -42,19 +42,18 @@ public class CryptoHomeFinder implements Home {
 
     @Override
     public Path find() throws BackgroundException {
-        final Path home = delegate.find();
+        return delegate.find();
+    }
+
+    @Override
+    public Path find(final Path workdir, final String path) {
+        final Path home = delegate.find(workdir, path);
         try {
             session.getFeature(Vault.class).load(home, keychain, prompt);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s", home));
         }
-        return home;
-    }
-
-    @Override
-    public Path find(final Path workdir, final String path) {
-        final Path home = delegate.find(workdir, path);
         return home;
     }
 }
