@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class CryptoHomeFinder implements Home {
     private static final Logger log = Logger.getLogger(CryptoHomeFinder.class);
 
-    private final Session session;
+    private final Session<?> session;
     private final Home delegate;
     private final PasswordStore keychain;
     private final LoginCallback prompt;
@@ -44,8 +44,7 @@ public class CryptoHomeFinder implements Home {
     public Path find() throws BackgroundException {
         final Path home = delegate.find();
         try {
-            final Vault vault = session.getVault();
-            vault.load(home, keychain, prompt);
+            session.getFeature(Vault.class).load(home, keychain, prompt);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s", home));
