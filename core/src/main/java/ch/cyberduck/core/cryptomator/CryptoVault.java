@@ -172,7 +172,7 @@ public class CryptoVault implements Vault {
     public <T> T getFeature(final Class<T> type, final T delegate) {
         if(this.isLoaded()) {
             if(type == Home.class) {
-                return (T) new CryptoHomeFinder(session, (Home) delegate, null, null);
+                return (T) new VaultFinder(this, (Home) delegate, null, null);
             }
             if(type == ListService.class) {
                 return (T) new CryptoListService((ListService) delegate, this);

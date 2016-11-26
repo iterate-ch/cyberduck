@@ -18,26 +18,25 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
-public class CryptoHomeFinder implements Home {
-    private static final Logger log = Logger.getLogger(CryptoHomeFinder.class);
+public class VaultFinder implements Home {
+    private static final Logger log = Logger.getLogger(VaultFinder.class);
 
-    private final Session<?> session;
+    private final Vault vault;
     private final Home delegate;
     private final PasswordStore keychain;
     private final LoginCallback prompt;
 
-    public CryptoHomeFinder(final Session session, final Home delegate, final PasswordStore keychain, final LoginCallback prompt) {
-        this.session = session;
+    public VaultFinder(final Vault vault, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
+        this.vault = vault;
         this.delegate = delegate;
         this.keychain = keychain;
-        this.prompt = prompt;
+        this.prompt = login;
     }
 
     @Override
@@ -49,7 +48,7 @@ public class CryptoHomeFinder implements Home {
     public Path find(final Path workdir, final String path) {
         final Path home = delegate.find(workdir, path);
         try {
-            session.getFeature(Vault.class).load(home, keychain, prompt);
+            vault.load(home, keychain, prompt);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s", home));
