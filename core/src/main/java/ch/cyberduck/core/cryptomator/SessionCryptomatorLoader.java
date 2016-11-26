@@ -16,9 +16,11 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,7 +65,7 @@ public class SessionCryptomatorLoader {
      * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException                                Failure reading master key from server
      */
-    public void load(final Session session, final Path home, final LoginCallback callback) throws BackgroundException {
+    public void load(final Session session, final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -77,15 +79,23 @@ public class SessionCryptomatorLoader {
             log.debug(String.format("Read master key %s", masterKey));
         }
         final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
-        final Credentials credentials = new Credentials();
-        // Default to false for save in keychain
-        credentials.setSaved(false);
-        callback.prompt(session.getHost(), credentials,
-                LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
-                new LoginOptions().user(false).anonymous(false));
+        final Host bookmark = session.getHost();
+        String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
+        if(null == passphrase) {
+            final Credentials credentials = new Credentials();
+            // Default to false for save in keychain
+            credentials.setSaved(false);
+            callback.prompt(bookmark, credentials,
+                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                    LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
+                    new LoginOptions().user(false).anonymous(false));
+            if(credentials.isSaved()) {
+                keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+            }
+            passphrase = credentials.getPassword();
+        }
         try {
-            cryptor = provider.createFromKeyFile(keyFile, credentials.getPassword(), 5);
+            cryptor = provider.createFromKeyFile(keyFile, passphrase, 5);
         }
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);

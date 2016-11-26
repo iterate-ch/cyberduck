@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
@@ -40,30 +41,32 @@ public class SessionCryptomatorLoaderTest {
     @Test
     public void testLoad() throws Exception {
         final SessionCryptomatorLoader loader = new SessionCryptomatorLoader();
-        try {
-            loader.load(new NullSession(new Host(new TestProtocol())) {
-                @Override
-                public <T> T getFeature(final Class<T> type) {
-                    if(type == Read.class) {
-                        return (T) new Read() {
-                            @Override
-                            public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                                final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
-                                        + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
-                                        + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
-                                        + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
-                                return IOUtils.toInputStream(masterKey);
-                            }
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                            final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
+                                    + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
+                                    + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
+                                    + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
+                            return IOUtils.toInputStream(masterKey);
+                        }
 
-                            @Override
-                            public boolean offset(final Path file) throws BackgroundException {
-                                return false;
-                            }
-                        };
-                    }
-                    return super.getFeature(type);
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
                 }
-            }, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledLoginCallback() {
+                return super.getFeature(type);
+            }
+        };
+        try {
+            loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
@@ -75,7 +78,7 @@ public class SessionCryptomatorLoaderTest {
             //
         }
         try {
-            loader.load(new NullSession(new Host(new TestProtocol())), new Path("/", EnumSet.of(Path.Type.directory)), new DisabledLoginCallback() {
+            loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     credentials.setPassword("null");
@@ -86,7 +89,7 @@ public class SessionCryptomatorLoaderTest {
         catch(CryptoAuthenticationException e) {
             //
         }
-        loader.load(new NullSession(new Host(new TestProtocol())), new Path("/", EnumSet.of(Path.Type.directory)), new DisabledLoginCallback() {
+        loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");
