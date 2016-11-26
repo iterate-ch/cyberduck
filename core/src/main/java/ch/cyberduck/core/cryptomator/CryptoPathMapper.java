@@ -20,7 +20,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 
 import org.apache.commons.lang3.StringUtils;
-import org.cryptomator.cryptolib.api.Cryptor;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,29 +31,25 @@ import com.google.common.cache.LoadingCache;
 
 public class CryptoPathMapper {
 
+    private static final String DATA_DIR_NAME = "d";
+
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
     private static final int MAX_CACHED_DIR_PATHS = 1000;
 
     private final LoadingCache<String, Path> directoryPathCache;
     private final Path dataRoot;
-    private final Cryptor cryptor;
-    private final LongFileNameProvider longFileNameProvider;
-    private final DirectoryIdProvider directoryIdProvider;
+    private final SessionCryptomatorLoader cryptomator;
 
-    public CryptoPathMapper(final Path pathToVault, final Cryptor cryptor,
-                            final LongFileNameProvider longFileNameProvider,
-                            final DirectoryIdProvider directoryIdProvider) {
-        this.dataRoot = new Path(pathToVault, Constants.DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
-        this.cryptor = cryptor;
-        this.longFileNameProvider = longFileNameProvider;
-        this.directoryIdProvider = directoryIdProvider;
+    public CryptoPathMapper(final Path vault, final SessionCryptomatorLoader cryptomator) {
+        this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        this.cryptomator = cryptomator;
         this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolveDirectory));
     }
 
     public String getCiphertextFileName(final String dirId, final String cleartextName, final EnumSet<AbstractPath.Type> type) throws IOException {
         final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
-        final String ciphertextName = prefix + cryptor.fileNameCryptor().encryptFilename(cleartextName, dirId.getBytes(StandardCharsets.UTF_8));
-        return longFileNameProvider.deflate(ciphertextName);
+        final String ciphertextName = prefix + cryptomator.getCryptor().fileNameCryptor().encryptFilename(cleartextName, dirId.getBytes(StandardCharsets.UTF_8));
+        return cryptomator.getLongFileNameProvider().deflate(ciphertextName);
     }
 
     public Directory getCiphertextDir(final Path cleartextPath) throws IOException {
@@ -65,13 +60,13 @@ public class CryptoPathMapper {
             final Directory parent = getCiphertextDir(cleartextPath.getParent());
             final String cleartextName = cleartextPath.getName();
             final String ciphertextName = getCiphertextFileName(parent.dirId, cleartextName, EnumSet.of(Path.Type.directory));
-            final String dirId = directoryIdProvider.load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
+            final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
             return new Directory(dirId, directoryPathCache.getUnchecked(dirId));
         }
     }
 
     private Path resolveDirectory(final String dirId) {
-        final String dirHash = cryptor.fileNameCryptor().hashDirectoryId(dirId);
+        final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(dirId);
         return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
 

@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator;
 
 final class Constants {
 
-    public static final String DATA_DIR_NAME = "d";
     public static final String METADATA_DIR_NAME = "m";
     public static final String DIR_PREFIX = "0";
     public static final int VAULT_VERSION = 5;

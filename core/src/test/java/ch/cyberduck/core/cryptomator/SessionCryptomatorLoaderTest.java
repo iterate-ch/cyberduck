@@ -40,7 +40,6 @@ public class SessionCryptomatorLoaderTest {
 
     @Test
     public void testLoad() throws Exception {
-        final SessionCryptomatorLoader loader = new SessionCryptomatorLoader();
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -65,8 +64,9 @@ public class SessionCryptomatorLoaderTest {
                 return super.getFeature(type);
             }
         };
+        final SessionCryptomatorLoader loader = new SessionCryptomatorLoader(session);
         try {
-            loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+            loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
@@ -78,7 +78,7 @@ public class SessionCryptomatorLoaderTest {
             //
         }
         try {
-            loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+            loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
                 @Override
                 public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     credentials.setPassword("null");
@@ -89,7 +89,7 @@ public class SessionCryptomatorLoaderTest {
         catch(CryptoAuthenticationException e) {
             //
         }
-        loader.load(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");

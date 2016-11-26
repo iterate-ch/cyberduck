@@ -56,18 +56,38 @@ public class SessionCryptomatorLoader {
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
+    private final Session<?> session;
+
     private Cryptor cryptor;
     private LongFileNameProvider longFileNameProvider;
     private DirectoryIdProvider directoryIdProvider;
     private CryptoPathMapper cryptoPathMapper;
 
+    public SessionCryptomatorLoader(final Session<?> session) {
+        this.session = session;
+    }
+
     /**
+     * Create vault
+     *
+     * @param home
+     * @param keychain
+     * @param callback
+     * @throws BackgroundException
+     */
+    public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
+        throw new NotfoundException(home.getAbsolute());
+    }
+
+    /**
+     * Open vault
+     *
      * @param home     Default path
      * @param callback Callback
      * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException                                Failure reading master key from server
      */
-    public void load(final Session<?> session, final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
+    public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -108,8 +128,12 @@ public class SessionCryptomatorLoader {
             }
             longFileNameProvider = new LongFileNameProvider(home, session);
             directoryIdProvider = new DirectoryIdProvider(session);
-            cryptoPathMapper = new CryptoPathMapper(home, cryptor, longFileNameProvider, directoryIdProvider);
+            cryptoPathMapper = new CryptoPathMapper(home, this);
         }
+    }
+
+    public boolean isLoaded() {
+        return cryptor != null;
     }
 
     public Cryptor getCryptor() {
