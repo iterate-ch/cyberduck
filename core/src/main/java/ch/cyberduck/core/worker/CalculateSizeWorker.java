@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -68,7 +69,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Getting size of {0}", "Status"),
                 p.getName()));
         if(p.isDirectory()) {
-            for(Path next : session.list(p, new ActionListProgressListener(this, listener))) {
+            for(Path next : session.getFeature(ListService.class).list(p, new ActionListProgressListener(this, listener))) {
                 size += this.calculateSize(session, next);
             }
         }

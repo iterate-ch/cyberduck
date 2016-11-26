@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Session<C> implements TranscriptListener {
+public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -67,9 +67,6 @@ public abstract class Session<C> implements TranscriptListener {
      */
     private State state = State.closed;
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(host.getProtocol().isSecure()) {
             return false;
@@ -77,6 +74,7 @@ public abstract class Session<C> implements TranscriptListener {
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
+        final Preferences preferences = PreferencesFactory.get();
         if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }
@@ -248,6 +246,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param directory Directory
      * @param listener  Callback
      */
+    @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     @SuppressWarnings("unchecked")

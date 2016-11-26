@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -86,7 +87,7 @@ public class WriteAclWorker extends Worker<Boolean> {
         }
         else if(file.isDirectory()) {
             if(callback.recurse(file, acl)) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }

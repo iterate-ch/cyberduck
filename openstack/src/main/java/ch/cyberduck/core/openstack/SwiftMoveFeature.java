@@ -20,6 +20,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,7 +62,7 @@ public class SwiftMoveFeature implements Move {
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
             else if(file.isDirectory()) {
-                for(Path i : session.list(file, new DisabledListProgressListener())) {
+                for(Path i : session.getFeature(ListService.class).list(file, new DisabledListProgressListener())) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
                 try {

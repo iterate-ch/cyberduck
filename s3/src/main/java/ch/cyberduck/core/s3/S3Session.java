@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -226,7 +227,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         final Path home = new S3HomeFinderService(this).find();
-        cache.put(home, this.list(home, new DisabledListProgressListener() {
+        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                 try {

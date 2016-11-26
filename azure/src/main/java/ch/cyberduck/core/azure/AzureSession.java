@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -159,7 +160,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
         final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home, this.list(home, new DisabledListProgressListener()));
+        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
     }
 
     @Override

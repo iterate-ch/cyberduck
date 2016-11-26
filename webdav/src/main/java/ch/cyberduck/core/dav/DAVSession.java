@@ -28,6 +28,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -205,7 +206,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 host, e.getResponsePhrase()));
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
-                        cache.put(home, this.list(home, new DisabledListProgressListener()));
+                        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {

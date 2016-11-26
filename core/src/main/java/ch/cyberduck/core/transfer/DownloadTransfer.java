@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -137,7 +138,7 @@ public class DownloadTransfer extends Transfer {
                 list = cache.get(directory);
             }
             else {
-                list = session.list(directory, listener);
+                list = session.getFeature(ListService.class).list(directory, listener);
                 cache.put(directory, list);
             }
             final List<TransferItem> children = new ArrayList<TransferItem>();
