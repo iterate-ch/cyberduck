@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -25,7 +26,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ContentReader;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -86,6 +92,8 @@ public class SessionCryptomatorLoader {
      * @param callback Callback
      * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
      * @throws BackgroundException                                Failure reading master key from server
+     * @throws NotfoundException                                  No master key file in home
+     * @throws CryptoAuthenticationException                      Failure opening master key file
      */
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
@@ -150,5 +158,30 @@ public class SessionCryptomatorLoader {
 
     public CryptoPathMapper getCryptoPathMapper() {
         return cryptoPathMapper;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type, final T delegate) {
+        if(this.isLoaded()) {
+            if(type == Home.class) {
+                return (T) new CryptoHomeFinder(session, (Home) delegate, null, null);
+            }
+            if(type == ListService.class) {
+                return (T) new CryptoListService((ListService) delegate, this);
+            }
+            if(type == Touch.class) {
+                return (T) new CryptoTouchFeature((Touch) delegate, this);
+            }
+            if(type == Directory.class) {
+                return (T) new CryptoDirectoryFeature((Directory) delegate, this);
+            }
+            if(type == Read.class) {
+                return (T) new CryptoReadFeature((Read) delegate, this);
+            }
+            if(type == Write.class) {
+                return (T) new CryptoWriteFeature((Write) delegate, this);
+            }
+        }
+        return delegate;
     }
 }
