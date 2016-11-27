@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io;
+package ch.cyberduck.core.cryptomator;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -36,7 +36,7 @@ public class ContentReader {
     }
 
     public String readToString(final Path file) throws BackgroundException {
-        final Read read = session.getFeature(Read.class);
+        final Read read = session._getFeature(Read.class);
         final InputStream stream = read.read(file, new TransferStatus());
         try {
             return IOUtils.toString(stream, "UTF-8");
