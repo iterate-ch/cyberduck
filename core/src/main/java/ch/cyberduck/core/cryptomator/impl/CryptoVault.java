@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -24,6 +24,14 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
+import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.CryptoListService;
+import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
+import ch.cyberduck.core.cryptomator.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
+import ch.cyberduck.core.cryptomator.VaultFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;

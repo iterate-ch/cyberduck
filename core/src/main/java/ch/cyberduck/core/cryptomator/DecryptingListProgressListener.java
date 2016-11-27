@@ -19,6 +19,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.impl.Constants;
+import ch.cyberduck.core.cryptomator.impl.CryptoPathMapper;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.LongFileNameProvider;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
@@ -90,7 +94,8 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
                 final String cleartextFilename = cryptomator.getCryptor().fileNameCryptor().decryptFilename(
                         ciphertext, dirId.getBytes(StandardCharsets.UTF_8));
                 return new Path(directory, cleartextFilename,
-                        ciphertextPath.getName().startsWith(Constants.DIR_PREFIX) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), ciphertextPath.attributes());
+                        ciphertextPath.getName().startsWith(Constants.DIR_PREFIX) ?
+                                EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), ciphertextPath.attributes());
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(

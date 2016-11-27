@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,9 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-final class Constants {
+public final class Constants {
 
-    public static final String METADATA_DIR_NAME = "m";
     public static final String DIR_PREFIX = "0";
     public static final int VAULT_VERSION = 5;
 }

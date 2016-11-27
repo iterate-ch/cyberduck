@@ -1,7 +1,6 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
- * Copyright (c) 2016 Sebastian Stenzel and others.
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -41,6 +40,7 @@ public class LongFileNameProvider {
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final int MAX_CACHE_SIZE = 5000;
     private static final String LONG_NAME_FILE_EXT = ".lng";
+    private static final String METADATA_DIR_NAME = "m";
 
     private static final int NAME_SHORTENING_THRESHOLD = 129;
 
@@ -49,7 +49,7 @@ public class LongFileNameProvider {
     private final LoadingCache<String, String> ids;
 
     public LongFileNameProvider(final Path pathToVault, final Session<?> session) {
-        this.metadataRoot = new Path(pathToVault, Constants.METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        this.metadataRoot = new Path(pathToVault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.session = session;
         this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
     }
