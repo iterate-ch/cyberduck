@@ -20,11 +20,11 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -54,7 +54,7 @@ public class DefaultAttributesFeature implements Attributes {
         final AttributedList<Path> list;
         if(!cache.containsKey(file.getParent())) {
             try {
-                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
@@ -62,6 +62,9 @@ public class DefaultAttributesFeature implements Attributes {
                 // Try native implementation
                 final Attributes feature = session.getFeature(Attributes.class);
                 if(feature instanceof DefaultAttributesFeature) {
+                    throw f;
+                }
+                if(feature instanceof CryptoAttributesFeature) {
                     throw f;
                 }
                 return feature.withCache(cache).find(file);
