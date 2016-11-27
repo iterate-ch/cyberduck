@@ -320,7 +320,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <T> T _getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new FTPDirectoryFeature(this);
         }

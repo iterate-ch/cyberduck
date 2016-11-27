@@ -266,7 +266,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <T> T _getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }

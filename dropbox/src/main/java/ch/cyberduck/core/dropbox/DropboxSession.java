@@ -137,7 +137,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         return new DropboxListService(this).list(directory, listener);
     }
 
-    protected <T> T _getFeature(Class<T> type) {
+    public <T> T _getFeature(Class<T> type) {
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
         }

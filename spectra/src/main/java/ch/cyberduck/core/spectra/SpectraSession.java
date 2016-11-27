@@ -60,7 +60,7 @@ public class SpectraSession extends S3Session {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <T> T _getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Bulk.class) {
             return (T) new SpectraBulkService(this);
         }

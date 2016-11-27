@@ -57,7 +57,7 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     }
 
     @Override
-    protected <T> T _getFeature(Class<T> type) {
+    public <T> T _getFeature(Class<T> type) {
         if(type == Upload.class) {
             return (T) new HttpUploadFeature((AbstractHttpWriteFeature<?>) this._getFeature(Write.class));
         }

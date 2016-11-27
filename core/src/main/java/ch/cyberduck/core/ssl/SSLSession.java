@@ -50,7 +50,7 @@ public abstract class SSLSession<C> extends Session<C> {
     }
 
     @Override
-    protected <T> T _getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == X509TrustManager.class) {
             return (T) trust;
         }

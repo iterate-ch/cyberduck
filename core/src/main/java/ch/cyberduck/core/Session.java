@@ -266,7 +266,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T _getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
