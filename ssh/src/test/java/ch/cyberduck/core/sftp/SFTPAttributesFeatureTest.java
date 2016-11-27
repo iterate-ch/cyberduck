@@ -9,12 +9,15 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -78,5 +81,30 @@ public class SFTPAttributesFeatureTest {
         final Path file = new Path(new SFTPHomeDirectoryService(session).find(), "dropbox/f", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(37L, attributes.getSize());
+    }
+
+    @Test
+    public void testListCryptomator() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        final PathCache cache = new PathCache(1);
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path vault = new Path(home, "/cryptomator-vault/test", EnumSet.of(Path.Type.directory));
+        session.getFeature(Vault.class).load(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("coke4you");
+            }
+        });
+        final PathAttributes attributes = session.getFeature(ch.cyberduck.core.features.Attributes.class).find(
+                new Path(vault, "blabal", EnumSet.of(Path.Type.directory)));
+        assertNotNull(attributes);
+        session.close();
     }
 }
