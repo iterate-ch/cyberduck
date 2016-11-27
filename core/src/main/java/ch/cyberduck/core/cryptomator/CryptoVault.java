@@ -44,6 +44,7 @@ import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
@@ -149,6 +150,12 @@ public class CryptoVault implements Vault {
     @Override
     public boolean isLoaded() {
         return cryptor != null;
+    }
+
+    public Path encrypt(final Path file) throws IOException {
+        final CryptoPathMapper.Directory ciphertextDirectory = cryptoPathMapper.getCiphertextDir(file.getParent());
+        final String ciphertextFileName = cryptoPathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
+        return new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
     }
 
     public Cryptor getCryptor() {

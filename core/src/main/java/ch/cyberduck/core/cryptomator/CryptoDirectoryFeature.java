@@ -15,10 +15,13 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.io.IOException;
 
 public class CryptoDirectoryFeature implements Directory {
 
@@ -32,11 +35,23 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        delegate.mkdir(file);
+        try {
+            final Path encrypted = cryptomator.encrypt(file);
+            delegate.mkdir(encrypted);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        throw new UnsupportedOperationException();
+        try {
+            final Path encrypted = cryptomator.encrypt(file);
+            delegate.mkdir(encrypted, region, status);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 }

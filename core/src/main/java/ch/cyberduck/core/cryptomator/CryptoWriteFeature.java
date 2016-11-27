@@ -28,7 +28,6 @@ import org.cryptomator.cryptolib.api.FileHeader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.EnumSet;
 
 public class CryptoWriteFeature implements Write {
 
@@ -43,17 +42,13 @@ public class CryptoWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final CryptoPathMapper pathMapper = cryptomator.getCryptoPathMapper();
-            final CryptoPathMapper.Directory ciphertextDirectory = pathMapper.getCiphertextDir(file.getParent());
-            final String ciphertextFileName = pathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
-            final Path cryptoPath = new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
-
-            // hHeader
+            final Path encrypted = cryptomator.encrypt(file);
+            // Header
             final Cryptor cryptor = cryptomator.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             header.setFilesize(-1);
             final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
-            final OutputStream cryptoStream = delegate.write(cryptoPath, status);
+            final OutputStream cryptoStream = delegate.write(encrypted, status);
             cryptoStream.write(headerBuffer.array());
 
             // content

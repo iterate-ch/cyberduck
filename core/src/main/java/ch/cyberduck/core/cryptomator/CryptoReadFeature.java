@@ -27,7 +27,6 @@ import org.cryptomator.cryptolib.api.FileHeader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.EnumSet;
 
 public class CryptoReadFeature implements Read {
 
@@ -42,15 +41,11 @@ public class CryptoReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final CryptoPathMapper pathMapper = cryptomator.getCryptoPathMapper();
-            final CryptoPathMapper.Directory ciphertextDirectory = pathMapper.getCiphertextDir(file.getParent());
-            final String ciphertextFileName = pathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
-            final Path cryptoPath = new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
-
+            final Path encrypted = cryptomator.encrypt(file);
             // Header
             final Cryptor cryptor = cryptomator.getCryptor();
             final ByteBuffer existingHeaderBuf = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final InputStream cryptoStream = delegate.read(cryptoPath, status);
+            final InputStream cryptoStream = delegate.read(encrypted, status);
             final int read = cryptoStream.read(existingHeaderBuf.array());
             final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(existingHeaderBuf);
             return new CryptoInputStream(cryptoStream, cryptor, header);
