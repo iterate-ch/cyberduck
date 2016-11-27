@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
@@ -195,6 +196,9 @@ public class CryptoVault implements Vault {
             }
             if(type == Write.class) {
                 return (T) new CryptoWriteFeature((Write) delegate, this);
+            }
+            if(type == Move.class) {
+                return (T) new CryptoMoveFeature((Move) delegate, this);
             }
         }
         return delegate;
