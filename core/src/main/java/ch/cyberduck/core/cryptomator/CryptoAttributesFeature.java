@@ -16,29 +16,30 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.features.Attributes;
 
-public class CryptoDirectoryFeature implements Directory {
+public class CryptoAttributesFeature implements Attributes {
 
-    private final Directory delegate;
+    private final Attributes delegate;
     private final CryptoVault cryptomator;
 
-    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoAttributesFeature(final Attributes delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        delegate.mkdir(file);
+    public PathAttributes find(final Path file) throws BackgroundException {
+        return delegate.find((cryptomator.encrypt(file)));
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        final Path encrypted = cryptomator.encrypt(file);
-        delegate.mkdir(encrypted, region, status);
+    public Attributes withCache(final PathCache cache) {
+        delegate.withCache(cache);
+        return this;
     }
 }

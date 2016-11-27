@@ -15,13 +15,10 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-
-import java.io.IOException;
 
 public class CryptoTouchFeature implements Touch {
 
@@ -35,13 +32,7 @@ public class CryptoTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file) throws BackgroundException {
-        try {
-            final Path encrypted = cryptomator.encrypt(file);
-            delegate.touch(encrypted);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        delegate.touch(cryptomator.encrypt(file));
     }
 
     @Override

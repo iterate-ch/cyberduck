@@ -15,14 +15,11 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-
-import java.io.IOException;
 
 public class CryptoMoveFeature implements Move {
 
@@ -36,12 +33,7 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        try {
-            delegate.move(cryptomator.encrypt(file), cryptomator.encrypt(renamed), exists, callback);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        delegate.move(cryptomator.encrypt(file), cryptomator.encrypt(renamed), exists, callback);
     }
 
     @Override

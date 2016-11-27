@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -24,8 +25,10 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
 import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoListService;
 import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.CryptoReadFeature;
@@ -34,6 +37,7 @@ import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.VaultFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Attributes;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -161,10 +165,15 @@ public class CryptoVault implements Vault {
         return cryptor != null;
     }
 
-    public Path encrypt(final Path file) throws IOException {
-        final CryptoPathMapper.Directory ciphertextDirectory = cryptoPathMapper.getCiphertextDir(file.getParent());
-        final String ciphertextFileName = cryptoPathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
-        return new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
+    public Path encrypt(final Path file) throws BackgroundException {
+        try {
+            final CryptoPathMapper.Directory ciphertextDirectory = cryptoPathMapper.getCiphertextDir(file.getParent());
+            final String ciphertextFileName = cryptoPathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
+            return new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     public Cryptor getCryptor() {
@@ -207,6 +216,12 @@ public class CryptoVault implements Vault {
             }
             if(type == Move.class) {
                 return (T) new CryptoMoveFeature((Move) delegate, this);
+            }
+            if(type == Attributes.class) {
+                return (T) new CryptoAttributesFeature((Attributes) delegate, this);
+            }
+            if(type == Find.class) {
+                return (T) new CryptoFindFeature((Find) delegate, this);
             }
         }
         return delegate;
