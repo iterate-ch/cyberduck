@@ -61,14 +61,12 @@ public class CryptoWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        //TODO implement
-        throw new UnsupportedOperationException();
+        return delegate.append(file, length, cache);
     }
 
     @Override
     public boolean temporary() {
-        //TODO check
-        return false;
+        return delegate.temporary();
     }
 
     @Override
