@@ -36,45 +36,55 @@ public class CryptoPathMapper {
     private static final int MAX_CACHED_DIR_PATHS = 1000;
 
     private final LoadingCache<String, Path> directoryPathCache;
-    private final Path dataRoot;
+    private final Path vault;
     private final CryptoVault cryptomator;
 
     public CryptoPathMapper(final Path vault, final CryptoVault cryptomator) {
-        this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        this.vault = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.cryptomator = cryptomator;
-        this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolveDirectory));
+        this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolve));
     }
 
-    public String getCiphertextFileName(final String dirId, final String cleartextName, final EnumSet<AbstractPath.Type> type) throws IOException {
+    /**
+     * @param directoryId Directory id
+     * @param filename    Clear text filename
+     * @param type        File type
+     * @return Encrypted filename
+     */
+    public String getCiphertextFilename(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws IOException {
         final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
-        final String ciphertextName = prefix + cryptomator.getCryptor().fileNameCryptor().encryptFilename(cleartextName, dirId.getBytes(StandardCharsets.UTF_8));
+        final String ciphertextName = String.format("%s%s", prefix,
+                cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
         return cryptomator.getLongFileNameProvider().deflate(ciphertextName);
     }
 
-    public Directory getCiphertextDir(final Path cleartextPath) throws IOException {
-        if(dataRoot.getParent().getAbsolute().equals(cleartextPath.getAbsolute())) {
+    /**
+     * @param directory Clear text
+     */
+    public Directory getCiphertextDirectory(final Path directory) throws IOException {
+        if(vault.getParent().getAbsolute().equals(directory.getAbsolute())) {
             return new Directory(ROOT_DIR_ID, directoryPathCache.getUnchecked(ROOT_DIR_ID));
         }
         else {
-            final Directory parent = getCiphertextDir(cleartextPath.getParent());
-            final String cleartextName = cleartextPath.getName();
-            final String ciphertextName = getCiphertextFileName(parent.dirId, cleartextName, EnumSet.of(Path.Type.directory));
+            final Directory parent = this.getCiphertextDirectory(directory.getParent());
+            final String cleartextName = directory.getName();
+            final String ciphertextName = this.getCiphertextFilename(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
             final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
             return new Directory(dirId, directoryPathCache.getUnchecked(dirId));
         }
     }
 
-    private Path resolveDirectory(final String dirId) {
-        final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(dirId);
-        return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
+    private Path resolve(final String directoryId) {
+        final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
+        return new Path(new Path(vault, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
 
     public static final class Directory {
-        public final String dirId;
+        public final String id;
         public final Path path;
 
-        public Directory(final String dirId, final Path path) {
-            this.dirId = dirId;
+        public Directory(final String id, final Path path) {
+            this.id = id;
             this.path = path;
         }
     }

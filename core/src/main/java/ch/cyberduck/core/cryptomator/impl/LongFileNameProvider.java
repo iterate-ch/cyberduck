@@ -17,13 +17,12 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.ContentReader;
 
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.EnumSet;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +30,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.io.BaseEncoding;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -70,12 +68,10 @@ public class LongFileNameProvider {
             return ids.get(shortFileName);
         }
         catch(ExecutionException e) {
-            if(e.getCause() instanceof IOException || e.getCause() instanceof UncheckedIOException) {
-                throw new IOException(e);
+            if(e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
             }
-            else {
-                throw new UncheckedExecutionException("Unexpected exception", e);
-            }
+            throw new IOException(e.getCause());
         }
     }
 

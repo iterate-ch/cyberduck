@@ -17,8 +17,9 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.ContentReader;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -30,21 +31,21 @@ import com.google.common.cache.LoadingCache;
 
 public class DirectoryIdProvider {
 
-    private static final int MAX_CACHE_SIZE = 5000;
-
     private final LoadingCache<Path, String> ids;
     private final Session<?> session;
 
     public DirectoryIdProvider(final Session<?> session) {
         this.session = session;
-        this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
+        this.ids = CacheBuilder.newBuilder().maximumSize(
+                PreferencesFactory.get().getInteger("browser.cache.size")
+        ).build(new Loader());
     }
 
     private class Loader extends CacheLoader<Path, String> {
         @Override
-        public String load(final Path dirFilePath) throws BackgroundException {
+        public String load(final Path directory) throws BackgroundException {
             try {
-                return new ContentReader(session).readToString(dirFilePath);
+                return new ContentReader(session).readToString(directory);
             }
             catch(BackgroundException e) {
                 return UUID.randomUUID().toString();
@@ -52,12 +53,15 @@ public class DirectoryIdProvider {
         }
     }
 
-    public String load(final Path dirFilePath) throws IOException {
+    public String load(final Path directory) throws IOException {
         try {
-            return ids.get(dirFilePath);
+            return ids.get(directory);
         }
         catch(ExecutionException e) {
-            throw new IOException("Failed to load contents of directory file at path " + dirFilePath, e);
+            if(e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e.getCause());
         }
     }
 
@@ -65,10 +69,10 @@ public class DirectoryIdProvider {
      * Removes the id currently associated with <code>dirFilePath</code> from cache. Useful during folder delete operations.
      * This method has no effect if the content of the given dirFile is not currently cached.
      *
-     * @param dirFilePath The dirFile for which the cache should be deleted.
+     * @param directory The directory for which the cache should be deleted.
      */
-    public void delete(Path dirFilePath) {
-        ids.invalidate(dirFilePath);
+    public void delete(Path directory) {
+        ids.invalidate(directory);
     }
 
     /**
@@ -76,14 +80,14 @@ public class DirectoryIdProvider {
      * Useful during folder move operations.
      * This method has no effect if the content of the source dirFile is not currently cached.
      *
-     * @param srcDirFilePath The dirFile that contained the cached id until now.
-     * @param dstDirFilePath The dirFile that will contain the id from now on.
+     * @param sourceDirectory The directory that contained the cached id until now.
+     * @param targetDirectory The directory that will contain the id from now on.
      */
-    public void move(Path srcDirFilePath, Path dstDirFilePath) {
-        String id = ids.getIfPresent(srcDirFilePath);
+    public void move(Path sourceDirectory, Path targetDirectory) {
+        String id = ids.getIfPresent(sourceDirectory);
         if(id != null) {
-            ids.put(dstDirFilePath, id);
-            ids.invalidate(srcDirFilePath);
+            ids.put(targetDirectory, id);
+            ids.invalidate(sourceDirectory);
         }
     }
 }

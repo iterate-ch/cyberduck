@@ -38,7 +38,7 @@ public class CryptoListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return delegate.list(cryptomator.getCryptoPathMapper().getCiphertextDir(directory).path,
+            return delegate.list(cryptomator.encrypt(directory),
                     new DecryptingListProgressListener(cryptomator, directory, listener));
         }
         catch(IOException e) {

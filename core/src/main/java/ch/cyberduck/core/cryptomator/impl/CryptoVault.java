@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
 import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
@@ -46,11 +47,11 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ContentReader;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
@@ -58,9 +59,12 @@ import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Cryptomator vault implementation
@@ -80,6 +84,9 @@ public class CryptoVault implements Vault {
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
+    private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
+
+
     private final Session<?> session;
 
     private Cryptor cryptor;
@@ -94,10 +101,9 @@ public class CryptoVault implements Vault {
     /**
      * Create vault
      *
-     * @param home
-     * @param keychain
-     * @param callback
-     * @throws BackgroundException
+     * @param home     Target for vault
+     * @param keychain Password store
+     * @param callback Password prompt
      */
     @Override
     public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
@@ -154,9 +160,9 @@ public class CryptoVault implements Vault {
             catch(InvalidPassphraseException e) {
                 throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
             }
-            longFileNameProvider = new LongFileNameProvider(home, session);
-            directoryIdProvider = new DirectoryIdProvider(session);
-            cryptoPathMapper = new CryptoPathMapper(home, this);
+            this.longFileNameProvider = new LongFileNameProvider(home, session);
+            this.directoryIdProvider = new DirectoryIdProvider(session);
+            this.cryptoPathMapper = new CryptoPathMapper(home, this);
         }
     }
 
@@ -167,9 +173,61 @@ public class CryptoVault implements Vault {
 
     public Path encrypt(final Path file) throws BackgroundException {
         try {
-            final CryptoPathMapper.Directory ciphertextDirectory = cryptoPathMapper.getCiphertextDir(file.getParent());
-            final String ciphertextFileName = cryptoPathMapper.getCiphertextFileName(ciphertextDirectory.dirId, file.getName(), EnumSet.of(Path.Type.file));
-            return new Path(ciphertextDirectory.path, ciphertextFileName, EnumSet.of(Path.Type.file));
+            if(file.isDirectory()) {
+                final CryptoPathMapper.Directory directory = cryptoPathMapper.getCiphertextDirectory(file);
+                return directory.path;
+            }
+            else {
+                final CryptoPathMapper.Directory parent = cryptoPathMapper.getCiphertextDirectory(file.getParent());
+                final String filename = cryptoPathMapper.getCiphertextFilename(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                return new Path(parent.path, filename, EnumSet.of(Path.Type.file));
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    private Path inflate(final Path cipher) throws CryptoAuthenticationException {
+        final String fileName = cipher.getName();
+        if(LongFileNameProvider.isDeflated(fileName)) {
+            try {
+                final String longFileName = longFileNameProvider.inflate(fileName);
+                return new Path(cipher.getParent(), longFileName, cipher.getType(), cipher.attributes());
+            }
+            catch(IOException e) {
+                throw new CryptoAuthenticationException(
+                        String.format("Failure to inflate filename from %s", cipher.getName()), e);
+            }
+        }
+        else {
+            return cipher;
+        }
+    }
+
+    public Path decrypt(final Path directory, final Path f) throws BackgroundException {
+        try {
+            final Path inflated = this.inflate(f);
+            final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
+            final CryptoPathMapper.Directory cryptoDirectory = cryptoPathMapper.getCiphertextDirectory(directory);
+            if(m.find()) {
+                final String ciphertext = m.group(1);
+                try {
+                    final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
+                            ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
+                    return new Path(directory, cleartextFilename,
+                            inflated.getName().startsWith(Constants.DIR_PREFIX) ?
+                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), inflated.attributes());
+                }
+                catch(AuthenticationFailedException e) {
+                    throw new CryptoAuthenticationException(
+                            "Failure to decrypt due to an unauthentic ciphertext", e);
+                }
+            }
+            else {
+                throw new CryptoAuthenticationException(
+                        String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -186,10 +244,6 @@ public class CryptoVault implements Vault {
 
     public DirectoryIdProvider getDirectoryIdProvider() {
         return directoryIdProvider;
-    }
-
-    public CryptoPathMapper getCryptoPathMapper() {
-        return cryptoPathMapper;
     }
 
     @Override
