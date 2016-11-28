@@ -39,7 +39,7 @@ import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.VaultFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -279,8 +279,8 @@ public class CryptoVault implements Vault {
             if(type == Move.class) {
                 return (T) new CryptoMoveFeature((Move) delegate, this);
             }
-            if(type == Attributes.class) {
-                return (T) new CryptoAttributesFeature((Attributes) delegate, this);
+            if(type == AttributesFinder.class) {
+                return (T) new CryptoAttributesFeature((AttributesFinder) delegate, this);
             }
             if(type == Find.class) {
                 return (T) new CryptoFindFeature((Find) delegate, this);

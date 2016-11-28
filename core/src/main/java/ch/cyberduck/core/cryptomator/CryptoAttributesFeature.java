@@ -20,14 +20,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 
-public class CryptoAttributesFeature implements Attributes {
+public class CryptoAttributesFeature implements AttributesFinder {
 
-    private final Attributes delegate;
+    private final AttributesFinder delegate;
     private final CryptoVault cryptomator;
 
-    public CryptoAttributesFeature(final Attributes delegate, final CryptoVault cryptomator) {
+    public CryptoAttributesFeature(final AttributesFinder delegate, final CryptoVault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
@@ -38,7 +38,7 @@ public class CryptoAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         delegate.withCache(cache);
         return this;
     }

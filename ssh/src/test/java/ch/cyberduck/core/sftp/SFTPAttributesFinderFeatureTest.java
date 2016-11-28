@@ -17,6 +17,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -102,7 +103,7 @@ public class SFTPAttributesFinderFeatureTest {
                 credentials.setPassword("coke4you");
             }
         });
-        final PathAttributes attributes = session.getFeature(ch.cyberduck.core.features.Attributes.class).find(
+        final PathAttributes attributes = session.getFeature(AttributesFinder.class).find(
                 new Path(vault, "blabal", EnumSet.of(Path.Type.directory)));
         assertNotNull(attributes);
         session.close();
