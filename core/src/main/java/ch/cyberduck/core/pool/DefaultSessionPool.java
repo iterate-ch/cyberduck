@@ -60,19 +60,7 @@ public class DefaultSessionPool implements SessionPool {
 
     private final Host bookmark;
 
-    private final int retry;
-
     private final GenericObjectPool<Session> pool;
-
-    /**
-     * The number of times this action has been run
-     */
-    private final ThreadLocal<Integer> repeat = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
 
     private SessionPool features = DISCONNECTED;
 
@@ -81,7 +69,6 @@ public class DefaultSessionPool implements SessionPool {
         this.connect = connect;
         this.cache = cache;
         this.bookmark = bookmark;
-        this.retry = PreferencesFactory.get().getInteger("connection.retry");
         this.progress = progress;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
@@ -137,6 +124,11 @@ public class DefaultSessionPool implements SessionPool {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
         }
         try {
+            final int retry = PreferencesFactory.get().getInteger("connection.retry");
+            /**
+             * The number of times this action has been run
+             */
+            int repeat = 0;
             while(!callback.isCanceled()) {
                 try {
                     if(log.isInfoEnabled()) {
@@ -168,24 +160,8 @@ public class DefaultSessionPool implements SessionPool {
                         // fix null pointer
                         final BackgroundException failure = (BackgroundException) cause;
                         log.warn(String.format("Failure %s obtaining connection for %s", failure, this));
-                        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                            // Downgrade pool to single connection
-                            final int max = pool.getMaxTotal() - 1;
-                            log.warn(String.format("Lower maximum pool size to %d connections.", max));
-                            pool.setMaxTotal(max);
-                            pool.setMaxIdle(pool.getMaxIdle() - 1);
-                            if(this.retry()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Connect failed with failure %s", e));
-                                }
-                                // This is an automated retry. Wait some time first.
-                                this.pause();
-                                if(!pool.isClosed()) {
-                                    repeat.set(repeat.get() + 1);
-                                    // Retry to connect
-                                    continue;
-                                }
-                            }
+                        if(this.retry(failure, retry - repeat++)) {
+                            continue;
                         }
                         throw failure;
                     }
@@ -204,6 +180,60 @@ public class DefaultSessionPool implements SessionPool {
             }
             throw new BackgroundException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * The number of times a new connection attempt should be made. Takes into
+     * account the number of times already tried.
+     *
+     * @param failure   Connect failure
+     * @param remaining Remaining number of connect attempts. The initial connection attempt does not count
+     * @return Greater than zero if a failed action should be repeated again
+     */
+    protected boolean retry(final BackgroundException failure, final int remaining) {
+        if(remaining > 0) {
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Retry for failure %s", failure));
+                }
+                {
+                    final int max = Math.max(1, pool.getMaxIdle() - 1);
+                    log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                    pool.setMaxIdle(max);
+                }
+                {
+                    final int max = Math.max(1, pool.getMaxTotal() - 1);
+                    log.warn(String.format("Lower maximum total pool size to %d connections.", max));
+                    pool.setMaxTotal(max);
+                }
+                // Clear pool from idle connections
+                pool.clear();
+                // This is an automated retry. Wait some time first.
+                this.pause(remaining);
+                // Retry to connect
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Idle this action for some time. Blocks the caller.
+     */
+    protected void pause(final int attempt) {
+        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return pool.isClosed();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
+                        delay, attempt));
+            }
+        });
+        pauser.await();
     }
 
     @Override
@@ -238,37 +268,6 @@ public class DefaultSessionPool implements SessionPool {
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
         }
-    }
-
-    /**
-     * The number of times a new connection attempt should be made. Takes into
-     * account the number of times already tried.
-     *
-     * @return Greater than zero if a failed action should be repeated again
-     */
-    protected boolean retry() {
-        // The initial connection attempt does not count
-        return retry - repeat.get() > 0;
-    }
-
-    /**
-     * Idle this action for some time. Blocks the caller.
-     */
-    private void pause() {
-        final int attempt = retry - repeat.get();
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-            @Override
-            public boolean isCanceled() {
-                return pool.isClosed();
-            }
-
-            @Override
-            public void progress(final Integer delay) {
-                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                        delay, attempt));
-            }
-        });
-        pauser.await();
     }
 
     @Override
