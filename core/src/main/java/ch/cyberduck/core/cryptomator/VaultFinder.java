@@ -41,12 +41,15 @@ public class VaultFinder implements Home {
 
     @Override
     public Path find() throws BackgroundException {
-        return delegate.find();
+        return load(delegate.find());
     }
 
     @Override
     public Path find(final Path workdir, final String path) {
-        final Path home = delegate.find(workdir, path);
+        return load(delegate.find(workdir, path));
+    }
+
+    private Path load(final Path home) {
         try {
             vault.load(home, keychain, prompt);
         }
