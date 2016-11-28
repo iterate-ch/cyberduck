@@ -34,7 +34,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -47,7 +47,7 @@ import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -81,7 +81,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     private final Session<?> session;
 
-    private Attributes attribute;
+    private AttributesFinder attribute;
 
     private DownloadFilterOptions options;
 
@@ -90,7 +90,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.attribute = new DefaultAttributesFeature(session);
+        this.attribute = new DefaultAttributesFinderFeature(session);
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         return this;
     }
 
-    public AbstractDownloadFilter withAttributes(final Attributes attribute) {
+    public AbstractDownloadFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
         return this;
     }

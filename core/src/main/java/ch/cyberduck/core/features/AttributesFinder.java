@@ -20,7 +20,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 
-public interface Attributes {
+public interface AttributesFinder {
 
     /**
      * Find file attributes
@@ -33,5 +33,5 @@ public interface Attributes {
      * Decorate with cache
      * @param cache Path cache
      */
-    Attributes withCache(PathCache cache);
+    AttributesFinder withCache(PathCache cache);
 }

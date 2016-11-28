@@ -22,14 +22,14 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -52,16 +52,16 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
             = new ThreadLocal<B2GetUploadUrlResponse>();
 
     public B2WriteFeature(final B2Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public B2WriteFeature(final B2Session session, final Find finder, final Attributes attributes) {
+    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;

@@ -95,7 +95,7 @@ public class S3ThresholdUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
@@ -132,7 +132,7 @@ public class S3ThresholdUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);

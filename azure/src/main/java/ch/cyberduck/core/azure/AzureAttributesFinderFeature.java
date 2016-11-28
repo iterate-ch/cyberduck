@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
@@ -41,7 +41,7 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
-public class AzureAttributesFeature implements Attributes {
+public class AzureAttributesFinderFeature implements AttributesFinder {
 
     private final AzureSession session;
 
@@ -50,7 +50,7 @@ public class AzureAttributesFeature implements Attributes {
     private final PathContainerService containerService
             = new AzurePathContainerService();
 
-    public AzureAttributesFeature(final AzureSession session, final OperationContext context) {
+    public AzureAttributesFinderFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
     }
@@ -93,7 +93,7 @@ public class AzureAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(PathCache cache) {
+    public AttributesFinder withCache(PathCache cache) {
         return this;
     }
 }

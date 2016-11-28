@@ -5,7 +5,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -198,14 +198,14 @@ public class SingleTransferWorkerTest {
 
             @Override
             public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, action, listener).withAttributes(new Attributes() {
+                return super.filter(session, action, listener).withAttributes(new AttributesFinder() {
                     @Override
                     public PathAttributes find(final Path file) throws BackgroundException {
                         return file.attributes();
                     }
 
                     @Override
-                    public Attributes withCache(final PathCache cache) {
+                    public AttributesFinder withCache(final PathCache cache) {
                         return this;
                     }
                 });

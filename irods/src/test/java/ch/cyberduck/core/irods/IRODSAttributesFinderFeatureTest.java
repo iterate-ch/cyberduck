@@ -44,7 +44,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
-public class IRODSAttributesFeatureTest {
+public class IRODSAttributesFinderFeatureTest {
 
     @BeforeClass
     public static void protocol() {
@@ -61,7 +61,7 @@ public class IRODSAttributesFeatureTest {
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        new IRODSAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class IRODSAttributesFeatureTest {
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test);
-        final PathAttributes attributes = new IRODSAttributesFeature(session).find(test);
+        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("iterate", attributes.getOwner());
         assertEquals("iplant", attributes.getGroup());

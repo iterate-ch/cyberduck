@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class PathAttributesTest {
+public class PathAttributesFinderTest {
 
     @Test
     public void testGetAsDictionary() throws Exception {

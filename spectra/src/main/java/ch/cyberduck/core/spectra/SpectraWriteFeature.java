@@ -14,12 +14,12 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3WriteFeature;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,10 +28,10 @@ import org.jets3t.service.model.S3Object;
 public class SpectraWriteFeature extends S3WriteFeature {
 
     public SpectraWriteFeature(final SpectraSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public SpectraWriteFeature(final SpectraSession session, final Find finder, final Attributes attributes) {
+    public SpectraWriteFeature(final SpectraSession session, final Find finder, final AttributesFinder attributes) {
         super(session, new S3DisabledMultipartService(), finder, attributes);
     }
 

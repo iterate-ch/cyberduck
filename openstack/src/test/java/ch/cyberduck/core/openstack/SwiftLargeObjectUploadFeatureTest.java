@@ -16,7 +16,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -87,7 +87,7 @@ public class SwiftLargeObjectUploadFeatureTest {
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
-        assertEquals(random.length, new SwiftAttributesFeature(session).find(test).getSize());
+        assertEquals(random.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[random.length];
@@ -148,7 +148,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
-        assertEquals(2 * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize(), 0L);
+        assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -194,8 +194,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         assertNull(Checksum.parse(object.getMd5sum()));
-        assertNull(new SwiftAttributesFeature(session).find(test).getChecksum());
-        assertNotNull(new DefaultAttributesFeature(session).find(test).getChecksum());
+        assertNull(new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum());
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());

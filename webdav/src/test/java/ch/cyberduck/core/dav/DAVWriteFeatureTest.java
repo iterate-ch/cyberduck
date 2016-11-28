@@ -20,7 +20,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -109,7 +109,7 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
@@ -149,7 +149,7 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus();
@@ -164,7 +164,7 @@ public class DAVWriteFeatureTest {
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
@@ -325,8 +325,8 @@ public class DAVWriteFeatureTest {
         out.close();
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
-        assertEquals(content.length, new DAVAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(
                 new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))

@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -57,7 +57,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
         super(session);
     }
 
-    public AbstractHttpWriteFeature(final Find finder, final Attributes attributes) {
+    public AbstractHttpWriteFeature(final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
     }
 

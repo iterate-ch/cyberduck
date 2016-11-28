@@ -11,7 +11,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -108,14 +108,14 @@ public class RenameExistingFilterTest {
                 return this;
             }
         };
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };
@@ -212,14 +212,14 @@ public class RenameExistingFilterTest {
                 return this;
             }
         };
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };

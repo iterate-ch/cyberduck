@@ -27,7 +27,7 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +41,8 @@ import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
 import ch.iterate.openstack.swift.model.Region;
 
-public class SwiftAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(SwiftAttributesFeature.class);
+public class SwiftAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(SwiftAttributesFinderFeature.class);
 
     private final SwiftSession session;
 
@@ -54,11 +54,11 @@ public class SwiftAttributesFeature implements Attributes {
 
     private final SwiftRegionService regionService;
 
-    public SwiftAttributesFeature(SwiftSession session) {
+    public SwiftAttributesFinderFeature(SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
-    public SwiftAttributesFeature(final SwiftSession session, final SwiftRegionService regionService) {
+    public SwiftAttributesFinderFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
     }
@@ -121,7 +121,7 @@ public class SwiftAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

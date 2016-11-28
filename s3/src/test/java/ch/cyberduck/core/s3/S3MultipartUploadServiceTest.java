@@ -69,7 +69,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
@@ -107,7 +107,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
@@ -259,7 +259,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(12L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        assertEquals(12L * 1024L * 1024L, new S3AttributesFeature(session).find(test).getSize(), 0L);
+        assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
         final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

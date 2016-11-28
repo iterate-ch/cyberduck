@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
@@ -33,11 +33,11 @@ import org.apache.commons.net.ftp.FTPReply;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class FTPAttributesFeature implements Attributes {
+public class FTPAttributesFinderFeature implements AttributesFinder {
 
     private final FTPSession session;
 
-    public FTPAttributesFeature(FTPSession session) {
+    public FTPAttributesFinderFeature(FTPSession session) {
         this.session = session;
     }
 
@@ -66,7 +66,7 @@ public class FTPAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

@@ -22,7 +22,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVAttributesFeatureTest {
+public class DAVAttributesFinderFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -33,7 +33,7 @@ public class DAVAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final DAVAttributesFeature f = new DAVAttributesFeature(session);
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
             f.find(test);
         }
@@ -52,7 +52,7 @@ public class DAVAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
-        final DAVAttributesFeature f = new DAVAttributesFeature(session);
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(923, attributes.getSize());
         assertNotNull(attributes.getModificationDate());

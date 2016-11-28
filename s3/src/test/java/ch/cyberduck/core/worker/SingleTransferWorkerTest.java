@@ -31,7 +31,7 @@ import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.s3.S3AttributesFeature;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3MultipartUploadService;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -124,7 +124,7 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
-        assertEquals(6L * 1024L * 1024L, new S3AttributesFeature(session).find(test).getSize());
+        assertEquals(6L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
         assertEquals(6L * 1024L * 1024L, counter.getSent(), 0L);
         assertTrue(failed.get());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

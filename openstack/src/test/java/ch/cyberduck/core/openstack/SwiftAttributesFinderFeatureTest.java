@@ -25,7 +25,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SwiftAttributesFeatureTest {
+public class SwiftAttributesFinderFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -38,7 +38,7 @@ public class SwiftAttributesFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        final SwiftAttributesFeature f = new SwiftAttributesFeature(session);
+        final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         f.find(test);
     }
 
@@ -55,7 +55,7 @@ public class SwiftAttributesFeatureTest {
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session).touch(test);
-        final SwiftAttributesFeature f = new SwiftAttributesFeature(session);
+        final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
@@ -83,7 +83,7 @@ public class SwiftAttributesFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final PathAttributes attributes = new SwiftAttributesFeature(session).find(container);
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container);
         assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), container.getType());
         session.close();
     }
@@ -101,10 +101,10 @@ public class SwiftAttributesFeatureTest {
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(file);
-        final PathAttributes attributes = new SwiftAttributesFeature(session).find(file);
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file);
         // Test wrong type
         try {
-            new SwiftAttributesFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)));
+            new SwiftAttributesFinderFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {

@@ -35,7 +35,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
@@ -46,7 +46,7 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -69,7 +69,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     protected Find find;
 
-    protected Attributes attribute;
+    protected AttributesFinder attribute;
 
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
@@ -83,7 +83,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         this.session = session;
         this.options = options;
         this.find = new DefaultFindFeature(session);
-        this.attribute = new DefaultAttributesFeature(session);
+        this.attribute = new DefaultAttributesFinderFeature(session);
     }
 
     @Override
@@ -98,7 +98,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         return this;
     }
 
-    public AbstractUploadFilter withAttributes(final Attributes attribute) {
+    public AbstractUploadFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
         return this;
     }

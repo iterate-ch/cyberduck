@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
@@ -41,15 +41,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class S3AttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
+public class S3AttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
 
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    public S3AttributesFeature(final S3Session session) {
+    public S3AttributesFinderFeature(final S3Session session) {
         this.session = session;
     }
 
@@ -67,7 +67,7 @@ public class S3AttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 

@@ -10,10 +10,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -119,8 +119,8 @@ public class ResumeFilterTest {
 
             @Override
             public <T> T getFeature(Class<T> type) {
-                if(type == Attributes.class) {
-                    return (T) new DefaultAttributesFeature(this);
+                if(type == AttributesFinder.class) {
+                    return (T) new DefaultAttributesFinderFeature(this);
                 }
                 return super.getFeature(type);
             }

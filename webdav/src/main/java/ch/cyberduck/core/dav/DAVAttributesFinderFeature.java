@@ -25,7 +25,7 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.Checksum;
 
@@ -43,15 +43,15 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
-public class DAVAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(DAVAttributesFeature.class);
+public class DAVAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(DAVAttributesFinderFeature.class);
 
     private final DAVSession session;
 
     private final RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();
 
-    public DAVAttributesFeature(DAVSession session) {
+    public DAVAttributesFinderFeature(DAVSession session) {
         this.session = session;
     }
 
@@ -140,7 +140,7 @@ public class DAVAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

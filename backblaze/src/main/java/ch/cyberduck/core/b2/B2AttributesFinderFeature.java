@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,11 +34,11 @@ import synapticloop.b2.response.B2FileResponse;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2AttributesFeature implements Attributes {
+public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
 
-    public B2AttributesFeature(final B2Session session) {
+    public B2AttributesFinderFeature(final B2Session session) {
         this.session = session;
     }
 
@@ -79,7 +79,7 @@ public class B2AttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

@@ -4,6 +4,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
@@ -344,15 +345,15 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
-                    return (T) new ch.cyberduck.core.features.Attributes() {
+                if(type.equals(AttributesFinder.class)) {
+                    return (T) new AttributesFinder() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes();
                         }
 
                         @Override
-                        public ch.cyberduck.core.features.Attributes withCache(PathCache cache) {
+                        public AttributesFinder withCache(PathCache cache) {
                             return this;
                         }
                     };

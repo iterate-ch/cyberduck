@@ -33,7 +33,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -200,8 +200,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == Headers.class) {
             return (T) new AzureMetadataFeature(this, context);
         }
-        if(type == Attributes.class) {
-            return (T) new AzureAttributesFeature(this, context);
+        if(type == AttributesFinder.class) {
+            return (T) new AzureAttributesFinderFeature(this, context);
         }
         if(type == Logging.class) {
             return (T) new AzureLoggingFeature(this, context);

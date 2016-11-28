@@ -37,6 +37,6 @@ public class DropboxIdProvider implements IdProvider {
         if(file.isRoot()) {
             return null;
         }
-        return new DropboxAttributesFeature(session).find(file).getVersionId();
+        return new DropboxAttributesFinderFeature(session).find(file).getVersionId();
     }
 }
