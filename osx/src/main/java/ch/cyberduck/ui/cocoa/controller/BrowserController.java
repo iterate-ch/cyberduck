@@ -3255,7 +3255,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final SessionPool session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
-                        new MountWorker(host, cache, listener, PasswordStoreFactory.get(), LoginCallbackFactory.get(BrowserController.this)) {
+                        new MountWorker(host, cache, listener, LoginCallbackFactory.get(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);

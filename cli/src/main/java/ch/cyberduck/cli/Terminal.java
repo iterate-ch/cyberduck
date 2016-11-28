@@ -362,9 +362,9 @@ public class Terminal {
     }
 
     protected Exit mount(final SessionPool session) {
-        final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
+        final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
                 controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache),
-                PasswordStoreFactory.get(), new TerminalLoginCallback(reader)));
+                new TerminalLoginCallback(reader)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -374,8 +374,8 @@ public class Terminal {
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
-                new TerminalListProgressListener(reader, verbose));
-        final SessionBackgroundAction action = new TerminalBackgroundAction<AttributedList<Path>>(
+                LoginCallbackFactory.get(controller), new TerminalListProgressListener(reader, verbose));
+        final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
                 controller,
                 session, worker);
         this.execute(action);
