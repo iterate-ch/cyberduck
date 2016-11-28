@@ -174,12 +174,12 @@ public class CryptoVault implements Vault {
     public Path encrypt(final Path file) throws BackgroundException {
         try {
             if(file.isDirectory()) {
-                final CryptoPathMapper.Directory directory = cryptoPathMapper.getCiphertextDirectory(file);
+                final CryptoDirectory directory = cryptoPathMapper.toEncrypted(file);
                 return directory.path;
             }
             else {
-                final CryptoPathMapper.Directory parent = cryptoPathMapper.getCiphertextDirectory(file.getParent());
-                final String filename = cryptoPathMapper.getCiphertextFilename(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                final CryptoDirectory parent = cryptoPathMapper.toEncrypted(file.getParent());
+                final String filename = cryptoPathMapper.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
                 return new Path(parent.path, filename, EnumSet.of(Path.Type.file));
             }
         }
@@ -209,7 +209,7 @@ public class CryptoVault implements Vault {
         try {
             final Path inflated = this.inflate(f);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            final CryptoPathMapper.Directory cryptoDirectory = cryptoPathMapper.getCiphertextDirectory(directory);
+            final CryptoDirectory cryptoDirectory = cryptoPathMapper.toEncrypted(directory);
             if(m.find()) {
                 final String ciphertext = m.group(1);
                 try {

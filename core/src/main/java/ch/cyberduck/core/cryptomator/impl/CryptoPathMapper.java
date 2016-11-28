@@ -51,7 +51,7 @@ public class CryptoPathMapper {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String getCiphertextFilename(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws IOException {
+    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws IOException {
         final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
@@ -61,16 +61,16 @@ public class CryptoPathMapper {
     /**
      * @param directory Clear text
      */
-    public Directory getCiphertextDirectory(final Path directory) throws IOException {
+    public CryptoDirectory toEncrypted(final Path directory) throws IOException {
         if(vault.getParent().getAbsolute().equals(directory.getAbsolute())) {
-            return new Directory(ROOT_DIR_ID, directoryPathCache.getUnchecked(ROOT_DIR_ID));
+            return new CryptoDirectory(ROOT_DIR_ID, directoryPathCache.getUnchecked(ROOT_DIR_ID));
         }
         else {
-            final Directory parent = this.getCiphertextDirectory(directory.getParent());
+            final CryptoDirectory parent = this.toEncrypted(directory.getParent());
             final String cleartextName = directory.getName();
-            final String ciphertextName = this.getCiphertextFilename(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
+            final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
             final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
-            return new Directory(dirId, directoryPathCache.getUnchecked(dirId));
+            return new CryptoDirectory(dirId, directoryPathCache.getUnchecked(dirId));
         }
     }
 
@@ -79,13 +79,4 @@ public class CryptoPathMapper {
         return new Path(new Path(vault, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
 
-    public static final class Directory {
-        public final String id;
-        public final Path path;
-
-        public Directory(final String id, final Path path) {
-            this.id = id;
-            this.path = path;
-        }
-    }
 }
