@@ -63,6 +63,8 @@ import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonParseException;
+
 /**
  * Cryptomator vault implementation
  */
@@ -178,7 +180,13 @@ public class CryptoVault implements Vault {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Read master key %s", masterKey));
             }
-            final KeyFile keyFile = KeyFile.parse(masterKey.getBytes());
+            final KeyFile masterKeyFile;
+            try {
+                masterKeyFile = KeyFile.parse(masterKey.getBytes());
+            }
+            catch(JsonParseException e) {
+                throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+            }
             final Host bookmark = session.getHost();
             String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
             if(null == passphrase) {
@@ -199,7 +207,7 @@ public class CryptoVault implements Vault {
                 }
                 passphrase = credentials.getPassword();
             }
-            init(home, keyFile, passphrase);
+            this.init(home, masterKeyFile, passphrase);
         }
     }
 
