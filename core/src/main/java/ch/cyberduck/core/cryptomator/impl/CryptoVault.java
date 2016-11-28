@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
@@ -215,9 +216,16 @@ public class CryptoVault implements Vault {
                 try {
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
-                    return new Path(directory, cleartextFilename,
+                    final Path decrypted = new Path(directory, cleartextFilename,
                             inflated.getName().startsWith(Constants.DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
+                    if(decrypted.isDirectory()) {
+                        final Permission permission = decrypted.attributes().getPermission();
+                        permission.setUser(permission.getUser().or(Permission.Action.execute));
+                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
+                        permission.setOther(permission.getOther().or(Permission.Action.execute));
+                    }
+                    return decrypted;
                 }
                 catch(AuthenticationFailedException e) {
                     throw new CryptoAuthenticationException(
