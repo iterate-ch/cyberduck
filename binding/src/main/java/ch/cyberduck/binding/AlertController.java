@@ -18,6 +18,7 @@ package ch.cyberduck.binding;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -62,8 +63,13 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     public int beginSheet() {
+        return new SheetInvoker(this, parent, this).beginSheet();
+    }
+
+    @Override
+    public NSWindow window() {
         this.focus();
-        return new SheetInvoker(this, parent, alert.window()).beginSheet();
+        return alert.window();
     }
 
     protected void focus() {

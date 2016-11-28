@@ -183,7 +183,12 @@ public class CryptoVault implements Vault {
             final Host bookmark = session.getHost();
             String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
             if(null == passphrase) {
-                final Credentials credentials = new Credentials();
+                final Credentials credentials = new Credentials() {
+                    @Override
+                    public String getPasswordPlaceholder() {
+                        return LocaleFactory.localizedString("Passphrase", "Cryptomator");
+                    }
+                };
                 // Default to false for save in keychain
                 credentials.setSaved(false);
                 callback.prompt(bookmark, credentials,
