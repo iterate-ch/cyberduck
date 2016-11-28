@@ -29,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
@@ -138,7 +139,7 @@ public class CryptoVault implements Vault {
         }
         final ContentWriter writer = new ContentWriter(session);
         writer.write(file, keyFile.serialize());
-        init(home, keyFile, passphrase);
+        this.init(home, keyFile, passphrase);
         try {
             final Path secondLevel = cryptoDirectoryProvider.toEncrypted(home).path;
             final Path firstLevel = secondLevel.getParent();
@@ -146,7 +147,7 @@ public class CryptoVault implements Vault {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create vault root directory at %s", secondLevel));
             }
-            final Directory feature = session.getFeature(Directory.class);
+            final Directory feature = session._getFeature(Directory.class);
             feature.mkdir(dataDir);
             feature.mkdir(firstLevel);
             feature.mkdir(secondLevel);
@@ -161,10 +162,11 @@ public class CryptoVault implements Vault {
      *
      * @param home     Default path
      * @param callback Callback
-     * @throws ch.cyberduck.core.exception.LoginCanceledException User dismissed passphrase prompt
-     * @throws BackgroundException                                Failure reading master key from server
-     * @throws NotfoundException                                  No master key file in home
-     * @throws CryptoAuthenticationException                      Failure opening master key file
+     * @throws VaultException                Failure parsing master key
+     * @throws LoginCanceledException        User dismissed passphrase prompt
+     * @throws BackgroundException           Failure reading master key from server
+     * @throws NotfoundException             No master key file in home
+     * @throws CryptoAuthenticationException Failure opening master key file
      */
     @Override
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
