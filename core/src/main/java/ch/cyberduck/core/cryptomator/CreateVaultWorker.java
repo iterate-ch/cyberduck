@@ -22,15 +22,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.worker.CreateDirectoryWorker;
 
-public class CreateVaultWorker extends Worker<Boolean> {
+public class CreateVaultWorker extends CreateDirectoryWorker {
 
     private final Path directory;
     private final PasswordStore keychain;
     private final LoginCallback login;
 
-    public CreateVaultWorker(final Path directory, final PasswordStore keychain, final LoginCallback login) {
+    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final LoginCallback login) {
+        super(directory, region);
         this.directory = directory;
         this.keychain = keychain;
         this.login = login;
@@ -39,7 +40,9 @@ public class CreateVaultWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            session.getFeature(Vault.class).create(directory, keychain, login);
+            if(super.run(session)) {
+                session.getFeature(Vault.class).create(directory, keychain, login);
+            }
         }
         catch(LoginCanceledException e) {
             return false;
