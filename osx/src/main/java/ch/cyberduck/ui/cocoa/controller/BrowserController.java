@@ -2560,6 +2560,11 @@ public class BrowserController extends WindowController
     }
 
     @Action
+    public void createEncryptedVaultButtonClicked(final ID sender) {
+        this.createFolderButtonClicked(sender);
+    }
+
+    @Action
     public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
         browser.editRow(browser.columnWithIdentifier(Column.filename.name()),
