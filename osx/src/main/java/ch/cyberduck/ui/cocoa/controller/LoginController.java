@@ -34,6 +34,7 @@ public class LoginController extends ConnectionController {
 
     private final String title;
     private final String reason;
+    private final LoginOptions options;
 
     @Outlet
     private NSImageView iconView;
@@ -47,6 +48,7 @@ public class LoginController extends ConnectionController {
         super(bookmark, credentials, new LoginInputValidator(credentials, bookmark, options));
         this.title = title;
         this.reason = reason;
+        this.options = options;
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -80,7 +82,12 @@ public class LoginController extends ConnectionController {
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
-        window.makeFirstResponder(usernameField);
+        if(options.user) {
+            window.makeFirstResponder(usernameField);
+        }
+        else {
+            window.makeFirstResponder(passwordField);
+        }
     }
 
     public void setIconView(NSImageView iconView) {
