@@ -55,7 +55,6 @@ public class AzureAttributesFinderFeatureTest {
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
-        assertNotNull(attributes.getChecksum());
         assertNotNull(attributes.getETag());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
