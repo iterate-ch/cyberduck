@@ -180,7 +180,7 @@ public class CryptoVault implements Vault {
             else {
                 final CryptoDirectory parent = cryptoDirectoryProvider.toEncrypted(file.getParent());
                 final String filename = cryptoDirectoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
-                return new Path(parent.path, filename, EnumSet.of(Path.Type.file));
+                return new Path(parent.path, filename, EnumSet.of(Path.Type.file), file.attributes());
             }
         }
         catch(IOException e) {
@@ -188,26 +188,26 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private Path inflate(final Path cipher) throws CryptoAuthenticationException {
-        final String fileName = cipher.getName();
+    private Path inflate(final Path file) throws CryptoAuthenticationException {
+        final String fileName = file.getName();
         if(filenameProvider.isDeflated(fileName)) {
             try {
-                final String longFileName = filenameProvider.inflate(fileName);
-                return new Path(cipher.getParent(), longFileName, cipher.getType(), cipher.attributes());
+                final String filename = filenameProvider.inflate(fileName);
+                return new Path(file.getParent(), filename, file.getType(), file.attributes());
             }
             catch(IOException e) {
                 throw new CryptoAuthenticationException(
-                        String.format("Failure to inflate filename from %s", cipher.getName()), e);
+                        String.format("Failure to inflate filename from %s", file.getName()), e);
             }
         }
         else {
-            return cipher;
+            return file;
         }
     }
 
-    public Path decrypt(final Path directory, final Path f) throws BackgroundException {
+    public Path decrypt(final Path directory, final Path file) throws BackgroundException {
         try {
-            final Path inflated = this.inflate(f);
+            final Path inflated = this.inflate(file);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
             final CryptoDirectory cryptoDirectory = cryptoDirectoryProvider.toEncrypted(directory);
             if(m.find()) {
@@ -217,7 +217,7 @@ public class CryptoVault implements Vault {
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     return new Path(directory, cleartextFilename,
                             inflated.getName().startsWith(Constants.DIR_PREFIX) ?
-                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), inflated.attributes());
+                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
                 }
                 catch(AuthenticationFailedException e) {
                     throw new CryptoAuthenticationException(
