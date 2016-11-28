@@ -57,10 +57,12 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
+import org.cryptomator.cryptolib.common.SecureRandomModule;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
@@ -73,6 +75,8 @@ import java.util.regex.Pattern;
 public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
+    private static final SecureRandom random;
+
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -82,11 +86,20 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
+    static {
+        try {
+            final SecureRandom seeder = SecureRandom.getInstanceStrong();
+            random = new SecureRandomModule(seeder).provideFastSecureRandom(seeder);
+        }
+        catch(NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA1PRNG must exist in every Java platform.", e);
+        }
+    }
+
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-
 
     private final Session<?> session;
 
@@ -94,6 +107,7 @@ public class CryptoVault implements Vault {
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider cryptoDirectoryProvider;
+
 
     public CryptoVault(final Session<?> session) {
         this.session = session;
@@ -123,7 +137,7 @@ public class CryptoVault implements Vault {
      */
     @Override
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
