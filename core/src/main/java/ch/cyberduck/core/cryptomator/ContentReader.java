@@ -37,15 +37,15 @@ public class ContentReader {
 
     public String readToString(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
-        final InputStream stream = read.read(file, new TransferStatus());
+        final InputStream in = read.read(file, new TransferStatus());
         try {
-            return IOUtils.toString(stream, "UTF-8");
+            return IOUtils.toString(in, "UTF-8");
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            IOUtils.closeQuietly(stream);
+            IOUtils.closeQuietly(in);
         }
     }
 

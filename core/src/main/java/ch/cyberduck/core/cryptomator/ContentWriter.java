@@ -37,15 +37,15 @@ public class ContentWriter {
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
         final Write write = session._getFeature(Write.class);
-        final OutputStream stream = write.write(file, new TransferStatus());
+        final OutputStream out = write.write(file, new TransferStatus());
         try {
-            IOUtils.write(content, stream);
+            IOUtils.write(content, out);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            IOUtils.closeQuietly(stream);
+            IOUtils.closeQuietly(out);
         }
     }
 }
