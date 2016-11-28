@@ -6,6 +6,7 @@ https://cyberduck.io/
 - [Feature] Choose certificate in bookmark panel for mutual authentication with TLS (WebDAV)
 - [Feature] Choose SSH private key from list in bookmark panel and login prompt (SFTP)
 - [Feature] Use marker and delimiter for listing files (Backblaze B2)
+- [Feature] Option to resume uploads (Azure) (#9770)
 - [Bugfix] Repeated prompt for client certificate (WebDAV) (#9746)
 - [Bugfix] Modification of distinct metadata for multiple selected files (WebDAV, Azure, S3, OpenStack Swift)
 - [Bugfix] Modification of distinct permissions for multiple selected files (FTP, SFTP)
