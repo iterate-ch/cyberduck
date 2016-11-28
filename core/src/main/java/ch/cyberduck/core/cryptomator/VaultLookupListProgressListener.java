@@ -35,12 +35,14 @@ public class VaultLookupListProgressListener extends IndexedListProgressListener
 
     private final Vault vault;
     private final Path directory;
+    private final Path master;
     private final LoginCallback prompt;
     private final ListProgressListener delegate;
 
     public VaultLookupListProgressListener(final Vault vault, final Path directory, final LoginCallback prompt, final ListProgressListener delegate) {
         this.vault = vault;
         this.directory = directory;
+        this.master = new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         this.prompt = prompt;
         this.delegate = delegate;
     }
@@ -52,7 +54,6 @@ public class VaultLookupListProgressListener extends IndexedListProgressListener
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
-        final Path master = new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             if(f.equals(master)) {
@@ -61,7 +62,9 @@ public class VaultLookupListProgressListener extends IndexedListProgressListener
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure loading vault in %s. %s", directory, e.getMessage()));
+                    return;
                 }
+                throw new VaultLookupListCanceledException(list);
             }
         }
     }

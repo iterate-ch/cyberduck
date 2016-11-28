@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.VaultLookupListCanceledException;
 import ch.cyberduck.core.cryptomator.VaultLookupListProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -59,8 +60,14 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
                 this.chunk(directory, list);
                 return list;
             }
-            return session.getFeature(ListService.class).list(directory,
-                    new VaultLookupListProgressListener(session.getFeature(Vault.class), directory, login, this));
+            try {
+                return session.getFeature(ListService.class).list(directory,
+                        new VaultLookupListProgressListener(session.getFeature(Vault.class), directory, login, this));
+            }
+            catch(VaultLookupListCanceledException e) {
+                // Run again with decrypting list worker
+                return session.getFeature(ListService.class).list(directory, this);
+            }
         }
         catch(ListCanceledException e) {
             return e.getChunk();
