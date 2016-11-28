@@ -31,12 +31,12 @@ import com.google.common.cache.LoadingCache;
 
 public class CryptoDirectoryIdProvider {
 
-    private final LoadingCache<Path, String> ids;
+    private final LoadingCache<Path, String> cache;
     private final Session<?> session;
 
     public CryptoDirectoryIdProvider(final Session<?> session) {
         this.session = session;
-        this.ids = CacheBuilder.newBuilder().maximumSize(
+        this.cache = CacheBuilder.newBuilder().maximumSize(
                 PreferencesFactory.get().getInteger("browser.cache.size")
         ).build(new Loader());
     }
@@ -55,7 +55,7 @@ public class CryptoDirectoryIdProvider {
 
     public String load(final Path directory) throws IOException {
         try {
-            return ids.get(directory);
+            return cache.get(directory);
         }
         catch(ExecutionException e) {
             if(e.getCause() instanceof IOException) {
@@ -72,7 +72,7 @@ public class CryptoDirectoryIdProvider {
      * @param directory The directory for which the cache should be deleted.
      */
     public void delete(Path directory) {
-        ids.invalidate(directory);
+        cache.invalidate(directory);
     }
 
     /**
@@ -84,10 +84,10 @@ public class CryptoDirectoryIdProvider {
      * @param targetDirectory The directory that will contain the id from now on.
      */
     public void move(Path sourceDirectory, Path targetDirectory) {
-        String id = ids.getIfPresent(sourceDirectory);
+        String id = cache.getIfPresent(sourceDirectory);
         if(id != null) {
-            ids.put(targetDirectory, id);
-            ids.invalidate(sourceDirectory);
+            cache.put(targetDirectory, id);
+            cache.invalidate(sourceDirectory);
         }
     }
 }

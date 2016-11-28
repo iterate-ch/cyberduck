@@ -17,6 +17,4 @@ package ch.cyberduck.core.cryptomator.impl;
 
 public final class Constants {
 
-    public static final String DIR_PREFIX = "0";
-    public static final int VAULT_VERSION = 5;
 }

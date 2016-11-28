@@ -72,6 +72,8 @@ import com.google.gson.JsonParseException;
 public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
+    protected static final String DIR_PREFIX = "0";
+
     private static final SecureRandom random;
 
     static {
@@ -281,7 +283,7 @@ public class CryptoVault implements Vault {
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     final Path decrypted = new Path(directory, cleartextFilename,
-                            inflated.getName().startsWith(Constants.DIR_PREFIX) ?
+                            inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();

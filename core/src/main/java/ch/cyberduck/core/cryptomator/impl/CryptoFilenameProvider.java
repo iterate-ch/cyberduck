@@ -44,12 +44,12 @@ public class CryptoFilenameProvider {
 
     private final Path metadataRoot;
     private final Session<?> session;
-    private final LoadingCache<String, String> ids;
+    private final LoadingCache<String, String> cache;
 
     public CryptoFilenameProvider(final Path vault, final Session<?> session) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.session = session;
-        this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
+        this.cache = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
     }
 
     private class Loader extends CacheLoader<String, String> {
@@ -65,7 +65,7 @@ public class CryptoFilenameProvider {
 
     public String inflate(final String filename) throws IOException {
         try {
-            return ids.get(filename);
+            return cache.get(filename);
         }
         catch(ExecutionException e) {
             if(e.getCause() instanceof IOException) {
@@ -82,8 +82,8 @@ public class CryptoFilenameProvider {
         byte[] longFileNameBytes = filename.getBytes(UTF_8);
         byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
         String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
-        if(ids.getIfPresent(shortName) == null) {
-            ids.put(shortName, filename);
+        if(cache.getIfPresent(shortName) == null) {
+            cache.put(shortName, filename);
             // TODO markuskreusch, overheadhunter: do we really want to persist this at this point?...
             // ...maybe the caller only wanted to know if a file exists without creating anything.
             Path file = resolveMetadataFile(shortName);

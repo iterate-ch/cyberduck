@@ -35,14 +35,14 @@ public class CryptoDirectoryProvider {
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
     private static final int MAX_CACHED_DIR_PATHS = 1000;
 
-    private final LoadingCache<String, Path> directoryPathCache;
-    private final Path vault;
+    private final LoadingCache<String, Path> cache;
+    private final Path dataRoot;
     private final CryptoVault cryptomator;
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
-        this.vault = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.cryptomator = cryptomator;
-        this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolve));
+        this.cache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolve));
     }
 
     /**
@@ -52,7 +52,7 @@ public class CryptoDirectoryProvider {
      * @return Encrypted filename
      */
     public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws IOException {
-        final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
+        final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
         return cryptomator.getFilenameProvider().deflate(ciphertextName);
@@ -62,20 +62,20 @@ public class CryptoDirectoryProvider {
      * @param directory Clear text
      */
     public CryptoDirectory toEncrypted(final Path directory) throws IOException {
-        if(vault.getParent().getAbsolute().equals(directory.getAbsolute())) {
-            return new CryptoDirectory(ROOT_DIR_ID, directoryPathCache.getUnchecked(ROOT_DIR_ID));
+        if(dataRoot.getParent().getAbsolute().equals(directory.getAbsolute())) {
+            return new CryptoDirectory(ROOT_DIR_ID, cache.getUnchecked(ROOT_DIR_ID));
         }
         else {
             final CryptoDirectory parent = this.toEncrypted(directory.getParent());
             final String cleartextName = directory.getName();
             final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
             final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
-            return new CryptoDirectory(dirId, directoryPathCache.getUnchecked(dirId));
+            return new CryptoDirectory(dirId, cache.getUnchecked(dirId));
         }
     }
 
     private Path resolve(final String directoryId) {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
-        return new Path(new Path(vault, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
+        return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
 }
