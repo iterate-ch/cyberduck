@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
@@ -255,9 +254,6 @@ public class CryptoVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
         if(this.isLoaded()) {
-            if(type == Home.class) {
-                return (T) new VaultFinder(this, (Home) delegate, null, null);
-            }
             if(type == ListService.class) {
                 return (T) new CryptoListService((ListService) delegate, this);
             }
