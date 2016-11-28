@@ -26,25 +26,20 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.ContentReader;
-import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoListService;
-import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
-import ch.cyberduck.core.cryptomator.CryptoReadFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
-import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
-import ch.cyberduck.core.cryptomator.VaultFinder;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
@@ -82,8 +77,8 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
-    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    public static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
@@ -284,6 +279,21 @@ public class CryptoVault implements Vault {
             }
             if(type == Find.class) {
                 return (T) new CryptoFindFeature((Find) delegate, this);
+            }
+            if(type == UrlProvider.class) {
+                return (T) new CryptoUrlProvider((UrlProvider) delegate, this);
+            }
+            if(type == IdProvider.class) {
+                return (T) new CryptoIdProvider((IdProvider) delegate, this);
+            }
+            if(type == Delete.class) {
+                return (T) new CryptoDeleteFeature((Delete) delegate, this);
+            }
+            if(type == Symlink.class) {
+                return (T) new CryptoSymlinkFeature((Symlink) delegate, this);
+            }
+            if(type == Compress.class) {
+                return (T) new CryptoCompressFeature((Compress) delegate, this);
             }
         }
         return delegate;
