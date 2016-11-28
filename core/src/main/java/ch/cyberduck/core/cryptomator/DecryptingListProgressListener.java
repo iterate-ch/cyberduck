@@ -47,8 +47,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             try {
-                final Path decrypted = cryptomator.decrypt(directory, f);
-                list.set(i, decrypted);
+                list.set(i, cryptomator.decrypt(directory, f));
             }
             catch(BackgroundException e) {
                 log.error(String.format("Failure decrypting %s. %s", f, e.getMessage()));
