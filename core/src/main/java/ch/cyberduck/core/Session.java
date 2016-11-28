@@ -64,11 +64,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     /**
      * Cryptomator
      */
-    protected final Vault vault = new CryptoVault(this);
+    protected Vault vault = new CryptoVault(this);
 
     protected C client;
 
-    private Set<TranscriptListener> listeners = new HashSet<>();
+    private final Set<TranscriptListener> listeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -114,6 +114,11 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     public Vault getVault() {
         return vault;
+    }
+
+    public Session withVault(final Vault vault) {
+        this.vault = vault;
+        return this;
     }
 
     /**
