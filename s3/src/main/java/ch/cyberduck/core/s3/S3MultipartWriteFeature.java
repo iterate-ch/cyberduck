@@ -59,7 +59,7 @@ public class S3MultipartWriteFeature implements Write {
             = PreferencesFactory.get();
 
     public S3MultipartWriteFeature(final S3Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public S3MultipartWriteFeature(final S3Session session,

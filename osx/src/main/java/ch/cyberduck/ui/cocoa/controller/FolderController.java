@@ -17,12 +17,16 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallbackFactory;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.CreateVaultWorker;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -53,7 +57,9 @@ public class FolderController extends FileController {
                 null,
                 LocaleFactory.localizedString("Cancel", "Folder")
         ));
-        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        this.alert.setShowsSuppressionButton(true);
+        this.alert.suppressionButton().setTitle(LocaleFactory.localizedString("Create encrypted Vault"));
         this.parent = parent;
         this.regions = regions;
     }
@@ -95,21 +101,34 @@ public class FolderController extends FileController {
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.run(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()), inputField.stringValue());
+            final String filename = inputField.stringValue();
+            final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
+                    filename, EnumSet.of(Path.Type.directory));
+            final String region = this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
+            if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
+                        new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), LoginCallbackFactory.get(parent)) {
+                            @Override
+                            public void cleanup(final Boolean done) {
+                                if(filename.charAt(0) == '.') {
+                                    parent.setShowHiddenFiles(true);
+                                }
+                                parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            }
+                        }));
+            }
+            else {
+                parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
+                        new CreateDirectoryWorker(folder, region) {
+                            @Override
+                            public void cleanup(final Boolean done) {
+                                if(filename.charAt(0) == '.') {
+                                    parent.setShowHiddenFiles(true);
+                                }
+                                parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            }
+                        }));
+            }
         }
-    }
-
-    private void run(final Path directory, final String filename) {
-        final Path folder = new Path(directory, filename, EnumSet.of(Path.Type.directory));
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                new CreateDirectoryWorker(folder, this.hasLocation() ? regionPopup.selectedItem().representedObject() : null) {
-                    @Override
-                    public void cleanup(final Boolean done) {
-                        if(filename.charAt(0) == '.') {
-                            parent.setShowHiddenFiles(true);
-                        }
-                        parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                    }
-                }));
     }
 }

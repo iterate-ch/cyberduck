@@ -90,7 +90,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.attribute = new DefaultAttributesFinderFeature(session);
+        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
     }
 
     @Override

@@ -34,7 +34,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -43,7 +42,6 @@ import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -58,7 +56,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
             = new ThreadLocal<B2GetUploadUrlResponse>();
 
     public B2WriteFeature(final B2Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {

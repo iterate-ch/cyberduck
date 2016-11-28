@@ -83,6 +83,9 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
                 if(feature instanceof DefaultAttributesFinderFeature) {
                     throw new NotfoundException(file.getAbsolute());
                 }
+                if(feature instanceof CryptoAttributesFeature) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
                 final IdProvider id = session.getFeature(IdProvider.class);
                 final String version = id.getFileid(file);
                 if(version == null) {

@@ -61,7 +61,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), chunksize);
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)), chunksize);
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Find finder, final AttributesFinder attributes, final Long chunksize) {
