@@ -118,7 +118,6 @@ public class CryptoVault implements Vault {
     public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
         // Default to false for save in keychain
@@ -135,7 +134,7 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", file));
         }
-        ContentWriter writer = new ContentWriter(session);
+        final ContentWriter writer = new ContentWriter(session);
         writer.write(file, keyFile.serialize());
         init(home, keyFile, passphrase);
         try {
