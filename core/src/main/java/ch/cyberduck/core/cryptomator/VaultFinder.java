@@ -54,7 +54,7 @@ public class VaultFinder implements Home {
             vault.load(home, keychain, prompt);
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Failure loading vault in %s", home));
+            log.warn(String.format("Failure loading vault in %s. %s", home, e.getMessage()));
         }
         return home;
     }
