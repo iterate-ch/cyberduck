@@ -18,8 +18,8 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -27,9 +27,9 @@ public class CryptoUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
 
     private final UrlProvider delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoUrlProvider(final UrlProvider delegate, final CryptoVault vault) {
+    public CryptoUrlProvider(final UrlProvider delegate, final Vault vault) {
         this.delegate = delegate;
         this.vault = vault;
     }

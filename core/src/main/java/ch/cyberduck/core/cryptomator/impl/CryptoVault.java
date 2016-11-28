@@ -167,6 +167,7 @@ public class CryptoVault implements Vault {
         return cryptor != null;
     }
 
+    @Override
     public Path encrypt(final Path file) throws BackgroundException {
         try {
             if(file.isDirectory()) {
@@ -201,6 +202,7 @@ public class CryptoVault implements Vault {
         }
     }
 
+    @Override
     public Path decrypt(final Path directory, final Path file) throws BackgroundException {
         try {
             final Path inflated = this.inflate(file);

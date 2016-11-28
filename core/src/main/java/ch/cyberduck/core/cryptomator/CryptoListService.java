@@ -20,26 +20,26 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
 
 import java.io.IOException;
 
 public class CryptoListService implements ListService {
 
     private final ListService delegate;
-    private final CryptoVault cryptomator;
+    private final Vault vault;
 
-    public CryptoListService(final ListService delegate, final CryptoVault cryptomator) {
+    public CryptoListService(final ListService delegate, final Vault vault) {
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return delegate.list(cryptomator.encrypt(directory),
-                    new DecryptingListProgressListener(cryptomator, directory, listener));
+            return delegate.list(vault.encrypt(directory),
+                    new DecryptingListProgressListener(vault, directory, listener));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

@@ -19,10 +19,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -31,14 +31,14 @@ import java.io.IOException;
 public class DecryptingListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
 
-    private final CryptoVault cryptomator;
+    private final Vault vault;
     private final Path directory;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final CryptoVault cryptomator,
+    public DecryptingListProgressListener(final Vault vault,
                                           final Path directory,
                                           final ListProgressListener delegate) throws IOException {
-        this.cryptomator = cryptomator;
+        this.vault = vault;
         this.directory = directory;
         this.delegate = delegate;
     }
@@ -48,7 +48,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             try {
-                list.set(i, cryptomator.decrypt(directory, f));
+                list.set(i, vault.decrypt(directory, f));
             }
             catch(BackgroundException e) {
                 log.error(String.format("Failure decrypting %s. %s", f, e.getMessage()));

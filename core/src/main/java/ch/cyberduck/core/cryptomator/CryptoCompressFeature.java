@@ -19,18 +19,18 @@ import ch.cyberduck.core.Archive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Vault;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CryptoCompressFeature implements Compress {
     private final Compress delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoCompressFeature(final Compress delegate, final CryptoVault vault) {
+    public CryptoCompressFeature(final Compress delegate, final Vault vault) {
         this.delegate = delegate;
         this.vault = vault;
     }

@@ -16,15 +16,15 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Vault;
 
 public class CryptoIdProvider implements IdProvider {
     private final IdProvider delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoIdProvider(final IdProvider delegate, final CryptoVault vault) {
+    public CryptoIdProvider(final IdProvider delegate, final Vault vault) {
         this.delegate = delegate;
         this.vault = vault;
     }

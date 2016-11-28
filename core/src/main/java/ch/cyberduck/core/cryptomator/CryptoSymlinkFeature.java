@@ -16,15 +16,15 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Vault;
 
 public class CryptoSymlinkFeature implements Symlink {
     private final Symlink delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoSymlinkFeature(final Symlink delegate, final CryptoVault vault) {
+    public CryptoSymlinkFeature(final Symlink delegate, final Vault vault) {
         this.delegate = delegate;
         this.vault = vault;
     }
