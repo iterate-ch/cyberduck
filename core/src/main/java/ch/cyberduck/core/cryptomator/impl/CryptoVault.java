@@ -92,9 +92,9 @@ public class CryptoVault implements Vault {
 
     public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
     public static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    private static final Integer VAULT_VERSION = 5;
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
-
 
     private final Session<?> session;
 
@@ -108,7 +108,7 @@ public class CryptoVault implements Vault {
     }
 
     /**
-     * Create vault
+     * Create and open vault
      *
      * @param home     Target for vault
      * @param keychain Password store
@@ -116,7 +116,42 @@ public class CryptoVault implements Vault {
      */
     @Override
     public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-        throw new NotfoundException(home.getAbsolute());
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
+        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        final Host bookmark = session.getHost();
+        final Credentials credentials = new Credentials();
+        // Default to false for save in keychain
+        credentials.setSaved(false);
+        callback.prompt(bookmark, credentials,
+                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
+                LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
+                new LoginOptions().user(false).anonymous(false));
+        if(credentials.isSaved()) {
+            keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+        }
+        final String passphrase = credentials.getPassword();
+        final KeyFile keyFile = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Write master key to %s", file));
+        }
+        final ContentWriter writer = new ContentWriter(session);
+        writer.write(file, keyFile.serialize());
+        init(home, keyFile, passphrase);
+        try {
+            final Path secondLevel = cryptoDirectoryProvider.toEncrypted(home).path;
+            final Path firstLevel = secondLevel.getParent();
+            final Path dataDir = firstLevel.getParent();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create vault root directory at %s", secondLevel));
+            }
+            final Directory feature = session.getFeature(Directory.class);
+            feature.mkdir(dataDir);
+            feature.mkdir(firstLevel);
+            feature.mkdir(secondLevel);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     /**
@@ -131,10 +166,6 @@ public class CryptoVault implements Vault {
      */
     @Override
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Initialized crypto provider %s", provider));
-        }
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         if(!session.getFeature(Find.class).find(file)) {
             throw new NotfoundException(file.getAbsolute());
@@ -168,16 +199,24 @@ public class CryptoVault implements Vault {
                 }
                 passphrase = credentials.getPassword();
             }
-            try {
-                cryptor = provider.createFromKeyFile(keyFile, passphrase, 5);
-            }
-            catch(InvalidPassphraseException e) {
-                throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
-            }
-            this.filenameProvider = new CryptoFilenameProvider(home, session);
-            this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
-            this.cryptoDirectoryProvider = new CryptoDirectoryProvider(home, this);
+            init(home, keyFile, passphrase);
         }
+    }
+
+    private void init(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws CryptoAuthenticationException {
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Initialized crypto provider %s", provider));
+        }
+        try {
+            cryptor = provider.createFromKeyFile(keyFile, passphrase, VAULT_VERSION);
+        }
+        catch(InvalidPassphraseException e) {
+            throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
+        }
+        this.filenameProvider = new CryptoFilenameProvider(home, session);
+        this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
+        this.cryptoDirectoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
     @Override
