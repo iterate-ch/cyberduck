@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DefaultAttributesFeatureTest {
+public class DefaultAttributesFinderFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
@@ -59,7 +59,7 @@ public class DefaultAttributesFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        new DefaultAttributesFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class DefaultAttributesFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final PathCache cache = new PathCache(1);
-        final DefaultAttributesFeature f = new DefaultAttributesFeature(session).withCache(cache);
+        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
         new DefaultTouchFeature(session).touch(file);
@@ -115,7 +115,7 @@ public class DefaultAttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final DefaultAttributesFeature f = new DefaultAttributesFeature(session);
+        final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
@@ -124,7 +124,7 @@ public class DefaultAttributesFeatureTest {
 
     @Test
     public void testFindPlaceholder() throws Exception {
-        assertNotNull(new DefaultAttributesFeature(new NullSession(new Host(new TestProtocol())) {
+        assertNotNull(new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));

@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -35,15 +35,15 @@ import java.text.MessageFormat;
 
 import com.google.api.services.drive.model.File;
 
-public class DriveAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(DriveAttributesFeature.class);
+public class DriveAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
 
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
 
     private final DriveSession session;
 
-    public DriveAttributesFeature(final DriveSession session) {
+    public DriveAttributesFinderFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -95,7 +95,7 @@ public class DriveAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

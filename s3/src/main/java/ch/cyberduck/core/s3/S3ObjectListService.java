@@ -60,11 +60,11 @@ public class S3ObjectListService implements ListService {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final S3AttributesFeature attributes;
+    private final S3AttributesFinderFeature attributes;
 
     public S3ObjectListService(final S3Session session) {
         this.session = session;
-        this.attributes = new S3AttributesFeature(session);
+        this.attributes = new S3AttributesFinderFeature(session);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class S3MetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFeature(session).find(file).getMetadata();
+            return new S3AttributesFinderFeature(session).find(file).getMetadata();
         }
         return Collections.emptyMap();
     }
@@ -76,7 +76,7 @@ public class S3MetadataFeature implements Headers {
             }
             try {
                 // Make sure to copy existing attributes
-                final StorageObject target = new S3AttributesFeature(session).details(file);
+                final StorageObject target = new S3AttributesFinderFeature(session).details(file);
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {

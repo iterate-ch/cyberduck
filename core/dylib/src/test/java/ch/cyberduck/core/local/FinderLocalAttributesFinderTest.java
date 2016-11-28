@@ -24,7 +24,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class FinderLocalAttributesTest {
+public class FinderLocalAttributesFinderTest {
 
     @Test
     public void testGetSize() throws Exception {

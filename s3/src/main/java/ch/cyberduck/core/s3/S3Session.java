@@ -369,8 +369,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);
         }
-        if(type == Attributes.class) {
-            return (T) new S3AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new S3AttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new S3HomeFinderService(this);

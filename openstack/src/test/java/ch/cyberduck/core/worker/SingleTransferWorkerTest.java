@@ -31,7 +31,7 @@ import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.openstack.SwiftAttributesFeature;
+import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
 import ch.cyberduck.core.openstack.SwiftProtocol;
@@ -126,7 +126,7 @@ public class SingleTransferWorkerTest {
         }.run(session));
         local.delete();
         assertEquals(2L * 1024L * 1024L, counter.getSent(), 0L);
-        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFeature(session).find(test).getSize());
+        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

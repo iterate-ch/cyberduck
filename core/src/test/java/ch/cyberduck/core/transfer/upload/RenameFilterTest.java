@@ -8,7 +8,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -35,14 +35,14 @@ public class RenameFilterTest {
         final Path file = new Path("/t", EnumSet.of(Path.Type.directory));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean moved = new AtomicBoolean();
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };

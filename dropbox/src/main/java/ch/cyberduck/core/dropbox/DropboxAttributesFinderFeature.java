@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
@@ -27,11 +27,11 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxAttributesFeature implements Attributes {
+public class DropboxAttributesFinderFeature implements AttributesFinder {
 
     private final DropboxSession session;
 
-    public DropboxAttributesFeature(final DropboxSession session) {
+    public DropboxAttributesFinderFeature(final DropboxSession session) {
         this.session = session;
     }
 
@@ -62,7 +62,7 @@ public class DropboxAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         throw new UnsupportedOperationException();
     }
 }

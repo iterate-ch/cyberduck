@@ -28,7 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TransferItemCache;
-import ch.cyberduck.core.b2.B2AttributesFeature;
+import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
 import ch.cyberduck.core.b2.B2Protocol;
@@ -125,7 +125,7 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
-        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFeature(session).find(test).getSize());
+        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session).find(test).getSize());
         assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
         assertTrue(failed.get());
         new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

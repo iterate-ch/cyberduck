@@ -29,20 +29,20 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
 
-public class DefaultAttributesFeature implements Attributes {
-    private static final Logger log = Logger.getLogger(DefaultAttributesFeature.class);
+public class DefaultAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
 
     private final Session<?> session;
 
     private PathCache cache
             = PathCache.empty();
 
-    public DefaultAttributesFeature(final Session session) {
+    public DefaultAttributesFinderFeature(final Session session) {
         this.session = session;
     }
 
@@ -60,8 +60,8 @@ public class DefaultAttributesFeature implements Attributes {
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
                 log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
                 // Try native implementation
-                final Attributes feature = session.getFeature(Attributes.class);
-                if(feature instanceof DefaultAttributesFeature) {
+                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
+                if(feature instanceof DefaultAttributesFinderFeature) {
                     throw f;
                 }
                 if(feature instanceof CryptoAttributesFeature) {
@@ -79,8 +79,8 @@ public class DefaultAttributesFeature implements Attributes {
         else {
             if(null == file.attributes().getVersionId()) {
                 // Try native implementation
-                final Attributes feature = session.getFeature(Attributes.class);
-                if(feature instanceof DefaultAttributesFeature) {
+                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
+                if(feature instanceof DefaultAttributesFinderFeature) {
                     throw new NotfoundException(file.getAbsolute());
                 }
                 final IdProvider id = session.getFeature(IdProvider.class);
@@ -97,7 +97,7 @@ public class DefaultAttributesFeature implements Attributes {
     }
 
     @Override
-    public DefaultAttributesFeature withCache(final PathCache cache) {
+    public DefaultAttributesFinderFeature withCache(final PathCache cache) {
         this.cache = cache;
         return this;
     }

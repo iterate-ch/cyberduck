@@ -29,7 +29,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SFTPAttributesFeatureTest {
+public class SFTPAttributesFinderFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -39,7 +39,7 @@ public class SFTPAttributesFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        new SFTPAttributesFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new SFTPAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class SFTPAttributesFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final SFTPAttributesFeature f = new SFTPAttributesFeature(session);
+        final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(new SFTPHomeDirectoryService(session).find());
         assertNotNull(attributes);
         // Test wrong type
@@ -77,7 +77,7 @@ public class SFTPAttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final SFTPAttributesFeature f = new SFTPAttributesFeature(session);
+        final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
         final Path file = new Path(new SFTPHomeDirectoryService(session).find(), "dropbox/f", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(37L, attributes.getSize());

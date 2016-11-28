@@ -81,7 +81,7 @@ public class B2LargeUploadServiceTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         // Large files do not have a SHA1 checksum. The value will always be "none".
-        assertNull(new B2AttributesFeature(session).find(test).getChecksum());
+        assertNull(new B2AttributesFinderFeature(session).find(test).getChecksum());
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
@@ -144,7 +144,7 @@ public class B2LargeUploadServiceTest {
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(random.length, new B2AttributesFeature(session).find(test).getSize());
+        assertEquals(random.length, new B2AttributesFinderFeature(session).find(test).getSize());
         assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[random.length];
@@ -204,7 +204,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(102L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(102L * 1024L * 1024L, new B2AttributesFeature(session).find(test).getSize(), 0L);
+        assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
         final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

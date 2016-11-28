@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
-public class FTPAttributesFeatureTest {
+public class FTPAttributesFinderFeatureTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testAttributesUnknownCommand() throws Exception {
@@ -61,7 +61,7 @@ public class FTPAttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final FTPAttributesFeature f = new FTPAttributesFeature(session);
+        final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)));
         session.close();
     }
@@ -80,7 +80,7 @@ public class FTPAttributesFeatureTest {
         };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final FTPAttributesFeature f = new FTPAttributesFeature(session);
+        final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         final Path file = new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());

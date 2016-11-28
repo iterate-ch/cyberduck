@@ -42,7 +42,7 @@ import java.util.UUID;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
-public class DriveAttributesFeatureTest {
+public class DriveAttributesFinderFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -73,7 +73,7 @@ public class DriveAttributesFeatureTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final DriveAttributesFeature f = new DriveAttributesFeature(session);
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session);
         f.find(test);
     }
 }

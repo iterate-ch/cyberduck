@@ -20,7 +20,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
@@ -30,11 +30,11 @@ import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
-public class IRODSAttributesFeature implements Attributes {
+public class IRODSAttributesFinderFeature implements AttributesFinder {
 
     private final IRODSSession session;
 
-    public IRODSAttributesFeature(final IRODSSession session) {
+    public IRODSAttributesFinderFeature(final IRODSSession session) {
         this.session = session;
     }
 
@@ -62,7 +62,7 @@ public class IRODSAttributesFeature implements Attributes {
     }
 
     @Override
-    public Attributes withCache(final PathCache cache) {
+    public AttributesFinder withCache(final PathCache cache) {
         return this;
     }
 }

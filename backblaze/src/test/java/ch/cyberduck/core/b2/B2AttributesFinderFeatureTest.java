@@ -37,7 +37,7 @@ import synapticloop.b2.response.B2StartLargeFileResponse;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class B2AttributesFeatureTest {
+public class B2AttributesFinderFeatureTest {
 
     @Test
     public void testFindLargeUpload() throws Exception {
@@ -53,7 +53,7 @@ public class B2AttributesFeatureTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket),
                 file.getName(), null, Collections.emptyMap());
-        assertNotNull(new B2AttributesFeature(session).find(file));
+        assertNotNull(new B2AttributesFinderFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }

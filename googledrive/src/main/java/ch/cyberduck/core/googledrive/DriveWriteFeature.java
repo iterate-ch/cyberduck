@@ -20,13 +20,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -58,13 +58,13 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     public DriveWriteFeature(final DriveSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public DriveWriteFeature(final DriveSession session, final Find finder, final Attributes attributes) {
+    public DriveWriteFeature(final DriveSession session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;

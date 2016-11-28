@@ -25,13 +25,13 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.s3.S3AttributesFeature;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
@@ -81,7 +81,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         {
@@ -89,7 +89,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -145,7 +145,7 @@ public class SpectraWriteFeatureTest {
             public Find withCache(final PathCache cache) {
                 return this;
             }
-        }, new Attributes() {
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
@@ -154,7 +154,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         });

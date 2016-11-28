@@ -22,7 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -32,7 +32,7 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -64,18 +64,18 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
-                          final Find finder, final Attributes attributes) {
+                          final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;

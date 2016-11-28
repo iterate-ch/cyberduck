@@ -10,7 +10,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -31,7 +31,7 @@ public class ComparisonServiceFilterTest {
     public void testCompareEqualResultFile() throws Exception {
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicBoolean attr = new AtomicBoolean();
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 attr.set(true);
@@ -44,7 +44,7 @@ public class ComparisonServiceFilterTest {
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };
@@ -176,7 +176,7 @@ public class ComparisonServiceFilterTest {
                 return this;
             }
         };
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 attr.set(true);
@@ -204,7 +204,7 @@ public class ComparisonServiceFilterTest {
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };

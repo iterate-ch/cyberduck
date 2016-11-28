@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -32,7 +33,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -285,8 +286,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
         }
-        if(type == ch.cyberduck.core.features.Attributes.class) {
-            return (T) new DefaultAttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new DefaultAttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new DefaultHomeFinderService(this);

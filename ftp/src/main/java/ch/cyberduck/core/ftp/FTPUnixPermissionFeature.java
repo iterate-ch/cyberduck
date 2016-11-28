@@ -73,7 +73,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
         try {
-            return new FTPAttributesFeature(session).find(file).getPermission();
+            return new FTPAttributesFinderFeature(session).find(file).getPermission();
         }
         catch(InteroperabilityException e) {
             for(Path f : session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener())) {

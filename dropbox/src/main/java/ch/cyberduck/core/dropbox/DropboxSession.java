@@ -28,7 +28,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -168,8 +168,8 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);
         }
-        if(type == Attributes.class) {
-            return (T) new DropboxAttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new DropboxAttributesFinderFeature(this);
         }
         if(type == Quota.class) {
             return (T) new DropboxQuotaFeature(this);

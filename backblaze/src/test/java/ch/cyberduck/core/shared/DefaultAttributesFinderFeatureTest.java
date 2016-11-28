@@ -43,7 +43,7 @@ import synapticloop.b2.response.B2StartLargeFileResponse;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class DefaultAttributesFeatureTest {
+public class DefaultAttributesFinderFeatureTest {
 
     @Test
     public void testFind() throws Exception {
@@ -58,7 +58,7 @@ public class DefaultAttributesFeatureTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file);
         // Find without version id set in attributes
-        assertNotNull(new DefaultAttributesFeature(session).find(file).getVersionId());
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -77,7 +77,7 @@ public class DefaultAttributesFeatureTest {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
                 new B2FileidProvider(session).getFileid(bucket),
                 file.getName(), null, Collections.emptyMap());
-        assertNotNull(new DefaultAttributesFeature(session).find(file));
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
         session.close();
     }

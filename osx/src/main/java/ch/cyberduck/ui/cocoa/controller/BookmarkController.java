@@ -64,7 +64,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class BookmarkController extends SheetController implements CollectionListener {
@@ -78,7 +78,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private final Set<BookmarkObserver> observers = new HashSet<>();
+    private final Set<BookmarkObserver> observers = new LinkedHashSet<>();
 
     protected final Host bookmark;
 
@@ -179,7 +179,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public void setHostField(final NSTextField field) {
         this.hostField = field;
-        notificationCenter.addObserver(this.id(),
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("hostFieldDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 field);
@@ -252,7 +252,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public void setPortField(final NSTextField field) {
         this.portField = field;
-        notificationCenter.addObserver(this.id(),
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("portInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.portField);
@@ -278,7 +278,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public void setPathField(NSTextField field) {
         this.pathField = field;
-        notificationCenter.addObserver(this.id(),
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("pathInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.pathField);
@@ -310,7 +310,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public void setUsernameField(final NSTextField field) {
         this.usernameField = field;
-        notificationCenter.addObserver(this.id(),
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("usernameInputDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.usernameField);

@@ -27,7 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -140,8 +140,8 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Find.class) {
             return (T) new B2FindFeature(this);
         }
-        if(type == Attributes.class) {
-            return (T) new B2AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new B2AttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new B2HomeFinderService(this);
@@ -155,8 +155,8 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == IdProvider.class) {
             return (T) new B2FileidProvider(this);
         }
-        if(type == Attributes.class) {
-            return (T) new B2AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new B2AttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }

@@ -35,7 +35,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -320,8 +320,8 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
         }
-        if(type == Attributes.class) {
-            return (T) new DAVAttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new DAVAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new DAVTimestampFeature(this);
