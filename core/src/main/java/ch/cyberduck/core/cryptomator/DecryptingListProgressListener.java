@@ -36,7 +36,8 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     private final ListProgressListener delegate;
 
     public DecryptingListProgressListener(final CryptoVault cryptomator,
-                                          final Path directory, final ListProgressListener delegate) throws IOException {
+                                          final Path directory,
+                                          final ListProgressListener delegate) throws IOException {
         this.cryptomator = cryptomator;
         this.directory = directory;
         this.delegate = delegate;
