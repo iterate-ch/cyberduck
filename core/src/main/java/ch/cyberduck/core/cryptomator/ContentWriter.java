@@ -37,7 +37,7 @@ public class ContentWriter {
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
         final Write write = session._getFeature(Write.class);
-        final OutputStream out = write.write(file, new TransferStatus());
+        final OutputStream out = write.write(file, new TransferStatus().length(content.length));
         try {
             IOUtils.write(content, out);
         }
