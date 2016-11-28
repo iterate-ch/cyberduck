@@ -46,11 +46,11 @@ public class SFTPListService implements ListService {
 
     private final SFTPSession session;
 
-    private final SFTPAttributesFeature feature;
+    private final SFTPAttributesFinderFeature feature;
 
     public SFTPListService(final SFTPSession session) {
         this.session = session;
-        this.feature = new SFTPAttributesFeature(session);
+        this.feature = new SFTPAttributesFinderFeature(session);
     }
 
     @Override

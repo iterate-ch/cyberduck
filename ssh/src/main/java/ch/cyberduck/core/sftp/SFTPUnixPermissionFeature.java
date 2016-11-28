@@ -63,7 +63,7 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        return new SFTPAttributesFeature(session).find(file).getPermission();
+        return new SFTPAttributesFinderFeature(session).find(file).getPermission();
     }
 
     @Override

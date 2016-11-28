@@ -409,7 +409,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
-                                new SessionListWorker(cache, folder, listener) {
+                        new SessionListWorker(cache, folder, LoginCallbackFactory.get(BrowserController.this), listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -3255,7 +3255,7 @@ public class BrowserController extends WindowController
                 // Initialize the browser with the new session attaching all listeners
                 final SessionPool session = init(host);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
-                        new MountWorker(host, cache, listener, PasswordStoreFactory.get(), LoginCallbackFactory.get(BrowserController.this)) {
+                        new MountWorker(host, cache, listener, LoginCallbackFactory.get(BrowserController.this)) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);

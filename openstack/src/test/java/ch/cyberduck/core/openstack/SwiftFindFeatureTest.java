@@ -12,7 +12,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class SwiftFindFeatureTest {
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(new SwiftFindFeature(session).find(file));
         try {
-            new DefaultAttributesFeature(session).find(file);
+            new DefaultAttributesFinderFeature(session).find(file);
             fail();
         }
         catch(NotfoundException e) {
@@ -66,7 +66,7 @@ public class SwiftFindFeatureTest {
         }
         new SwiftTouchFeature(session).touch(file);
         assertTrue(new SwiftFindFeature(session).find(file));
-        assertNotNull(new DefaultAttributesFeature(session).find(file));
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.close();
     }
 

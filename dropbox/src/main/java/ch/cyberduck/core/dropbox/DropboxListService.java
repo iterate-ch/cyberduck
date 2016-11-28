@@ -41,11 +41,11 @@ public class DropboxListService implements ListService {
 
     private final DropboxSession session;
 
-    private final DropboxAttributesFeature attributes;
+    private final DropboxAttributesFinderFeature attributes;
 
     public DropboxListService(final DropboxSession session) {
         this.session = session;
-        this.attributes = new DropboxAttributesFeature(session);
+        this.attributes = new DropboxAttributesFinderFeature(session);
     }
 
     @Override

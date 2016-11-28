@@ -46,8 +46,8 @@ public class CryptoFilenameProvider {
     private final Session<?> session;
     private final LoadingCache<String, String> ids;
 
-    public CryptoFilenameProvider(final Path pathToVault, final Session<?> session) {
-        this.metadataRoot = new Path(pathToVault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+    public CryptoFilenameProvider(final Path vault, final Session<?> session) {
+        this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.session = session;
         this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
     }

@@ -13,7 +13,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -161,14 +161,14 @@ public class SwiftWriteFeatureTest {
             public Find withCache(final PathCache cache) {
                 return this;
             }
-        }, new Attributes() {
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         }

@@ -47,7 +47,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new B2AttributesFeature(session).find(file).getMetadata();
+        return new B2AttributesFinderFeature(session).find(file).getMetadata();
     }
 
     @Override

@@ -16,16 +16,16 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Vault;
 
 public class CryptoTouchFeature implements Touch {
 
     private final Touch delegate;
-    private final CryptoVault cryptomator;
+    private final Vault cryptomator;
 
-    public CryptoTouchFeature(final Touch delegate, final CryptoVault cryptomator) {
+    public CryptoTouchFeature(final Touch delegate, final Vault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

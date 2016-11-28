@@ -16,17 +16,17 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class CryptoDirectoryFeature implements Directory {
 
     private final Directory delegate;
-    private final CryptoVault cryptomator;
+    private final Vault cryptomator;
 
-    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryFeature(final Directory delegate, final Vault cryptomator) {
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }

@@ -28,6 +28,10 @@ public interface Vault {
 
     boolean isLoaded();
 
+    Path encrypt(Path file) throws BackgroundException;
+
+    Path decrypt(Path directory, Path file) throws BackgroundException;
+
     @SuppressWarnings("unchecked")
     <T> T getFeature(Class<T> type, T delegate);
 }

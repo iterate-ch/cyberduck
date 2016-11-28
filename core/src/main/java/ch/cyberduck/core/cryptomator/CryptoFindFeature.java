@@ -17,23 +17,23 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Vault;
 
 public class CryptoFindFeature implements Find {
 
     private final Find delegate;
-    private final CryptoVault cryptomator;
+    private final Vault vault;
 
-    public CryptoFindFeature(final Find delegate, final CryptoVault cryptomator) {
+    public CryptoFindFeature(final Find delegate, final Vault vault) {
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return delegate.find(cryptomator.encrypt(file));
+        return delegate.find(vault.encrypt(file));
     }
 
     @Override

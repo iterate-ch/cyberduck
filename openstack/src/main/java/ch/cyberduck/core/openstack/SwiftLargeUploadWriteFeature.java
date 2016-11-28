@@ -21,12 +21,12 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,7 +53,7 @@ public class SwiftLargeUploadWriteFeature implements Write {
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
@@ -63,23 +63,23 @@ public class SwiftLargeUploadWriteFeature implements Write {
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, regionService, new SwiftSegmentService(session, regionService), session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, regionService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
-    public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final Attributes attributes) {
+    public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
         this(session, new SwiftRegionService(session), new SwiftSegmentService(session), finder, attributes);
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService,
-                                        final Find finder, final Attributes attributes) {
+                                        final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.regionService = regionService;
         this.segmentService = segmentService;

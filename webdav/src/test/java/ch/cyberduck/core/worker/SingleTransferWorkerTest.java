@@ -28,7 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.TransferItemCache;
-import ch.cyberduck.core.dav.DAVAttributesFeature;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
@@ -128,7 +128,7 @@ public class SingleTransferWorkerTest {
         }.run(session));
         local.delete();
         assertEquals(62768L, counter.getSent(), 0L);
-        assertEquals(62768L, new DAVAttributesFeature(session).find(test).getSize());
+        assertEquals(62768L, new DAVAttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

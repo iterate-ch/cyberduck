@@ -35,7 +35,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -282,8 +282,8 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == UrlProvider.class) {
             return (T) new SwiftUrlProvider(this, accounts, regionService);
         }
-        if(type == Attributes.class) {
-            return (T) new SwiftAttributesFeature(this, regionService);
+        if(type == AttributesFinder.class) {
+            return (T) new SwiftAttributesFinderFeature(this, regionService);
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);

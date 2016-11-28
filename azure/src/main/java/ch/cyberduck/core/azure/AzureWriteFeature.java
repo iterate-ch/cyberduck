@@ -67,7 +67,7 @@ public class AzureWriteFeature implements Write {
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
-        this.finder = new DefaultFindFeature(session);
+        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
     }
 
     @Override

@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -33,7 +33,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -62,7 +62,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -70,25 +70,25 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new DefaultFindFeature(session));
+        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), session.getFeature(Find.class, new DefaultFindFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
-        this(session, regionService, listService, segmentService, new DefaultFindFeature(session));
+        this(session, regionService, listService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFeature(session));
+        this(session, regionService, listService, segmentService, finder, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService,
-                             final Find finder, final Attributes attributes) {
+                             final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.listService = listService;

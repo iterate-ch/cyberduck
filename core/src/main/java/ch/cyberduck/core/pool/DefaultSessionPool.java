@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -75,6 +76,7 @@ public class DefaultSessionPool implements SessionPool {
     };
 
     private SessionPool features = DISCONNECTED;
+    private Vault vault;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
@@ -142,14 +144,15 @@ public class DefaultSessionPool implements SessionPool {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrow session from pool %s", pool));
                     }
-                    final Session session = pool.borrowObject();
+                    final Session<?> session = pool.borrowObject();
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
-                    if(null == features) {
+                    if(DISCONNECTED == features) {
                         features = new SingleSessionPool(connect, session, cache);
+                        vault = session.getFeature(Vault.class);
                     }
-                    return session;
+                    return session.withVault(vault);
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);

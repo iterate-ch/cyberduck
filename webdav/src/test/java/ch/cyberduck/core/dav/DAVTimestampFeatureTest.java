@@ -72,7 +72,7 @@ public class DAVTimestampFeatureTest {
         session.getFeature(Touch.class).touch(file);
         final long millis = LocalDateTime.of(2015, 1, 1, 1, 1).toInstant(ZoneOffset.UTC).toEpochMilli();
         new DAVTimestampFeature(session).setTimestamp(file, millis);
-        assertEquals(millis, new DAVAttributesFeature(session).find(file).getModificationDate());
+        assertEquals(millis, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

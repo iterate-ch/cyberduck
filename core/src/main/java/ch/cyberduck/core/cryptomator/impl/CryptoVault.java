@@ -26,25 +26,19 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.ContentReader;
-import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoListService;
-import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
-import ch.cyberduck.core.cryptomator.CryptoReadFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
-import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
-import ch.cyberduck.core.cryptomator.VaultFinder;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
@@ -57,12 +51,10 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
-import org.cryptomator.cryptolib.common.SecureRandomModule;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.EnumSet;
@@ -75,8 +67,6 @@ import java.util.regex.Pattern;
 public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
-    private static final SecureRandom random;
-
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -86,20 +76,11 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
-    static {
-        try {
-            final SecureRandom seeder = SecureRandom.getInstanceStrong();
-            random = new SecureRandomModule(seeder).provideFastSecureRandom(seeder);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA1PRNG must exist in every Java platform.", e);
-        }
-    }
-
-    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    public static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
+
 
     private final Session<?> session;
 
@@ -107,7 +88,6 @@ public class CryptoVault implements Vault {
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider cryptoDirectoryProvider;
-
 
     public CryptoVault(final Session<?> session) {
         this.session = session;
@@ -137,7 +117,7 @@ public class CryptoVault implements Vault {
      */
     @Override
     public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(new SecureRandom());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
@@ -186,6 +166,7 @@ public class CryptoVault implements Vault {
         return cryptor != null;
     }
 
+    @Override
     public Path encrypt(final Path file) throws BackgroundException {
         try {
             if(file.isDirectory()) {
@@ -220,6 +201,7 @@ public class CryptoVault implements Vault {
         }
     }
 
+    @Override
     public Path decrypt(final Path directory, final Path file) throws BackgroundException {
         try {
             final Path inflated = this.inflate(file);
@@ -272,9 +254,6 @@ public class CryptoVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
         if(this.isLoaded()) {
-            if(type == Home.class) {
-                return (T) new VaultFinder(this, (Home) delegate, null, null);
-            }
             if(type == ListService.class) {
                 return (T) new CryptoListService((ListService) delegate, this);
             }
@@ -293,11 +272,26 @@ public class CryptoVault implements Vault {
             if(type == Move.class) {
                 return (T) new CryptoMoveFeature((Move) delegate, this);
             }
-            if(type == Attributes.class) {
-                return (T) new CryptoAttributesFeature((Attributes) delegate, this);
+            if(type == AttributesFinder.class) {
+                return (T) new CryptoAttributesFeature((AttributesFinder) delegate, this);
             }
             if(type == Find.class) {
                 return (T) new CryptoFindFeature((Find) delegate, this);
+            }
+            if(type == UrlProvider.class) {
+                return (T) new CryptoUrlProvider((UrlProvider) delegate, this);
+            }
+            if(type == IdProvider.class) {
+                return (T) new CryptoIdProvider((IdProvider) delegate, this);
+            }
+            if(type == Delete.class) {
+                return (T) new CryptoDeleteFeature((Delete) delegate, this);
+            }
+            if(type == Symlink.class) {
+                return (T) new CryptoSymlinkFeature((Symlink) delegate, this);
+            }
+            if(type == Compress.class) {
+                return (T) new CryptoCompressFeature((Compress) delegate, this);
             }
         }
         return delegate;

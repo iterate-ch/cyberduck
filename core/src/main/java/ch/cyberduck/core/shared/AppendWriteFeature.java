@@ -23,7 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 
@@ -31,14 +31,14 @@ public abstract class AppendWriteFeature implements Write {
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     protected AppendWriteFeature(final Session<?> session) {
-        this.finder = new DefaultFindFeature(session);
-        this.attributes = new DefaultAttributesFeature(session);
+        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
+        this.attributes = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
     }
 
-    protected AppendWriteFeature(final Find finder, final Attributes attributes) {
+    protected AppendWriteFeature(final Find finder, final AttributesFinder attributes) {
         this.finder = finder;
         this.attributes = attributes;
     }
