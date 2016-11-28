@@ -28,11 +28,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.VaultFinder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -66,11 +64,11 @@ public class MountWorker extends Worker<Path> {
         Path home;
         AttributedList<Path> list;
         try {
-            home = new VaultFinder(session.getFeature(Vault.class), session.getFeature(Home.class), keychain, login).find();
+            home = session.getFeature(Home.class).find();
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            list = new SessionListWorker(cache, home, listener).run(session);
+            list = new SessionListWorker(cache, home, login, listener).run(session);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
@@ -80,7 +78,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            list = new SessionListWorker(cache, home, listener).run(session);
+            list = new SessionListWorker(cache, home, login, listener).run(session);
         }
         cache.put(home, list);
         return home;

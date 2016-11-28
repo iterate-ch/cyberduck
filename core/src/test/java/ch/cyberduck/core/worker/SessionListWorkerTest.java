@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
@@ -41,7 +42,7 @@ public class SessionListWorkerTest {
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/jenkins", EnumSet.of(Path.Type.directory)),
-                new DisabledListProgressListener());
+                new DisabledLoginCallback(), new DisabledListProgressListener());
         final AttributedList<Path> list = worker.run(session);
         assertFalse(list.isEmpty());
         assertFalse(cache.containsKey(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))));
@@ -56,7 +57,7 @@ public class SessionListWorkerTest {
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
-                new DisabledListProgressListener());
+                new DisabledLoginCallback(), new DisabledListProgressListener());
         final Controller c = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -81,7 +82,7 @@ public class SessionListWorkerTest {
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
-                new DisabledListProgressListener());
+                new DisabledLoginCallback(), new DisabledListProgressListener());
         final Controller c = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -98,7 +99,7 @@ public class SessionListWorkerTest {
     public void testInitialValueOnFailure() throws Exception {
         final SessionListWorker worker = new SessionListWorker(PathCache.empty(),
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
-                new DisabledListProgressListener());
+                new DisabledLoginCallback(), new DisabledListProgressListener());
         assertSame(AttributedList.emptyList(), worker.initialize());
     }
 }

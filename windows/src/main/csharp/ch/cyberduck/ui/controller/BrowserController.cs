@@ -3033,7 +3033,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _workdir;
 
                 public InnerListWorker(BrowserController controller, Path workdir, Path folder, IList<Path> selected,
-                    PathCache cache, ListProgressListener listener) : base(cache, folder, listener)
+                    PathCache cache, ListProgressListener listener) : base(cache, folder, LoginCallbackFactory.get(controller), listener)
                 {
                     _controller = controller;
                     _workdir = workdir;

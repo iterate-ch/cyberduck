@@ -409,7 +409,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
-                                new SessionListWorker(cache, folder, listener) {
+                        new SessionListWorker(cache, folder, LoginCallbackFactory.get(BrowserController.this), listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
