@@ -50,6 +50,7 @@ public abstract class SSLSession<C> extends Session<C> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == X509TrustManager.class) {
             return (T) trust;

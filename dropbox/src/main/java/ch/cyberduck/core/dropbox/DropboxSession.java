@@ -137,6 +137,8 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         return new DropboxListService(this).list(directory, listener);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(Class<T> type) {
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);

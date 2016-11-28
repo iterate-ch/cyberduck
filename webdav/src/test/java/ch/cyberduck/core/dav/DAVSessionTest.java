@@ -411,7 +411,7 @@ public class DAVSessionTest {
                     @Override
                     public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt)
                             throws ConnectionCanceledException {
-                        assertEquals("auth.startssl.com", bookmark);
+                        assertEquals("auth.startssl.com", bookmark.getHostname());
                         assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to auth.startssl.com.",
                                 prompt);
                         assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
