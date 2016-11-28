@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -22,7 +22,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.worker.CreateDirectoryWorker;
 
 public class CreateVaultWorker extends CreateDirectoryWorker {
 
