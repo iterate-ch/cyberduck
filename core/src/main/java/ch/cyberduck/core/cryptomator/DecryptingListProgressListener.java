@@ -26,8 +26,6 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-
 public class DecryptingListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
 
@@ -37,7 +35,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
 
     public DecryptingListProgressListener(final Vault vault,
                                           final Path directory,
-                                          final ListProgressListener delegate) throws IOException {
+                                          final ListProgressListener delegate) {
         this.vault = vault;
         this.directory = directory;
         this.delegate = delegate;
