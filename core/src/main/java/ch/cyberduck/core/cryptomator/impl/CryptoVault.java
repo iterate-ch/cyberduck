@@ -186,7 +186,7 @@ public class CryptoVault implements Vault {
             try {
                 masterKeyFile = KeyFile.parse(masterKey.getBytes());
             }
-            catch(JsonParseException e) {
+            catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
                 throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
             }
             final Host bookmark = session.getHost();
