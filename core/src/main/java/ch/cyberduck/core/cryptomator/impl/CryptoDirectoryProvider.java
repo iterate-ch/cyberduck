@@ -28,7 +28,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class CryptoPathMapper {
+public class CryptoDirectoryProvider {
 
     private static final String DATA_DIR_NAME = "d";
 
@@ -39,7 +39,7 @@ public class CryptoPathMapper {
     private final Path vault;
     private final CryptoVault cryptomator;
 
-    public CryptoPathMapper(final Path vault, final CryptoVault cryptomator) {
+    public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
         this.vault = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.cryptomator = cryptomator;
         this.directoryPathCache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolve));
@@ -55,7 +55,7 @@ public class CryptoPathMapper {
         final String prefix = type.contains(Path.Type.directory) ? Constants.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
-        return cryptomator.getLongFileNameProvider().deflate(ciphertextName);
+        return cryptomator.getFilenameProvider().deflate(ciphertextName);
     }
 
     /**
@@ -78,5 +78,4 @@ public class CryptoPathMapper {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
         return new Path(new Path(vault, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
-
 }

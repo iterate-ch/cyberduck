@@ -90,9 +90,9 @@ public class CryptoVault implements Vault {
     private final Session<?> session;
 
     private Cryptor cryptor;
-    private LongFileNameProvider longFileNameProvider;
-    private DirectoryIdProvider directoryIdProvider;
-    private CryptoPathMapper cryptoPathMapper;
+    private CryptoFilenameProvider filenameProvider;
+    private CryptoDirectoryIdProvider directoryIdProvider;
+    private CryptoDirectoryProvider cryptoDirectoryProvider;
 
     public CryptoVault(final Session<?> session) {
         this.session = session;
@@ -160,9 +160,9 @@ public class CryptoVault implements Vault {
             catch(InvalidPassphraseException e) {
                 throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
             }
-            this.longFileNameProvider = new LongFileNameProvider(home, session);
-            this.directoryIdProvider = new DirectoryIdProvider(session);
-            this.cryptoPathMapper = new CryptoPathMapper(home, this);
+            this.filenameProvider = new CryptoFilenameProvider(home, session);
+            this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
+            this.cryptoDirectoryProvider = new CryptoDirectoryProvider(home, this);
         }
     }
 
@@ -174,12 +174,12 @@ public class CryptoVault implements Vault {
     public Path encrypt(final Path file) throws BackgroundException {
         try {
             if(file.isDirectory()) {
-                final CryptoDirectory directory = cryptoPathMapper.toEncrypted(file);
+                final CryptoDirectory directory = cryptoDirectoryProvider.toEncrypted(file);
                 return directory.path;
             }
             else {
-                final CryptoDirectory parent = cryptoPathMapper.toEncrypted(file.getParent());
-                final String filename = cryptoPathMapper.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                final CryptoDirectory parent = cryptoDirectoryProvider.toEncrypted(file.getParent());
+                final String filename = cryptoDirectoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
                 return new Path(parent.path, filename, EnumSet.of(Path.Type.file));
             }
         }
@@ -190,9 +190,9 @@ public class CryptoVault implements Vault {
 
     private Path inflate(final Path cipher) throws CryptoAuthenticationException {
         final String fileName = cipher.getName();
-        if(LongFileNameProvider.isDeflated(fileName)) {
+        if(filenameProvider.isDeflated(fileName)) {
             try {
-                final String longFileName = longFileNameProvider.inflate(fileName);
+                final String longFileName = filenameProvider.inflate(fileName);
                 return new Path(cipher.getParent(), longFileName, cipher.getType(), cipher.attributes());
             }
             catch(IOException e) {
@@ -209,7 +209,7 @@ public class CryptoVault implements Vault {
         try {
             final Path inflated = this.inflate(f);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            final CryptoDirectory cryptoDirectory = cryptoPathMapper.toEncrypted(directory);
+            final CryptoDirectory cryptoDirectory = cryptoDirectoryProvider.toEncrypted(directory);
             if(m.find()) {
                 final String ciphertext = m.group(1);
                 try {
@@ -238,11 +238,11 @@ public class CryptoVault implements Vault {
         return cryptor;
     }
 
-    public LongFileNameProvider getLongFileNameProvider() {
-        return longFileNameProvider;
+    public CryptoFilenameProvider getFilenameProvider() {
+        return filenameProvider;
     }
 
-    public DirectoryIdProvider getDirectoryIdProvider() {
+    public CryptoDirectoryIdProvider getDirectoryIdProvider() {
         return directoryIdProvider;
     }
 

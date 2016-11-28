@@ -29,12 +29,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-public class DirectoryIdProvider {
+public class CryptoDirectoryIdProvider {
 
     private final LoadingCache<Path, String> ids;
     private final Session<?> session;
 
-    public DirectoryIdProvider(final Session<?> session) {
+    public CryptoDirectoryIdProvider(final Session<?> session) {
         this.session = session;
         this.ids = CacheBuilder.newBuilder().maximumSize(
                 PreferencesFactory.get().getInteger("browser.cache.size")

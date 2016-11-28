@@ -33,7 +33,7 @@ import com.google.common.io.BaseEncoding;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class LongFileNameProvider {
+public class CryptoFilenameProvider {
 
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final int MAX_CACHE_SIZE = 5000;
@@ -46,7 +46,7 @@ public class LongFileNameProvider {
     private final Session<?> session;
     private final LoadingCache<String, String> ids;
 
-    public LongFileNameProvider(final Path pathToVault, final Session<?> session) {
+    public CryptoFilenameProvider(final Path pathToVault, final Session<?> session) {
         this.metadataRoot = new Path(pathToVault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.session = session;
         this.ids = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
@@ -59,13 +59,13 @@ public class LongFileNameProvider {
         }
     }
 
-    public static boolean isDeflated(final String possiblyDeflatedFileName) {
-        return possiblyDeflatedFileName.endsWith(LONG_NAME_FILE_EXT);
+    public boolean isDeflated(final String filename) {
+        return filename.endsWith(LONG_NAME_FILE_EXT);
     }
 
-    public String inflate(final String shortFileName) throws IOException {
+    public String inflate(final String filename) throws IOException {
         try {
-            return ids.get(shortFileName);
+            return ids.get(filename);
         }
         catch(ExecutionException e) {
             if(e.getCause() instanceof IOException) {
@@ -75,15 +75,15 @@ public class LongFileNameProvider {
         }
     }
 
-    public String deflate(final String longFileName) throws IOException {
-        if(longFileName.length() < NAME_SHORTENING_THRESHOLD) {
-            return longFileName;
+    public String deflate(final String filename) throws IOException {
+        if(filename.length() < NAME_SHORTENING_THRESHOLD) {
+            return filename;
         }
-        byte[] longFileNameBytes = longFileName.getBytes(UTF_8);
+        byte[] longFileNameBytes = filename.getBytes(UTF_8);
         byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
         String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
         if(ids.getIfPresent(shortName) == null) {
-            ids.put(shortName, longFileName);
+            ids.put(shortName, filename);
             // TODO markuskreusch, overheadhunter: do we really want to persist this at this point?...
             // ...maybe the caller only wanted to know if a file exists without creating anything.
             Path file = resolveMetadataFile(shortName);
@@ -98,8 +98,8 @@ public class LongFileNameProvider {
         return shortName;
     }
 
-    private Path resolveMetadataFile(final String shortName) {
-        return new Path(new Path(new Path(metadataRoot, shortName.substring(0, 2), EnumSet.of(Path.Type.directory)),
-                shortName.substring(2, 4), EnumSet.of(Path.Type.directory)), shortName, EnumSet.of(Path.Type.directory));
+    private Path resolveMetadataFile(final String filename) {
+        return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory)),
+                filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.directory));
     }
 }
