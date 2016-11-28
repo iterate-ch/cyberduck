@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.shared;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -24,15 +24,15 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
-public class VaultFinder implements Home {
-    private static final Logger log = Logger.getLogger(VaultFinder.class);
+public class DefaultVaultFinder implements Home {
+    private static final Logger log = Logger.getLogger(DefaultVaultFinder.class);
 
     private final Vault vault;
     private final Home delegate;
     private final PasswordStore keychain;
     private final LoginCallback prompt;
 
-    public VaultFinder(final Vault vault, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
+    public DefaultVaultFinder(final Vault vault, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
         this.vault = vault;
         this.delegate = delegate;
         this.keychain = keychain;
