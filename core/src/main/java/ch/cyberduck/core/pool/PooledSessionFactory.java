@@ -35,13 +35,9 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private static final Logger log = Logger.getLogger(PooledSessionFactory.class);
 
     private final ConnectionService connect;
-
     private final X509TrustManager trust;
-
     private final X509KeyManager key;
-
     private final PathCache cache;
-
     private final Host bookmark;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
