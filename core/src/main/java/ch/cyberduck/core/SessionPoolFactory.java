@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -29,14 +30,14 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
-        return create(controller, cache, bookmark,
+        return pooled(controller, cache, bookmark,
                 LoginCallbackFactory.get(controller),
                 HostKeyCallbackFactory.get(controller, bookmark.getProtocol()),
                 PasswordStoreFactory.get()
         );
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
+    public static SessionPool pooled(final Controller controller, final PathCache cache, final Host bookmark,
                                      final LoginCallback login, final HostKeyCallback key, final HostPasswordStore keychain) {
         return new DefaultSessionPool(
                 new LoginConnectionService(
@@ -51,5 +52,20 @@ public class SessionPoolFactory {
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                 .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+    }
+
+    public static SessionPool single(final Controller controller, final PathCache cache, final Host bookmark,
+                                     final LoginCallback login, final HostKeyCallback key, final HostPasswordStore keychain) {
+        return new SingleSessionPool(
+                new LoginConnectionService(
+                        login,
+                        key,
+                        keychain,
+                        controller,
+                        controller),
+                SessionFactory.create(bookmark,
+                        new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
+                        new KeychainX509KeyManager(bookmark)), cache
+        );
     }
 }
