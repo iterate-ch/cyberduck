@@ -26,6 +26,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -98,4 +99,34 @@ public class CryptoVaultTest {
         });
     }
 
+    @Test
+    public void testInit() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Directory.class) {
+                    return (T) new Directory() {
+                        @Override
+                        public void mkdir(final Path file) throws BackgroundException {
+                            //TODO mockito test
+                        }
+
+                        @Override
+                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+                            //TODO mockito test
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault loader = new CryptoVault(session);
+        loader.create(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("myPassphrase");
+            }
+        });
+    }
 }

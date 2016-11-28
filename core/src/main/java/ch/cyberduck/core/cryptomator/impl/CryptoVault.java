@@ -139,7 +139,7 @@ public class CryptoVault implements Vault {
         }
         final ContentWriter writer = new ContentWriter(session);
         writer.write(file, keyFile.serialize());
-        this.init(home, keyFile, passphrase);
+        this.init(home, KeyFile.parse(keyFile.serialize()), passphrase);
         try {
             final Path secondLevel = cryptoDirectoryProvider.toEncrypted(home).path;
             final Path firstLevel = secondLevel.getParent();
