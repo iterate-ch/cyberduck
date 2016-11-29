@@ -3033,7 +3033,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _workdir;
 
                 public InnerListWorker(BrowserController controller, Path workdir, Path folder, IList<Path> selected,
-                    PathCache cache, ListProgressListener listener) : base(cache, folder, LoginCallbackFactory.get(controller), listener)
+                    PathCache cache, ListProgressListener listener) : base(cache, folder, listener)
                 {
                     _controller = controller;
                     _workdir = workdir;
@@ -3219,7 +3219,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly SessionPool _session;
 
                 public InnerMountWorker(BrowserController controller, SessionPool session, ListProgressListener listener)
-                    : base(session.getHost(), controller._cache, listener, LoginCallbackFactory.get(controller))
+                    : base(session.getHost(), controller._cache, listener)
                 {
                     _controller = controller;
                     _session = session;
