@@ -55,7 +55,7 @@ public class CryptoFilenameProvider {
     private class Loader extends CacheLoader<String, String> {
         @Override
         public String load(final String shortName) throws BackgroundException {
-            return new ContentReader(session).readToString(resolveMetadataFile(shortName));
+            return new ContentReader(session).readToString(resolve(shortName));
         }
     }
 
@@ -86,7 +86,7 @@ public class CryptoFilenameProvider {
             cache.put(shortName, filename);
             // TODO markuskreusch, overheadhunter: do we really want to persist this at this point?...
             // ...maybe the caller only wanted to know if a file exists without creating anything.
-            Path file = resolveMetadataFile(shortName);
+            Path file = resolve(shortName);
             Path fileDir = file.getParent();
             assert fileDir != null : "resolveMetadataFile returned path to a file";
 
@@ -98,7 +98,7 @@ public class CryptoFilenameProvider {
         return shortName;
     }
 
-    private Path resolveMetadataFile(final String filename) {
+    private Path resolve(final String filename) {
         return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory)),
                 filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.directory));
     }
