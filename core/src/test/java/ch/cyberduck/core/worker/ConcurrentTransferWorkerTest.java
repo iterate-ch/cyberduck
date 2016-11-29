@@ -132,7 +132,6 @@ public class ConcurrentTransferWorkerTest {
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 3;
-        final CountDownLatch lock = new CountDownLatch(files);
         final CountDownLatch d = new CountDownLatch(connections - 1);
         final Set<Path> transferred = new HashSet<Path>();
         final List<TransferItem> list = new ArrayList<TransferItem>();
@@ -150,7 +149,6 @@ public class ConcurrentTransferWorkerTest {
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertNotNull(session);
                 transferred.add(file);
-                lock.countDown();
                 d.countDown();
                 try {
                     d.await();
@@ -188,10 +186,11 @@ public class ConcurrentTransferWorkerTest {
             }
         };
         final LoginConnectionService connection = new TestLoginConnectionService();
+        final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new DisabledPasswordStore(), new DisabledLoginCallback(),
+                PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                        new DisabledPasswordStore(), new DisabledLoginCallback(),
-                        PathCache.empty(), new DisabledProgressListener(), host), t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+                pool, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
@@ -199,9 +198,10 @@ public class ConcurrentTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
-
-        assertTrue(worker.run(null));
-        lock.await(1, TimeUnit.MINUTES);
+        pool.withMaxTotal(connections);
+        final Session<?> session = worker.borrow();
+        assertTrue(worker.run(session));
+        worker.release(session);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
         }
