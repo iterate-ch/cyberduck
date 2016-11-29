@@ -171,11 +171,7 @@ public class SwiftUrlProvider implements UrlProvider {
             mac.init(signingKey);
             return Hex.encodeHexString(mac.doFinal(body.getBytes(Charset.forName("UTF-8"))));
         }
-        catch(NoSuchAlgorithmException e) {
-            log.error(String.format("Error signing %s %s", body, e.getMessage()));
-            return null;
-        }
-        catch(InvalidKeyException e) {
+        catch(NoSuchAlgorithmException | InvalidKeyException e) {
             log.error(String.format("Error signing %s %s", body, e.getMessage()));
             return null;
         }
