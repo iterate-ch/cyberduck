@@ -28,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
@@ -157,46 +156,41 @@ public class CryptoVault implements Vault {
     @Override
     public CryptoVault load() throws BackgroundException {
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        if(!session.getFeature(Find.class).find(file)) {
-            throw new NotfoundException(file.getAbsolute());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attempt to read master key from %s", file));
         }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Attempt to read master key from %s", file));
-            }
-            final String json = new ContentReader(session).readToString(file);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Read master key %s", json));
-            }
-            final KeyFile master;
-            try {
-                master = KeyFile.parse(json.getBytes());
-            }
-            catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-                throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
-            }
-            final Host bookmark = session.getHost();
-            String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
-            if(null == passphrase) {
-                final Credentials credentials = new Credentials() {
-                    @Override
-                    public String getPasswordPlaceholder() {
-                        return LocaleFactory.localizedString("Passphrase", "Cryptomator");
-                    }
-                };
-                // Default to false for save in keychain
-                credentials.setSaved(false);
-                callback.prompt(bookmark, credentials,
-                        LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                        LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
-                        new LoginOptions().user(false).anonymous(false));
-                if(credentials.isSaved()) {
-                    keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+        final String json = new ContentReader(session).readToString(file);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Read master key %s", json));
+        }
+        final KeyFile master;
+        try {
+            master = KeyFile.parse(json.getBytes());
+        }
+        catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
+            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+        }
+        final Host bookmark = session.getHost();
+        String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
+        if(null == passphrase) {
+            final Credentials credentials = new Credentials() {
+                @Override
+                public String getPasswordPlaceholder() {
+                    return LocaleFactory.localizedString("Passphrase", "Cryptomator");
                 }
-                passphrase = credentials.getPassword();
+            };
+            // Default to false for save in keychain
+            credentials.setSaved(false);
+            callback.prompt(bookmark, credentials,
+                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                    LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
+                    new LoginOptions().user(false).anonymous(false));
+            if(credentials.isSaved()) {
+                keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
             }
-            this.open(master, passphrase);
+            passphrase = credentials.getPassword();
         }
+        this.open(master, passphrase);
         return this;
     }
 
