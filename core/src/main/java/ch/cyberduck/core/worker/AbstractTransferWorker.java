@@ -162,36 +162,29 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     }
 
     @Override
-    public Boolean run(final Session<?> ignored) throws BackgroundException {
+    public Boolean run(final Session<?> session) throws BackgroundException {
         final String lock = sleep.lock();
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
-            final Session<?> session = this.borrow();
             final TransferAction action;
-            try {
-                // Determine the filter to match files against
-                action = transfer.action(session, options.resumeRequested, options.reloadRequested, prompt,
-                        new DisabledListProgressListener() {
-                            @Override
-                            public void message(final String message) {
-                                progress.message(message);
-                            }
-                        });
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Selected transfer action %s", action));
-                }
-                if(action.equals(TransferAction.cancel)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Transfer %s canceled by user", this));
-                    }
-                    throw new ConnectionCanceledException();
-                }
+            // Determine the filter to match files against
+            action = transfer.action(session, options.resumeRequested, options.reloadRequested, prompt,
+                    new DisabledListProgressListener() {
+                        @Override
+                        public void message(final String message) {
+                            progress.message(message);
+                        }
+                    });
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Selected transfer action %s", action));
             }
-            finally {
-                // Return session to pool
-                this.release(session);
+            if(action.equals(TransferAction.cancel)) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Transfer %s canceled by user", this));
+                }
+                throw new ConnectionCanceledException();
             }
             // Reset the cached size of the transfer and progress value
             transfer.reset();
