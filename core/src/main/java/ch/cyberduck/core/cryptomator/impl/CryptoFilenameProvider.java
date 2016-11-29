@@ -30,6 +30,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.io.BaseEncoding;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -67,7 +68,7 @@ public class CryptoFilenameProvider {
         try {
             return cache.get(filename);
         }
-        catch(ExecutionException e) {
+        catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }

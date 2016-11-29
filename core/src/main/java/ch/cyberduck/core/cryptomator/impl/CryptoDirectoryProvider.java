@@ -23,10 +23,12 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import java.util.concurrent.ExecutionException;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class CryptoDirectoryProvider {
 
@@ -62,15 +64,23 @@ public class CryptoDirectoryProvider {
      * @param directory Clear text
      */
     public CryptoDirectory toEncrypted(final Path directory) throws IOException {
-        if(dataRoot.getParent().getAbsolute().equals(directory.getAbsolute())) {
-            return new CryptoDirectory(ROOT_DIR_ID, cache.getUnchecked(ROOT_DIR_ID));
+        try {
+            if(dataRoot.getParent().getAbsolute().equals(directory.getAbsolute())) {
+                return new CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
+            }
+            else {
+                final CryptoDirectory parent = this.toEncrypted(directory.getParent());
+                final String cleartextName = directory.getName();
+                final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
+                final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
+                return new CryptoDirectory(dirId, cache.get(dirId));
+            }
         }
-        else {
-            final CryptoDirectory parent = this.toEncrypted(directory.getParent());
-            final String cleartextName = directory.getName();
-            final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
-            final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
-            return new CryptoDirectory(dirId, cache.getUnchecked(dirId));
+        catch(ExecutionException | UncheckedExecutionException e) {
+            if(e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            throw new IOException(e.getCause());
         }
     }
 

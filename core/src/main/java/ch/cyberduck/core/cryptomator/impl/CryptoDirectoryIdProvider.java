@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class CryptoDirectoryIdProvider {
 
@@ -51,7 +52,7 @@ public class CryptoDirectoryIdProvider {
         try {
             return cache.get(directory);
         }
-        catch(ExecutionException e) {
+        catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }
