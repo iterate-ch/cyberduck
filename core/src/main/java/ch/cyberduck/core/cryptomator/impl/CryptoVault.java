@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -54,7 +53,6 @@ import org.cryptomator.cryptolib.api.KeyFile;
 import org.cryptomator.cryptolib.common.SecureRandomModule;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -143,21 +141,16 @@ public class CryptoVault implements Vault {
         final ContentWriter writer = new ContentWriter(session);
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
-        try {
-            final Path secondLevel = directoryProvider.toEncrypted(home).path;
-            final Path firstLevel = secondLevel.getParent();
-            final Path dataDir = firstLevel.getParent();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Create vault root directory at %s", secondLevel));
-            }
-            final Directory feature = session._getFeature(Directory.class);
-            feature.mkdir(dataDir);
-            feature.mkdir(firstLevel);
-            feature.mkdir(secondLevel);
+        final Path secondLevel = directoryProvider.toEncrypted(home).path;
+        final Path firstLevel = secondLevel.getParent();
+        final Path dataDir = firstLevel.getParent();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        final Directory feature = session._getFeature(Directory.class);
+        feature.mkdir(dataDir);
+        feature.mkdir(firstLevel);
+        feature.mkdir(secondLevel);
         return this;
     }
 
@@ -254,19 +247,14 @@ public class CryptoVault implements Vault {
                 log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
                 return file;
             }
-            try {
-                if(file.isDirectory()) {
-                    final CryptoDirectory directory = directoryProvider.toEncrypted(file);
-                    return directory.path;
-                }
-                else {
-                    final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
-                    final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
-                    return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
-                }
+            if(file.isDirectory()) {
+                final CryptoDirectory directory = directoryProvider.toEncrypted(file);
+                return directory.path;
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+            else {
+                final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
+                final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
             }
         }
         return file;
@@ -275,54 +263,43 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Path directory, final Path file) throws BackgroundException {
         if(this.contains(directory)) {
-            try {
-                final Path inflated = this.inflate(file);
-                final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-                final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(directory);
-                if(m.find()) {
-                    final String ciphertext = m.group(1);
-                    try {
-                        final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                                ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
-                        final Path decrypted = new Path(directory, cleartextFilename,
-                                inflated.getName().startsWith(DIR_PREFIX) ?
-                                        EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
-                        if(decrypted.isDirectory()) {
-                            final Permission permission = decrypted.attributes().getPermission();
-                            permission.setUser(permission.getUser().or(Permission.Action.execute));
-                            permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                            permission.setOther(permission.getOther().or(Permission.Action.execute));
-                        }
-                        return decrypted;
+            final Path inflated = this.inflate(file);
+            final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
+            final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(directory);
+            if(m.find()) {
+                final String ciphertext = m.group(1);
+                try {
+                    final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
+                            ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
+                    final Path decrypted = new Path(directory, cleartextFilename,
+                            inflated.getName().startsWith(DIR_PREFIX) ?
+                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
+                    if(decrypted.isDirectory()) {
+                        final Permission permission = decrypted.attributes().getPermission();
+                        permission.setUser(permission.getUser().or(Permission.Action.execute));
+                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
+                        permission.setOther(permission.getOther().or(Permission.Action.execute));
                     }
-                    catch(AuthenticationFailedException e) {
-                        throw new CryptoAuthenticationException(
-                                "Failure to decrypt due to an unauthentic ciphertext", e);
-                    }
+                    return decrypted;
                 }
-                else {
+                catch(AuthenticationFailedException e) {
                     throw new CryptoAuthenticationException(
-                            String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+                            "Failure to decrypt due to an unauthentic ciphertext", e);
                 }
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+            else {
+                throw new CryptoAuthenticationException(
+                        String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
             }
         }
         return file;
     }
 
-    private Path inflate(final Path file) throws CryptoAuthenticationException {
+    private Path inflate(final Path file) throws BackgroundException {
         final String fileName = file.getName();
         if(filenameProvider.isDeflated(fileName)) {
-            try {
-                final String filename = filenameProvider.inflate(fileName);
-                return new Path(file.getParent(), filename, file.getType(), file.attributes());
-            }
-            catch(IOException e) {
-                throw new CryptoAuthenticationException(
-                        String.format("Failure to inflate filename from %s", file.getName()), e);
-            }
+            final String filename = filenameProvider.inflate(fileName);
+            return new Path(file.getParent(), filename, file.getType(), file.attributes());
         }
         else {
             return file;

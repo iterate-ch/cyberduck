@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
@@ -64,19 +65,22 @@ public class CryptoFilenameProvider {
         return filename.endsWith(LONG_NAME_FILE_EXT);
     }
 
-    public String inflate(final String filename) throws IOException {
+    public String inflate(final String filename) throws BackgroundException {
         try {
             return cache.get(filename);
         }
         catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
+                throw new DefaultIOExceptionMappingService().map((IOException) e.getCause());
             }
-            throw new IOException(e.getCause());
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
+            throw new BackgroundException(e.getCause());
         }
     }
 
-    public String deflate(final String filename) throws IOException {
+    public String deflate(final String filename) {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
         }

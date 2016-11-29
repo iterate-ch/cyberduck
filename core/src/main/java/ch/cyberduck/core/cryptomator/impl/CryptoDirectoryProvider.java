@@ -16,7 +16,9 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +55,7 @@ public class CryptoDirectoryProvider {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws IOException {
+    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
@@ -63,7 +65,7 @@ public class CryptoDirectoryProvider {
     /**
      * @param directory Clear text
      */
-    public CryptoDirectory toEncrypted(final Path directory) throws IOException {
+    public CryptoDirectory toEncrypted(final Path directory) throws BackgroundException {
         try {
             if(dataRoot.getParent().getAbsolute().equals(directory.getAbsolute())) {
                 return new CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
@@ -78,9 +80,12 @@ public class CryptoDirectoryProvider {
         }
         catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
+                throw new DefaultIOExceptionMappingService().map((IOException) e.getCause());
             }
-            throw new IOException(e.getCause());
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
+            throw new BackgroundException(e.getCause());
         }
     }
 

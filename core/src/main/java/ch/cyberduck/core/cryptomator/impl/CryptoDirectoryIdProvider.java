@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
@@ -48,15 +49,18 @@ public class CryptoDirectoryIdProvider {
         }
     }
 
-    public String load(final Path directory) throws IOException {
+    public String load(final Path directory) throws BackgroundException {
         try {
             return cache.get(directory);
         }
         catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
-                throw (IOException) e.getCause();
+                throw new DefaultIOExceptionMappingService().map((IOException) e.getCause());
             }
-            throw new IOException(e.getCause());
+            if(e.getCause() instanceof BackgroundException) {
+                throw (BackgroundException) e.getCause();
+            }
+            throw new BackgroundException(e.getCause());
         }
     }
 
