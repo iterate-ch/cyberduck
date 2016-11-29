@@ -90,4 +90,8 @@ public class CryptoDirectoryIdProvider {
             cache.invalidate(sourceDirectory);
         }
     }
+
+    public void close() {
+        cache.invalidateAll();
+    }
 }

@@ -102,4 +102,8 @@ public class CryptoFilenameProvider {
         return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory)),
                 filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.directory));
     }
+
+    public void close() {
+        cache.invalidateAll();
+    }
 }

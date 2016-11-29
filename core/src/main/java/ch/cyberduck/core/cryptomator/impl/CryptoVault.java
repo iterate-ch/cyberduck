@@ -103,22 +103,16 @@ public class CryptoVault implements Vault {
 
     private final Session<?> session;
 
+    private Path vault;
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
-    private CryptoDirectoryProvider cryptoDirectoryProvider;
+    private CryptoDirectoryProvider directoryProvider;
 
     public CryptoVault(final Session<?> session) {
         this.session = session;
     }
 
-    /**
-     * Create and open vault
-     *
-     * @param home     Target for vault
-     * @param keychain Password store
-     * @param callback Password prompt
-     */
     @Override
     public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
@@ -141,9 +135,9 @@ public class CryptoVault implements Vault {
         }
         final ContentWriter writer = new ContentWriter(session);
         writer.write(file, keyFile.serialize());
-        this.init(home, KeyFile.parse(keyFile.serialize()), passphrase);
+        this.open(home, KeyFile.parse(keyFile.serialize()), passphrase);
         try {
-            final Path secondLevel = cryptoDirectoryProvider.toEncrypted(home).path;
+            final Path secondLevel = directoryProvider.toEncrypted(home).path;
             final Path firstLevel = secondLevel.getParent();
             final Path dataDir = firstLevel.getParent();
             if(log.isDebugEnabled()) {
@@ -211,11 +205,20 @@ public class CryptoVault implements Vault {
                 }
                 passphrase = credentials.getPassword();
             }
-            this.init(home, masterKeyFile, passphrase);
+            this.open(home, masterKeyFile, passphrase);
         }
     }
 
-    private void init(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws CryptoAuthenticationException {
+    @Override
+    public void close() {
+        vault = null;
+        cryptor.destroy();
+        filenameProvider.close();
+        directoryIdProvider.close();
+        directoryProvider.close();
+    }
+
+    private void open(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -226,32 +229,76 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
+        this.vault = home;
         this.filenameProvider = new CryptoFilenameProvider(home, session);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
-        this.cryptoDirectoryProvider = new CryptoDirectoryProvider(home, this);
+        this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
     @Override
-    public boolean isLoaded() {
-        return cryptor != null;
+    public boolean contains(final Path file) {
+        return file.equals(vault) || file.isChild(vault);
     }
 
     @Override
     public Path encrypt(final Path file) throws BackgroundException {
-        try {
-            if(file.isDirectory()) {
-                final CryptoDirectory directory = cryptoDirectoryProvider.toEncrypted(file);
-                return directory.path;
+        if(this.contains(file)) {
+            try {
+                if(file.isDirectory()) {
+                    final CryptoDirectory directory = directoryProvider.toEncrypted(file);
+                    return directory.path;
+                }
+                else {
+                    final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
+                    final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                    return new Path(parent.path, filename, EnumSet.of(Path.Type.file), file.attributes());
+                }
             }
-            else {
-                final CryptoDirectory parent = cryptoDirectoryProvider.toEncrypted(file.getParent());
-                final String filename = cryptoDirectoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
-                return new Path(parent.path, filename, EnumSet.of(Path.Type.file), file.attributes());
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+        return file;
+    }
+
+    @Override
+    public Path decrypt(final Path directory, final Path file) throws BackgroundException {
+        if(this.contains(directory)) {
+            try {
+                final Path inflated = this.inflate(file);
+                final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
+                final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(directory);
+                if(m.find()) {
+                    final String ciphertext = m.group(1);
+                    try {
+                        final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
+                                ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
+                        final Path decrypted = new Path(directory, cleartextFilename,
+                                inflated.getName().startsWith(DIR_PREFIX) ?
+                                        EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
+                        if(decrypted.isDirectory()) {
+                            final Permission permission = decrypted.attributes().getPermission();
+                            permission.setUser(permission.getUser().or(Permission.Action.execute));
+                            permission.setGroup(permission.getGroup().or(Permission.Action.execute));
+                            permission.setOther(permission.getOther().or(Permission.Action.execute));
+                        }
+                        return decrypted;
+                    }
+                    catch(AuthenticationFailedException e) {
+                        throw new CryptoAuthenticationException(
+                                "Failure to decrypt due to an unauthentic ciphertext", e);
+                    }
+                }
+                else {
+                    throw new CryptoAuthenticationException(
+                            String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+                }
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
+        return file;
     }
 
     private Path inflate(final Path file) throws CryptoAuthenticationException {
@@ -271,43 +318,6 @@ public class CryptoVault implements Vault {
         }
     }
 
-    @Override
-    public Path decrypt(final Path directory, final Path file) throws BackgroundException {
-        try {
-            final Path inflated = this.inflate(file);
-            final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            final CryptoDirectory cryptoDirectory = cryptoDirectoryProvider.toEncrypted(directory);
-            if(m.find()) {
-                final String ciphertext = m.group(1);
-                try {
-                    final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                            ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
-                    final Path decrypted = new Path(directory, cleartextFilename,
-                            inflated.getName().startsWith(DIR_PREFIX) ?
-                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
-                    if(decrypted.isDirectory()) {
-                        final Permission permission = decrypted.attributes().getPermission();
-                        permission.setUser(permission.getUser().or(Permission.Action.execute));
-                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                        permission.setOther(permission.getOther().or(Permission.Action.execute));
-                    }
-                    return decrypted;
-                }
-                catch(AuthenticationFailedException e) {
-                    throw new CryptoAuthenticationException(
-                            "Failure to decrypt due to an unauthentic ciphertext", e);
-                }
-            }
-            else {
-                throw new CryptoAuthenticationException(
-                        String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-    }
-
     public Cryptor getCryptor() {
         return cryptor;
     }
@@ -323,7 +333,7 @@ public class CryptoVault implements Vault {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
-        if(this.isLoaded()) {
+        if(vault != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService((ListService) delegate, this);
             }

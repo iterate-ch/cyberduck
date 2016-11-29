@@ -201,6 +201,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
+        vault.close();
         listeners.clear();
     }
 

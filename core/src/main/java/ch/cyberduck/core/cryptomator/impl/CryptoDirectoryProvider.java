@@ -78,4 +78,8 @@ public class CryptoDirectoryProvider {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
         return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
     }
+
+    public void close() {
+        cache.invalidateAll();
+    }
 }
