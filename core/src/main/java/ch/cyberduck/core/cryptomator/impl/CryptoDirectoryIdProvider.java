@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.cache.CacheBuilder;
@@ -44,12 +43,7 @@ public class CryptoDirectoryIdProvider {
     private class Loader extends CacheLoader<Path, String> {
         @Override
         public String load(final Path directory) throws BackgroundException {
-            try {
-                return new ContentReader(session).readToString(directory);
-            }
-            catch(BackgroundException e) {
-                return UUID.randomUUID().toString();
-            }
+            return new ContentReader(session).readToString(directory);
         }
     }
 
