@@ -66,37 +66,95 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault loader = new CryptoVault(session);
-        try {
-            loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
-                @Override
-                public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    throw new LoginCanceledException();
-                }
-            });
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            //
-        }
-        try {
-            loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
-                @Override
-                public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                    credentials.setPassword("null");
-                }
-            });
-            fail();
-        }
-        catch(CryptoAuthenticationException e) {
-            //
-        }
-        loader.load(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault loader = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");
             }
         });
+        loader.load();
+    }
+
+    @Test
+    public void testLoadInvalidPassphrase() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                            final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
+                                    + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
+                                    + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
+                                    + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
+                            return IOUtils.toInputStream(masterKey);
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault loader = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("null");
+            }
+        });
+        try {
+            loader.load();
+            fail();
+        }
+        catch(CryptoAuthenticationException e) {
+            //
+        }
+    }
+
+    @Test
+    public void testLoadCancel() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                            final String masterKey = "{\"version\":5,\"scryptSalt\":\"JdjFoskbyIE=\",\"scryptCostParam\":16384,\"scryptBlockSize\":8,"
+                                    + "\"primaryMasterKey\":\"h+5DIMCFiMTa1lBbd/i4jsORzQXe5YcqUME5Cmza4raqBpFQ+lkqaQ==\","
+                                    + "\"hmacMasterKey\":\"qSdfm+JwGLfapvNrqmqo32WVS8idB76nPLxo611DIfdgCFxGbrAlZQ==\","
+                                    + "\"versionMac\":\"ALE/39EGv6oLi5/LPtTVVTxPuzrmtRqUJGzMZJ5zyIc=\"}";
+                            return IOUtils.toInputStream(masterKey);
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault loader = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                throw new LoginCanceledException();
+            }
+        });
+        try {
+            loader.load();
+            fail();
+        }
+        catch(LoginCanceledException e) {
+            //
+        }
     }
 
     @Test
@@ -121,12 +179,12 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault loader = new CryptoVault(session);
-        loader.create(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault loader = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("myPassphrase");
             }
         });
+        loader.create();
     }
 }
