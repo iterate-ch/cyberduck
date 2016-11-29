@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Vault;
 
@@ -33,7 +34,12 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return delegate.find(vault.encrypt(file));
+        try {
+            return delegate.find(vault.encrypt(file));
+        }
+        catch(NotfoundException e) {
+            return false;
+        }
     }
 
     @Override
