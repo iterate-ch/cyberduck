@@ -251,7 +251,7 @@ public class CryptoVault implements Vault {
                 else {
                     final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
                     final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
-                    return new Path(parent.path, filename, EnumSet.of(Path.Type.file), file.attributes());
+                    return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
                 }
             }
             catch(IOException e) {
