@@ -158,7 +158,7 @@ public class CryptoVaultTest {
     }
 
     @Test
-    public void testInit() throws Exception {
+    public void testCreate() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
