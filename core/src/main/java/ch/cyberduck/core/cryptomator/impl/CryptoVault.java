@@ -212,10 +212,18 @@ public class CryptoVault implements Vault {
     @Override
     public void close() {
         vault = null;
-        cryptor.destroy();
-        filenameProvider.close();
-        directoryIdProvider.close();
-        directoryProvider.close();
+        if(cryptor != null) {
+            cryptor.destroy();
+        }
+        if(filenameProvider != null) {
+            filenameProvider.close();
+        }
+        if(directoryIdProvider != null) {
+            directoryIdProvider.close();
+        }
+        if(directoryProvider != null) {
+            directoryProvider.close();
+        }
     }
 
     private void open(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
