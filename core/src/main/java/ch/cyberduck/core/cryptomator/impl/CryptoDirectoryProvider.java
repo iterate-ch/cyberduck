@@ -74,7 +74,7 @@ public class CryptoDirectoryProvider {
                 final CryptoDirectory parent = this.toEncrypted(directory.getParent());
                 final String cleartextName = directory.getName();
                 final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
-                final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file)));
+                final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
                 return new CryptoDirectory(dirId, cache.get(dirId));
             }
         }
@@ -91,7 +91,8 @@ public class CryptoDirectoryProvider {
 
     private Path resolve(final String directoryId) {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
-        return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2), EnumSet.of(Path.Type.directory));
+        return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory)), dirHash.substring(2),
+                EnumSet.of(Path.Type.directory, Path.Type.encrypted));
     }
 
     public void close() {
