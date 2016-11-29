@@ -119,6 +119,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     public Session withVault(final Vault vault) {
+        this.vault.close();
         this.vault = vault;
         return this;
     }
