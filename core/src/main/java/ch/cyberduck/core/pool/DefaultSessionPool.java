@@ -70,6 +70,8 @@ public class DefaultSessionPool implements SessionPool {
 
     private SessionPool features = DISCONNECTED;
 
+    private int retry = PreferencesFactory.get().getInteger("connection.retry");
+
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PasswordStore keychain, final LoginCallback login,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
@@ -124,6 +126,11 @@ public class DefaultSessionPool implements SessionPool {
         return this;
     }
 
+    public DefaultSessionPool withRetry(final int retry) {
+        this.retry = retry;
+        return this;
+    }
+
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final Integer numActive = pool.getNumActive();
@@ -131,7 +138,6 @@ public class DefaultSessionPool implements SessionPool {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
         }
         try {
-            final int retry = PreferencesFactory.get().getInteger("connection.retry");
             /**
              * The number of times this action has been run
              */
@@ -203,16 +209,9 @@ public class DefaultSessionPool implements SessionPool {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Retry for failure %s", failure));
                 }
-                {
-                    final int max = Math.max(1, pool.getMaxIdle() - 1);
-                    log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
-                    pool.setMaxIdle(max);
-                }
-                {
-                    final int max = Math.max(1, pool.getMaxTotal() - 1);
-                    log.warn(String.format("Lower maximum total pool size to %d connections.", max));
-                    pool.setMaxTotal(max);
-                }
+                final int max = Math.max(1, pool.getMaxIdle() - 1);
+                log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                pool.setMaxIdle(max);
                 // Clear pool from idle connections
                 pool.clear();
                 // This is an automated retry. Wait some time first.

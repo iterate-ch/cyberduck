@@ -107,7 +107,7 @@ public class ConcurrentTransferWorkerTest {
     @Test
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
-        final int connections = 6;
+        final int connections = 7;
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
@@ -131,7 +131,7 @@ public class ConcurrentTransferWorkerTest {
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DisabledPasswordStore(), new DisabledLoginCallback(), PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool.withMaxTotal(connections),
+                pool,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -140,7 +140,11 @@ public class ConcurrentTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
-        assertTrue(worker.run(null));
+        pool.withMaxTotal(connections);
+        pool.withRetry(10);
+        final Session<?> s = worker.borrow();
+        assertTrue(worker.run(s));
+        worker.release(s);
         assertEquals(0L, transfer.getTransferred(), 0L);
     }
 }
