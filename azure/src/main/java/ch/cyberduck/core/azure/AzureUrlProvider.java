@@ -80,20 +80,14 @@ public class AzureUrlProvider implements UrlProvider {
             blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlockBlobReference(containerService.getKey(file));
         }
-        catch(URISyntaxException e) {
-            return DescriptiveUrl.EMPTY;
-        }
-        catch(StorageException e) {
+        catch(URISyntaxException | StorageException e) {
             return DescriptiveUrl.EMPTY;
         }
         final String token;
         try {
             token = blob.generateSharedAccessSignature(this.getPolicy(seconds), null);
         }
-        catch(InvalidKeyException e) {
-            return DescriptiveUrl.EMPTY;
-        }
-        catch(StorageException e) {
+        catch(InvalidKeyException | StorageException e) {
             return DescriptiveUrl.EMPTY;
         }
         return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
