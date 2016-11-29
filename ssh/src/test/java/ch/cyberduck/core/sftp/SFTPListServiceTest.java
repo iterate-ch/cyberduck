@@ -18,9 +18,9 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -112,12 +112,12 @@ public class SFTPListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "/cryptomator-vault/test", EnumSet.of(Path.Type.directory));
-        session.getFeature(Vault.class).load(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.withVault(new CryptoVault(session, home, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");
             }
-        });
+        }).load());
         final AttributedList<Path> list = session.getFeature(ListService.class).list(vault, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(new Path("/home/jenkins/cryptomator-vault/test/blabal", EnumSet.of(Path.Type.directory)), list.get(0));

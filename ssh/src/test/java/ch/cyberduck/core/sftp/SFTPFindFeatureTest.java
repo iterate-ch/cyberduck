@@ -10,9 +10,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -81,12 +81,12 @@ public class SFTPFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "/cryptomator-vault/test", EnumSet.of(Path.Type.directory));
-        session.getFeature(Vault.class).load(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.withVault(new CryptoVault(session, home, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");
             }
-        });
+        }).load());
         assertTrue(session.getFeature(Find.class).find(new Path(vault, "blabal", EnumSet.of(Path.Type.directory))));
         assertFalse(session.getFeature(Find.class).find(new Path(vault, "bla", EnumSet.of(Path.Type.directory))));
         session.close();
