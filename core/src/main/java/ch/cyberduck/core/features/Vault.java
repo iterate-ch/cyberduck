@@ -15,31 +15,38 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
+import ch.cyberduck.core.cryptomator.VaultException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 public interface Vault {
 
     /**
      * Create and open new vault
      *
-     * @param home     Target for vault
-     * @param keychain Password store
-     * @param callback Password prompt
+     * @return Open vault
+     * @throws VaultException                Failure parsing master key
+     * @throws LoginCanceledException        User dismissed passphrase prompt
+     * @throws BackgroundException           Failure reading master key from server
+     * @throws NotfoundException             No master key file in home
+     * @throws CryptoAuthenticationException Failure opening master key file
      */
-    void create(Path home, PasswordStore keychain, LoginCallback callback) throws BackgroundException;
+    Vault create() throws BackgroundException;
 
     /**
      * Open existing vault
      *
-     * @param home     Target for vault
-     * @param keychain Password store
-     * @param callback Password prompt
+     * @return Open vault
+     * @throws VaultException                Failure parsing master key
+     * @throws LoginCanceledException        User dismissed passphrase prompt
+     * @throws BackgroundException           Failure reading master key from server
+     * @throws NotfoundException             No master key file in home
+     * @throws CryptoAuthenticationException Failure opening master key file
      */
-    void load(Path home, PasswordStore keychain, LoginCallback callback) throws BackgroundException;
+    Vault load() throws BackgroundException;
 
     /**
      * Close vault
@@ -61,13 +68,13 @@ public interface Vault {
 
     Vault DISABLED = new Vault() {
         @Override
-        public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-            throw new AccessDeniedException();
+        public Vault create() throws BackgroundException {
+            return this;
         }
 
         @Override
-        public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
-            throw new AccessDeniedException();
+        public Vault load() throws BackgroundException {
+            return this;
         }
 
         @Override

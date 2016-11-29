@@ -22,15 +22,11 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.VaultLookupListCanceledException;
-import ch.cyberduck.core.cryptomator.VaultLookupListProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -41,14 +37,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
 
     private final Cache<Path> cache;
     private final Path directory;
-    private final LoginCallback login;
     private final ListProgressListener listener;
 
-    public SessionListWorker(final Cache<Path> cache, final Path directory,
-                             final LoginCallback login, final ListProgressListener listener) {
+    public SessionListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
-        this.login = login;
         this.listener = listener;
     }
 
@@ -60,14 +53,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
                 this.chunk(directory, list);
                 return list;
             }
-            try {
-                return session.getFeature(ListService.class).list(directory,
-                        new VaultLookupListProgressListener(session.getFeature(Vault.class), directory, login, this));
-            }
-            catch(VaultLookupListCanceledException e) {
-                // Run again with decrypting list worker
-                return session.getFeature(ListService.class).list(directory, this);
-            }
+            return session.getFeature(ListService.class).list(directory, listener);
         }
         catch(ListCanceledException e) {
             return e.getChunk();

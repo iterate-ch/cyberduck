@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
+import ch.cyberduck.core.cryptomator.VaultFinderListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
@@ -64,11 +64,13 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     /**
      * Cryptomator
      */
-    protected Vault vault = new CryptoVault(this);
+    protected Vault vault = Vault.DISABLED;
 
     protected C client;
 
-    private final Set<TranscriptListener> listeners = new HashSet<>();
+    private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
+
+    private final Set<ListProgressListener> listProgressListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -90,8 +92,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
-    public void addTranscriptListener(final TranscriptListener transcript) {
-        listeners.add(transcript);
+    public void addListener(final TranscriptListener transcript) {
+        transcriptListeners.add(transcript);
+    }
+
+    public void addListener(final ListProgressListener listener) {
+        listProgressListeners.add(listener);
     }
 
     public enum State {
@@ -110,10 +116,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     public C getClient() {
         return client;
-    }
-
-    public Vault getVault() {
-        return vault;
     }
 
     public Session withVault(final Vault vault) {
@@ -202,7 +204,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected void disconnect() {
         state = State.closed;
         vault.close();
-        listeners.clear();
+        transcriptListeners.clear();
     }
 
     /**
@@ -253,7 +255,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             case opening:
             case open:
             case closing:
-                for(TranscriptListener listener : listeners) {
+                for(TranscriptListener listener : transcriptListeners) {
                     listener.log(request, message);
                 }
                 break;
@@ -316,6 +318,10 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) vault;
         }
         if(type == ListService.class) {
+            if(Vault.DISABLED == vault) {
+                return (T) new VaultFinderListService(this,
+                        listProgressListeners.toArray(new ListProgressListener[listProgressListeners.size()]));
+            }
             return (T) this;
         }
         return null;

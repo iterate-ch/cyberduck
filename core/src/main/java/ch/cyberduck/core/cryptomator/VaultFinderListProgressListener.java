@@ -17,54 +17,52 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
-public class VaultLookupListProgressListener extends IndexedListProgressListener {
-    private static final Logger log = Logger.getLogger(VaultLookupListProgressListener.class);
+public class VaultFinderListProgressListener extends IndexedListProgressListener {
+    private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
-    private final Vault vault;
-    private final Path directory;
-    private final Path master;
+    private final Session<?> session;
+    private final PasswordStore keychain;
     private final LoginCallback prompt;
-    private final ListProgressListener delegate;
 
-    public VaultLookupListProgressListener(final Vault vault, final Path directory, final LoginCallback prompt, final ListProgressListener delegate) {
-        this.vault = vault;
-        this.directory = directory;
-        this.master = new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+    public VaultFinderListProgressListener(final Session<?> session,
+                                           final PasswordStore keychain,
+                                           final LoginCallback prompt) {
+        this.session = session;
+        this.keychain = keychain;
         this.prompt = prompt;
-        this.delegate = delegate;
     }
 
     @Override
     public void message(final String message) {
-        delegate.message(message);
+        //
     }
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
-            if(f.equals(master)) {
+            final Path directory = f.getParent();
+            if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
                 try {
-                    vault.load(directory, PasswordStoreFactory.get(), prompt);
+                    session.withVault(new CryptoVault(session, directory, keychain, prompt).load());
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure loading vault in %s. %s", directory, e.getMessage()));
                     return;
                 }
-                throw new VaultLookupListCanceledException(list);
+                throw new VaultFinderListCanceledException(list);
             }
         }
     }

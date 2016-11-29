@@ -19,8 +19,8 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ListCanceledException;
 
-public class VaultLookupListCanceledException extends ListCanceledException {
-    public VaultLookupListCanceledException(final AttributedList<Path> chunk) {
+public class VaultFinderListCanceledException extends ListCanceledException {
+    public VaultFinderListCanceledException(final AttributedList<Path> chunk) {
         super(chunk);
     }
 }

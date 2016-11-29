@@ -17,6 +17,8 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -219,7 +221,8 @@ public class TransferBackgroundActionTest {
         final TransferOptions options = new TransferOptions();
         final AtomicBoolean retry = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
-                new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host) {
+                new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new DisabledPasswordStore(), new DisabledLoginCallback(), PathCache.empty(), new DisabledProgressListener(), host) {
             @Override
             public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());

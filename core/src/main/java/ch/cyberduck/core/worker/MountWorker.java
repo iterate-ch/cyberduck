@@ -24,7 +24,6 @@ import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,13 +41,11 @@ public class MountWorker extends Worker<Path> {
     private final Host bookmark;
     private final Cache<Path> cache;
     private final ListProgressListener listener;
-    private final LoginCallback login;
 
-    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener, LoginCallback login) {
+    public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {
         this.bookmark = bookmark;
         this.cache = cache;
         this.listener = listener;
-        this.login = login;
     }
 
     /**
@@ -64,7 +61,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of default path
-            list = new SessionListWorker(cache, home, login, listener).run(session);
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Mount failed with %s", e.getMessage()));
@@ -74,7 +71,7 @@ public class MountWorker extends Worker<Path> {
             // Remove cached home to force error if repeated attempt to mount fails
             cache.invalidate(home);
             // Retrieve directory listing of working directory
-            list = new SessionListWorker(cache, home, login, listener).run(session);
+            list = new SessionListWorker(cache, home, listener).run(session);
         }
         cache.put(home, list);
         return home;

@@ -29,7 +29,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
@@ -102,19 +101,27 @@ public class CryptoVault implements Vault {
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
     private final Session<?> session;
+    /**
+     * Root of vault directory
+     */
+    private final Path home;
+    private final PasswordStore keychain;
+    private final LoginCallback callback;
 
-    private Path vault;
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Session<?> session) {
+    public CryptoVault(final Session<?> session, final Path home, final PasswordStore keychain, final LoginCallback callback) {
         this.session = session;
+        this.home = home;
+        this.keychain = keychain;
+        this.callback = callback;
     }
 
     @Override
-    public void create(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
+    public CryptoVault create() throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         final Host bookmark = session.getHost();
@@ -129,13 +136,13 @@ public class CryptoVault implements Vault {
             keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
         }
         final String passphrase = credentials.getPassword();
-        final KeyFile keyFile = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+        final KeyFile master = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", file));
         }
         final ContentWriter writer = new ContentWriter(session);
-        writer.write(file, keyFile.serialize());
-        this.open(home, KeyFile.parse(keyFile.serialize()), passphrase);
+        writer.write(file, master.serialize());
+        this.open(KeyFile.parse(master.serialize()), passphrase);
         try {
             final Path secondLevel = directoryProvider.toEncrypted(home).path;
             final Path firstLevel = secondLevel.getParent();
@@ -151,21 +158,11 @@ public class CryptoVault implements Vault {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return this;
     }
 
-    /**
-     * Open vault
-     *
-     * @param home     Default path
-     * @param callback Callback
-     * @throws VaultException                Failure parsing master key
-     * @throws LoginCanceledException        User dismissed passphrase prompt
-     * @throws BackgroundException           Failure reading master key from server
-     * @throws NotfoundException             No master key file in home
-     * @throws CryptoAuthenticationException Failure opening master key file
-     */
     @Override
-    public void load(final Path home, final PasswordStore keychain, final LoginCallback callback) throws BackgroundException {
+    public CryptoVault load() throws BackgroundException {
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         if(!session.getFeature(Find.class).find(file)) {
             throw new NotfoundException(file.getAbsolute());
@@ -174,13 +171,13 @@ public class CryptoVault implements Vault {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to read master key from %s", file));
             }
-            final String masterKey = new ContentReader(session).readToString(file);
+            final String json = new ContentReader(session).readToString(file);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Read master key %s", masterKey));
+                log.debug(String.format("Read master key %s", json));
             }
-            final KeyFile masterKeyFile;
+            final KeyFile master;
             try {
-                masterKeyFile = KeyFile.parse(masterKey.getBytes());
+                master = KeyFile.parse(json.getBytes());
             }
             catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
                 throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
@@ -205,13 +202,13 @@ public class CryptoVault implements Vault {
                 }
                 passphrase = credentials.getPassword();
             }
-            this.open(home, masterKeyFile, passphrase);
+            this.open(master, passphrase);
         }
+        return this;
     }
 
     @Override
     public void close() {
-        vault = null;
         if(cryptor != null) {
             cryptor.destroy();
         }
@@ -226,7 +223,7 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private void open(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
+    private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
@@ -240,7 +237,6 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
-        this.vault = home;
         this.filenameProvider = new CryptoFilenameProvider(home, session);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
@@ -248,7 +244,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        return file.equals(vault) || file.isChild(vault);
+        return file.equals(home) || file.isChild(home);
     }
 
     @Override
@@ -348,7 +344,7 @@ public class CryptoVault implements Vault {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
-        if(vault != null) {
+        if(cryptor != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService((ListService) delegate, this);
             }

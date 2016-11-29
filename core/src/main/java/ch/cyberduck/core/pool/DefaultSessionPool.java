@@ -16,16 +16,21 @@
 package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionPauser;
@@ -64,9 +69,9 @@ public class DefaultSessionPool implements SessionPool {
     private final GenericObjectPool<Session> pool;
 
     private SessionPool features = DISCONNECTED;
-    private Vault vault;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
+                              final PasswordStore keychain, final LoginCallback login,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
         this.cache = cache;
@@ -77,7 +82,7 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -142,9 +147,8 @@ public class DefaultSessionPool implements SessionPool {
                     }
                     if(DISCONNECTED == features) {
                         features = new SingleSessionPool(connect, session, cache);
-                        vault = session.getFeature(Vault.class);
                     }
-                    return session.withVault(vault);
+                    return session;
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);
@@ -303,7 +307,8 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark).getFeature(type);
+            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                    new DisabledPasswordStore(), new DisabledLoginCallback()).getFeature(type);
         }
         return features.getFeature(type);
     }
