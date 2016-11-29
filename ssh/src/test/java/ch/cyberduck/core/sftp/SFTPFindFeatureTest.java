@@ -81,7 +81,7 @@ public class SFTPFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), cache);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "/cryptomator-vault/test", EnumSet.of(Path.Type.directory));
-        session.withVault(new CryptoVault(session, home, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.withVault(new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("coke4you");
