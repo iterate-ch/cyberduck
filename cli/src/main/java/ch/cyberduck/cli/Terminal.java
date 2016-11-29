@@ -224,7 +224,7 @@ public class Terminal {
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))), cache);
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(), new TerminalLoginCallback(reader)), cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = session.getFeature(Home.class);
@@ -260,7 +260,8 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))),
+                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
+                                    new DisabledPasswordStore(), new DisabledLoginCallback()),
                             Collections.singletonMap(
                                     remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             )
@@ -363,8 +364,8 @@ public class Terminal {
 
     protected Exit mount(final SessionPool session) {
         final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
-                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache),
-                new TerminalLoginCallback(reader)));
+                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)
+        ));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -374,7 +375,7 @@ public class Terminal {
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
-                LoginCallbackFactory.get(controller), new TerminalListProgressListener(reader, verbose));
+                new TerminalListProgressListener(reader, verbose));
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
                 controller,
                 session, worker);
