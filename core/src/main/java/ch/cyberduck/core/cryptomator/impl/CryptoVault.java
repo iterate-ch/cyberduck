@@ -138,6 +138,9 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Write master key to %s", file));
         }
         final ContentWriter writer = new ContentWriter(session);
+        // Obtain non encrypted directory writer
+        final Directory feature = session._getFeature(Directory.class);
+        feature.mkdir(home);
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(home).path;
@@ -146,7 +149,6 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        final Directory feature = session._getFeature(Directory.class);
         feature.mkdir(dataDir);
         feature.mkdir(firstLevel);
         feature.mkdir(secondLevel);
