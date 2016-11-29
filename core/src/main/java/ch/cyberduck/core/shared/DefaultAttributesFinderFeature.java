@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoAttributesFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -65,9 +64,6 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
                 if(feature instanceof DefaultAttributesFinderFeature) {
                     throw f;
                 }
-                if(feature instanceof CryptoAttributesFeature) {
-                    throw f;
-                }
                 return feature.withCache(cache).find(file);
             }
         }
@@ -82,9 +78,6 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
                 // Try native implementation
                 final AttributesFinder feature = session.getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                if(feature instanceof CryptoAttributesFeature) {
                     throw new NotfoundException(file.getAbsolute());
                 }
                 final IdProvider id = session.getFeature(IdProvider.class);
