@@ -218,13 +218,16 @@ public class CryptoVault implements Vault {
         directoryProvider.close();
     }
 
-    private void open(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws CryptoAuthenticationException {
+    private void open(final Path home, final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
         try {
             cryptor = provider.createFromKeyFile(keyFile, passphrase, VAULT_VERSION);
+        }
+        catch(IllegalArgumentException e) {
+            throw new VaultException("Failure reading key file", e);
         }
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
