@@ -121,6 +121,10 @@ public class SFTPListServiceTest {
         final AttributedList<Path> list = session.getFeature(ListService.class).list(vault, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(new Path("/home/jenkins/cryptomator-vault/test/blabal", EnumSet.of(Path.Type.directory)), list.get(0));
+        // Test list of parent unencrypted
+        final AttributedList<Path> list1 = session.getFeature(ListService.class).list(home, new DisabledListProgressListener());
+        assertFalse(list1.isEmpty());
+        assertTrue(list1.contains(new Path("/home/jenkins/cryptomator-vault", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }
