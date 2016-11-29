@@ -243,6 +243,10 @@ public class CryptoVault implements Vault {
     @Override
     public Path encrypt(final Path file) throws BackgroundException {
         if(this.contains(file)) {
+            if(file.getType().contains(Path.Type.encrypted)) {
+                log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+                return file;
+            }
             try {
                 if(file.isDirectory()) {
                     final CryptoDirectory directory = directoryProvider.toEncrypted(file);
