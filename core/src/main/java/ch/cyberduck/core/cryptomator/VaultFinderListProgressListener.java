@@ -55,14 +55,15 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path f = list.get(i);
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
+                final CryptoVault vault = new CryptoVault(directory, keychain, prompt);
                 try {
-                    final CryptoVault vault = new CryptoVault(directory, keychain, prompt).load(session);
-                    throw new VaultFinderListCanceledException(vault, list);
+                    vault.load(session);
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure loading vault in %s. %s", directory, e.getMessage()));
                     return;
                 }
+                throw new VaultFinderListCanceledException(vault, list);
             }
         }
     }
