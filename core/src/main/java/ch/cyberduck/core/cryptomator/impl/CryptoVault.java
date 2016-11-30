@@ -74,8 +74,6 @@ public class CryptoVault implements Vault {
 
     private static final SecureRandom random;
 
-    private Boolean open = false;
-
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -214,21 +212,22 @@ public class CryptoVault implements Vault {
         if(directoryProvider != null) {
             directoryProvider.close();
         }
-        open = false;
     }
 
     @Override
     public void delete() throws BackgroundException {
-        if(open) {
-            throw new VaultException("An open vault cannot be deleted");
+        if(cryptor.isDestroyed()) {
+            final Path secondLevel = directoryProvider.toEncrypted(home).path;
+            final Path firstLevel = secondLevel.getParent();
+            final Path dataDir = firstLevel.getParent();
+            final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+            //TODO handling BACKUPKEY_FILE_NAME, versuchen zu löschen und error ignorieren
+            session._getFeature(Delete.class).delete(Arrays.asList(
+                    secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        final Path secondLevel = directoryProvider.toEncrypted(home).path;
-        final Path firstLevel = secondLevel.getParent();
-        final Path dataDir = firstLevel.getParent();
-        final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        //TODO handling BACKUPKEY_FILE_NAME, versuchen zu löschen und error ignorieren
-        session._getFeature(Delete.class).delete(Arrays.asList(
-                secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        else {
+            throw new VaultException("Vault is open and cannot be deleted");
+        }
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
@@ -248,7 +247,6 @@ public class CryptoVault implements Vault {
         this.filenameProvider = new CryptoFilenameProvider(session, home);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
-        open = true;
     }
 
     @Override
