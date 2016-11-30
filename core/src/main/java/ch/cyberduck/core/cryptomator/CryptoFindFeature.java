@@ -44,6 +44,7 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public Find withCache(final PathCache cache) {
-        throw new UnsupportedOperationException();
+        delegate.withCache(cache);
+        return this;
     }
 }
