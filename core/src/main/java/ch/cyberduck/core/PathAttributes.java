@@ -86,6 +86,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * Unique identifier for cryptomator
+     */
+    private String directoryId;
+
+    /**
      * Should be hidden in the browser by default
      */
     private boolean duplicate;
@@ -279,6 +284,14 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public void setVersionId(final String versionId) {
         this.versionId = versionId;
+    }
+
+    public String getDirectoryId() {
+        return directoryId;
+    }
+
+    public void setDirectoryId(final String directoryId) {
+        this.directoryId = directoryId;
     }
 
     /**
