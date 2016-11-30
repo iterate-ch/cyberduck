@@ -29,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
@@ -58,6 +59,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -221,9 +223,17 @@ public class CryptoVault implements Vault {
             final Path firstLevel = secondLevel.getParent();
             final Path dataDir = firstLevel.getParent();
             final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-            //TODO handling BACKUPKEY_FILE_NAME, versuchen zu löschen und error ignorieren
-            session._getFeature(Delete.class).delete(Arrays.asList(
+            final Delete delete = session._getFeature(Delete.class);
+            delete.delete(Arrays.asList(
                     secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            final Path backup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+            try {
+                delete.delete(Collections.singletonList(
+                        backup), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            }
+            catch(NotfoundException e) {
+                log.warn(String.format("Missing backup master key %s", backup));
+            }
         }
         else {
             throw new VaultException("Vault is open and cannot be deleted");
