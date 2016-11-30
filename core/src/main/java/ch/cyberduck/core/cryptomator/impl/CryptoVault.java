@@ -58,6 +58,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -130,7 +131,7 @@ public class CryptoVault implements Vault {
         // Default to false for save in keychain
         credentials.setSaved(false);
         callback.prompt(bookmark, credentials,
-                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create Vault {0}", "Cryptomator"), home.getName()),
                 LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         if(credentials.isSaved()) {
@@ -190,7 +191,7 @@ public class CryptoVault implements Vault {
             // Default to false for save in keychain
             credentials.setSaved(false);
             callback.prompt(bookmark, credentials,
-                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Unlock Vault {0}", "Cryptomator"), home.getName()),
                     LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
             if(credentials.isSaved()) {
