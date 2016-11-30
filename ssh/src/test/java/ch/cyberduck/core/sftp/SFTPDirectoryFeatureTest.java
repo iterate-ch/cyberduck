@@ -76,18 +76,15 @@ public class SFTPDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path vault = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptoVault = new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.withVault(new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create();
-        session.withVault(cryptoVault);
+        }).create());
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        cryptoVault.close();
-        cryptoVault.delete();
+        session.getFeature(Delete.class).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
