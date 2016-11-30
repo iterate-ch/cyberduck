@@ -33,7 +33,7 @@ import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudBlob;
 
 public class AzureCopyFeature implements Copy {
     private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
@@ -53,13 +53,13 @@ public class AzureCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            final CloudBlockBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
-                    .getBlockBlobReference(containerService.getKey(copy));
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
-                    .getBlockBlobReference(containerService.getKey(source));
+            final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
+                    .getAppendBlobReference(containerService.getKey(copy));
+            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(source).getName())
+                    .getBlobReferenceFromServer(containerService.getKey(source));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setStoreBlobContentMD5(PreferencesFactory.get().getBoolean("azure.upload.md5"));
-            final String id = target.startCopy(blob,
+            final String id = target.startCopy(blob.getUri(),
                     AccessCondition.generateEmptyCondition(), AccessCondition.generateEmptyCondition(), options, context);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Started copy for %s with copy operation ID %s", copy, id));

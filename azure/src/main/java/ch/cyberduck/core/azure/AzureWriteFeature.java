@@ -19,15 +19,15 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -46,17 +46,15 @@ import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobOutputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudAppendBlob;
 import com.microsoft.azure.storage.core.SR;
 
-public class AzureWriteFeature implements Write {
+public class AzureWriteFeature extends AppendWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
     private final AzureSession session;
 
     private final OperationContext context;
-
-    private final Find finder;
 
     private final PathContainerService containerService
             = new AzurePathContainerService();
@@ -65,17 +63,15 @@ public class AzureWriteFeature implements Write {
             = PreferencesFactory.get();
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
+        super(session);
         this.session = session;
         this.context = context;
-        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
     }
 
-    @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            return Write.override;
-        }
-        return Write.notfound;
+    protected AzureWriteFeature(final AzureSession session, final OperationContext context, final Find finder, final AttributesFinder attributes) {
+        super(finder, attributes);
+        this.session = session;
+        this.context = context;
     }
 
     @Override
@@ -91,8 +87,8 @@ public class AzureWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
+            final CloudAppendBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getAppendBlobReference(containerService.getKey(file));
             if(StringUtils.isNotBlank(status.getMime())) {
                 blob.getProperties().setContentType(status.getMime());
             }
@@ -112,7 +108,13 @@ public class AzureWriteFeature implements Write {
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
-            final BlobOutputStream out = blob.openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
+            final BlobOutputStream out;
+            if(status.isAppend()) {
+                out = blob.openWriteExisting(AccessCondition.generateEmptyCondition(), options, context);
+            }
+            else {
+                out = blob.openWriteNew(AccessCondition.generateEmptyCondition(), options, context);
+            }
             return new ProxyOutputStream(out) {
                 @Override
                 protected void handleIOException(final IOException e) throws IOException {

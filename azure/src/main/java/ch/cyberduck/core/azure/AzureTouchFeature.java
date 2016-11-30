@@ -33,7 +33,7 @@ import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudBlob;
 
 public class AzureTouchFeature implements Touch {
 
@@ -57,8 +57,8 @@ public class AzureTouchFeature implements Touch {
     @Override
     public void touch(final Path file) throws BackgroundException {
         try {
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
+            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getAppendBlobReference(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
         }

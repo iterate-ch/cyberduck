@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
 
@@ -38,8 +39,8 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobContainerProperties;
 import com.microsoft.azure.storage.blob.BlobProperties;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureAttributesFinderFeature implements AttributesFinder {
 
@@ -71,15 +72,17 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
                 return attributes;
             }
             else {
-                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file));
+                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlobReferenceFromServer(containerService.getKey(file));
                 final BlobRequestOptions options = new BlobRequestOptions();
                 blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
                 final BlobProperties properties = blob.getProperties();
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(properties.getLength());
                 attributes.setModificationDate(properties.getLastModified().getTime());
-                attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
+                if(StringUtils.isNotBlank(properties.getContentMD5())) {
+                    attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
+                }
                 attributes.setETag(properties.getEtag());
                 return attributes;
             }

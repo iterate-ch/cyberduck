@@ -40,7 +40,7 @@ import java.util.EnumSet;
 import java.util.TimeZone;
 
 import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
@@ -72,13 +72,13 @@ public class AzureUrlProvider implements UrlProvider {
     }
 
     private DescriptiveUrl createSignedUrl(final Path file, int seconds) {
-        final CloudBlockBlob blob;
+        final CloudBlob blob;
         try {
             if(!session.isConnected()) {
                 return DescriptiveUrl.EMPTY;
             }
             blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
+                    .getBlobReferenceFromServer(containerService.getKey(file));
         }
         catch(URISyntaxException | StorageException e) {
             return DescriptiveUrl.EMPTY;
