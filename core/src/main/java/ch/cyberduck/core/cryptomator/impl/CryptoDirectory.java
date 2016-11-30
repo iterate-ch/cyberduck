@@ -17,7 +17,7 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Path;
 
-final class CryptoDirectory {
+public final class CryptoDirectory {
     public final String id;
     public final Path path;
 

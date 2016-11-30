@@ -16,29 +16,44 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import java.nio.charset.Charset;
+import java.util.EnumSet;
 
 public class CryptoDirectoryFeature implements Directory {
 
     private final Directory delegate;
-    private final Vault cryptomator;
+    private final CryptoVault vault;
+    private final Session session;
 
-    public CryptoDirectoryFeature(final Directory delegate, final Vault cryptomator) {
+    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator, final Session session) {
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = cryptomator;
+        this.session = session;
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        delegate.mkdir(file);
+    public void mkdir(final Path directory) throws BackgroundException {
+        this.mkdir(directory, null, null);
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        final Path encrypted = cryptomator.encrypt(file);
-        delegate.mkdir(encrypted, region, status);
+    public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+        final Path directoryMetafile = vault.encrypt(directory, EnumSet.of(Path.Type.file));
+        final Path directoryPath = vault.encrypt(directory, EnumSet.of(Path.Type.directory));
+        final String uuid = vault.getDirectoryProvider().toEncrypted(directory).id;
+
+        final ContentWriter writer = new ContentWriter(session);
+        writer.write(directoryMetafile, uuid.getBytes(Charset.forName("UTF-8")));
+
+        final Path firstLevel = directoryPath.getParent();
+        //TODO check if exists
+        delegate.mkdir(firstLevel);
+        delegate.mkdir(directoryPath);
     }
 }
