@@ -68,11 +68,6 @@ public class CryptoDeleteFeature implements Delete {
             if(filenameProvider.isDeflated(file.getName())) {
                 final Path metadataFile = filenameProvider.resolve(file.getName());
                 metadataFiles.add(metadataFile);
-                //TODO darf beim Löschen der nachfolgenden Directories nicht failen
-                final Path secondLevel = metadataFile.getParent();
-                metadataFiles.add(secondLevel);
-                final Path firstLevel = secondLevel.getParent();
-                metadataFiles.add(firstLevel);
             }
         }
         return metadataFiles;
