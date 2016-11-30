@@ -49,6 +49,7 @@ public final class SessionFactory {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
                     host.getClass(), trust.getClass(), key.getClass());
+            final Session<?> session;
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s, %s, %s", host.getClass(), trust.getClass(), key.getClass()));
                 final Constructor<Session> fallback = ConstructorUtils.getMatchingAccessibleConstructor(name,
@@ -56,9 +57,11 @@ public final class SessionFactory {
                 if(fallback == null) {
                     throw new FactoryException(String.format("No matching constructor for parameter %s", host.getClass()));
                 }
-                return fallback.newInstance(host);
+                session = fallback.newInstance(host);
             }
-            final Session<?> session = constructor.newInstance(host, trust, key);
+            else {
+                session = constructor.newInstance(host, trust, key);
+            }
             session.addListener(new VaultFinderListProgressListener(session, keychain, login));
             return session;
         }
