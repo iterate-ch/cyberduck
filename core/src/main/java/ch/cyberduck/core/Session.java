@@ -316,9 +316,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
         }
-        if(type == Vault.class) {
-            return (T) vault;
-        }
         if(type == ListService.class) {
             if(Vault.DISABLED == vault) {
                 return (T) new VaultFinderListService(this, this,
