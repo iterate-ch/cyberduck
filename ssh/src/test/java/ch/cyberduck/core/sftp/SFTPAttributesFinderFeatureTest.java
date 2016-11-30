@@ -96,7 +96,7 @@ public class SFTPAttributesFinderFeatureTest {
                 credentials.setPassword("vault");
             }
         }).create();
-        session.withVault(cryptomator.create());
+        session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(test);
         final PathAttributes attributes = session.getFeature(AttributesFinder.class).find(test);
         assertNotNull(attributes);
