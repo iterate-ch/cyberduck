@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
@@ -37,7 +38,17 @@ public class CryptoDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
-            encrypted.add(vault.encrypt(f));
+            if(f.isDirectory()) {
+                final Path directoryMetafile = vault.encrypt(f, EnumSet.of(Path.Type.file));
+                final Path directoryPath = vault.encrypt(f, EnumSet.of(Path.Type.directory));
+                encrypted.add(directoryMetafile);
+                encrypted.add(directoryPath);
+                //TODO muss silently failen für directoryPath.getParent(), wenn es noch andere Ordner unter diesem Firstlevel hat
+                encrypted.add(directoryPath.getParent());
+            }
+            else {
+                encrypted.add(vault.encrypt(f));
+            }
         }
         delegate.delete(encrypted, prompt, callback);
     }

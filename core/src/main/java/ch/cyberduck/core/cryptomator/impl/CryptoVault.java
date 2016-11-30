@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -56,6 +57,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,6 +73,8 @@ public class CryptoVault implements Vault {
     protected static final String DIR_PREFIX = "0";
 
     private static final SecureRandom random;
+
+    private Boolean open = false;
 
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
@@ -210,6 +214,21 @@ public class CryptoVault implements Vault {
         if(directoryProvider != null) {
             directoryProvider.close();
         }
+        open = false;
+    }
+
+    @Override
+    public void delete() throws BackgroundException {
+        if(open) {
+            throw new VaultException("An open vault cannot be deleted");
+        }
+        final Path secondLevel = directoryProvider.toEncrypted(home).path;
+        final Path firstLevel = secondLevel.getParent();
+        final Path dataDir = firstLevel.getParent();
+        final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        //TODO handling BACKUPKEY_FILE_NAME, versuchen zu löschen und error ignorieren
+        session._getFeature(Delete.class).delete(Arrays.asList(
+                secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
@@ -229,6 +248,7 @@ public class CryptoVault implements Vault {
         this.filenameProvider = new CryptoFilenameProvider(home, session);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
+        open = true;
     }
 
     @Override
