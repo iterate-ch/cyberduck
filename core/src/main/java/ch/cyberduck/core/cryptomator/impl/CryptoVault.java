@@ -273,8 +273,10 @@ public class CryptoVault implements Vault {
                 return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
             }
             else {
-                final CryptoDirectory directory = directoryProvider.toEncrypted(file);
-                return directory.path;
+                final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(file);
+                // Set internal id
+                cryptoDirectory.path.attributes().setDirectoryId(cryptoDirectory.id);
+                return cryptoDirectory.path;
             }
         }
         return file;
@@ -387,5 +389,15 @@ public class CryptoVault implements Vault {
             }
         }
         return delegate;
+    }
+
+    static final class CryptoDirectory {
+        public final String id;
+        public final Path path;
+
+        public CryptoDirectory(final String id, final Path path) {
+            this.id = id;
+            this.path = path;
+        }
     }
 }

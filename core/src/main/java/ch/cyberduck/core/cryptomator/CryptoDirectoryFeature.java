@@ -46,10 +46,10 @@ public class CryptoDirectoryFeature implements Directory {
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
         final Path directoryMetafile = vault.encrypt(directory, true);
         final Path directoryPath = vault.encrypt(directory);
-        final String uuid = vault.getDirectoryProvider().toEncrypted(directory).id;
+        final String directoryId = directoryPath.attributes().getDirectoryId();
 
         final ContentWriter writer = new ContentWriter(session);
-        writer.write(directoryMetafile, uuid.getBytes(Charset.forName("UTF-8")));
+        writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
 
         final Path firstLevel = directoryPath.getParent();
         if(!session._getFeature(Find.class).find(firstLevel)) {

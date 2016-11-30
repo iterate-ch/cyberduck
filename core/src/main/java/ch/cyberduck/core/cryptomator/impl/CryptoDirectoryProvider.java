@@ -69,17 +69,17 @@ public class CryptoDirectoryProvider {
     /**
      * @param directory Clear text
      */
-    public CryptoDirectory toEncrypted(final Path directory) throws BackgroundException {
+    public CryptoVault.CryptoDirectory toEncrypted(final Path directory) throws BackgroundException {
         try {
             if(dataRoot.getParent().getAbsolute().equals(directory.getAbsolute())) {
-                return new CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
+                return new CryptoVault.CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
             }
             else {
-                final CryptoDirectory parent = this.toEncrypted(directory.getParent());
+                final CryptoVault.CryptoDirectory parent = this.toEncrypted(directory.getParent());
                 final String cleartextName = directory.getName();
                 final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
                 final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
-                return new CryptoDirectory(dirId, cache.get(dirId));
+                return new CryptoVault.CryptoDirectory(dirId, cache.get(dirId));
             }
         }
         catch(ExecutionException | UncheckedExecutionException e) {
