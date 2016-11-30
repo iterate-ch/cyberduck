@@ -34,14 +34,14 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class CryptoDirectoryIdProvider {
 
-    private final LoadingCache<Path, String> cache;
+    private final LoadingCache<Path, String> cache = CacheBuilder.newBuilder().maximumSize(
+            PreferencesFactory.get().getInteger("browser.cache.size")
+    ).build(new Loader());
+
     private final Session<?> session;
 
     public CryptoDirectoryIdProvider(final Session<?> session) {
         this.session = session;
-        this.cache = CacheBuilder.newBuilder().maximumSize(
-                PreferencesFactory.get().getInteger("browser.cache.size")
-        ).build(new Loader());
     }
 
     private class Loader extends CacheLoader<Path, String> {

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,14 +40,17 @@ public class CryptoDirectoryProvider {
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
     private static final int MAX_CACHED_DIR_PATHS = 1000;
 
-    private final LoadingCache<String, Path> cache;
+    private final LoadingCache<String, Path> cache
+            = CacheBuilder.newBuilder().maximumSize(
+            PreferencesFactory.get().getInteger("browser.cache.size")
+    ).build(CacheLoader.from(this::resolve));
+
     private final Path dataRoot;
     private final CryptoVault cryptomator;
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
         this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.cryptomator = cryptomator;
-        this.cache = CacheBuilder.newBuilder().maximumSize(MAX_CACHED_DIR_PATHS).build(CacheLoader.from(this::resolve));
     }
 
     /**

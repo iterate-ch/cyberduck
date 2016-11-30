@@ -226,7 +226,7 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
-        this.filenameProvider = new CryptoFilenameProvider(home, session);
+        this.filenameProvider = new CryptoFilenameProvider(session, home);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
