@@ -132,7 +132,7 @@ public class CryptoVault implements Vault {
         callback.prompt(bookmark, credentials,
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
-                new LoginOptions().user(false).anonymous(false));
+                new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         if(credentials.isSaved()) {
             keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
         }
@@ -192,7 +192,7 @@ public class CryptoVault implements Vault {
             callback.prompt(bookmark, credentials,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
-                    new LoginOptions().user(false).anonymous(false));
+                    new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
             if(credentials.isSaved()) {
                 keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
             }
