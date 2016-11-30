@@ -223,9 +223,10 @@ public class CryptoVault implements Vault {
         final Path secondLevel = directoryProvider.toEncrypted(home).path;
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
+        final Path metaDir = filenameProvider.getMetadataRoot();
         final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         session._getFeature(Delete.class).delete(Arrays.asList(
-                secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
+                secondLevel, firstLevel, master, dataDir, metaDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final Path backup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         try {
             session._getFeature(Delete.class).delete(Collections.singletonList(

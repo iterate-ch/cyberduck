@@ -58,7 +58,7 @@ public class CryptoDirectoryProvider {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) {
+    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));

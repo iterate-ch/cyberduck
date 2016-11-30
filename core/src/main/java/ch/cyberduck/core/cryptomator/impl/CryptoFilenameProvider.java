@@ -19,7 +19,9 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
+import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
 
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
@@ -81,7 +83,7 @@ public class CryptoFilenameProvider {
         }
     }
 
-    public String deflate(final String filename) {
+    public String deflate(final String filename) throws BackgroundException {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
         }
@@ -90,20 +92,32 @@ public class CryptoFilenameProvider {
         final String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
         if(cache.getIfPresent(shortName) == null) {
             cache.put(shortName, filename);
-            Path file = this.resolve(shortName);
-            Path directory = file.getParent();
-
-            //TODO yla: NOCH ZU IMPLEMENTIEREN
-            throw new UnsupportedOperationException();
-//            Files.createDirectories(fileDir);
-//            Files.write(file, longFileNameBytes);
+            final Path metadataFile = this.resolve(shortName);
+            this.createDirectories(metadataFile);
+            final ContentWriter writer = new ContentWriter(session);
+            writer.write(metadataFile, longFileNameBytes);
         }
         return shortName;
     }
 
-    private Path resolve(final String filename) {
+    private void createDirectories(final Path metadataFile) throws BackgroundException {
+        final Path secondLevel = metadataFile.getParent();
+        final Path firstLevel = secondLevel.getParent();
+        final Path metadataRoot = firstLevel.getParent();
+        final Directory feature = session._getFeature(Directory.class);
+        //TODO do not fail in case the folders already exist
+        feature.mkdir(metadataRoot);
+        feature.mkdir(firstLevel);
+        feature.mkdir(secondLevel);
+    }
+
+    public Path resolve(final String filename) {
         return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory)),
-                filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.directory));
+                filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.file));
+    }
+
+    public Path getMetadataRoot() {
+        return metadataRoot;
     }
 
     public void close() {

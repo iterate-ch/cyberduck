@@ -17,20 +17,23 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Vault;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
     private final Delete delegate;
-    private final Vault vault;
+    private final CryptoVault vault;
+    private final CryptoFilenameProvider filenameProvider;
 
-    public CryptoDeleteFeature(final Delete delegate, final Vault vault) {
+    public CryptoDeleteFeature(final Delete delegate, final CryptoVault vault) {
         this.delegate = delegate;
         this.vault = vault;
+        this.filenameProvider = vault.getFilenameProvider();
     }
 
     @Override
@@ -52,6 +55,23 @@ public class CryptoDeleteFeature implements Delete {
                 encrypted.add(vault.encrypt(f));
             }
         }
+        encrypted.addAll(this.getMetadataFiles(encrypted));
         delegate.delete(encrypted, prompt, callback);
+    }
+
+    private List<Path> getMetadataFiles(final List<Path> files) {
+        List<Path> metadataFiles = new ArrayList<>();
+        for(Path file : files) {
+            if(filenameProvider.isDeflated(file.getName())) {
+                final Path metadataFile = filenameProvider.resolve(file.getName());
+                metadataFiles.add(metadataFile);
+                //TODO darf beim Löschen der nachfolgenden Directories nicht failen
+                final Path secondLevel = metadataFile.getParent();
+                metadataFiles.add(secondLevel);
+                final Path firstLevel = secondLevel.getParent();
+                metadataFiles.add(firstLevel);
+            }
+        }
+        return metadataFiles;
     }
 }
