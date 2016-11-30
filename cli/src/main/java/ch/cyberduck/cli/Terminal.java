@@ -219,13 +219,13 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
                     new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-            pool = new SingleSessionPool(connect, SessionFactory.create(host,
+            final Session<?> session = SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))), cache,
-                    PasswordStoreFactory.get(), new TerminalLoginCallback(reader));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(), new TerminalLoginCallback(reader));
+            pool = new SingleSessionPool(connect, session, cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = pool.getFeature(Home.class);
@@ -255,14 +255,7 @@ public class Terminal {
                     break;
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
-                    transfer = new CopyTransfer(host,
-                            SessionFactory.create(target,
-                                    new CertificateStoreX509TrustManager(
-                                            new DefaultTrustManagerHostnameCallback(target),
-                                            new TerminalCertificateStore(reader)
-                                    ),
-                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
-                            ),
+                    transfer = new CopyTransfer(host, session,
                             Collections.singletonMap(
                                     remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             )

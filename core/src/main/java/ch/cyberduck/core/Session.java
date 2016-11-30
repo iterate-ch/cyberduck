@@ -273,12 +273,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
-        return vault.getFeature(type, this._getFeature(type));
+        return vault.getFeature(this, type, this._getFeature(type));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
-        return vault.getFeature(type, feature);
+        return vault.getFeature(this, type, feature);
     }
 
     @SuppressWarnings("unchecked")

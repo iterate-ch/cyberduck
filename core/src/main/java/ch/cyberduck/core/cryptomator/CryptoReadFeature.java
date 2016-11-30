@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -31,10 +32,12 @@ import java.nio.ByteBuffer;
 
 public class CryptoReadFeature implements Read {
 
+    private final Session<?> session;
     private final Read delegate;
     private final CryptoVault cryptomator;
 
-    public CryptoReadFeature(final Read delegate, final CryptoVault cryptomator) {
+    public CryptoReadFeature(final Session<?> session, final Read delegate, final CryptoVault cryptomator) {
+        this.session = session;
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
@@ -42,7 +45,7 @@ public class CryptoReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final Path encrypted = cryptomator.encrypt(file);
+            final Path encrypted = cryptomator.encrypt(session, file);
             // Header
             final Cryptor cryptor = cryptomator.getCryptor();
             final ByteBuffer existingHeaderBuf = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());

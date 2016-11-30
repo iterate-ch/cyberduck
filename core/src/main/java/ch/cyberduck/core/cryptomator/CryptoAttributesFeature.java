@@ -18,23 +18,26 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
 
 public class CryptoAttributesFeature implements AttributesFinder {
 
+    private final Session<?> session;
     private final AttributesFinder delegate;
     private final Vault cryptomator;
 
-    public CryptoAttributesFeature(final AttributesFinder delegate, final Vault cryptomator) {
+    public CryptoAttributesFeature(final Session<?> session, final AttributesFinder delegate, final Vault cryptomator) {
+        this.session = session;
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        return delegate.find(cryptomator.encrypt(file));
+        return delegate.find(cryptomator.encrypt(session, file));
     }
 
     @Override

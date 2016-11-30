@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -24,17 +25,19 @@ import ch.cyberduck.core.features.Vault;
 
 public class CryptoMoveFeature implements Move {
 
+    private final Session<?> session;
     private final Move delegate;
     private final Vault vault;
 
-    public CryptoMoveFeature(final Move delegate, final CryptoVault vault) {
+    public CryptoMoveFeature(final Session<?> session, final Move delegate, final CryptoVault vault) {
+        this.session = session;
         this.delegate = delegate;
         this.vault = vault;
     }
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        delegate.move(vault.encrypt(file), vault.encrypt(renamed), exists, callback);
+        delegate.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
     }
 
     @Override

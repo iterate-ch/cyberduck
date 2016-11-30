@@ -112,18 +112,18 @@ public class SFTPMoveFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback());
+        ), new SFTPSession(host), PathCache.empty());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(pool, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create();
+        }).create(session);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));

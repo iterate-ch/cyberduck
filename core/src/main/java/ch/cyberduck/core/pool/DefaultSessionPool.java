@@ -24,9 +24,9 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -67,7 +67,8 @@ public class DefaultSessionPool implements SessionPool {
 
     private final GenericObjectPool<Session> pool;
 
-    private SessionPool features = DISCONNECTED;
+    private SessionPool features = SessionPool.DISCONNECTED;
+    private Vault vault = Vault.DISABLED;
 
     private int retry = PreferencesFactory.get().getInteger("connection.retry");
 
@@ -86,14 +87,7 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         this.pool = new GenericObjectPool<Session>(
-                new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark) {
-                    @Override
-                    public Session create() {
-                        final Session session = super.create();
-                        session.addListener(new VaultFinderListProgressListener(DefaultSessionPool.this, keychain, login));
-                        return session;
-                    }
-                }, configuration);
+                new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -161,7 +155,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache, keychain, login);
+                        features = new SingleSessionPool(connect, session, cache);
                     }
                     return session;
                 }
@@ -323,7 +317,8 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()
+            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                    keychain, login
             ).getFeature(type);
         }
         return features.getFeature(type);

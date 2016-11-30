@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
@@ -44,7 +42,7 @@ public class SessionBackgroundActionTest {
     @Test
     public void testGetExceptionConnectionCanceledException() throws Exception {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new DisabledAlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new DisabledAlertCallback() {
         }, new ProgressListener() {
             @Override
             public void message(final String message) {
@@ -78,7 +76,7 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionFailure() throws Exception {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new AlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -117,7 +115,7 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionLoginCanceledException() throws Exception {
         final BackgroundException failure = new LoginCanceledException();
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new AlertCallback() {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);
@@ -157,7 +155,7 @@ public class SessionBackgroundActionTest {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new SingleSessionPool(
                 new TestLoginConnectionService(),
-                new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new AlertCallback() {
+                new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty()), new AlertCallback() {
             @Override
             public boolean alert(final Host repeatableBackgroundAction, final BackgroundException f, final StringBuilder transcript) {
                 assertEquals(failure, f);

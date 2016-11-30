@@ -17,11 +17,8 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 
@@ -34,11 +31,9 @@ public class SingleSessionPool implements SessionPool {
     private final Session<?> session;
     private final PathCache cache;
 
-    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final PasswordStore keychain, final LoginCallback login) {
+    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache) {
         this.connect = connect;
         this.session = session;
-        this.session.addListener(new VaultFinderListProgressListener(this, keychain, login));
         this.cache = cache;
     }
 

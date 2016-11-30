@@ -55,7 +55,7 @@ public class DefaultVaultFinder implements Home {
 
     private Path load(final Path home) {
         try {
-            session.withVault(new CryptoVault(pool, home, keychain, login).load());
+            session.withVault(new CryptoVault(home, keychain, login).load(session));
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s. %s", home, e.getMessage()));

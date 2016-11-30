@@ -15,27 +15,18 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.threading.BackgroundActionState;
 
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
-import java.io.IOException;
 import java.util.EnumSet;
-import java.util.concurrent.ExecutionException;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.io.BaseEncoding;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -48,76 +39,38 @@ public class CryptoFilenameProvider {
 
     private static final int NAME_SHORTENING_THRESHOLD = 129;
 
-    private final LoadingCache<String, String> cache
-            = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
-
-    private final SessionPool pool;
     private final Path metadataRoot;
 
-    public CryptoFilenameProvider(final SessionPool pool, final Path vault) {
+    public CryptoFilenameProvider(final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
-        this.pool = pool;
-    }
-
-    private class Loader extends CacheLoader<String, String> {
-        @Override
-        public String load(final String shortName) throws BackgroundException {
-            final Session<?> session = pool.borrow(BackgroundActionState.running);
-            try {
-                return new ContentReader(session).readToString(resolve(shortName));
-            }
-            finally {
-                pool.release(session, null);
-            }
-        }
     }
 
     public boolean isDeflated(final String filename) {
         return filename.endsWith(LONG_NAME_FILE_EXT);
     }
 
-    public String inflate(final String filename) throws BackgroundException {
-        try {
-            return cache.get(filename);
-        }
-        catch(ExecutionException | UncheckedExecutionException e) {
-            if(e.getCause() instanceof IOException) {
-                throw new DefaultIOExceptionMappingService().map((IOException) e.getCause());
-            }
-            if(e.getCause() instanceof BackgroundException) {
-                throw (BackgroundException) e.getCause();
-            }
-            throw new BackgroundException(e.getCause());
-        }
+    public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
+        return new ContentReader(session).readToString(resolve(shortName));
     }
 
-    public String deflate(final String filename) throws BackgroundException {
+    public String deflate(final Session<?> session, final String filename) throws BackgroundException {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
         }
         final byte[] longFileNameBytes = filename.getBytes(UTF_8);
         final byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
         final String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
-        if(cache.getIfPresent(shortName) == null) {
-            cache.put(shortName, filename);
-            final Path metadataFile = this.resolve(shortName);
-            final Path secondLevel = metadataFile.getParent();
-            final Path firstLevel = secondLevel.getParent();
-            final Path metadataRoot = firstLevel.getParent();
-            final Session<?> session = pool.borrow(BackgroundActionState.running);
-            try {
-                final Directory feature = session._getFeature(Directory.class);
-                //TODO do not fail in case the folders already exist
-                feature.mkdir(metadataRoot);
-                feature.mkdir(firstLevel);
-                feature.mkdir(secondLevel);
-                final ContentWriter writer = new ContentWriter(session);
-                writer.write(metadataFile, longFileNameBytes);
-            }
-            finally {
-                pool.release(session, null);
-            }
-        }
+        final Path metadataFile = this.resolve(shortName);
+        final Path secondLevel = metadataFile.getParent();
+        final Path firstLevel = secondLevel.getParent();
+        final Path metadataRoot = firstLevel.getParent();
+        final Directory feature = session._getFeature(Directory.class);
+        //TODO do not fail in case the folders already exist
+        feature.mkdir(metadataRoot);
+        feature.mkdir(firstLevel);
+        feature.mkdir(secondLevel);
+        final ContentWriter writer = new ContentWriter(session);
+        writer.write(metadataFile, longFileNameBytes);
         return shortName;
     }
 
@@ -131,6 +84,5 @@ public class CryptoFilenameProvider {
     }
 
     public void close() {
-        cache.invalidateAll();
     }
 }

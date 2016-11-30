@@ -16,21 +16,24 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Vault;
 
 public class CryptoSymlinkFeature implements Symlink {
+    private final Session<?> session;
     private final Symlink delegate;
     private final Vault vault;
 
-    public CryptoSymlinkFeature(final Symlink delegate, final Vault vault) {
+    public CryptoSymlinkFeature(final Session<?> session, final Symlink delegate, final Vault vault) {
+        this.session = session;
         this.delegate = delegate;
         this.vault = vault;
     }
 
     @Override
     public void symlink(final Path file, final String target) throws BackgroundException {
-        delegate.symlink(vault.encrypt(file), target);
+        delegate.symlink(vault.encrypt(session, file), target);
     }
 }

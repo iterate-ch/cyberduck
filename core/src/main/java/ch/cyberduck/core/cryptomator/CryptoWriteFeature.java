@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
@@ -32,10 +33,12 @@ import java.nio.ByteBuffer;
 
 public class CryptoWriteFeature implements Write {
 
+    private final Session<?> session;
     private final Write delegate;
     private final CryptoVault cryptomator;
 
-    public CryptoWriteFeature(final Write delegate, final CryptoVault cryptomator) {
+    public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault cryptomator) {
+        this.session = session;
         this.delegate = delegate;
         this.cryptomator = cryptomator;
     }
@@ -43,7 +46,7 @@ public class CryptoWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final Path encrypted = cryptomator.encrypt(file);
+            final Path encrypted = cryptomator.encrypt(session, file);
             // Header
             final Cryptor cryptor = cryptomator.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();

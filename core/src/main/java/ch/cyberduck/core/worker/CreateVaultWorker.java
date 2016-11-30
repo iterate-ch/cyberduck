@@ -43,7 +43,7 @@ public class CreateVaultWorker extends CreateDirectoryWorker {
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
             if(super.run(session)) {
-                session.withVault(new CryptoVault(pool, directory, keychain, login).create());
+                session.withVault(new CryptoVault(directory, keychain, login).create(session));
             }
         }
         catch(LoginCanceledException e) {

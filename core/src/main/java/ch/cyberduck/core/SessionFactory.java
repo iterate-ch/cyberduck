@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -37,7 +38,7 @@ public final class SessionFactory {
         //
     }
 
-    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key, final PasswordStore keychain, final LoginCallback login) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create session for %s", host));
         }
@@ -61,6 +62,7 @@ public final class SessionFactory {
             else {
                 session = constructor.newInstance(host, trust, key);
             }
+            session.addListener(new VaultFinderListProgressListener(session, keychain, login));
             return session;
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
@@ -70,6 +72,6 @@ public final class SessionFactory {
 
     public static Session<?> create(final Host target) {
         return create(target, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
-                new KeychainX509KeyManager(target));
+                new KeychainX509KeyManager(target), new DisabledPasswordStore(), new DisabledLoginCallback());
     }
 }

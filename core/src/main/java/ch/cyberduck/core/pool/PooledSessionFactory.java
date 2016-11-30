@@ -60,7 +60,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
-        return SessionFactory.create(bookmark, trust, key);
+        return SessionFactory.create(bookmark, trust, key, keychain, login);
     }
 
     @Override

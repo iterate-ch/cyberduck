@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.impl;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -58,25 +59,25 @@ public class CryptoDirectoryProvider {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String toEncrypted(final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
+    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
-        return cryptomator.getFilenameProvider().deflate(ciphertextName);
+        return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
     /**
      * @param directory Clear text
      */
-    public CryptoVault.CryptoDirectory toEncrypted(final Path directory) throws BackgroundException {
+    public CryptoVault.CryptoDirectory toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
         try {
             if(dataRoot.getParent().equals(directory)) {
                 return new CryptoVault.CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
             }
-            final CryptoVault.CryptoDirectory parent = this.toEncrypted(directory.getParent());
+            final CryptoVault.CryptoDirectory parent = this.toEncrypted(session, directory.getParent());
             final String cleartextName = directory.getName();
-            final String ciphertextName = this.toEncrypted(parent.id, cleartextName, EnumSet.of(Path.Type.directory));
-            final String dirId = cryptomator.getDirectoryIdProvider().load(new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+            final String ciphertextName = this.toEncrypted(session, parent.id, cleartextName, EnumSet.of(Path.Type.directory));
+            final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
             return new CryptoVault.CryptoDirectory(dirId, cache.get(dirId));
         }
         catch(ExecutionException | UncheckedExecutionException e) {

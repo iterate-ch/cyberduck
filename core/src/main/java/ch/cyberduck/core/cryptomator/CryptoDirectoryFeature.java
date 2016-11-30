@@ -21,22 +21,20 @@ import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.charset.Charset;
 
 public class CryptoDirectoryFeature implements Directory {
 
-    private final SessionPool pool;
+    private final Session<?> session;
     private final Directory delegate;
     private final CryptoVault vault;
 
-    public CryptoDirectoryFeature(final SessionPool pool, final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final CryptoVault cryptomator) {
+        this.session = session;
         this.delegate = delegate;
         this.vault = cryptomator;
-        this.pool = pool;
     }
 
     @Override
@@ -46,22 +44,16 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final Path directoryMetafile = vault.encrypt(directory, true);
-        final Path directoryPath = vault.encrypt(directory);
+        final Path directoryMetafile = vault.encrypt(session, directory, true);
+        final Path directoryPath = vault.encrypt(session, directory);
         final String directoryId = directoryPath.attributes().getDirectoryId();
-        final Session<?> session = pool.borrow(BackgroundActionState.running);
-        try {
-            final ContentWriter writer = new ContentWriter(session);
-            writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
+        final ContentWriter writer = new ContentWriter(session);
+        writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
 
-            final Path firstLevel = directoryPath.getParent();
-            if(!session._getFeature(Find.class).find(firstLevel)) {
-                delegate.mkdir(firstLevel);
-            }
-            delegate.mkdir(directoryPath);
+        final Path firstLevel = directoryPath.getParent();
+        if(!session._getFeature(Find.class).find(firstLevel)) {
+            delegate.mkdir(firstLevel);
         }
-        finally {
-            pool.release(session, null);
-        }
+        delegate.mkdir(directoryPath);
     }
 }

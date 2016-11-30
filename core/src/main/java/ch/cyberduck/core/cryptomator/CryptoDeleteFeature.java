@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,11 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
+    private final Session<?> session;
     private final Delete delegate;
     private final CryptoVault vault;
     private final CryptoFilenameProvider filenameProvider;
 
-    public CryptoDeleteFeature(final Delete delegate, final CryptoVault vault) {
+    public CryptoDeleteFeature(final Session<?> session, final Delete delegate, final CryptoVault vault) {
+        this.session = session;
         this.delegate = delegate;
         this.vault = vault;
         this.filenameProvider = vault.getFilenameProvider();
@@ -41,18 +44,18 @@ public class CryptoDeleteFeature implements Delete {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
             if(f.isDirectory()) {
-                final Path metadataFile = vault.encrypt(f, true);
+                final Path metadataFile = vault.encrypt(session, f, true);
                 if(metadataFile.getType().contains(Path.Type.encrypted)) {
                     encrypted.add(metadataFile);
                 }
-                final Path directory = vault.encrypt(f);
+                final Path directory = vault.encrypt(session, f);
                 encrypted.add(directory);
                 if(directory.getType().contains(Path.Type.encrypted)) {
                     encrypted.add(directory.getParent());
                 }
             }
             else {
-                encrypted.add(vault.encrypt(f));
+                encrypted.add(vault.encrypt(session, f));
             }
         }
         encrypted.addAll(this.getMetadataFiles(encrypted));

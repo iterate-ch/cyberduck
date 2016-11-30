@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
 import ch.cyberduck.core.cryptomator.VaultException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +35,7 @@ public interface Vault {
      * @throws NotfoundException             No master key file in home
      * @throws CryptoAuthenticationException Failure opening master key file
      */
-    Vault create() throws BackgroundException;
+    Vault create(final Session<?> session) throws BackgroundException;
 
     /**
      * Open existing vault
@@ -46,7 +47,7 @@ public interface Vault {
      * @throws NotfoundException             No master key file in home
      * @throws CryptoAuthenticationException Failure opening master key file
      */
-    Vault load() throws BackgroundException;
+    Vault load(final Session<?> session) throws BackgroundException;
 
     /**
      * Close vault
@@ -63,33 +64,33 @@ public interface Vault {
      * @param file Decrypted human readable path
      * @return Encrypted path
      */
-    Path encrypt(Path file) throws BackgroundException;
+    Path encrypt(final Session<?> session, Path file) throws BackgroundException;
 
     /**
      * @param file     Decrypted human readable path
      * @param metadata Provide path to metadata of file if set to true
      * @return Encrypted path
      */
-    Path encrypt(Path file, boolean metadata) throws BackgroundException;
+    Path encrypt(final Session<?> session, Path file, boolean metadata) throws BackgroundException;
 
     /**
      * @param directory Encrypted parent path
      * @param file      Encrypted path
      * @return Decrypted human readable path
      */
-    Path decrypt(Path directory, Path file) throws BackgroundException;
+    Path decrypt(final Session<?> session, Path directory, Path file) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
-    <T> T getFeature(Class<T> type, T delegate);
+    <T> T getFeature(Session<?> session, Class<T> type, T delegate);
 
     Vault DISABLED = new Vault() {
         @Override
-        public Vault create() throws BackgroundException {
+        public Vault create(final Session<?> session) throws BackgroundException {
             return this;
         }
 
         @Override
-        public Vault load() throws BackgroundException {
+        public Vault load(final Session<?> session) throws BackgroundException {
             return this;
         }
 
@@ -104,22 +105,22 @@ public interface Vault {
         }
 
         @Override
-        public Path encrypt(final Path file) throws BackgroundException {
+        public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
             return file;
         }
 
         @Override
-        public Path encrypt(final Path file, final boolean metadata) throws BackgroundException {
+        public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
             return file;
         }
 
         @Override
-        public Path decrypt(final Path directory, final Path file) throws BackgroundException {
+        public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
             return file;
         }
 
         @Override
-        public <T> T getFeature(final Class<T> type, final T delegate) {
+        public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
             return delegate;
         }
     };

@@ -20,10 +20,10 @@ import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
@@ -32,14 +32,14 @@ import java.util.EnumSet;
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
-    private final SessionPool pool;
     private final PasswordStore keychain;
     private final LoginCallback prompt;
+    private final Session<?> session;
 
-    public VaultFinderListProgressListener(final SessionPool pool,
+    public VaultFinderListProgressListener(final Session<?> session,
                                            final PasswordStore keychain,
                                            final LoginCallback prompt) {
-        this.pool = pool;
+        this.session = session;
         this.keychain = keychain;
         this.prompt = prompt;
     }
@@ -56,7 +56,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
                 try {
-                    final CryptoVault vault = new CryptoVault(pool, directory, keychain, prompt).load();
+                    final CryptoVault vault = new CryptoVault(directory, keychain, prompt).load(session);
                     throw new VaultFinderListCanceledException(vault, list);
                 }
                 catch(BackgroundException e) {
