@@ -22,6 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import java.util.EnumSet;
+
 public interface Vault {
 
     /**
@@ -61,6 +63,8 @@ public interface Vault {
 
     Path encrypt(Path file) throws BackgroundException;
 
+    Path encrypt(Path file, EnumSet<Path.Type> type) throws BackgroundException;
+
     Path decrypt(Path directory, Path file) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
@@ -89,6 +93,11 @@ public interface Vault {
 
         @Override
         public Path encrypt(final Path file) throws BackgroundException {
+            return file;
+        }
+
+        @Override
+        public Path encrypt(final Path file, final EnumSet<Path.Type> type) throws BackgroundException {
             return file;
         }
 

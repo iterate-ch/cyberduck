@@ -238,18 +238,22 @@ public class CryptoVault implements Vault {
 
     @Override
     public Path encrypt(final Path file) throws BackgroundException {
+        return this.encrypt(file, file.getType());
+    }
+
+    public Path encrypt(final Path file, final EnumSet<Path.Type> type) throws BackgroundException {
         if(this.contains(file)) {
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
                 return file;
             }
-            if(file.isDirectory()) {
+            if(type.contains(Path.Type.directory)) {
                 final CryptoDirectory directory = directoryProvider.toEncrypted(file);
                 return directory.path;
             }
             else {
                 final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
-                final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), EnumSet.of(Path.Type.file));
+                final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), file.getType());
                 return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
             }
         }
@@ -314,6 +318,10 @@ public class CryptoVault implements Vault {
         return directoryIdProvider;
     }
 
+    public CryptoDirectoryProvider getDirectoryProvider() {
+        return directoryProvider;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T delegate) {
@@ -325,7 +333,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoTouchFeature((Touch) delegate, this);
             }
             if(type == Directory.class) {
-                return (T) new CryptoDirectoryFeature((Directory) delegate, this);
+                return (T) new CryptoDirectoryFeature((Directory) delegate, this, session);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature((Read) delegate, this);
