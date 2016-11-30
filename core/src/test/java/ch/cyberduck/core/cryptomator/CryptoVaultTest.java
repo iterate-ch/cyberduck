@@ -36,6 +36,7 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CryptoVaultTest {
@@ -174,6 +175,7 @@ public class CryptoVaultTest {
 
     @Test
     public void testCreate() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
@@ -182,19 +184,19 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
                         @Override
                         public void mkdir(final Path file) throws BackgroundException {
-                            //TODO mockito test
+                            assertTrue(file.equals(home) || file.isChild(home));
                         }
 
                         @Override
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            //TODO mockito test
+                            assertTrue(file.isChild(home));
                         }
                     };
                 }
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault vault = new CryptoVault(session, home, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
