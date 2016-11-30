@@ -144,7 +144,9 @@ public class CryptoVault implements Vault {
         final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
-        feature.mkdir(home);
+        if(!session._getFeature(Find.class).find(home)) {
+            feature.mkdir(home);
+        }
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(home).path;
