@@ -38,6 +38,7 @@ import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -105,6 +106,7 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
+    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 5;
