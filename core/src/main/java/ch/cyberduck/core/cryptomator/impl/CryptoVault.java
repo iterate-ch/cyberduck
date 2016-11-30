@@ -218,26 +218,21 @@ public class CryptoVault implements Vault {
 
     @Override
     public void delete() throws BackgroundException {
-        if(cryptor.isDestroyed()) {
-            final Path secondLevel = directoryProvider.toEncrypted(home).path;
-            final Path firstLevel = secondLevel.getParent();
-            final Path dataDir = firstLevel.getParent();
-            final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-            final Delete delete = session._getFeature(Delete.class);
-            delete.delete(Arrays.asList(
-                    secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            final Path backup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-            try {
-                delete.delete(Collections.singletonList(
-                        backup), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-            catch(NotfoundException e) {
-                log.warn(String.format("Missing backup master key %s", backup));
-            }
+        final Path secondLevel = directoryProvider.toEncrypted(home).path;
+        final Path firstLevel = secondLevel.getParent();
+        final Path dataDir = firstLevel.getParent();
+        final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        session._getFeature(Delete.class).delete(Arrays.asList(
+                secondLevel, firstLevel, master, dataDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path backup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        try {
+            session._getFeature(Delete.class).delete(Collections.singletonList(
+                    backup), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        else {
-            throw new VaultException("Vault is open and cannot be deleted");
+        catch(NotfoundException e) {
+            log.warn(String.format("Missing backup master key %s", backup));
         }
+        this.close();
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
