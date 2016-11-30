@@ -38,7 +38,6 @@ public class CryptoDirectoryProvider {
     private static final String DATA_DIR_NAME = "d";
 
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
-    private static final int MAX_CACHED_DIR_PATHS = 1000;
 
     private final LoadingCache<String, Path> cache
             = CacheBuilder.newBuilder().maximumSize(
