@@ -20,7 +20,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -54,7 +53,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         final AttributedList<Path> list;
         if(!cache.containsKey(file.getParent())) {
             try {
-                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
