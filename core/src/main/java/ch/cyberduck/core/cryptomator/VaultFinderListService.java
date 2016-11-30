@@ -29,17 +29,19 @@ public class VaultFinderListService implements ListService {
     private static final Logger log = Logger.getLogger(VaultFinderListService.class);
 
     private final Session<?> proxy;
+    private final ListService delegate;
     private final ListProgressListener[] listeners;
 
-    public VaultFinderListService(final Session<?> proxy, final ListProgressListener[] listeners) {
+    public VaultFinderListService(final Session<?> proxy, final ListService delegate, final ListProgressListener[] listeners) {
         this.proxy = proxy;
+        this.delegate = delegate;
         this.listeners = listeners;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return proxy.list(directory, new ProxyListProgressListener(listeners));
+            return delegate.list(directory, new ProxyListProgressListener(listeners));
         }
         catch(VaultFinderListCanceledException e) {
             // Run again with decrypting list worker

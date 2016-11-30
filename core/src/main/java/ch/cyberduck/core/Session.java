@@ -320,7 +320,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == ListService.class) {
             if(Vault.DISABLED == vault) {
-                return (T) new VaultFinderListService(this,
+                return (T) new VaultFinderListService(this, this,
                         listProgressListeners.toArray(new ListProgressListener[listProgressListeners.size()]));
             }
             return (T) this;
