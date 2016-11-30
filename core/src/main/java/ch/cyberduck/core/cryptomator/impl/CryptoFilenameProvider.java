@@ -21,6 +21,7 @@ import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
@@ -64,11 +65,13 @@ public class CryptoFilenameProvider {
         final Path secondLevel = metadataFile.getParent();
         final Path firstLevel = secondLevel.getParent();
         final Path metadataRoot = firstLevel.getParent();
-        final Directory feature = session._getFeature(Directory.class);
-        //TODO do not fail in case the folders already exist
-        feature.mkdir(metadataRoot);
-        feature.mkdir(firstLevel);
-        feature.mkdir(secondLevel);
+        final Directory mkdir = session._getFeature(Directory.class);
+        final Find find = session._getFeature(Find.class);
+        if(!find.find(metadataRoot)) {
+            mkdir.mkdir(metadataRoot);
+        }
+        mkdir.mkdir(firstLevel);
+        mkdir.mkdir(secondLevel);
         final ContentWriter writer = new ContentWriter(session);
         writer.write(metadataFile, longFileNameBytes);
         return shortName;
