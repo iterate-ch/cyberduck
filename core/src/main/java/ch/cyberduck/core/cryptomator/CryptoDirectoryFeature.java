@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.charset.Charset;
-import java.util.EnumSet;
 
 public class CryptoDirectoryFeature implements Directory {
 
@@ -45,8 +44,8 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final Path directoryMetafile = vault.encrypt(directory, EnumSet.of(Path.Type.file));
-        final Path directoryPath = vault.encrypt(directory, EnumSet.of(Path.Type.directory));
+        final Path directoryMetafile = vault.encrypt(directory, true);
+        final Path directoryPath = vault.encrypt(directory);
         final String uuid = vault.getDirectoryProvider().toEncrypted(directory).id;
 
         final ContentWriter writer = new ContentWriter(session);
