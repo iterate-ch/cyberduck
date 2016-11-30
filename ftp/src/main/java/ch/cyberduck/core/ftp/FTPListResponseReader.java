@@ -163,6 +163,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
             }
             children.add(parsed);
+            listener.chunk(directory, children);
         }
         if(!success) {
             throw new FTPInvalidListException(children);
