@@ -18,9 +18,17 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.features.Vault;
 
 public class VaultFinderListCanceledException extends ListCanceledException {
-    public VaultFinderListCanceledException(final AttributedList<Path> chunk) {
+    private final Vault vault;
+
+    public VaultFinderListCanceledException(final Vault vault, final AttributedList<Path> chunk) {
         super(chunk);
+        this.vault = vault;
+    }
+
+    public Vault getVault() {
+        return vault;
     }
 }

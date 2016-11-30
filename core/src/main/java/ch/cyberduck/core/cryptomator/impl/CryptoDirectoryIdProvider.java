@@ -21,7 +21,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -38,20 +40,24 @@ public class CryptoDirectoryIdProvider {
             PreferencesFactory.get().getInteger("browser.cache.size")
     ).build(new Loader());
 
-    private final Session<?> session;
+    private final SessionPool pool;
 
-    public CryptoDirectoryIdProvider(final Session<?> session) {
-        this.session = session;
+    public CryptoDirectoryIdProvider(final SessionPool pool) {
+        this.pool = pool;
     }
 
     private class Loader extends CacheLoader<Path, String> {
         @Override
         public String load(final Path directoryMetafile) throws BackgroundException {
+            final Session<?> session = pool.borrow(BackgroundActionState.running);
             try {
                 return new ContentReader(session).readToString(directoryMetafile);
             }
             catch(NotfoundException e) {
                 return UUID.randomUUID().toString();
+            }
+            finally {
+                pool.release(session, null);
             }
         }
     }

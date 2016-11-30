@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -29,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
@@ -42,7 +40,9 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -59,8 +59,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,7 +100,7 @@ public class CryptoVault implements Vault {
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
 
-    private final Session<?> session;
+    private final SessionPool pool;
     /**
      * Root of vault directory
      */
@@ -115,8 +113,8 @@ public class CryptoVault implements Vault {
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Session<?> session, final Path home, final PasswordStore keychain, final LoginCallback callback) {
-        this.session = session;
+    public CryptoVault(final SessionPool pool, final Path home, final PasswordStore keychain, final LoginCallback callback) {
+        this.pool = pool;
         this.home = home;
         this.keychain = keychain;
         this.callback = callback;
@@ -126,12 +124,12 @@ public class CryptoVault implements Vault {
     public CryptoVault create() throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        final Host bookmark = session.getHost();
+        final Host bookmark = pool.getHost();
         final Credentials credentials = new Credentials();
         // Default to false for save in keychain
         credentials.setSaved(false);
         callback.prompt(bookmark, credentials,
-                MessageFormat.format(LocaleFactory.localizedString("Create Vault {0}", "Cryptomator"), home.getName()),
+                MessageFormat.format(LocaleFactory.localizedString("Create Vault “{0}“", "Cryptomator"), home.getName()),
                 LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         if(credentials.isSaved()) {
@@ -142,24 +140,30 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", file));
         }
-        final ContentWriter writer = new ContentWriter(session);
-        // Obtain non encrypted directory writer
-        final Directory feature = session._getFeature(Directory.class);
-        if(!session._getFeature(Find.class).find(home)) {
-            feature.mkdir(home);
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        try {
+            final ContentWriter writer = new ContentWriter(session);
+            // Obtain non encrypted directory writer
+            final Directory feature = session._getFeature(Directory.class);
+            if(!session._getFeature(Find.class).find(home)) {
+                feature.mkdir(home);
+            }
+            writer.write(file, master.serialize());
+            this.open(KeyFile.parse(master.serialize()), passphrase);
+            final Path secondLevel = directoryProvider.toEncrypted(home).path;
+            final Path firstLevel = secondLevel.getParent();
+            final Path dataDir = firstLevel.getParent();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create vault root directory at %s", secondLevel));
+            }
+            feature.mkdir(dataDir);
+            feature.mkdir(firstLevel);
+            feature.mkdir(secondLevel);
+            return this;
         }
-        writer.write(file, master.serialize());
-        this.open(KeyFile.parse(master.serialize()), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(home).path;
-        final Path firstLevel = secondLevel.getParent();
-        final Path dataDir = firstLevel.getParent();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create vault root directory at %s", secondLevel));
+        finally {
+            pool.release(session, null);
         }
-        feature.mkdir(dataDir);
-        feature.mkdir(firstLevel);
-        feature.mkdir(secondLevel);
-        return this;
     }
 
     @Override
@@ -168,39 +172,45 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt to read master key from %s", file));
         }
-        final String json = new ContentReader(session).readToString(file);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Read master key %s", json));
-        }
-        final KeyFile master;
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
         try {
-            master = KeyFile.parse(json.getBytes());
-        }
-        catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
-        }
-        final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
-        if(null == passphrase) {
-            final Credentials credentials = new Credentials() {
-                @Override
-                public String getPasswordPlaceholder() {
-                    return LocaleFactory.localizedString("Passphrase", "Cryptomator");
-                }
-            };
-            // Default to false for save in keychain
-            credentials.setSaved(false);
-            callback.prompt(bookmark, credentials,
-                    MessageFormat.format(LocaleFactory.localizedString("Unlock Vault {0}", "Cryptomator"), home.getName()),
-                    LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
-                    new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-            if(credentials.isSaved()) {
-                keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+            final String json = new ContentReader(session).readToString(file);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Read master key %s", json));
             }
-            passphrase = credentials.getPassword();
+            final KeyFile master;
+            try {
+                master = KeyFile.parse(json.getBytes());
+            }
+            catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
+                throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+            }
+            final Host bookmark = pool.getHost();
+            String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
+            if(null == passphrase) {
+                final Credentials credentials = new Credentials() {
+                    @Override
+                    public String getPasswordPlaceholder() {
+                        return LocaleFactory.localizedString("Passphrase", "Cryptomator");
+                    }
+                };
+                // Default to false for save in keychain
+                credentials.setSaved(false);
+                callback.prompt(bookmark, credentials,
+                        MessageFormat.format(LocaleFactory.localizedString("Unlock Vault “{0}“", "Cryptomator"), home.getName()),
+                        LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
+                        new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
+                if(credentials.isSaved()) {
+                    keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+                }
+                passphrase = credentials.getPassword();
+            }
+            this.open(master, passphrase);
+            return this;
         }
-        this.open(master, passphrase);
-        return this;
+        finally {
+            pool.release(session, null);
+        }
     }
 
     @Override
@@ -219,26 +229,6 @@ public class CryptoVault implements Vault {
         }
     }
 
-    @Override
-    public void delete() throws BackgroundException {
-        final Path secondLevel = directoryProvider.toEncrypted(home).path;
-        final Path firstLevel = secondLevel.getParent();
-        final Path dataDir = firstLevel.getParent();
-        final Path metaDir = filenameProvider.getMetadataRoot();
-        final Path master = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        session._getFeature(Delete.class).delete(Arrays.asList(
-                secondLevel, firstLevel, master, dataDir, metaDir, home), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final Path backup = new Path(home, BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-        try {
-            session._getFeature(Delete.class).delete(Collections.singletonList(
-                    backup), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        catch(NotfoundException e) {
-            log.warn(String.format("Missing backup master key %s", backup));
-        }
-        this.close();
-    }
-
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
@@ -253,8 +243,8 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
-        this.filenameProvider = new CryptoFilenameProvider(session, home);
-        this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
+        this.filenameProvider = new CryptoFilenameProvider(pool, home);
+        this.directoryIdProvider = new CryptoDirectoryIdProvider(pool);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
@@ -362,7 +352,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoTouchFeature((Touch) delegate, this);
             }
             if(type == Directory.class) {
-                return (T) new CryptoDirectoryFeature((Directory) delegate, this, session);
+                return (T) new CryptoDirectoryFeature(pool, (Directory) delegate, this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature((Read) delegate, this);

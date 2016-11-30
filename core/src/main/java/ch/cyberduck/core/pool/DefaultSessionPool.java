@@ -16,8 +16,6 @@
 package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -26,6 +24,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -61,9 +60,9 @@ public class DefaultSessionPool implements SessionPool {
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
-
+    private final PasswordStore keychain;
+    private final LoginCallback login;
     private final PathCache cache;
-
     private final Host bookmark;
 
     private final GenericObjectPool<Session> pool;
@@ -76,6 +75,8 @@ public class DefaultSessionPool implements SessionPool {
                               final PasswordStore keychain, final LoginCallback login,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
+        this.keychain = keychain;
+        this.login = login;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -84,7 +85,15 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(
+                new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark) {
+                    @Override
+                    public Session create() {
+                        final Session session = super.create();
+                        session.addListener(new VaultFinderListProgressListener(DefaultSessionPool.this, keychain, login));
+                        return session;
+                    }
+                }, configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -152,7 +161,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache);
+                        features = new SingleSessionPool(connect, session, cache, keychain, login);
                     }
                     return session;
                 }
@@ -314,8 +323,8 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                    new DisabledPasswordStore(), new DisabledLoginCallback()).getFeature(type);
+            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()
+            ).getFeature(type);
         }
         return features.getFeature(type);
     }

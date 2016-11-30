@@ -209,7 +209,7 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        SessionPool session = null;
+        SessionPool pool = null;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
             if(null == action) {
@@ -219,15 +219,16 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
                     new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-            session = new SingleSessionPool(connect, SessionFactory.create(host,
+            pool = new SingleSessionPool(connect, SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(), new TerminalLoginCallback(reader)), cache);
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))), cache,
+                    PasswordStoreFactory.get(), new TerminalLoginCallback(reader));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
-                final Home home = session.getFeature(Home.class);
+                final Home home = pool.getFeature(Home.class);
                 remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
@@ -235,14 +236,14 @@ public class Terminal {
             }
             switch(action) {
                 case edit:
-                    return this.edit(session, remote);
+                    return this.edit(pool, remote);
                 case list:
                 case longlist:
-                    return this.list(session, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+                    return this.list(pool, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
                 case mount:
-                    return this.mount(session);
+                    return this.mount(pool);
                 case delete:
-                    return this.delete(session, remote);
+                    return this.delete(pool, remote);
             }
             final Transfer transfer;
             switch(action) {
@@ -260,8 +261,8 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                                    new DisabledPasswordStore(), new DisabledLoginCallback()),
+                                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
+                            ),
                             Collections.singletonMap(
                                     remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
                             )
@@ -271,7 +272,7 @@ public class Terminal {
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                             String.format("Unknown transfer type %s", action.name()));
             }
-            return this.transfer(transfer, session);
+            return this.transfer(transfer, pool);
         }
         catch(ConnectionCanceledException e) {
             log.warn("Connection canceled", e);
@@ -284,7 +285,7 @@ public class Terminal {
             console.printf("%n%s", b.toString());
         }
         finally {
-            this.disconnect(session);
+            this.disconnect(pool);
         }
         return Exit.failure;
     }

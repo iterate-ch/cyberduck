@@ -53,7 +53,6 @@ public interface Vault {
      */
     void close();
 
-    void delete() throws BackgroundException;
     /**
      * @param file Decrypted human readable path
      * @return True if the file is part of the vault
@@ -96,11 +95,6 @@ public interface Vault {
 
         @Override
         public void close() {
-            //
-        }
-
-        @Override
-        public void delete() throws BackgroundException {
             //
         }
 

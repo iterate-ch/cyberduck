@@ -19,10 +19,8 @@ package ch.cyberduck.core.udt.qloudsonic;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
@@ -139,8 +137,8 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
             throw new AccessDeniedException("Cannot read bucket location");
         }
         final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
-        return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key,
-                PasswordStoreFactory.get(), new DisabledLoginCallback()));
+        return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key
+        ));
     }
 
     public QloudsonicTransferAcceleration withUdtThreshold(final Long threshold) {

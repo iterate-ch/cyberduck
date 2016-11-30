@@ -72,11 +72,11 @@ public class TransferBackgroundActionTest {
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
                 new TestLoginConnectionService(),
-                new NullSession(host), PathCache.empty()),
+                new NullSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()),
                 new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
                 new TestLoginConnectionService(),
-                new NullSession(host), PathCache.empty()),
+                new NullSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()),
                 new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
@@ -117,7 +117,7 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean stop = new AtomicBoolean();
         final Session session = new NullSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
+                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -173,7 +173,7 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
+                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);

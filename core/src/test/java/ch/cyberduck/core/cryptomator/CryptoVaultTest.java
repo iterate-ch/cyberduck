@@ -22,12 +22,15 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -72,7 +75,9 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault vault = new CryptoVault(new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(),
+                new DisabledPasswordStore(), new DisabledLoginCallback()),
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
@@ -112,7 +117,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault vault = new CryptoVault(new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()),
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("null");
@@ -158,7 +164,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault vault = new CryptoVault(new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()),
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
@@ -196,7 +203,8 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(session, home, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault vault = new CryptoVault(new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback()),
+                home, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");

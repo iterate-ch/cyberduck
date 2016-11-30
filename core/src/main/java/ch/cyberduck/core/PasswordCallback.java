@@ -15,19 +15,9 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+public interface PasswordCallback {
 
-import org.junit.Test;
+    Credentials create();
 
-import static org.junit.Assert.assertNotNull;
-
-public class SessionFactoryTest {
-
-    @Test
-    public void testCreateSession() throws Exception {
-        assertNotNull(SessionFactory.create(new Host(new SpectraProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
-    }
+    void prompt(Credentials credentials, String title, String reason, LoginOptions options);
 }

@@ -64,7 +64,7 @@ public class SessionPoolFactory {
                         controller),
                 SessionFactory.create(bookmark,
                         new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                        new KeychainX509KeyManager(bookmark), keychain, login), cache
-        );
+                        new KeychainX509KeyManager(bookmark)), cache,
+                keychain, login);
     }
 }

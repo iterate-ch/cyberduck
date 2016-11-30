@@ -1,5 +1,5 @@
-"Create Vault {0}" = "Create Vault {0}";
-"Unlock Vault {0}" = "Unlock Vault {0}";
+"Create Vault “{0}“" = "Create Vault “{0}“";
+"Unlock Vault “{0“" = "Unlock Vault “{0}“";
 "Provide a passphrase for the Cryptomator Vault" = "Provide a passphrase for the Cryptomator Vault";
 "Provide your passphrase to unlock the Cryptomator Vault" = "Provide your passphrase to unlock the Cryptomator Vault";
 "Passphrase" = "Passphrase";

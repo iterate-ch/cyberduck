@@ -13,6 +13,6 @@ public class SessionFactoryTest {
     @Test
     public void testCreateSession() throws Exception {
         assertNotNull(SessionFactory.create(new Host(new SFTPProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordStore(), new DisabledLoginCallback()));
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
     }
 }

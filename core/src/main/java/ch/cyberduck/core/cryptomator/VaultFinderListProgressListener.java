@@ -20,10 +20,10 @@ import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
@@ -32,14 +32,14 @@ import java.util.EnumSet;
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
-    private final Session<?> session;
+    private final SessionPool pool;
     private final PasswordStore keychain;
     private final LoginCallback prompt;
 
-    public VaultFinderListProgressListener(final Session<?> session,
+    public VaultFinderListProgressListener(final SessionPool pool,
                                            final PasswordStore keychain,
                                            final LoginCallback prompt) {
-        this.session = session;
+        this.pool = pool;
         this.keychain = keychain;
         this.prompt = prompt;
     }
@@ -56,13 +56,13 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
                 try {
-                    session.withVault(new CryptoVault(session, directory, keychain, prompt).load());
+                    final CryptoVault vault = new CryptoVault(pool, directory, keychain, prompt).load();
+                    throw new VaultFinderListCanceledException(vault, list);
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure loading vault in %s. %s", directory, e.getMessage()));
                     return;
                 }
-                throw new VaultFinderListCanceledException(list);
             }
         }
     }

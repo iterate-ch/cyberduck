@@ -22,15 +22,22 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -68,14 +75,14 @@ public class SFTPDirectoryFeatureTest {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path vault = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
+                new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback());
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        final Path home = session.getFeature(Home.class).find();
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault cryptomator = new CryptoVault(pool, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
@@ -85,7 +92,6 @@ public class SFTPDirectoryFeatureTest {
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        cryptomator.delete();
         session.close();
     }
 }

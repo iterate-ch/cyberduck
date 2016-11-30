@@ -22,6 +22,8 @@ import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
@@ -49,18 +51,24 @@ public class CryptoFilenameProvider {
     private final LoadingCache<String, String> cache
             = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
 
-    private final Session<?> session;
+    private final SessionPool pool;
     private final Path metadataRoot;
 
-    public CryptoFilenameProvider(final Session<?> session, final Path vault) {
+    public CryptoFilenameProvider(final SessionPool pool, final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
-        this.session = session;
+        this.pool = pool;
     }
 
     private class Loader extends CacheLoader<String, String> {
         @Override
         public String load(final String shortName) throws BackgroundException {
-            return new ContentReader(session).readToString(resolve(shortName));
+            final Session<?> session = pool.borrow(BackgroundActionState.running);
+            try {
+                return new ContentReader(session).readToString(resolve(shortName));
+            }
+            finally {
+                pool.release(session, null);
+            }
         }
     }
 
@@ -93,22 +101,24 @@ public class CryptoFilenameProvider {
         if(cache.getIfPresent(shortName) == null) {
             cache.put(shortName, filename);
             final Path metadataFile = this.resolve(shortName);
-            this.createDirectories(metadataFile);
-            final ContentWriter writer = new ContentWriter(session);
-            writer.write(metadataFile, longFileNameBytes);
+            final Path secondLevel = metadataFile.getParent();
+            final Path firstLevel = secondLevel.getParent();
+            final Path metadataRoot = firstLevel.getParent();
+            final Session<?> session = pool.borrow(BackgroundActionState.running);
+            try {
+                final Directory feature = session._getFeature(Directory.class);
+                //TODO do not fail in case the folders already exist
+                feature.mkdir(metadataRoot);
+                feature.mkdir(firstLevel);
+                feature.mkdir(secondLevel);
+                final ContentWriter writer = new ContentWriter(session);
+                writer.write(metadataFile, longFileNameBytes);
+            }
+            finally {
+                pool.release(session, null);
+            }
         }
         return shortName;
-    }
-
-    private void createDirectories(final Path metadataFile) throws BackgroundException {
-        final Path secondLevel = metadataFile.getParent();
-        final Path firstLevel = secondLevel.getParent();
-        final Path metadataRoot = firstLevel.getParent();
-        final Directory feature = session._getFeature(Directory.class);
-        //TODO do not fail in case the folders already exist
-        feature.mkdir(metadataRoot);
-        feature.mkdir(firstLevel);
-        feature.mkdir(secondLevel);
     }
 
     public Path resolve(final String filename) {
