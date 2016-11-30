@@ -20,9 +20,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import com.google.common.cache.CacheBuilder;
@@ -44,14 +46,19 @@ public class CryptoDirectoryIdProvider {
 
     private class Loader extends CacheLoader<Path, String> {
         @Override
-        public String load(final Path directory) throws BackgroundException {
-            return new ContentReader(session).readToString(directory);
+        public String load(final Path directoryMetafile) throws BackgroundException {
+            try {
+                return new ContentReader(session).readToString(directoryMetafile);
+            }
+            catch(NotfoundException e) {
+                return UUID.randomUUID().toString();
+            }
         }
     }
 
-    public String load(final Path directory) throws BackgroundException {
+    public String load(final Path directoryMetafile) throws BackgroundException {
         try {
-            return cache.get(directory);
+            return cache.get(directoryMetafile);
         }
         catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
@@ -68,10 +75,10 @@ public class CryptoDirectoryIdProvider {
      * Removes the id currently associated with <code>dirFilePath</code> from cache. Useful during folder delete operations.
      * This method has no effect if the content of the given dirFile is not currently cached.
      *
-     * @param directory The directory for which the cache should be deleted.
+     * @param directoryMetafile The directoryMetafile for which the cache should be deleted.
      */
-    public void delete(Path directory) {
-        cache.invalidate(directory);
+    public void delete(final Path directoryMetafile) {
+        cache.invalidate(directoryMetafile);
     }
 
     /**
@@ -79,14 +86,14 @@ public class CryptoDirectoryIdProvider {
      * Useful during folder move operations.
      * This method has no effect if the content of the source dirFile is not currently cached.
      *
-     * @param sourceDirectory The directory that contained the cached id until now.
-     * @param targetDirectory The directory that will contain the id from now on.
+     * @param sourceDirectoryMetafile The directory that contained the cached id until now.
+     * @param targetDirectoryMetafile The directory that will contain the id from now on.
      */
-    public void move(Path sourceDirectory, Path targetDirectory) {
-        String id = cache.getIfPresent(sourceDirectory);
+    public void move(final Path sourceDirectoryMetafile, final Path targetDirectoryMetafile) {
+        String id = cache.getIfPresent(sourceDirectoryMetafile);
         if(id != null) {
-            cache.put(targetDirectory, id);
-            cache.invalidate(sourceDirectory);
+            cache.put(targetDirectoryMetafile, id);
+            cache.invalidate(sourceDirectoryMetafile);
         }
     }
 
