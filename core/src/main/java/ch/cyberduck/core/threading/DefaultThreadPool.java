@@ -20,15 +20,12 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
-    private static final Logger log = Logger.getLogger(DefaultThreadPool.class);
 
     /**
      * With FIFO (first-in-first-out) ordered wait queue.
