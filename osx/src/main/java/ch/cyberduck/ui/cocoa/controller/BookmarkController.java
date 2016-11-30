@@ -64,8 +64,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookmarkController extends SheetController implements CollectionListener {
     private static final Logger log = Logger.getLogger(BookmarkController.class);
@@ -78,7 +78,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final NSNotificationCenter notificationCenter
             = NSNotificationCenter.defaultCenter();
 
-    private final Set<BookmarkObserver> observers = new LinkedHashSet<>();
+    private final List<BookmarkObserver> observers = new ArrayList<>();
 
     protected final Host bookmark;
 
@@ -391,6 +391,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
+        window.makeFirstResponder(hostField);
         this.update();
     }
 
@@ -504,7 +505,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     public void addObserver(final BookmarkObserver observer) {
-        observers.add(observer);
+        observers.add(0, observer);
     }
 
     @Override

@@ -15,6 +15,7 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
@@ -34,11 +35,9 @@ import ch.cyberduck.ui.InputValidator;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
 public class ConnectionController extends BookmarkController {
-    private static final Logger log = Logger.getLogger(ConnectionController.class);
 
     private final HostPasswordStore keychain
             = PasswordStoreFactory.get();
@@ -85,7 +84,7 @@ public class ConnectionController extends BookmarkController {
     public void setPasswordField(NSSecureTextField field) {
         this.passwordField = field;
         this.updateField(this.passwordField, credentials.getPassword());
-        notificationCenter.addObserver(this.id(),
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.passwordField);
@@ -114,6 +113,7 @@ public class ConnectionController extends BookmarkController {
         });
     }
 
+    @Action
     public void passwordFieldTextDidChange(NSNotification notification) {
         credentials.setPassword(passwordField.stringValue());
     }
@@ -125,8 +125,7 @@ public class ConnectionController extends BookmarkController {
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.isNotBlank(credentials.getPasswordPlaceholder()) ? String.format("%s:",
-                                credentials.getPasswordPlaceholder()) : StringUtils.EMPTY,
-                        LABEL_ATTRIBUTES
+                                credentials.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
                 ));
             }
         });
@@ -139,6 +138,7 @@ public class ConnectionController extends BookmarkController {
         this.keychainCheckbox.setState(PreferencesFactory.get().getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
+    @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         credentials.setSaved(sender.state() == NSCell.NSOnState);
     }

@@ -249,6 +249,14 @@ public class DefaultSessionPool implements SessionPool {
         }
         try {
             pool.returnObject(session);
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                try {
+                    pool.invalidateObject(session);
+                }
+                catch(Exception e) {
+                    log.warn(String.format("Failure invalidating session %s in pool", session));
+                }
+            }
         }
         catch(IllegalStateException e) {
             log.warn(String.format("Failed to release session %s. %s", session, e.getMessage()));
