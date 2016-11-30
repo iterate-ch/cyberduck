@@ -38,7 +38,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -113,12 +112,13 @@ public class SFTPMoveFeatureTest {
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.withVault(new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault cryptomator = new CryptoVault(session, vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create());
+        }).create();
+        session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));
         session.getFeature(Move.class).move(source, target, false, new Delete.Callback() {
@@ -129,7 +129,8 @@ public class SFTPMoveFeatureTest {
         });
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(target));
-        session.getFeature(Delete.class).delete(Arrays.asList(target, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.delete();
         session.close();
     }
 }
