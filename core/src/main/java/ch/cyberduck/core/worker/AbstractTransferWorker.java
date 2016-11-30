@@ -165,6 +165,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     public Boolean run(final Session<?> session) throws BackgroundException {
         final String lock = sleep.lock();
         try {
+            // No need for session. Return prematurely to pool
+            this.release(session);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
