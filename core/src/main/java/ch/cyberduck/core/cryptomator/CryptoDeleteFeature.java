@@ -22,7 +22,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
@@ -40,7 +39,7 @@ public class CryptoDeleteFeature implements Delete {
         for(Path f : files) {
             if(f.isDirectory()) {
                 final Path directoryMetafile = vault.encrypt(f, true);
-                final Path directoryPath = vault.encrypt(f, false);
+                final Path directoryPath = vault.encrypt(f);
                 encrypted.add(directoryMetafile);
                 encrypted.add(directoryPath);
                 //TODO muss silently failen für directoryPath.getParent(), wenn es noch andere Ordner unter diesem Firstlevel hat
