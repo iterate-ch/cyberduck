@@ -22,8 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import java.util.EnumSet;
-
 public interface Vault {
 
     /**
@@ -57,15 +55,29 @@ public interface Vault {
 
     void delete() throws BackgroundException;
     /**
-     * @param file File or directory
+     * @param file Decrypted human readable path
      * @return True if the file is part of the vault
      */
     boolean contains(Path file);
 
+    /**
+     * @param file Decrypted human readable path
+     * @return Encrypted path
+     */
     Path encrypt(Path file) throws BackgroundException;
 
-    Path encrypt(Path file, EnumSet<Path.Type> type) throws BackgroundException;
+    /**
+     * @param file     Decrypted human readable path
+     * @param metadata Provide path to metadata of file if set to true
+     * @return Encrypted path
+     */
+    Path encrypt(Path file, boolean metadata) throws BackgroundException;
 
+    /**
+     * @param directory Encrypted parent path
+     * @param file      Encrypted path
+     * @return Decrypted human readable path
+     */
     Path decrypt(Path directory, Path file) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
@@ -103,7 +115,7 @@ public interface Vault {
         }
 
         @Override
-        public Path encrypt(final Path file, final EnumSet<Path.Type> type) throws BackgroundException {
+        public Path encrypt(final Path file, final boolean metadata) throws BackgroundException {
             return file;
         }
 

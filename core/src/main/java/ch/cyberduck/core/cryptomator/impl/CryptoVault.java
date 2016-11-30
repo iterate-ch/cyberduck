@@ -245,7 +245,7 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
-        this.filenameProvider = new CryptoFilenameProvider(home, session);
+        this.filenameProvider = new CryptoFilenameProvider(session, home);
         this.directoryIdProvider = new CryptoDirectoryIdProvider(session);
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
         open = true;
@@ -258,23 +258,23 @@ public class CryptoVault implements Vault {
 
     @Override
     public Path encrypt(final Path file) throws BackgroundException {
-        return this.encrypt(file, file.getType());
+        return this.encrypt(file, false);
     }
 
-    public Path encrypt(final Path file, final EnumSet<Path.Type> type) throws BackgroundException {
+    public Path encrypt(final Path file, boolean metadata) throws BackgroundException {
         if(this.contains(file)) {
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
                 return file;
             }
-            if(type.contains(Path.Type.directory)) {
-                final CryptoDirectory directory = directoryProvider.toEncrypted(file);
-                return directory.path;
-            }
-            else {
+            if(file.isFile() || metadata) {
                 final CryptoDirectory parent = directoryProvider.toEncrypted(file.getParent());
                 final String filename = directoryProvider.toEncrypted(parent.id, file.getName(), file.getType());
                 return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
+            }
+            else {
+                final CryptoDirectory directory = directoryProvider.toEncrypted(file);
+                return directory.path;
             }
         }
         return file;

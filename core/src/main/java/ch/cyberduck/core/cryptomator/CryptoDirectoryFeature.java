@@ -20,18 +20,18 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.charset.Charset;
-import java.util.EnumSet;
 
 public class CryptoDirectoryFeature implements Directory {
 
     private final Directory delegate;
     private final CryptoVault vault;
-    private final Session session;
+    private final Session<?> session;
 
-    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator, final Session session) {
+    public CryptoDirectoryFeature(final Directory delegate, final CryptoVault cryptomator, final Session<?> session) {
         this.delegate = delegate;
         this.vault = cryptomator;
         this.session = session;
@@ -44,16 +44,17 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final Path directoryMetafile = vault.encrypt(directory, EnumSet.of(Path.Type.file));
-        final Path directoryPath = vault.encrypt(directory, EnumSet.of(Path.Type.directory));
+        final Path directoryMetafile = vault.encrypt(directory, true);
+        final Path directoryPath = vault.encrypt(directory);
         final String uuid = vault.getDirectoryProvider().toEncrypted(directory).id;
 
         final ContentWriter writer = new ContentWriter(session);
         writer.write(directoryMetafile, uuid.getBytes(Charset.forName("UTF-8")));
 
         final Path firstLevel = directoryPath.getParent();
-        //TODO check if exists
-        delegate.mkdir(firstLevel);
+        if(!session._getFeature(Find.class).find(firstLevel)) {
+            delegate.mkdir(firstLevel);
+        }
         delegate.mkdir(directoryPath);
     }
 }

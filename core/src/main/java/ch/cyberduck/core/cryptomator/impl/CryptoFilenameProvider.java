@@ -44,14 +44,15 @@ public class CryptoFilenameProvider {
 
     private static final int NAME_SHORTENING_THRESHOLD = 129;
 
-    private final Path metadataRoot;
-    private final Session<?> session;
-    private final LoadingCache<String, String> cache;
+    private final LoadingCache<String, String> cache
+            = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
 
-    public CryptoFilenameProvider(final Path vault, final Session<?> session) {
+    private final Session<?> session;
+    private final Path metadataRoot;
+
+    public CryptoFilenameProvider(final Session<?> session, final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
         this.session = session;
-        this.cache = CacheBuilder.newBuilder().maximumSize(MAX_CACHE_SIZE).build(new Loader());
     }
 
     private class Loader extends CacheLoader<String, String> {
@@ -84,16 +85,13 @@ public class CryptoFilenameProvider {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
         }
-        byte[] longFileNameBytes = filename.getBytes(UTF_8);
-        byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
-        String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
+        final byte[] longFileNameBytes = filename.getBytes(UTF_8);
+        final byte[] hash = MessageDigestSupplier.SHA1.get().digest(longFileNameBytes);
+        final String shortName = BASE32.encode(hash) + LONG_NAME_FILE_EXT;
         if(cache.getIfPresent(shortName) == null) {
             cache.put(shortName, filename);
-            // TODO markuskreusch, overheadhunter: do we really want to persist this at this point?...
-            // ...maybe the caller only wanted to know if a file exists without creating anything.
-            Path file = resolve(shortName);
-            Path fileDir = file.getParent();
-            assert fileDir != null : "resolveMetadataFile returned path to a file";
+            Path file = this.resolve(shortName);
+            Path directory = file.getParent();
 
             //TODO yla: NOCH ZU IMPLEMENTIEREN
             throw new UnsupportedOperationException();
