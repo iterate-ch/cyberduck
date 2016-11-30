@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
@@ -47,12 +47,10 @@ public class CryptoDirectoryIdProvider {
     private class Loader extends CacheLoader<Path, String> {
         @Override
         public String load(final Path directoryMetafile) throws BackgroundException {
-            try {
-                return new ContentReader(session).readToString(directoryMetafile);
-            }
-            catch(NotfoundException e) {
+            if(!session._getFeature(Find.class).find(directoryMetafile)) {
                 return UUID.randomUUID().toString();
             }
+            return new ContentReader(session).readToString(directoryMetafile);
         }
     }
 
