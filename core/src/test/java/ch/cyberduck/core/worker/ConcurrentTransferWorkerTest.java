@@ -34,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -129,6 +130,7 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
+    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 3;
