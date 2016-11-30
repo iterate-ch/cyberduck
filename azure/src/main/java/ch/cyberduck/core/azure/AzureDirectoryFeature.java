@@ -34,8 +34,8 @@ import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureDirectoryFeature implements Directory {
 
@@ -67,7 +67,7 @@ public class AzureDirectoryFeature implements Directory {
             }
             else {
                 // Create delimiter placeholder
-                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
                 blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
             }

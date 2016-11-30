@@ -40,7 +40,7 @@ import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobInputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.core.SR;
 
 public class AzureReadFeature implements Read {
@@ -66,8 +66,8 @@ public class AzureReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
+            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getBlobReferenceFromServer(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);

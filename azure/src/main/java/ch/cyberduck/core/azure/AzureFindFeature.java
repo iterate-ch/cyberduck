@@ -30,8 +30,8 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureFindFeature implements Find {
 
@@ -79,8 +79,8 @@ public class AzureFindFeature implements Find {
                     found = container.exists(null, null, context);
                 }
                 else {
-                    final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                            .getBlockBlobReference(containerService.getKey(file));
+                    final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlobReferenceFromServer(containerService.getKey(file));
                     found = blob.exists(null, null, context);
                 }
                 if(found) {
