@@ -91,8 +91,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Username = credentials.getUsername();
             View.SavePasswordState = credentials.isSaved();
 
-            if(_options.icon != null) {
-                View.DiskIcon = IconCache.Instance.IconForName(_options.icon, 64);
+            if(_options.icon() != null) {
+                View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
             }
             else {
                 View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);

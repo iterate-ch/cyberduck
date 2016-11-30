@@ -80,6 +80,10 @@ public final class LoginOptions {
         return anonymous;
     }
 
+    public String icon() {
+        return icon;
+    }
+
     /**
      * Defer login options from protocol
      */
