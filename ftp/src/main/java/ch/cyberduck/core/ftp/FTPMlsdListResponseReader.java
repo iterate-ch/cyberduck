@@ -163,6 +163,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                 }
                 children.add(parsed);
+                listener.chunk(directory, children);
             }
         }
         if(!success) {
