@@ -39,8 +39,8 @@ public class CryptoDeleteFeature implements Delete {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
             if(f.isDirectory()) {
-                final Path directoryMetafile = vault.encrypt(f, EnumSet.of(Path.Type.file));
-                final Path directoryPath = vault.encrypt(f, EnumSet.of(Path.Type.directory));
+                final Path directoryMetafile = vault.encrypt(f, true);
+                final Path directoryPath = vault.encrypt(f, false);
                 encrypted.add(directoryMetafile);
                 encrypted.add(directoryPath);
                 //TODO muss silently failen für directoryPath.getParent(), wenn es noch andere Ordner unter diesem Firstlevel hat
