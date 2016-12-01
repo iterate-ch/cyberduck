@@ -70,8 +70,12 @@ public class CryptoFilenameProvider {
         if(!find.find(metadataRoot)) {
             mkdir.mkdir(metadataRoot);
         }
-        mkdir.mkdir(firstLevel);
-        mkdir.mkdir(secondLevel);
+        if(!find.find(firstLevel)) {
+            mkdir.mkdir(firstLevel);
+        }
+        if(!find.find(secondLevel)) {
+            mkdir.mkdir(secondLevel);
+        }
         final ContentWriter writer = new ContentWriter(session);
         writer.write(metadataFile, longFileNameBytes);
         return shortName;

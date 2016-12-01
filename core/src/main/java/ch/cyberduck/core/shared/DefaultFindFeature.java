@@ -53,7 +53,7 @@ public class DefaultFindFeature implements Find {
         try {
             final AttributedList<Path> list;
             if(!cache.containsKey(file.getParent())) {
-                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                list = session._getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             else {
@@ -75,7 +75,7 @@ public class DefaultFindFeature implements Find {
                         }
                 }
                 if(null == file.attributes().getVersionId()) {
-                    final IdProvider id = session.getFeature(IdProvider.class);
+                    final IdProvider id = session._getFeature(IdProvider.class);
                     final String version = id.getFileid(file);
                     if(version != null) {
                         return true;
