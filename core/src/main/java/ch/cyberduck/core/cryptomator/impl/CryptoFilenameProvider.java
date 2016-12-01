@@ -34,7 +34,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class CryptoFilenameProvider {
 
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
-    private static final int MAX_CACHE_SIZE = 5000;
     private static final String LONG_NAME_FILE_EXT = ".lng";
     private static final String METADATA_DIR_NAME = "m";
 
@@ -43,7 +42,9 @@ public class CryptoFilenameProvider {
     private final Path metadataRoot;
 
     public CryptoFilenameProvider(final Path vault) {
-        this.metadataRoot = new Path(vault, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        // new vault home with encrypted flag set for internal use
+        final Path parent = new Path(vault.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.encrypted), vault.attributes());
+        this.metadataRoot = new Path(parent, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory, Path.Type.encrypted));
     }
 
     public boolean isDeflated(final String filename) {
@@ -64,7 +65,6 @@ public class CryptoFilenameProvider {
         final Path metadataFile = this.resolve(shortName);
         final Path secondLevel = metadataFile.getParent();
         final Path firstLevel = secondLevel.getParent();
-        final Path metadataRoot = firstLevel.getParent();
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
         if(!find.find(metadataRoot)) {
@@ -82,12 +82,8 @@ public class CryptoFilenameProvider {
     }
 
     public Path resolve(final String filename) {
-        return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory)),
-                filename.substring(2, 4), EnumSet.of(Path.Type.directory)), filename, EnumSet.of(Path.Type.file));
-    }
-
-    public Path getMetadataRoot() {
-        return metadataRoot;
+        return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted)),
+                filename.substring(2, 4), EnumSet.of(Path.Type.directory, Path.Type.encrypted)), filename, EnumSet.of(Path.Type.file, Path.Type.encrypted));
     }
 
     public void close() {
