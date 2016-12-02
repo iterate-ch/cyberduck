@@ -17,21 +17,17 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
-import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import java.util.Collections;
@@ -58,8 +54,6 @@ public class FolderController extends FileController {
                 LocaleFactory.localizedString("Cancel", "Folder")
         ));
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
-        this.alert.setShowsSuppressionButton(true);
-        this.alert.suppressionButton().setTitle(LocaleFactory.localizedString("Create encrypted Vault"));
         this.parent = parent;
         this.regions = regions;
     }
@@ -93,7 +87,7 @@ public class FolderController extends FileController {
         return super.getAccessoryView();
     }
 
-    private boolean hasLocation() {
+    protected boolean hasLocation() {
         return !regions.isEmpty()
                 && new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()).isRoot();
     }
@@ -105,30 +99,13 @@ public class FolderController extends FileController {
             final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
                     filename, EnumSet.of(Path.Type.directory));
             final String region = this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
-            if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                        new CreateVaultWorker(folder, PasswordStoreFactory.get(), LoginCallbackFactory.get(parent)) {
-                            @Override
-                            public void cleanup(final Boolean done) {
-                                if(filename.charAt(0) == '.') {
-                                    parent.setShowHiddenFiles(true);
-                                }
-                                parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                            }
-                        }));
-            }
-            else {
-                parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                        new CreateDirectoryWorker(folder, region) {
-                            @Override
-                            public void cleanup(final Boolean done) {
-                                if(filename.charAt(0) == '.') {
-                                    parent.setShowHiddenFiles(true);
-                                }
-                                parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                            }
-                        }));
-            }
+            parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
+                    new CreateDirectoryWorker(folder, region) {
+                        @Override
+                        public void cleanup(final Boolean done) {
+                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                        }
+                    }));
         }
     }
 }
