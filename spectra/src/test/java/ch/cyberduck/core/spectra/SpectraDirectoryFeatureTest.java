@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3HomeFinderService;
@@ -80,6 +81,17 @@ public class SpectraDirectoryFeatureTest {
                 new DefaultX509KeyManager());
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
+        session.addListener(new TranscriptListener() {
+            @Override
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(("PUT /test.cyberduck.ch/" + name + "/ HTTP/1.1").equals(message)) {
+                            b.set(true);
+                        }
+                }
+            }
+        });
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
