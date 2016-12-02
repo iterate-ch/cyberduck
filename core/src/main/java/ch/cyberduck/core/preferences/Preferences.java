@@ -1197,6 +1197,7 @@ public abstract class Preferences {
         defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", DisabledLoginCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
         defaults.put("factory.temporaryfiles.class", DefaultTemporaryFileService.class.getName());
