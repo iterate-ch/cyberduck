@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -49,7 +48,6 @@ import org.cryptomator.cryptofs.CryptoFileSystemProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -61,7 +59,6 @@ import static org.cryptomator.cryptofs.CryptoFileSystemProperties.cryptoFileSyst
 import static org.cryptomator.cryptofs.CryptoFileSystemUris.createUri;
 import static org.junit.Assert.assertArrayEquals;
 
-@Category(IntegrationTest.class)
 public class SFTPCryptomatorInteroperabilityTest {
 
     private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
@@ -116,8 +113,8 @@ public class SFTPCryptomatorInteroperabilityTest {
         return session;
     }
 
-    /*
-        Create file/folder with Cryptomator, read with Cyberduck
+    /**
+     *   Create file/folder with Cryptomator, read with Cyberduck
      */
     @Test
     public void testCryptomatorInteroperabilityTests() throws Exception {
