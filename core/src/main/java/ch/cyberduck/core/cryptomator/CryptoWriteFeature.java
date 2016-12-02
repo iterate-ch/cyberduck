@@ -35,21 +35,21 @@ public class CryptoWriteFeature implements Write {
 
     private final Session<?> session;
     private final Write delegate;
-    private final CryptoVault cryptomator;
+    private final CryptoVault vault;
 
-    public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault cryptomator) {
+    public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault vault) {
         this.session = session;
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        if(cryptomator.contains(file)) {
+        if(vault.contains(file)) {
             try {
-                final Path encrypted = cryptomator.encrypt(session, file);
+                final Path encrypted = vault.encrypt(session, file);
                 // Header
-                final Cryptor cryptor = cryptomator.getCryptor();
+                final Cryptor cryptor = vault.getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
                 header.setFilesize(-1);
                 final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
@@ -78,6 +78,6 @@ public class CryptoWriteFeature implements Write {
 
     @Override
     public boolean random() {
-        return false;
+        return delegate.random();
     }
 }

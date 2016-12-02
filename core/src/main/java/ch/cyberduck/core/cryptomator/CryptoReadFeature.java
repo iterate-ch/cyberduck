@@ -34,21 +34,21 @@ public class CryptoReadFeature implements Read {
 
     private final Session<?> session;
     private final Read delegate;
-    private final CryptoVault cryptomator;
+    private final CryptoVault vault;
 
-    public CryptoReadFeature(final Session<?> session, final Read delegate, final CryptoVault cryptomator) {
+    public CryptoReadFeature(final Session<?> session, final Read delegate, final CryptoVault vault) {
         this.session = session;
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        if(cryptomator.contains(file)) {
+        if(vault.contains(file)) {
             try {
-                final Path encrypted = cryptomator.encrypt(session, file);
+                final Path encrypted = vault.encrypt(session, file);
                 // Header
-                final Cryptor cryptor = cryptomator.getCryptor();
+                final Cryptor cryptor = vault.getCryptor();
                 final InputStream proxy = delegate.read(encrypted, status);
                 final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
                 final int read = proxy.read(headerBuffer.array());
