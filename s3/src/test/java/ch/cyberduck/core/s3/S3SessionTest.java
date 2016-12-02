@@ -174,6 +174,18 @@ public class S3SessionTest {
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final S3Session session = new S3Session(host);
+        session.addListener(new TranscriptListener() {
+            @Override
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(message.contains("Host:")) {
+                            assertEquals("Host: cyberduck.io", message);
+                            set.set(true);
+                        }
+                }
+            }
+        });
         session.open(new HostKeyCallback() {
             @Override
             public boolean verify(final String hostname, final int port, final PublicKey key)
