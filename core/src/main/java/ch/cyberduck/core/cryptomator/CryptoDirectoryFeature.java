@@ -17,10 +17,10 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.charset.Charset;
@@ -29,9 +29,9 @@ public class CryptoDirectoryFeature implements Directory {
 
     private final Session<?> session;
     private final Directory delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final Vault cryptomator) {
         this.session = session;
         this.delegate = delegate;
         this.vault = cryptomator;
