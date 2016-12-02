@@ -43,33 +43,27 @@ public class CryptoDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
-            if(f.isDirectory()) {
-                final Path metadataFile = vault.encrypt(session, f, true);
-                if(metadataFile.getType().contains(Path.Type.encrypted)) {
-                    encrypted.add(metadataFile);
+            if(vault.contains(f)) {
+                final Path encrypt = vault.encrypt(session, f);
+                encrypted.add(encrypt);
+                if(f.isDirectory()) {
+                    final Path metadataFile = vault.encrypt(session, f, true);
+                    if(metadataFile.getType().contains(Path.Type.encrypted)) {
+                        encrypted.add(metadataFile);
+                    }
+                    if(encrypt.getType().contains(Path.Type.encrypted)) {
+                        encrypted.add(encrypt.getParent());
+                    }
                 }
-                final Path directory = vault.encrypt(session, f);
-                encrypted.add(directory);
-                if(directory.getType().contains(Path.Type.encrypted)) {
-                    encrypted.add(directory.getParent());
+                if(filenameProvider.isDeflated(encrypt.getName())) {
+                    final Path metadataFile = filenameProvider.resolve(encrypt.getName());
+                    encrypted.add(metadataFile);
                 }
             }
             else {
-                encrypted.add(vault.encrypt(session, f));
+                encrypted.add(f);
             }
         }
-        encrypted.addAll(this.getMetadataFiles(encrypted));
         delegate.delete(encrypted, prompt, callback);
-    }
-
-    private List<Path> getMetadataFiles(final List<Path> files) {
-        List<Path> metadataFiles = new ArrayList<>();
-        for(Path file : files) {
-            if(filenameProvider.isDeflated(file.getName())) {
-                final Path metadataFile = filenameProvider.resolve(file.getName());
-                metadataFiles.add(metadataFile);
-            }
-        }
-        return metadataFiles;
     }
 }
