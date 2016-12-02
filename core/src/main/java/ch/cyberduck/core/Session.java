@@ -311,6 +311,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == ListService.class) {
             return (T) this;
         }
+        if(type == Vault.class) {
+            return (T) vault;
+        }
         return null;
     }
 
