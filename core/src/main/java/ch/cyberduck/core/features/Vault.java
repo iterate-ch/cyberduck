@@ -120,6 +120,7 @@ public interface Vault {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
             return delegate;
         }

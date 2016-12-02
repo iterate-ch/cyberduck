@@ -107,7 +107,7 @@ public class FolderController extends FileController {
             final String region = this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
             if(alert.suppressionButton().state() == NSCell.NSOnState) {
                 parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                        new CreateVaultWorker(parent.getSession(), folder, region, PasswordStoreFactory.get(), LoginCallbackFactory.get(parent)) {
+                        new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), LoginCallbackFactory.get(parent)) {
                             @Override
                             public void cleanup(final Boolean done) {
                                 if(filename.charAt(0) == '.') {

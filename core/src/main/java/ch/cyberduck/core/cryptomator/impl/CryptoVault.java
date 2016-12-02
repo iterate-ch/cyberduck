@@ -32,12 +32,14 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -330,13 +332,20 @@ public class CryptoVault implements Vault {
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(cryptor != null) {
             if(type == ListService.class) {
-                return (T) new CryptoListService(session, (ListService) delegate, this);
+                return (T) new CryptoListService(session,
+                        new VaultFinderListService(session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, (Touch) delegate, this);
             }
             if(type == Directory.class) {
                 return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
+            }
+            if(type == Upload.class) {
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
+            }
+            if(type == Download.class) {
+                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature(session, (Read) delegate, this);

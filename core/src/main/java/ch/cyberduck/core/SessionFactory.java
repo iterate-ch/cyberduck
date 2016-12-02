@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
+import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -62,8 +62,7 @@ public final class SessionFactory {
             else {
                 session = constructor.newInstance(host, trust, key);
             }
-            session.addListener(new VaultFinderListProgressListener(session, keychain, login));
-            return session;
+            return session.withVault(new LookupVault(keychain, login));
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(String.format("Failure loading session class for %s protocol. Failure %s", protocol, e));

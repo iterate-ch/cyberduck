@@ -36,9 +36,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private final LoginCallback prompt;
     private final Session<?> session;
 
-    public VaultFinderListProgressListener(final Session<?> session,
-                                           final PasswordStore keychain,
-                                           final LoginCallback prompt) {
+    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final LoginCallback prompt) {
         this.session = session;
         this.keychain = keychain;
         this.prompt = prompt;

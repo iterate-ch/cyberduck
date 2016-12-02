@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cryptomator.VaultFinderListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
@@ -70,8 +69,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
 
-    private final Set<ListProgressListener> listProgressListeners = new HashSet<>();
-
     /**
      * Connection attempt being made.
      */
@@ -96,10 +93,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         transcriptListeners.add(transcript);
     }
 
-    public void addListener(final ListProgressListener listener) {
-        listProgressListeners.add(listener);
-    }
-
     public enum State {
         opening,
         open,
@@ -118,7 +111,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
-    public Session withVault(final Vault vault) {
+    public Session<C> withVault(final Vault vault) {
         this.vault.close();
         this.vault = vault;
         return this;
@@ -206,7 +199,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         state = State.closed;
         vault.close();
         transcriptListeners.clear();
-        listProgressListeners.clear();
     }
 
     /**
@@ -317,11 +309,10 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DisabledQuotaFeature();
         }
         if(type == ListService.class) {
-            if(Vault.DISABLED == vault) {
-                return (T) new VaultFinderListService(this, this,
-                        listProgressListeners.toArray(new ListProgressListener[listProgressListeners.size()]));
-            }
             return (T) this;
+        }
+        if(type == Vault.class) {
+            return (T) vault;
         }
         return null;
     }

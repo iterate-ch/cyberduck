@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -30,28 +31,36 @@ public class VaultFinderListService implements ListService {
 
     private final Session<?> proxy;
     private final ListService delegate;
-    private final ListProgressListener[] listeners;
+    private final VaultFinderListProgressListener finder;
 
-    public VaultFinderListService(final Session<?> proxy, final ListService delegate, final ListProgressListener[] listeners) {
+    public VaultFinderListService(final Session<?> proxy, final ListService delegate, final VaultFinderListProgressListener finder) {
         this.proxy = proxy;
         this.delegate = delegate;
-        this.listeners = listeners;
+        this.finder = finder;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            return delegate.list(directory, new ProxyListProgressListener(listeners));
-        }
-        catch(VaultFinderListCanceledException finder) {
-            // Set vault
-            proxy.withVault(finder.getVault());
-            // Run again with decrypting list worker
-            final ListService service = proxy.getFeature(ListService.class);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Switch list service to %s", service));
+        if(!proxy.getFeature(Vault.class).contains(directory)) {
+            try {
+                return delegate.list(directory, new ProxyListProgressListener(finder, listener));
             }
-            return service.list(directory, listener);
+            catch(VaultFinderListCanceledException finder) {
+                // Set vault
+                proxy.withVault(finder.getVault());
+                // Run again with decrypting list worker
+                final ListService service = proxy.getFeature(ListService.class);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Switch list service to %s", service));
+                }
+                return service.list(directory, listener);
+            }
+            finally {
+                finder.reset();
+            }
+        }
+        else {
+            return delegate.list(directory, listener);
         }
     }
 }

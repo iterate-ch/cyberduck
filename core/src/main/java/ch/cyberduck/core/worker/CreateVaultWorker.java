@@ -22,18 +22,15 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.pool.SessionPool;
 
 public class CreateVaultWorker extends CreateDirectoryWorker {
 
-    private final SessionPool pool;
     private final Path directory;
     private final PasswordStore keychain;
     private final LoginCallback login;
 
-    public CreateVaultWorker(final SessionPool pool, final Path directory, final String region, final PasswordStore keychain, final LoginCallback login) {
+    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final LoginCallback login) {
         super(directory, region);
-        this.pool = pool;
         this.directory = directory;
         this.keychain = keychain;
         this.login = login;

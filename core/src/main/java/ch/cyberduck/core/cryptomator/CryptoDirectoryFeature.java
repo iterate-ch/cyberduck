@@ -17,10 +17,10 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.charset.Charset;
@@ -29,9 +29,9 @@ public class CryptoDirectoryFeature implements Directory {
 
     private final Session<?> session;
     private final Directory delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final Vault cryptomator) {
         this.session = session;
         this.delegate = delegate;
         this.vault = cryptomator;
@@ -44,16 +44,18 @@ public class CryptoDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        final Path directoryMetafile = vault.encrypt(session, directory, true);
-        final Path directoryPath = vault.encrypt(session, directory);
-        final String directoryId = directoryPath.attributes().getDirectoryId();
-        final ContentWriter writer = new ContentWriter(session);
-        writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
+        final Path target = vault.encrypt(session, directory);
+        if(vault.contains(directory)) {
+            final Path directoryMetafile = vault.encrypt(session, directory, true);
+            final String directoryId = target.attributes().getDirectoryId();
+            final ContentWriter writer = new ContentWriter(session);
+            writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
 
-        final Path firstLevel = directoryPath.getParent();
-        if(!session._getFeature(Find.class).find(firstLevel)) {
-            delegate.mkdir(firstLevel);
+            final Path firstLevel = target.getParent();
+            if(!session._getFeature(Find.class).find(firstLevel)) {
+                delegate.mkdir(firstLevel);
+            }
         }
-        delegate.mkdir(directoryPath);
+        delegate.mkdir(target);
     }
 }
