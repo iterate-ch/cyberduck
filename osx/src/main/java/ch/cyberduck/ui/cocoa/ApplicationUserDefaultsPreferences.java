@@ -47,6 +47,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.hostkeycallback.class", AlertHostKeyController.class.getName());
         defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", AlertTransferErrorCallback.class.getName());
         defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
