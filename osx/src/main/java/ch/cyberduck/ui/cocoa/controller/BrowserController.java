@@ -305,7 +305,7 @@ public class BrowserController extends WindowController
         }
     }
 
-    public void setShowHiddenFiles(boolean showHidden) {
+    protected void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
             this.filenameFilter = SearchFilterFactory.NULL_FILTER;
             this.showHiddenFiles = true;
@@ -383,6 +383,11 @@ public class BrowserController extends WindowController
     protected void reload(final Path workdir, final Set<Path> folders, final List<Path> selected, final boolean invalidate) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
+        }
+        for(final Path folder : folders) {
+            if(folder.getName().startsWith(".")) {
+                this.setShowHiddenFiles(true);
+            }
         }
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
@@ -2562,7 +2567,10 @@ public class BrowserController extends WindowController
 
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
-        this.createFolderButtonClicked(sender);
+        final Location feature = session.getFeature(Location.class);
+        final VaultController sheet = new VaultController(this, cache,
+                feature != null ? feature.getLocations() : Collections.emptySet());
+        sheet.beginSheet();
     }
 
     @Action

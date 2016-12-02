@@ -60,10 +60,7 @@ public class CreateSymlinkController extends FileController {
         parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), new CreateSymlinkWorker(link, selected) {
             @Override
             public void cleanup(final Path symlink) {
-                if(symlink.getName().startsWith(".")) {
-                    parent.setShowHiddenFiles(true);
-                }
-                parent.reload(parent.workdir(), Collections.singletonList(link), Collections.singletonList(link));
+                parent.reload(parent.workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
             }
         }));
     }
