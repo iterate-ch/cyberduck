@@ -17,8 +17,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public interface PasswordCallback {
-
-    void prompt(Credentials credentials, String title, String reason, LoginOptions options)
-            throws LoginCanceledException;
+public class DisabledPasswordCallback implements PasswordCallback {
+    @Override
+    public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options)
+            throws LoginCanceledException {
+        throw new LoginCanceledException();
+    }
 }
