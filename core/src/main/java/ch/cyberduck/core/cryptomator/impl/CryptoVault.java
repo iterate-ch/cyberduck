@@ -143,7 +143,7 @@ public class CryptoVault implements Vault {
             feature.mkdir(home);
         }
         writer.write(file, master.serialize());
-        this.open(session, KeyFile.parse(master.serialize()), passphrase);
+        this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
@@ -193,7 +193,7 @@ public class CryptoVault implements Vault {
             }
             passphrase = credentials.getPassword();
         }
-        this.open(session, master, passphrase);
+        this.open(master, passphrase);
         return this;
     }
 
@@ -213,7 +213,7 @@ public class CryptoVault implements Vault {
         }
     }
 
-    private void open(final Session<?> session, final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
+    private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
