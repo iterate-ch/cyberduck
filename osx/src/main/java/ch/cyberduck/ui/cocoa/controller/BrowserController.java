@@ -2360,6 +2360,7 @@ public class BrowserController extends WindowController
     @Action
     public void setStatusLabel(NSTextField statusLabel) {
         this.statusLabel = statusLabel;
+        this.statusLabel.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
     public void setStatus() {
