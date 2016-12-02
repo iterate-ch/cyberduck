@@ -17,7 +17,7 @@ package ch.cyberduck.core;
 
 public interface PasswordCallback {
 
-    Credentials create(LoginOptions options);
+    void create(Credentials credentials, String title, String reason, LoginOptions options);
 
     void prompt(Credentials credentials, String title, String reason, LoginOptions options);
 }
