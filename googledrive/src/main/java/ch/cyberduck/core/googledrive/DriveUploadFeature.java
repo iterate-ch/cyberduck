@@ -17,18 +17,11 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.http.HttpUploadFeature;
 
-import org.apache.log4j.Logger;
-
 import java.security.MessageDigest;
 
 public class DriveUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-    private static final Logger log = Logger.getLogger(DriveUploadFeature.class);
 
     public DriveUploadFeature(final DriveSession session) {
-        super(new DriveWriteFeature(session));
-    }
-
-    public DriveUploadFeature(final DriveWriteFeature writer) {
-        super(writer);
+        super(session, new DriveWriteFeature(session));
     }
 }

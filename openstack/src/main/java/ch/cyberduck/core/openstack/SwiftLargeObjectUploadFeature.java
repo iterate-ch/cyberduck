@@ -27,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -83,9 +82,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                          final SwiftRegionService regionService,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
-                                         final AbstractHttpWriteFeature<StorageObject> writer,
+                                         final SwiftWriteFeature writer,
                                          final Long segmentSize, final Integer concurrency) {
-        super(writer);
+        super(session, writer);
         this.session = session;
         this.regionService = regionService;
         this.segmentSize = segmentSize;

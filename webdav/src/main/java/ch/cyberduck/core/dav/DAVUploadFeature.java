@@ -36,11 +36,11 @@ public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     private static final Logger log = Logger.getLogger(DAVUploadFeature.class);
 
     public DAVUploadFeature(final DAVSession session) {
-        super(new DAVWriteFeature(session));
+        super(session, new DAVWriteFeature(session));
     }
 
-    public DAVUploadFeature(final AbstractHttpWriteFeature<String> writer) {
-        super(writer);
+    public DAVUploadFeature(final DAVSession session, final AbstractHttpWriteFeature<String> writer) {
+        super(session, writer);
     }
 
     @Override

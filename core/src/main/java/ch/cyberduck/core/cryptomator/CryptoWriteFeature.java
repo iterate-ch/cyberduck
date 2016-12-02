@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -35,9 +36,9 @@ public class CryptoWriteFeature implements Write {
 
     private final Session<?> session;
     private final Write delegate;
-    private final CryptoVault vault;
+    private final Vault vault;
 
-    public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault vault) {
+    public CryptoWriteFeature(final Session<?> session, final Write delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -49,7 +50,7 @@ public class CryptoWriteFeature implements Write {
             try {
                 final Path encrypted = vault.encrypt(session, file);
                 // Header
-                final Cryptor cryptor = vault.getCryptor();
+                final Cryptor cryptor = ((CryptoVault) vault).getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
                 header.setFilesize(-1);
                 final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);

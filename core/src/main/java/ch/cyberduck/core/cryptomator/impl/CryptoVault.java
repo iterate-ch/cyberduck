@@ -194,8 +194,14 @@ public class CryptoVault implements Vault {
                 keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
             }
             passphrase = credentials.getPassword();
+            credentials.setPassword(null);
         }
-        this.open(master, passphrase);
+        try {
+            this.open(master, passphrase);
+        }
+        finally {
+            passphrase = null;
+        }
         return this;
     }
 

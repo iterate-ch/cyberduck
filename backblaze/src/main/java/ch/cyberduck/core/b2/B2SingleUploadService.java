@@ -51,11 +51,11 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
             = ChecksumComputeFactory.get(HashAlgorithm.sha1);
 
     public B2SingleUploadService(final B2Session session) {
-        this(new B2WriteFeature(session));
+        this(session, new B2WriteFeature(session));
     }
 
-    public B2SingleUploadService(final B2WriteFeature writer) {
-        super(writer);
+    public B2SingleUploadService(final B2Session session, final B2WriteFeature writer) {
+        super(session, writer);
     }
 
     @Override

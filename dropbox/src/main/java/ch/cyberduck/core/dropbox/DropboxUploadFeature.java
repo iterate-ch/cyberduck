@@ -23,6 +23,6 @@ import java.security.MessageDigest;
 public class DropboxUploadFeature extends HttpUploadFeature<String, MessageDigest> {
 
     public DropboxUploadFeature(final DropboxSession session) {
-        super(new DropboxWriteFeature(session));
+        super(session, new DropboxWriteFeature(session));
     }
 }
