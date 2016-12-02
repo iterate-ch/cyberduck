@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cryptomator.VaultFinderListProgressListener;
 import ch.cyberduck.core.cryptomator.VaultFinderListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -70,7 +71,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
 
-    private final Set<ListProgressListener> listProgressListeners = new HashSet<>();
+    private PasswordStore keychain = new DisabledPasswordStore();
+
+    private LoginCallback login = new DisabledLoginCallback();
 
     /**
      * Connection attempt being made.
@@ -96,10 +99,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         transcriptListeners.add(transcript);
     }
 
-    public void addListener(final ListProgressListener listener) {
-        listProgressListeners.add(listener);
-    }
-
     public enum State {
         opening,
         open,
@@ -118,9 +117,19 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         return client;
     }
 
-    public Session withVault(final Vault vault) {
+    public Session<C> withVault(final Vault vault) {
         this.vault.close();
         this.vault = vault;
+        return this;
+    }
+
+    public Session<C> withKeychain(final PasswordStore keychain) {
+        this.keychain = keychain;
+        return this;
+    }
+
+    public Session<C> withLogin(final LoginCallback login) {
+        this.login = login;
         return this;
     }
 
@@ -206,7 +215,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         state = State.closed;
         vault.close();
         transcriptListeners.clear();
-        listProgressListeners.clear();
     }
 
     /**
@@ -318,8 +326,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == ListService.class) {
             if(Vault.DISABLED == vault) {
-                return (T) new VaultFinderListService(this, this,
-                        listProgressListeners.toArray(new ListProgressListener[listProgressListeners.size()]));
+                return (T) new VaultFinderListService(this, this, new VaultFinderListProgressListener(this, keychain, login));
             }
             return (T) this;
         }

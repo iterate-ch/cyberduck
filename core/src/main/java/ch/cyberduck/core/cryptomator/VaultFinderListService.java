@@ -30,18 +30,18 @@ public class VaultFinderListService implements ListService {
 
     private final Session<?> proxy;
     private final ListService delegate;
-    private final ListProgressListener[] listeners;
+    private final VaultFinderListProgressListener finder;
 
-    public VaultFinderListService(final Session<?> proxy, final ListService delegate, final ListProgressListener[] listeners) {
+    public VaultFinderListService(final Session<?> proxy, final ListService delegate, final VaultFinderListProgressListener finder) {
         this.proxy = proxy;
         this.delegate = delegate;
-        this.listeners = listeners;
+        this.finder = finder;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            return delegate.list(directory, new ProxyListProgressListener(listeners));
+            return delegate.list(directory, new ProxyListProgressListener(finder, listener));
         }
         catch(VaultFinderListCanceledException finder) {
             // Set vault
@@ -52,6 +52,9 @@ public class VaultFinderListService implements ListService {
                 log.debug(String.format("Switch list service to %s", service));
             }
             return service.list(directory, listener);
+        }
+        finally {
+            finder.reset();
         }
     }
 }
