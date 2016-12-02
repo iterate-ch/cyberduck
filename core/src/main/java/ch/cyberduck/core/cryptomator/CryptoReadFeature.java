@@ -52,6 +52,7 @@ public class CryptoReadFeature implements Read {
             final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
             final int read = proxy.read(headerBuffer.array());
             final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+            // Content
             return new CryptoInputStream(proxy, cryptor, header);
         }
         catch(IOException e) {

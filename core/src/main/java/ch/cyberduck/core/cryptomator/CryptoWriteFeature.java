@@ -52,11 +52,11 @@ public class CryptoWriteFeature implements Write {
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             header.setFilesize(-1);
             final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
-            final OutputStream cryptoStream = delegate.write(encrypted, status);
-            cryptoStream.write(headerBuffer.array());
-
-            // content
-            return new CryptoOutputStream(cryptoStream, cryptor, header);
+            // Unknown encrypted content length
+            final OutputStream proxy = delegate.write(encrypted, status.length(-1L));
+            proxy.write(headerBuffer.array());
+            // Content
+            return new CryptoOutputStream(proxy, cryptor, header);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
