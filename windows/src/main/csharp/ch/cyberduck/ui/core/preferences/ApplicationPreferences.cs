@@ -32,7 +32,6 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.controller;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences

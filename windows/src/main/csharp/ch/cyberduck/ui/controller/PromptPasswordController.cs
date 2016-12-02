@@ -23,7 +23,7 @@ using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using StructureMap;
 
-namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.controller
+namespace Ch.Cyberduck.Ui.Controller
 {
     class PromptPasswordController : PasswordCallback
     {
