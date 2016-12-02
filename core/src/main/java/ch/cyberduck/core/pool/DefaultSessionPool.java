@@ -26,7 +26,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -68,7 +67,6 @@ public class DefaultSessionPool implements SessionPool {
     private final GenericObjectPool<Session> pool;
 
     private SessionPool features = SessionPool.DISCONNECTED;
-    private Vault vault = Vault.DISABLED;
 
     private int retry = PreferencesFactory.get().getInteger("connection.retry");
 
