@@ -22,21 +22,18 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.log4j.Logger;
 
 public class DefaultVaultFinder implements Home {
     private static final Logger log = Logger.getLogger(DefaultVaultFinder.class);
 
-    private final SessionPool pool;
     private final Session<?> session;
     private final Home delegate;
     private final PasswordStore keychain;
     private final LoginCallback login;
 
-    public DefaultVaultFinder(final SessionPool pool, final Session<?> session, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
-        this.pool = pool;
+    public DefaultVaultFinder(final Session<?> session, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
         this.session = session;
         this.delegate = delegate;
         this.keychain = keychain;
