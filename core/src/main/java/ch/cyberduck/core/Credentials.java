@@ -22,6 +22,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+
 /**
  * Stores the login credentials
  */
@@ -35,7 +37,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * The login password
      */
-    private String password;
+    private char[] password;
 
     /**
      * Private key identity for SSH public key authentication.
@@ -74,7 +76,12 @@ public class Credentials implements Comparable<Credentials> {
      */
     public Credentials(final String user, final String password) {
         this.user = user;
-        this.password = password;
+        if(null == password) {
+            Arrays.fill(this.password, ' ');
+        }
+        else {
+            this.password = password.toCharArray();
+        }
     }
 
     /**
@@ -99,22 +106,26 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(StringUtils.isEmpty(password)) {
+        if(StringUtils.isEmpty(String.valueOf(passed))) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
         }
-        return password;
+        return String.valueOf(passed);
     }
 
     public void setPassword(final String password) {
-        this.password = password;
+        if(null == password) {
+            Arrays.fill(this.password, ' ');
+        }
+        else {
+            this.password = password.toCharArray();
+        }
         this.passed = false;
     }
 
     public Credentials withPassword(final String password) {
-        this.password = password;
-        this.passed = false;
+        this.setPassword(password);
         return this;
     }
 
