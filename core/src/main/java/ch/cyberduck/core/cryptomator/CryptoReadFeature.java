@@ -44,20 +44,23 @@ public class CryptoReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final Path encrypted = cryptomator.encrypt(session, file);
-            // Header
-            final Cryptor cryptor = cryptomator.getCryptor();
-            final InputStream proxy = delegate.read(encrypted, status);
-            final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final int read = proxy.read(headerBuffer.array());
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
-            // Content
-            return new CryptoInputStream(proxy, cryptor, header);
+        if(cryptomator.contains(file)) {
+            try {
+                final Path encrypted = cryptomator.encrypt(session, file);
+                // Header
+                final Cryptor cryptor = cryptomator.getCryptor();
+                final InputStream proxy = delegate.read(encrypted, status);
+                final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
+                final int read = proxy.read(headerBuffer.array());
+                final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+                // Content
+                return new CryptoInputStream(proxy, cryptor, header);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        return delegate.read(file, status);
     }
 
     @Override

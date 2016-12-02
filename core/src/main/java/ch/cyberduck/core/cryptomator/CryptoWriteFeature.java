@@ -45,22 +45,25 @@ public class CryptoWriteFeature implements Write {
 
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final Path encrypted = cryptomator.encrypt(session, file);
-            // Header
-            final Cryptor cryptor = cryptomator.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            header.setFilesize(-1);
-            final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
-            // Unknown encrypted content length
-            final OutputStream proxy = delegate.write(encrypted, status.length(-1L));
-            proxy.write(headerBuffer.array());
-            // Content
-            return new CryptoOutputStream(proxy, cryptor, header);
+        if(cryptomator.contains(file)) {
+            try {
+                final Path encrypted = cryptomator.encrypt(session, file);
+                // Header
+                final Cryptor cryptor = cryptomator.getCryptor();
+                final FileHeader header = cryptor.fileHeaderCryptor().create();
+                header.setFilesize(-1);
+                final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
+                // Unknown encrypted content length
+                final OutputStream proxy = delegate.write(encrypted, status.length(-1L));
+                proxy.write(headerBuffer.array());
+                // Content
+                return new CryptoOutputStream(proxy, cryptor, header);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        return delegate.write(file, status);
     }
 
     @Override
