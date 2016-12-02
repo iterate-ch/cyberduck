@@ -16,7 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -36,6 +35,7 @@ namespace Ch.Cyberduck.Ui
                 x.For<IInfoView>().Use<InfoForm>();
                 x.For<IActivityView>().Use<ActivityForm>();
                 x.For<ILoginView>().Use<LoginForm>();
+                x.For<IPasswordView>().Use<PasswordForm>();
                 x.For<IBookmarkView>().Use<BookmarkForm>();
                 x.For<IConnectionView>().Use<ConnectionForm>();
                 x.For<ITransferPromptView>().Use<TransferPromptForm>();
