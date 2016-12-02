@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -75,6 +76,17 @@ public class S3DirectoryFeatureTest {
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
+        session.addListener(new TranscriptListener() {
+            @Override
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(("PUT /" + name + "/ HTTP/1.1").equals(message)) {
+                            b.set(true);
+                        }
+                }
+            }
+        });
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
