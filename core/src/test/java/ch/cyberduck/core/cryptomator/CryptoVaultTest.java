@@ -206,6 +206,6 @@ public class CryptoVaultTest {
                 credentials.setPassword("pwd");
             }
         });
-        vault.create(session);
+        vault.create(session, null);
     }
 }

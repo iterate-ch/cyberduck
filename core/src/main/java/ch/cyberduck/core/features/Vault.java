@@ -35,7 +35,7 @@ public interface Vault {
      * @throws NotfoundException             No master key file in home
      * @throws CryptoAuthenticationException Failure opening master key file
      */
-    Vault create(final Session<?> session) throws BackgroundException;
+    Vault create(Session<?> session, String region) throws BackgroundException;
 
     /**
      * Open existing vault
@@ -47,7 +47,7 @@ public interface Vault {
      * @throws NotfoundException             No master key file in home
      * @throws CryptoAuthenticationException Failure opening master key file
      */
-    Vault load(final Session<?> session) throws BackgroundException;
+    Vault load(Session<?> session) throws BackgroundException;
 
     /**
      * Close vault
@@ -64,28 +64,28 @@ public interface Vault {
      * @param file Decrypted human readable path
      * @return Encrypted path
      */
-    Path encrypt(final Session<?> session, Path file) throws BackgroundException;
+    Path encrypt(Session<?> session, Path file) throws BackgroundException;
 
     /**
      * @param file     Decrypted human readable path
      * @param metadata Provide path to metadata of file if set to true
      * @return Encrypted path
      */
-    Path encrypt(final Session<?> session, Path file, boolean metadata) throws BackgroundException;
+    Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException;
 
     /**
      * @param directory Encrypted parent path
      * @param file      Encrypted path
      * @return Decrypted human readable path
      */
-    Path decrypt(final Session<?> session, Path directory, Path file) throws BackgroundException;
+    Path decrypt(Session<?> session, Path directory, Path file) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
 
     Vault DISABLED = new Vault() {
         @Override
-        public Vault create(final Session<?> session) throws BackgroundException {
+        public Vault create(final Session<?> session, final String region) throws BackgroundException {
             return this;
         }
 

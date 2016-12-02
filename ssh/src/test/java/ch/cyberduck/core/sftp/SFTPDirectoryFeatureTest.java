@@ -88,7 +88,7 @@ public class SFTPDirectoryFeatureTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session);
+        }).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
@@ -113,7 +113,7 @@ public class SFTPDirectoryFeatureTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session);
+        }).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Directory.class).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));

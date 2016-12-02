@@ -125,7 +125,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session);
+        }).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));
@@ -160,7 +160,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session);
+        }).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));
@@ -197,7 +197,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session);
+        }).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));

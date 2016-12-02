@@ -119,7 +119,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public CryptoVault create(final Session<?> session) throws BackgroundException {
+    public CryptoVault create(final Session<?> session, final String region) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         final Host bookmark = session.getHost();
@@ -141,9 +141,7 @@ public class CryptoVault implements Vault {
         final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
-        if(!session._getFeature(Find.class).find(home)) {
-            feature.mkdir(home);
-        }
+        feature.mkdir(home, region, null);
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
@@ -152,9 +150,9 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        feature.mkdir(dataDir);
-        feature.mkdir(firstLevel);
-        feature.mkdir(secondLevel);
+        feature.mkdir(dataDir, region, null);
+        feature.mkdir(firstLevel, region, null);
+        feature.mkdir(secondLevel, region, null);
         return this;
     }
 

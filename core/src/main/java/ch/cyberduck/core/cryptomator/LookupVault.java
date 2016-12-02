@@ -33,7 +33,7 @@ public class LookupVault implements Vault {
     }
 
     @Override
-    public Vault create(final Session<?> session) throws BackgroundException {
+    public Vault create(final Session<?> session, final String region) throws BackgroundException {
         return this;
     }
 
