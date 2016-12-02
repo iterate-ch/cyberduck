@@ -15,7 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -28,9 +28,9 @@ public class CreateVaultWorker extends Worker<Boolean> {
     private final Path directory;
     private final String region;
     private final PasswordStore keychain;
-    private final LoginCallback login;
+    private final PasswordCallback login;
 
-    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final LoginCallback login) {
+    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final PasswordCallback login) {
         this.directory = directory;
         this.region = region;
         this.keychain = keychain;

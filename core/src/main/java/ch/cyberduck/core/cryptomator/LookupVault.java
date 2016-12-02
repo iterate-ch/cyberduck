@@ -16,7 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -25,9 +25,9 @@ import ch.cyberduck.core.features.Vault;
 
 public class LookupVault implements Vault {
     private final PasswordStore keychain;
-    private final LoginCallback callback;
+    private final PasswordCallback callback;
 
-    public LookupVault(final PasswordStore keychain, final LoginCallback callback) {
+    public LookupVault(final PasswordStore keychain, final PasswordCallback callback) {
         this.keychain = keychain;
         this.callback = callback;
     }

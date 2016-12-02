@@ -75,9 +75,9 @@ public class SFTPTouchFeatureTest {
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         }).create(session, null);
@@ -100,9 +100,9 @@ public class SFTPTouchFeatureTest {
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         }).create(session, null);

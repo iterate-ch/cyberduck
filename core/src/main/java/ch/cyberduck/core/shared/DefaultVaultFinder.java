@@ -15,7 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -31,9 +31,9 @@ public class DefaultVaultFinder implements Home {
     private final Session<?> session;
     private final Home delegate;
     private final PasswordStore keychain;
-    private final LoginCallback login;
+    private final PasswordCallback login;
 
-    public DefaultVaultFinder(final Session<?> session, final Home delegate, final PasswordStore keychain, final LoginCallback login) {
+    public DefaultVaultFinder(final Session<?> session, final Home delegate, final PasswordStore keychain, final PasswordCallback login) {
         this.session = session;
         this.delegate = delegate;
         this.keychain = keychain;

@@ -17,7 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -33,10 +33,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
     private final PasswordStore keychain;
-    private final LoginCallback prompt;
+    private final PasswordCallback prompt;
     private final Session<?> session;
 
-    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final LoginCallback prompt) {
+    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final PasswordCallback prompt) {
         this.session = session;
         this.keychain = keychain;
         this.prompt = prompt;

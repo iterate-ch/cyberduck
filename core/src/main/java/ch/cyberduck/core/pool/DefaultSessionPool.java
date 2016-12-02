@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -60,7 +61,7 @@ public class DefaultSessionPool implements SessionPool {
 
     private final ConnectionService connect;
     private final PasswordStore keychain;
-    private final LoginCallback login;
+    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
 
@@ -71,11 +72,11 @@ public class DefaultSessionPool implements SessionPool {
     private int retry = PreferencesFactory.get().getInteger("connection.retry");
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final PasswordStore keychain, final LoginCallback login,
+                              final PasswordStore keychain, final LoginCallback login, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
         this.keychain = keychain;
-        this.login = login;
+        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -85,7 +86,7 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         this.pool = new GenericObjectPool<Session>(
-                new PooledSessionFactory(connect, trust, key, keychain, login, cache, bookmark), configuration);
+                new PooledSessionFactory(connect, trust, key, keychain, password, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -316,7 +317,7 @@ public class DefaultSessionPool implements SessionPool {
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
             return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                    keychain, login
+                    keychain, password
             ).getFeature(type);
         }
         return features.getFeature(type);

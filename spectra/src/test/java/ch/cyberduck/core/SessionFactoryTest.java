@@ -29,6 +29,6 @@ public class SessionFactoryTest {
     public void testCreateSession() throws Exception {
         assertNotNull(SessionFactory.create(new Host(new SpectraProtocol()),
                 new DefaultX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledLoginCallback()));
+                new DisabledPasswordStore(), new DisabledPasswordCallback()));
     }
 }

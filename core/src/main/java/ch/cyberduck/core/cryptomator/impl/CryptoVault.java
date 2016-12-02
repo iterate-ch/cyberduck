@@ -19,8 +19,8 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -105,14 +105,14 @@ public class CryptoVault implements Vault {
      */
     private final Path home;
     private final PasswordStore keychain;
-    private final LoginCallback callback;
+    private final PasswordCallback callback;
 
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Path home, final PasswordStore keychain, final LoginCallback callback) {
+    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback) {
         this.home = home;
         this.keychain = keychain;
         this.callback = callback;
@@ -126,7 +126,7 @@ public class CryptoVault implements Vault {
         final Credentials credentials = new Credentials();
         // Default to false for save in keychain
         credentials.setSaved(false);
-        callback.prompt(bookmark, credentials,
+        callback.prompt(credentials,
                 MessageFormat.format(LocaleFactory.localizedString("Create Vault “{0}“", "Cryptomator"), home.getName()),
                 LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
@@ -184,7 +184,7 @@ public class CryptoVault implements Vault {
             };
             // Default to false for save in keychain
             credentials.setSaved(false);
-            callback.prompt(bookmark, credentials,
+            callback.prompt(credentials,
                     MessageFormat.format(LocaleFactory.localizedString("Unlock Vault “{0}“", "Cryptomator"), home.getName()),
                     LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));

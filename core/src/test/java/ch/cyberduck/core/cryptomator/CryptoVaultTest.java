@@ -16,7 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -73,9 +73,9 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         });
@@ -114,10 +114,10 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("null");
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
             }
         });
         try {
@@ -161,10 +161,10 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledLoginCallback() {
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
             }
         });
         try {
@@ -200,10 +200,10 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore(), new DisabledLoginCallback() {
+                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
             }
         });
         vault.create(session, null);

@@ -19,7 +19,7 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -40,12 +40,12 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private final X509TrustManager trust;
     private final X509KeyManager key;
     private final PasswordStore keychain;
-    private final LoginCallback login;
+    private final PasswordCallback login;
     private final PathCache cache;
     private final Host bookmark;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final PasswordStore keychain, final LoginCallback login, final PathCache cache, final Host bookmark) {
+                                final PasswordStore keychain, final PasswordCallback login, final PathCache cache, final Host bookmark) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;

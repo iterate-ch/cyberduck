@@ -19,7 +19,7 @@ package ch.cyberduck.core.udt.qloudsonic;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -140,7 +140,7 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
         }
         final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
         return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key,
-                new DisabledPasswordStore(), new DisabledLoginCallback()));
+                new DisabledPasswordStore(), new DisabledPasswordCallback()));
     }
 
     public QloudsonicTransferAcceleration withUdtThreshold(final Long threshold) {
