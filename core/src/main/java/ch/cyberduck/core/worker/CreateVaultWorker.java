@@ -23,14 +23,13 @@ import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public class CreateVaultWorker extends CreateDirectoryWorker {
+public class CreateVaultWorker extends Worker<Boolean> {
 
     private final Path directory;
     private final PasswordStore keychain;
     private final LoginCallback login;
 
-    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final LoginCallback login) {
-        super(directory, region);
+    public CreateVaultWorker(final Path directory, final PasswordStore keychain, final LoginCallback login) {
         this.directory = directory;
         this.keychain = keychain;
         this.login = login;
@@ -39,9 +38,7 @@ public class CreateVaultWorker extends CreateDirectoryWorker {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            if(super.run(session)) {
-                session.withVault(new CryptoVault(directory, keychain, login).create(session));
-            }
+            session.withVault(new CryptoVault(directory, keychain, login).create(session));
         }
         catch(LoginCanceledException e) {
             return false;
