@@ -48,11 +48,11 @@ public class CryptoReadFeature implements Read {
             final Path encrypted = cryptomator.encrypt(session, file);
             // Header
             final Cryptor cryptor = cryptomator.getCryptor();
-            final ByteBuffer existingHeaderBuf = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final InputStream cryptoStream = delegate.read(encrypted, status);
-            final int read = cryptoStream.read(existingHeaderBuf.array());
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(existingHeaderBuf);
-            return new CryptoInputStream(cryptoStream, cryptor, header);
+            final InputStream proxy = delegate.read(encrypted, status);
+            final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
+            final int read = proxy.read(headerBuffer.array());
+            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+            return new CryptoInputStream(proxy, cryptor, header);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
