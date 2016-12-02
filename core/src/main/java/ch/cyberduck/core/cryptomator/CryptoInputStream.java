@@ -26,9 +26,7 @@ import java.nio.ByteBuffer;
 public class CryptoInputStream extends InputStream {
 
     private final InputStream proxy;
-
     private final Cryptor cryptor;
-
     private final FileHeader header;
 
     private ByteBuffer buffer = ByteBuffer.allocate(0);
@@ -44,6 +42,10 @@ public class CryptoInputStream extends InputStream {
         this.cryptor = cryptor;
         this.header = header;
         this.chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
+    }
+
+    public InputStream getProxy() {
+        return proxy;
     }
 
     @Override

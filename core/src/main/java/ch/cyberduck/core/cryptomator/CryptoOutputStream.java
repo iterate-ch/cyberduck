@@ -25,25 +25,24 @@ import java.nio.ByteBuffer;
 public class CryptoOutputStream extends OutputStream {
 
     private final OutputStream proxy;
-
     private final Cryptor cryptor;
-
     private final FileHeader header;
-
-    private ByteBuffer buffer;
+    private final ByteBuffer buffer;
 
     /**
      * Position proxy content cryptor
      */
     private long chunkIndex = 0;
-    private final int payloadSize;
 
     public CryptoOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header) {
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
-        this.payloadSize = cryptor.fileContentCryptor().cleartextChunkSize();
-        this.buffer = ByteBuffer.allocate(payloadSize);
+        this.buffer = ByteBuffer.allocate(cryptor.fileContentCryptor().cleartextChunkSize());
+    }
+
+    public OutputStream getProxy() {
+        return proxy;
     }
 
     @Override
@@ -64,7 +63,7 @@ public class CryptoOutputStream extends OutputStream {
             buffer.put(b, buffer.position(), write);
             if(buffer.remaining() == 0) {
                 this.encryptAndWriteBuffer();
-                buffer = ByteBuffer.allocate(payloadSize);
+                buffer.clear();
             }
             toWrite -= write;
         }
