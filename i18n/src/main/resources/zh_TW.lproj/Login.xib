@@ -53,8 +53,8 @@
                             <outlet property="nextKeyView" destination="17" id="46"/>
                         </connections>
                     </textField>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="9">
-                        <rect key="frame" x="89" y="229" width="314" height="17"/>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="9">
+                        <rect key="frame" x="101" y="229" width="302" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="10">
                             <font key="font" metaFont="systemBold"/>
@@ -62,8 +62,8 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="11">
-                        <rect key="frame" x="89" y="179" width="314" height="42"/>
+                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" misplaced="YES" id="11">
+                        <rect key="frame" x="101" y="179" width="302" height="42"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="使用者名稱：" id="12">
                             <font key="font" metaFont="smallSystem"/>
