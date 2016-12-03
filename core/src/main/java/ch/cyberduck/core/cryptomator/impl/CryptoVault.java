@@ -126,8 +126,8 @@ public class CryptoVault implements Vault {
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
         callback.prompt(credentials,
-                MessageFormat.format(LocaleFactory.localizedString("Create Vault “{0}“", "Cryptomator"), home.getName()),
-                LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
+                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         if(credentials.isSaved()) {
             keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
@@ -181,14 +181,14 @@ public class CryptoVault implements Vault {
             }
         };
         this.unlock(file, master, credentials,
-                String.format("%s.", LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator")));
+                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
 
     private void unlock(final Path file, final KeyFile master, final Credentials credentials, final String message) throws LoginCanceledException, VaultException {
         if(null == credentials.getPassword()) {
             callback.prompt(credentials,
-                    MessageFormat.format(LocaleFactory.localizedString("Unlock Vault “{0}“", "Cryptomator"), home.getName()),
+                    LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         }
@@ -201,7 +201,7 @@ public class CryptoVault implements Vault {
         catch(CryptoAuthenticationException e) {
             credentials.setPassword(null);
             this.unlock(file, master, credentials,
-                    String.format("%s. %s.", e.getMessage(), LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator")));
+                    String.format("%s. %s.", e.getMessage(), LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator")));
         }
         finally {
             credentials.setPassword(null);

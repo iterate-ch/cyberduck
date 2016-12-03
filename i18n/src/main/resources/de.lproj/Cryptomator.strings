@@ -1,5 +1,6 @@
-"Create Vault “{0}“" = "Create Vault “{0}“";
-"Unlock Vault “{0“" = "Unlock Vault “{0}“";
-"Provide a passphrase for the Cryptomator Vault" = "Provide a passphrase for the Cryptomator Vault";
-"Provide your passphrase to unlock the Cryptomator Vault" = "Provide your passphrase to unlock the Cryptomator Vault";
-"Passphrase" = "Passphrase";
+"Create Vault" = "Neuer Tresor “{0}“";
+"Unlock" = "Entsperren";
+"Unlock Vault" = "Tresor “{0}“ entsperren";
+"Provide a passphrase for the Cryptomator Vault “{0}“" = "Neues Passwort für den Cryptomator Tresor “{0}“";
+"Provide your passphrase to unlock the Cryptomator Vault “{0}“" = "Passwort zum Entsperren des Cryptomator Tresors “{0}“";
+"Passphrase" = "Passwort";
