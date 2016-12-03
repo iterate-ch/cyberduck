@@ -23,6 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Stores the login credentials
@@ -77,7 +78,7 @@ public class Credentials implements Comparable<Credentials> {
     public Credentials(final String user, final String password) {
         this.user = user;
         if(null == password) {
-            Arrays.fill(this.password, ' ');
+            this.password = null;
         }
         else {
             this.password = password.toCharArray();
@@ -106,10 +107,13 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(StringUtils.isEmpty(String.valueOf(password))) {
+        if(null == password || StringUtils.isEmpty(String.valueOf(password))) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
+        }
+        if(null == password) {
+            return null;
         }
         return String.valueOf(password);
     }
@@ -242,13 +246,15 @@ public class Credentials implements Comparable<Credentials> {
             return false;
         }
         final Credentials that = (Credentials) o;
-        if(password != null ? !password.equals(that.password) : that.password != null) {
-            return false;
-        }
-        if(user != null ? !user.equals(that.user) : that.user != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(user, that.user) &&
+                Arrays.equals(password, that.password) &&
+                Objects.equals(identity, that.identity) &&
+                Objects.equals(certificate, that.certificate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user, password, identity, certificate);
     }
 
     @Override
@@ -263,13 +269,6 @@ public class Credentials implements Comparable<Credentials> {
             return 1;
         }
         return user.compareTo(o.user);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = user != null ? user.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
     }
 
     @Override
