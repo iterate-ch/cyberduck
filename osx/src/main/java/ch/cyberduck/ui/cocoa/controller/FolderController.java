@@ -87,25 +87,28 @@ public class FolderController extends FileController {
         return super.getAccessoryView();
     }
 
-    protected boolean hasLocation() {
-        return !regions.isEmpty()
-                && new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()).isRoot();
-    }
-
     @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final String filename = inputField.stringValue();
             final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
                     filename, EnumSet.of(Path.Type.directory));
-            final String region = this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
             parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                    new CreateDirectoryWorker(folder, region) {
+                    new CreateDirectoryWorker(folder, this.getLocation()) {
                         @Override
                         public void cleanup(final Boolean done) {
                             parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                         }
                     }));
         }
+    }
+
+    protected boolean hasLocation() {
+        return !regions.isEmpty()
+                && new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()).isRoot();
+    }
+
+    protected String getLocation() {
+        return this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
     }
 }
