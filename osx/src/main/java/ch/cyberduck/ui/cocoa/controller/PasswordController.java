@@ -41,6 +41,8 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 public class PasswordController extends AlertController {
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     @Outlet
     protected final NSSecureTextField inputField
             = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
@@ -62,7 +64,6 @@ public class PasswordController extends AlertController {
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
         alert.setShowsHelp(true);
         inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
-        final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
