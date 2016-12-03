@@ -28,19 +28,19 @@ public class CreateVaultWorker extends Worker<Boolean> {
     private final Path directory;
     private final String region;
     private final PasswordStore keychain;
-    private final PasswordCallback login;
+    private final PasswordCallback prompt;
 
-    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final PasswordCallback login) {
+    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final PasswordCallback prompt) {
         this.directory = directory;
         this.region = region;
         this.keychain = keychain;
-        this.login = login;
+        this.prompt = prompt;
     }
 
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            session.withVault(new CryptoVault(directory, keychain, login).create(session, region));
+            session.withVault(new CryptoVault(directory, keychain, prompt).create(session, region));
         }
         catch(LoginCanceledException e) {
             return false;
