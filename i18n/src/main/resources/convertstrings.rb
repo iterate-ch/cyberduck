@@ -8,7 +8,7 @@ comment_hash = Hash::new
 # Open base language
 open($*[0], "rb:UTF-16LE:UTF-8") do |f|
   f.each { |line|
-    pattern = '^"(\d*)\..*" = "(.*)";$'
+    pattern = '^"(.*)\..*" = "(.*)";$'
     r = Regexp.new(pattern, Regexp::FIXEDENCODING)
     r.match(line) { |m|
       key = m[1]
