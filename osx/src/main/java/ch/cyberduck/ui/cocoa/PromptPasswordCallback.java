@@ -15,7 +15,6 @@ package ch.cyberduck.ui.cocoa;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -36,7 +35,7 @@ public class PromptPasswordCallback implements PasswordCallback {
     @Override
     public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         final PasswordController controller = new PasswordController(parent, credentials, title, reason, options);
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, controller);
+        final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
