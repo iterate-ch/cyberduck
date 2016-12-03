@@ -21,6 +21,7 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Credentials;
@@ -37,7 +38,7 @@ public class PasswordController extends AlertController {
 
     @Outlet
     protected final NSTextField inputField
-            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+            = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
 
     private final Credentials credentials;
 
