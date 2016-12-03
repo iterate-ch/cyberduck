@@ -107,12 +107,10 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(null == password || StringUtils.isEmpty(String.valueOf(password))) {
+        if(null == password || StringUtils.isBlank(String.valueOf(password))) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
-        }
-        if(null == password) {
             return null;
         }
         return String.valueOf(password);
@@ -120,7 +118,9 @@ public class Credentials implements Comparable<Credentials> {
 
     public void setPassword(final String password) {
         if(null == password) {
-            Arrays.fill(this.password, ' ');
+            if(this.password != null) {
+                Arrays.fill(this.password, ' ');
+            }
         }
         else {
             this.password = password.toCharArray();
