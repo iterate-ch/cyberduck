@@ -71,6 +71,9 @@ public class CryptoOutputStream extends OutputStream {
 
     private void encryptAndWriteBuffer() throws IOException {
         buffer.flip();
+        if(buffer.remaining() == 0) {
+            return;
+        }
         final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(buffer, chunkIndex++, header);
         proxy.write(encryptedChunk.array());
     }
