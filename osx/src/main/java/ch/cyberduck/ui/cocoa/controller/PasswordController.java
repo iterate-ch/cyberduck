@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
@@ -37,7 +36,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 public class PasswordController extends AlertController {
 
     @Outlet
-    protected final NSTextField inputField
+    protected final NSSecureTextField inputField
             = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
 
     private final Credentials credentials;
@@ -54,7 +53,7 @@ public class PasswordController extends AlertController {
         this.credentials = credentials;
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
         alert.setShowsSuppressionButton(options.keychain);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Save Password", "Keychain"));
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
         alert.setShowsHelp(true);
     }
 
