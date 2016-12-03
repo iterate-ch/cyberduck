@@ -23,6 +23,8 @@ import ch.cyberduck.core.PasswordCallbackFactory;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CreateVaultWorker;
@@ -62,5 +64,12 @@ public class VaultController extends FolderController {
                     })
             );
         }
+    }
+
+    @Override
+    protected void help() {
+        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
+        site.append("/howto/cryptomator");
+        BrowserLauncherFactory.get().open(site.toString());
     }
 }
