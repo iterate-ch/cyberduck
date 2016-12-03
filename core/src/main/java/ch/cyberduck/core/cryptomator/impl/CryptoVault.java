@@ -28,6 +28,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Compress;
 import ch.cyberduck.core.features.Delete;
@@ -172,31 +173,39 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
         }
         final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(bookmark.getHostname(), file.getAbsolute());
-        if(null == passphrase) {
-            final Credentials credentials = new Credentials() {
-                @Override
-                public String getPasswordPlaceholder() {
-                    return LocaleFactory.localizedString("Passphrase", "Cryptomator");
-                }
-            };
+        final Credentials credentials = new Credentials(bookmark.getHostname(),
+                keychain.getPassword(bookmark.getHostname(), file.getAbsolute())) {
+            @Override
+            public String getPasswordPlaceholder() {
+                return LocaleFactory.localizedString("Passphrase", "Cryptomator");
+            }
+        };
+        this.unlock(file, master, credentials,
+                String.format("%s.", LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator")));
+        return this;
+    }
+
+    private void unlock(final Path file, final KeyFile master, final Credentials credentials, final String message) throws LoginCanceledException, VaultException {
+        if(null == credentials.getPassword()) {
             callback.prompt(credentials,
                     MessageFormat.format(LocaleFactory.localizedString("Unlock Vault “{0}“", "Cryptomator"), home.getName()),
-                    LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
+                    message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-            if(credentials.isSaved()) {
-                keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
-            }
-            passphrase = credentials.getPassword();
-            credentials.setPassword(null);
         }
         try {
-            this.open(master, passphrase);
+            this.open(master, credentials.getPassword());
+            if(credentials.isSaved()) {
+                keychain.addPassword(credentials.getUsername(), file.getAbsolute(), credentials.getPassword());
+            }
+        }
+        catch(CryptoAuthenticationException e) {
+            credentials.setPassword(null);
+            this.unlock(file, master, credentials,
+                    String.format("%s. %s.", e.getMessage(), LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator")));
         }
         finally {
-            passphrase = null;
+            credentials.setPassword(null);
         }
-        return this;
     }
 
     @Override
