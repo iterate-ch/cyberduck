@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.loginButton.Name = "loginButton";
             this.loginButton.Size = new System.Drawing.Size(50, 27);
             this.loginButton.TabIndex = 7;
-            this.loginButton.Text = "OK";
+            this.loginButton.Text = "Unlock";
             this.loginButton.UseVisualStyleBackColor = true;
             // 
             // cancelButton
