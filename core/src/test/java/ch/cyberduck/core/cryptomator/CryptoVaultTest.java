@@ -117,7 +117,7 @@ public class CryptoVaultTest {
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+                credentials.setPassword("null");
             }
         });
         try {
@@ -164,7 +164,7 @@ public class CryptoVaultTest {
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+                throw new LoginCanceledException();
             }
         });
         try {
@@ -192,7 +192,7 @@ public class CryptoVaultTest {
 
                         @Override
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.isChild(home));
+                            assertTrue(file.equals(home) || file.isChild(home));
                         }
                     };
                 }
@@ -203,7 +203,7 @@ public class CryptoVaultTest {
                 home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
+                credentials.setPassword("pwd");
             }
         });
         vault.create(session, null);
