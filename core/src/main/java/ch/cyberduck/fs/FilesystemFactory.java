@@ -22,7 +22,6 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -32,11 +31,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public class FilesystemFactory extends Factory<Filesystem> {
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     public Filesystem create(final Controller controller, final Host bookmark, final PathCache cache) {
-        final String clazz = preferences.getProperty("factory.filesystem.class");
+        final String clazz = PreferencesFactory.get().getProperty("factory.filesystem.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
