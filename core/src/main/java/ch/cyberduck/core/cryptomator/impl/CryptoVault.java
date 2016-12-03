@@ -124,8 +124,6 @@ public class CryptoVault implements Vault {
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
-        // Default to false for save in keychain
-        credentials.setSaved(false);
         callback.prompt(credentials,
                 MessageFormat.format(LocaleFactory.localizedString("Create Vault “{0}“", "Cryptomator"), home.getName()),
                 LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault", "Cryptomator"),
@@ -182,8 +180,6 @@ public class CryptoVault implements Vault {
                     return LocaleFactory.localizedString("Passphrase", "Cryptomator");
                 }
             };
-            // Default to false for save in keychain
-            credentials.setSaved(false);
             callback.prompt(credentials,
                     MessageFormat.format(LocaleFactory.localizedString("Unlock Vault “{0}“", "Cryptomator"), home.getName()),
                     LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault", "Cryptomator"),
