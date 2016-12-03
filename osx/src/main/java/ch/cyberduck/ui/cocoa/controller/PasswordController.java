@@ -55,6 +55,7 @@ public class PasswordController extends AlertController {
         alert.setShowsSuppressionButton(options.keychain);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
         alert.setShowsHelp(true);
+        inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
     }
 
     @Override
