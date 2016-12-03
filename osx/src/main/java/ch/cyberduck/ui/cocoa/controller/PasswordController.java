@@ -15,14 +15,19 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -31,6 +36,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public class PasswordController extends AlertController {
@@ -56,6 +62,22 @@ public class PasswordController extends AlertController {
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
         alert.setShowsHelp(true);
         inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+        final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+        notificationCenter.addObserver(this.id(),
+                Foundation.selector("passwordFieldTextDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                this.inputField);
+        alert.suppressionButton().setAction(Foundation.selector("keychainCheckboxClicked:"));
+    }
+
+    @Action
+    public void keychainCheckboxClicked(final NSButton sender) {
+        credentials.setSaved(sender.state() == NSCell.NSOnState);
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(NSNotification notification) {
+        credentials.setPassword(inputField.stringValue());
     }
 
     @Override
@@ -71,10 +93,7 @@ public class PasswordController extends AlertController {
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            credentials.setPassword(inputField.stringValue());
-            credentials.setSaved(alert.suppressionButton().state() == NSCell.NSOnState);
-        }
+        //
     }
 
     @Override
