@@ -28,11 +28,11 @@ public interface PasswordStore {
     String getPassword(Scheme scheme, int port, String hostname, String user);
 
     /**
-     * @param hostname Hostname
+     * @param serviceName Hostname
      * @param user     Credentials
      * @return Password if found or null otherwise
      */
-    String getPassword(String hostname, String user);
+    String getPassword(String serviceName, String user);
 
     /**
      * @param serviceName Hostname
