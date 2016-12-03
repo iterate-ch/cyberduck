@@ -51,6 +51,7 @@ public class DefaultPathReference implements CacheReference<Path> {
         types.remove(Path.Type.placeholder);
         types.remove(Path.Type.volume);
         types.remove(Path.Type.encrypted);
+        types.remove(Path.Type.decrypted);
         return String.valueOf(types);
     }
 

@@ -288,7 +288,8 @@ public class CryptoVault implements Vault {
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     final Path decrypted = new Path(directory, cleartextFilename,
                             inflated.getName().startsWith(DIR_PREFIX) ?
-                                    EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), file.attributes());
+                                    EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
+                                    EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
