@@ -46,7 +46,7 @@ public class PasswordController extends AlertController {
         super(parent, NSAlert.alert(
                 title,
                 reason,
-                LocaleFactory.localizedString("Unlock", "File"),
+                LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Alert")
         ), NSAlert.NSInformationalAlertStyle);
