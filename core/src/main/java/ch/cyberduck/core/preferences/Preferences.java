@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
@@ -1197,7 +1198,7 @@ public abstract class Preferences {
         defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
-        defaults.put("factory.passwordcallback.class", DisabledLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
         defaults.put("factory.temporaryfiles.class", DefaultTemporaryFileService.class.getName());
