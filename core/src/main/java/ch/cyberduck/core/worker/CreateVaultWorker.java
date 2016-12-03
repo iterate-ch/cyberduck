@@ -15,6 +15,7 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
@@ -22,6 +23,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+
+import java.text.MessageFormat;
+import java.util.Objects;
 
 public class CreateVaultWorker extends Worker<Boolean> {
 
@@ -46,5 +50,38 @@ public class CreateVaultWorker extends Worker<Boolean> {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String getActivity() {
+        return MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
+                directory.getName());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof CreateVaultWorker)) {
+            return false;
+        }
+        final CreateVaultWorker that = (CreateVaultWorker) o;
+        return Objects.equals(directory, that.directory) &&
+                Objects.equals(region, that.region);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(directory, region);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CreateVaultWorker{");
+        sb.append("directory=").append(directory);
+        sb.append(", region='").append(region).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
