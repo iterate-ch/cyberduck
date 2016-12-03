@@ -22,9 +22,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 /**
  * Stores the login credentials
  */
@@ -38,7 +35,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * The login password
      */
-    private char[] password;
+    private String password;
 
     /**
      * Private key identity for SSH public key authentication.
@@ -77,12 +74,7 @@ public class Credentials implements Comparable<Credentials> {
      */
     public Credentials(final String user, final String password) {
         this.user = user;
-        if(null == password) {
-            this.password = null;
-        }
-        else {
-            this.password = password.toCharArray();
-        }
+        this.password = password;
     }
 
     /**
@@ -107,29 +99,22 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(null == password || StringUtils.isBlank(String.valueOf(password))) {
+        if(StringUtils.isEmpty(password)) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
-            return null;
         }
-        return String.valueOf(password);
+        return password;
     }
 
     public void setPassword(final String password) {
-        if(null == password) {
-            if(this.password != null) {
-                Arrays.fill(this.password, ' ');
-            }
-        }
-        else {
-            this.password = password.toCharArray();
-        }
+        this.password = password;
         this.passed = false;
     }
 
     public Credentials withPassword(final String password) {
-        this.setPassword(password);
+        this.password = password;
+        this.passed = false;
         return this;
     }
 
@@ -246,15 +231,13 @@ public class Credentials implements Comparable<Credentials> {
             return false;
         }
         final Credentials that = (Credentials) o;
-        return Objects.equals(user, that.user) &&
-                Arrays.equals(password, that.password) &&
-                Objects.equals(identity, that.identity) &&
-                Objects.equals(certificate, that.certificate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(user, password, identity, certificate);
+        if(password != null ? !password.equals(that.password) : that.password != null) {
+            return false;
+        }
+        if(user != null ? !user.equals(that.user) : that.user != null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -269,6 +252,13 @@ public class Credentials implements Comparable<Credentials> {
             return 1;
         }
         return user.compareTo(o.user);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = user != null ? user.hashCode() : 0;
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        return result;
     }
 
     @Override
