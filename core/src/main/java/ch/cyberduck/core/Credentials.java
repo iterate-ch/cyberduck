@@ -106,12 +106,12 @@ public class Credentials implements Comparable<Credentials> {
      * @return The login secret
      */
     public String getPassword() {
-        if(StringUtils.isEmpty(String.valueOf(passed))) {
+        if(StringUtils.isEmpty(String.valueOf(password))) {
             if(this.isAnonymousLogin()) {
                 return PreferencesFactory.get().getProperty("connection.login.anon.pass");
             }
         }
-        return String.valueOf(passed);
+        return String.valueOf(password);
     }
 
     public void setPassword(final String password) {
