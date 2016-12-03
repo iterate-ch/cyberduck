@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
@@ -227,9 +242,9 @@
             </dict>
         </array>
         <key>CFBundleVersion</key>
-        <string>${REVISION}</string>
+        <string>SNAPSHOT</string>
         <key>CFBundleShortVersionString</key>
-    	<string>${VERSION}</string>
+        <string>SNAPSHOT</string>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
         <key>Runtime</key>
@@ -248,17 +263,7 @@
         <key>NSAppleScriptEnabled</key>
         <false/>
         <key>SUFeedURL</key>
-        <string>${SPARKLEFEED}</string>
-        <key>SUCheckAtStartup</key>
-        <false/>
-        <key>SUEnableSystemProfiling</key>
-        <false/>
-        <key>SUAllowsAutomaticUpdates</key>
-        <false/>
-        <key>SUPublicDSAKeyFile</key>
-        <string>update.pem</string>
-        <key>SUExpectsDSASignature</key>
-        <true/>
+        <string>http://dev/null</string>
         <key>NSServices</key>
         <array>
             <dict>
@@ -400,11 +405,7 @@
                 <string>cyberduck-document.icns</string>
             </dict>
         </array>
-        <key>LSMinimumSystemVersion</key>
-        <string>${MACOSX_DEPLOYMENT_TARGET}</string>
         <key>NSHighResolutionCapable</key>
         <true/>
-        <key>NSHumanReadableCopyright</key>
-       	<string>${COPYRIGHT}</string>
     </dict>
 </plist>
