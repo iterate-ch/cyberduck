@@ -35,9 +35,9 @@ import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class CryptoVaultTest {
 
@@ -113,20 +113,30 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
+        final AtomicBoolean prompt = new AtomicBoolean();
         final CryptoVault vault = new CryptoVault(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("null");
+                if(!prompt.get()) {
+                    assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
+                    credentials.setPassword("null");
+                }
+                if(prompt.get()) {
+                    assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault “/“.", reason);
+                    throw new LoginCanceledException();
+                }
+                prompt.set(true);
             }
         });
         try {
             vault.load(session);
             fail();
         }
-        catch(CryptoAuthenticationException e) {
+        catch(LoginCanceledException e) {
             //
         }
+        assertTrue(prompt.get());
     }
 
     @Test

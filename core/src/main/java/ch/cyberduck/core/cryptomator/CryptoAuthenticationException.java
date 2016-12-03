@@ -17,6 +17,8 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class CryptoAuthenticationException extends AccessDeniedException {
 
     public CryptoAuthenticationException() {
@@ -28,5 +30,10 @@ public class CryptoAuthenticationException extends AccessDeniedException {
 
     public CryptoAuthenticationException(final String detail, final Throwable cause) {
         super(detail, cause);
+    }
+
+    @Override
+    public String getHelp() {
+        return StringUtils.EMPTY;
     }
 }

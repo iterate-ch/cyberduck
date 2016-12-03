@@ -201,7 +201,8 @@ public class CryptoVault implements Vault {
         catch(CryptoAuthenticationException e) {
             credentials.setPassword(null);
             this.unlock(file, master, credentials,
-                    String.format("%s. %s.", e.getMessage(), LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator")));
+                    String.format("%s %s.", e.getDetail(),
+                            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
         finally {
             credentials.setPassword(null);
