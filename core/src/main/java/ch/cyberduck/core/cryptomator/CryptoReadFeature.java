@@ -65,6 +65,6 @@ public class CryptoReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return delegate.offset(file);
+        return false;
     }
 }
