@@ -15,8 +15,10 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallbackFactory;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
@@ -34,7 +36,13 @@ public class VaultController extends FolderController {
     private final BrowserController parent;
 
     public VaultController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
-        super(parent, cache, regions);
+        super(parent, cache, regions, NSAlert.alert(
+                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
+                LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
+                LocaleFactory.localizedString("Create Vault", "Cryptomator"),
+                null,
+                LocaleFactory.localizedString("Cancel", "Folder")
+        ));
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
         this.parent = parent;
     }

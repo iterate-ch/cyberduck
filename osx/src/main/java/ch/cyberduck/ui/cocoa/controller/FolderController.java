@@ -46,13 +46,18 @@ public class FolderController extends FileController {
     private NSView view;
 
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
-        super(parent, cache, NSAlert.alert(
+        this(parent, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
                 LocaleFactory.localizedString("Create", "Folder"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Folder")
         ));
+    }
+
+    public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions,
+                            final NSAlert alert) {
+        super(parent, cache, alert);
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
         this.parent = parent;
         this.regions = regions;
