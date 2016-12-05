@@ -106,7 +106,7 @@
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(187, 15);
             this.label.TabIndex = 1;
-            this.label.Text = "Enter the name for the new folder:";
+            this.label.Text = "Enter the name for the new folder";
             // 
             // inputTextBox
             // 
