@@ -83,7 +83,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         }
         final NSView accessory = this.getAccessoryView();
         if(accessory != null) {
-            final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), 0);
+            final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
             final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
             NSObject next;
             while(null != (next = enumerator.nextObject())) {
