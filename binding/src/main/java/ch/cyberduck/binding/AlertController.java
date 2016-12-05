@@ -83,18 +83,23 @@ public abstract class AlertController extends SheetController implements SheetCa
         }
         final NSView accessory = this.getAccessoryView();
         if(accessory != null) {
-            final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
-            final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
-            NSObject next;
-            while(null != (next = enumerator.nextObject())) {
-                final NSView subview = Rococoa.cast(next, NSView.class);
-                frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue());
-            }
+            final NSRect frame = this.getFrame(accessory);
             accessory.setFrame(frame);
             alert.setAccessoryView(accessory);
             alert.window().makeFirstResponder(accessory);
         }
         alert.layout();
+    }
+
+    protected NSRect getFrame(final NSView accessory) {
+        final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
+        final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
+        NSObject next;
+        while(null != (next = enumerator.nextObject())) {
+            final NSView subview = Rococoa.cast(next, NSView.class);
+            frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue());
+        }
+        return frame;
     }
 
     protected void setTitle(final String title) {
