@@ -60,7 +60,7 @@ public abstract class NSLevelIndicator extends NSControl {
 
     public abstract void setNumberOfTickMarks(int numberOfTickMarks);
 
-    public abstract int lLevelIndicatorStyle();
+    public abstract int levelIndicatorStyle();
 
     public abstract void setLevelIndicatorStyle(final int levelIndicatorStyle);
 }
