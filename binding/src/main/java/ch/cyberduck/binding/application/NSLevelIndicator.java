@@ -36,31 +36,31 @@ public abstract class NSLevelIndicator extends NSControl {
 
     public abstract NSLevelIndicator initWithFrame(NSRect frameRect);
 
-    public abstract int getMinValue();
+    public abstract int minValue();
 
-    public abstract void setMinValue(final int minValue);
+    public abstract void setMinValue(int minValue);
 
-    public abstract int getMaxValue();
+    public abstract int maxValue();
 
     public abstract void setMaxValue(int maxValue);
 
-    public abstract int getWarningValue();
+    public abstract int warningValue();
 
     public abstract void setWarningValue(int warningValue);
 
-    public abstract int getCriticalValue();
+    public abstract int criticalValue();
 
     public abstract void setCriticalValue(int criticalValue);
 
-    public abstract int getTickMarkPosition();
+    public abstract int tickMarkPosition();
 
     public abstract void setTickMarkPosition(int tickMarkPosition);
 
-    public abstract int getNumberOfTickMarks();
+    public abstract int numberOfTickMarks();
 
     public abstract void setNumberOfTickMarks(int numberOfTickMarks);
 
-    public abstract int getLevelIndicatorStyle();
+    public abstract int lLevelIndicatorStyle();
 
     public abstract void setLevelIndicatorStyle(final int levelIndicatorStyle);
 }
