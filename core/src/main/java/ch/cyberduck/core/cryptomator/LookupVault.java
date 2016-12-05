@@ -68,6 +68,16 @@ public class LookupVault implements Vault {
     }
 
     @Override
+    public long toCiphertextSize(final long cleartextFileSize) {
+        return 0L;
+    }
+
+    @Override
+    public long toCleartextSize(final long ciphertextFileSize) {
+        return 0L;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(type == ListService.class) {
