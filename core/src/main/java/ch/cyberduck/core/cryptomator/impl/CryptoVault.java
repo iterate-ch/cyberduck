@@ -290,7 +290,7 @@ public class CryptoVault implements Vault {
                             inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
                                     EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
-                    decrypted.attributes().setSize(this.cleartextSize(file.attributes().getSize()));
+                    decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -312,7 +312,16 @@ public class CryptoVault implements Vault {
         return file;
     }
 
-    long cleartextSize(final long ciphertextFileSize) {
+    @Override
+    public long toCiphertextSize(final long cleartextFileSize) {
+        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
+        final int cleartextChunkSize = cryptor.fileContentCryptor().cleartextChunkSize();
+        final int chunkHeaderSize = cryptor.fileContentCryptor().ciphertextChunkSize() - cleartextChunkSize;
+        return cleartextFileSize + headerSize + (cleartextFileSize > 0 ? chunkHeaderSize : 0) + chunkHeaderSize * ((cleartextFileSize - 1) / cleartextChunkSize);
+    }
+
+    @Override
+    public long toCleartextSize(final long ciphertextFileSize) {
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();

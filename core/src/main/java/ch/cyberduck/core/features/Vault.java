@@ -80,6 +80,10 @@ public interface Vault {
      */
     Path decrypt(Session<?> session, Path directory, Path file) throws BackgroundException;
 
+    long toCiphertextSize(long cleartextFileSize);
+
+    long toCleartextSize(long ciphertextFileSize);
+
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
 
@@ -117,6 +121,16 @@ public interface Vault {
         @Override
         public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
             return file;
+        }
+
+        @Override
+        public long toCiphertextSize(final long cleartextFileSize) {
+            return cleartextFileSize;
+        }
+
+        @Override
+        public long toCleartextSize(final long ciphertextFileSize) {
+            return ciphertextFileSize;
         }
 
         @Override
