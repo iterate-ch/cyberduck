@@ -290,6 +290,7 @@ public class CryptoVault implements Vault {
                             inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
                                     EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
+                    decrypted.attributes().setSize(this.cleartextsize(file.attributes().getSize()));
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -309,6 +310,20 @@ public class CryptoVault implements Vault {
             }
         }
         return file;
+    }
+
+    long cleartextsize(final long ciphertextFileSize) {
+        final int headerSize = cryptor.fileHeaderCryptor().headerSize();
+        final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
+        final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
+        if(ciphertextFileSize < headerSize) {
+            throw new IllegalArgumentException(String.format("Encrypted file size must be at least %d bytes", headerSize));
+        }
+        final long remainder = (ciphertextFileSize - headerSize) % ciphertextChunkSize;
+        if(remainder > 0 && remainder < chunkHeaderSize) {
+            throw new IllegalArgumentException("Invalid file size");
+        }
+        return ciphertextFileSize - (headerSize + (ciphertextFileSize / ciphertextChunkSize) * chunkHeaderSize + (remainder == 0 ? 0 : chunkHeaderSize));
     }
 
     private Path inflate(final Session<?> session, final Path file) throws BackgroundException {
