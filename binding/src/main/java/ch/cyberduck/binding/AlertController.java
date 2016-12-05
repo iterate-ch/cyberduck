@@ -32,6 +32,8 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
 
+    protected static final int SUBVIEWS_VERTICAL_SPACE = 8;
+
     private final WindowController parent;
     /**
      * If using alert and no custom window

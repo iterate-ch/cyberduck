@@ -48,8 +48,6 @@ public class FolderController extends FileController {
     @Outlet
     private final NSView view;
 
-    public final int SUBVIEWS_VERTICAL_SPACE = 8;
-
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         this(parent, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
