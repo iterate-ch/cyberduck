@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cryptomator;
+package ch.cyberduck.core.cryptomator.impl;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -23,7 +23,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -217,5 +216,69 @@ public class CryptoVaultTest {
             }
         });
         vault.create(session, null);
+    }
+
+    @Test
+    public void testCleartextSize() throws Exception {
+        final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Directory.class) {
+                    return (T) new Directory() {
+                        @Override
+                        public void mkdir(final Path file) throws BackgroundException {
+                            assertTrue(file.equals(home) || file.isChild(home));
+                        }
+
+                        @Override
+                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(file.equals(home) || file.isChild(home));
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault vault = new CryptoVault(
+                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("pwd");
+            }
+        });
+        vault.create(session, null);
+
+        // zero ciphertextFileSize
+        {
+            try {
+                vault.cleartextsize(0);
+                fail();
+            }
+            catch(IllegalArgumentException e) {
+            }
+        }
+        // ciphertextFileSize == headerSize
+        {
+            assertEquals(0, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize()));
+        }
+        // ciphertextFileSize == headerSize + 1
+        {
+            try {
+                vault.cleartextsize(vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
+                fail();
+            }
+            catch(IllegalArgumentException e) {
+            }
+        }
+        // ciphertextFileSize == headerSize + chunkHeaderSize + 1
+        {
+            assertEquals(1, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));
+        }
+        // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
+        {
+            assertEquals(32769, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
+        }
     }
 }
