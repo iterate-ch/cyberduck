@@ -290,7 +290,7 @@ public class CryptoVault implements Vault {
                             inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
                                     EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
-                    decrypted.attributes().setSize(this.cleartextsize(file.attributes().getSize()));
+                    decrypted.attributes().setSize(this.cleartextSize(file.attributes().getSize()));
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
@@ -312,7 +312,7 @@ public class CryptoVault implements Vault {
         return file;
     }
 
-    long cleartextsize(final long ciphertextFileSize) {
+    long cleartextSize(final long ciphertextFileSize) {
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();

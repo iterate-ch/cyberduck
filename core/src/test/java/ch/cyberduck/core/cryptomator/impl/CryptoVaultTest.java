@@ -249,36 +249,25 @@ public class CryptoVaultTest {
             }
         });
         vault.create(session, null);
-
         // zero ciphertextFileSize
-        {
-            try {
-                vault.cleartextsize(0);
-                fail();
-            }
-            catch(IllegalArgumentException e) {
-            }
+        try {
+            vault.cleartextSize(0);
+            fail();
+        }
+        catch(IllegalArgumentException e) {
         }
         // ciphertextFileSize == headerSize
-        {
-            assertEquals(0, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize()));
-        }
+        assertEquals(0, vault.cleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()));
         // ciphertextFileSize == headerSize + 1
-        {
-            try {
-                vault.cleartextsize(vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
-                fail();
-            }
-            catch(IllegalArgumentException e) {
-            }
+        try {
+            vault.cleartextSize(vault.cleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
+            fail();
+        }
+        catch(IllegalArgumentException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        {
-            assertEquals(1, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));
-        }
+        assertEquals(1, vault.cleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));
         // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        {
-            assertEquals(32769, vault.cleartextsize(vault.getCryptor().fileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
-        }
+        assertEquals(32769, vault.cleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
     }
 }
