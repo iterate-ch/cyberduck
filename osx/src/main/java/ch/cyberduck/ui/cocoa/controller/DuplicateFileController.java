@@ -41,7 +41,7 @@ public class DuplicateFileController extends FileController {
     public DuplicateFileController(final BrowserController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Duplicate File", "Duplicate"),
-                LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate"),
+                LocaleFactory.localizedString("Enter the name for the new file", "Duplicate"),
                 LocaleFactory.localizedString("Duplicate", "Duplicate"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Duplicate")

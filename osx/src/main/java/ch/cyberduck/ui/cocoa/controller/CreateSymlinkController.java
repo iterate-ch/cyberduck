@@ -44,7 +44,7 @@ public class CreateSymlinkController extends FileController {
         alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
         final Path selected = this.getSelected();
         inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
-        this.setMessage(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}:", "File"),
+        this.setMessage(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"),
                 selected.getName()));
     }
 

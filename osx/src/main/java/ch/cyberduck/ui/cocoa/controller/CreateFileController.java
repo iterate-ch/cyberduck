@@ -35,7 +35,7 @@ public class CreateFileController extends FileController {
     public CreateFileController(final BrowserController parent, final Cache<Path> cache) {
         super(parent, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new file", "File"),
-                LocaleFactory.localizedString("Enter the name for the new file:", "File"),
+                LocaleFactory.localizedString("Enter the name for the new file", "File"),
                 LocaleFactory.localizedString("Create", "File"),
                 EditorFactory.instance().getDefaultEditor() != Application.notfound ? LocaleFactory.localizedString("Edit", "File") : null,
                 LocaleFactory.localizedString("Cancel", "File")
