@@ -15,13 +15,19 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSSecureTextField;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallbackFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -30,23 +36,55 @@ import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
+import org.apache.commons.lang3.StringUtils;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
 public class VaultController extends FolderController {
+
     private final BrowserController parent;
+
+    @Outlet
+    private final NSSecureTextField passwordField;
+
+    @Outlet
+    private final NSSecureTextField confirmField;
+
+    @Outlet
+    private final NSView view;
 
     public VaultController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
-                LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
+                LocaleFactory.localizedString("Enter the name for the new folder", "Folder"),
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Folder")
         ));
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
         this.parent = parent;
+        this.view = NSView.create();
+        this.passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+        this.confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
+    }
+
+    public NSView getAccessoryView() {
+        confirmField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        view.addSubview(confirmField);
+        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        view.addSubview(passwordField);
+        final NSView accessory = super.getAccessoryView();
+        accessory.setFrame(this.getFrame(accessory));
+        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        view.addSubview(accessory);
+        view.setFrame(this.getFrame(view));
+        return view;
     }
 
     @Override
@@ -55,8 +93,14 @@ public class VaultController extends FolderController {
             final String filename = inputField.stringValue();
             final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
                     filename, EnumSet.of(Path.Type.directory));
+            final String passphrase = passwordField.stringValue();
             parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                    new CreateVaultWorker(folder, this.getLocation(), PasswordStoreFactory.get(), PasswordCallbackFactory.get(parent)) {
+                    new CreateVaultWorker(folder, this.getLocation(), PasswordStoreFactory.get(), new PasswordCallback() {
+                        @Override
+                        public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                            credentials.setPassword(passphrase);
+                        }
+                    }) {
                         @Override
                         public void cleanup(final Boolean done) {
                             parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
@@ -64,6 +108,23 @@ public class VaultController extends FolderController {
                     })
             );
         }
+    }
+
+    @Override
+    public boolean validate() {
+        if(super.validate()) {
+            if(StringUtils.isBlank(passwordField.stringValue())) {
+                return false;
+            }
+            if(StringUtils.isBlank(confirmField.stringValue())) {
+                return false;
+            }
+            if(!StringUtils.equals(passwordField.stringValue(), confirmField.stringValue())) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
