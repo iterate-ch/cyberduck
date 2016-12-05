@@ -54,8 +54,7 @@ public class CryptoWriteFeature implements Write {
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
                 header.setFilesize(-1);
                 final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
-                // Unknown encrypted content length
-                final OutputStream proxy = delegate.write(encrypted, status.length(this.ciphtertextSize(file.attributes().getSize())));
+                final OutputStream proxy = delegate.write(encrypted, status.length(this.ciphertextSize(file.attributes().getSize())));
                 proxy.write(headerBuffer.array());
                 // Content
                 return new CryptoOutputStream(proxy, cryptor, header);
@@ -82,7 +81,7 @@ public class CryptoWriteFeature implements Write {
         return delegate.random();
     }
 
-    long ciphtertextSize(final long cleartextFileSize) {
+    long ciphertextSize(final long cleartextFileSize) {
         final Cryptor cryptor = ((CryptoVault) vault).getCryptor();
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int cleartextChunkSize = cryptor.fileContentCryptor().cleartextChunkSize();
