@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
@@ -49,7 +48,7 @@ public class PasswordController extends AlertController {
 
     private final Credentials credentials;
 
-    public PasswordController(final WindowController parent, final Credentials credentials,
+    public PasswordController(final Credentials credentials,
                               final String title, final String reason, final LoginOptions options) {
         super(NSAlert.alert(
                 title,

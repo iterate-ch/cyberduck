@@ -34,7 +34,7 @@ public class PromptPasswordCallback implements PasswordCallback {
 
     @Override
     public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-        final PasswordController controller = new PasswordController(parent, credentials, title, reason, options);
+        final PasswordController controller = new PasswordController(credentials, title, reason, options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
