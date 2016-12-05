@@ -85,10 +85,9 @@ public class VaultController extends FolderController {
         this.confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
-        this.strengthIndicator.setEnabled(true);
+        this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         this.strengthIndicator.setMinValue(Strength.veryweak.getScore());
         this.strengthIndicator.setMaxValue(Strength.verystrong.getScore());
-        this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -97,7 +96,7 @@ public class VaultController extends FolderController {
 
     @Action
     public void passwordFieldTextDidChange(NSNotification notification) {
-        strengthIndicator.setFloatValue(passwordStrengthValidator.getScore(passwordField.stringValue()).getScore());
+        strengthIndicator.setIntValue(passwordStrengthValidator.getScore(passwordField.stringValue()).getScore());
     }
 
     public NSView getAccessoryView() {
