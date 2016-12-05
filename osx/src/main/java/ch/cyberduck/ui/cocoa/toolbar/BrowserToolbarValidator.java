@@ -208,7 +208,9 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted();
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Vault.class) == Vault.DISABLED;
+            return this.isBrowser() && controller.isMounted() && !controller.getSession().getFeature(Vault.class).contains(
+                    controller.getSelectedPath()
+            );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
