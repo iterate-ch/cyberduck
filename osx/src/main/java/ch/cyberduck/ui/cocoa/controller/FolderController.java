@@ -80,9 +80,9 @@ public class FolderController extends FileController {
     public NSView getAccessoryView() {
         if(this.hasLocation()) {
             // Override accessory view with location menu added
-            regionPopup.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+            regionPopup.setFrameOrigin(new NSPoint(0, 0));
             view.addSubview(regionPopup);
-            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
             view.addSubview(inputField);
             return view;
         }
