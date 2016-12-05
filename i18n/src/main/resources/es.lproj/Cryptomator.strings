@@ -4,3 +4,4 @@
 "Provide a passphrase for the Cryptomator Vault “{0}“" = "Provide a passphrase for the Cryptomator Vault “{0}“";
 "Provide your passphrase to unlock the Cryptomator Vault “{0}“" = "Provide your passphrase to unlock the Cryptomator Vault “{0}“";
 "Passphrase" = "Passphrase";
+"Confirm Passphrase" = "Confirm Passphrase";
