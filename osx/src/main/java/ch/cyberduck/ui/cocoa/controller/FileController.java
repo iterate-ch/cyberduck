@@ -44,6 +44,7 @@ public abstract class FileController extends AlertController {
         this.parent = parent;
         this.cache = cache;
         this.inputField = NSTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.inputField.cell().setPlaceholderString(alert.informativeText());
         alert.setShowsHelp(true);
     }
 
