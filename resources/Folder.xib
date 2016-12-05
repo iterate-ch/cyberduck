@@ -16,12 +16,12 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
         <customView misplaced="YES" id="3">
-            <rect key="frame" x="0.0" y="0.0" width="373" height="59"/>
+            <rect key="frame" x="0.0" y="0.0" width="373" height="51"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
             <subviews>
-                <popUpButton verticalHuggingPriority="750" id="4">
-                    <rect key="frame" x="-1" y="-5" width="377" height="26"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <popUpButton verticalHuggingPriority="750" misplaced="YES" id="4">
+                    <rect key="frame" x="-1" y="-3" width="377" height="26"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="5">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="menu"/>
@@ -32,8 +32,8 @@
                     </connections>
                 </popUpButton>
                 <textField verticalHuggingPriority="750" misplaced="YES" id="7">
-                    <rect key="frame" x="0.0" y="37" width="373" height="22"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <rect key="frame" x="0.0" y="29" width="373" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="8">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -44,7 +44,7 @@
                     </connections>
                 </textField>
             </subviews>
-            <point key="canvasLocation" x="116.5" y="149.5"/>
+            <point key="canvasLocation" x="116.5" y="145.5"/>
         </customView>
     </objects>
 </document>
