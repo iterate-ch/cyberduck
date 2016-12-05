@@ -495,8 +495,9 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
-        DownloadController c = new DownloadController(TransferControllerFactory.get());
-        c.beginSheet();
+        final TransferController parent = TransferControllerFactory.get();
+        DownloadController c = new DownloadController(parent);
+        c.beginSheet(parent);
     }
 
     @Action
@@ -745,7 +746,7 @@ public class MainController extends BundleController implements NSApplication.De
         final TransferController t = TransferControllerFactory.get();
         final Host mount = open;
         final Path destination = workdir;
-        final AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
+        final AlertController alert = new AlertController(NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
                                 : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
@@ -790,7 +791,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
-        alert.beginSheet();
+        alert.beginSheet(t);
         return true;
     }
 

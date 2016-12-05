@@ -40,7 +40,7 @@ public abstract class FileController extends AlertController {
     protected final NSTextField inputField;
 
     public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
-        super(parent, alert);
+        super(alert);
         this.parent = parent;
         this.cache = cache;
         this.inputField = NSTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));

@@ -54,11 +54,11 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController sheet = new AlertController(controller, alert) {
+            final AlertController sheet = new AlertController(alert) {
                 @Override
-                public int beginSheet() {
+                public int beginSheet(final WindowController parent) {
                     if(!suppressed) {
-                        return super.beginSheet();
+                        return super.beginSheet(parent);
                     }
                     return option ? SheetCallback.DEFAULT_OPTION : SheetCallback.ALTERNATE_OPTION;
                 }
@@ -71,7 +71,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
                     }
                 }
             };
-            sheet.beginSheet();
+            sheet.beginSheet(controller);
             return !option;
         }
         // Abort

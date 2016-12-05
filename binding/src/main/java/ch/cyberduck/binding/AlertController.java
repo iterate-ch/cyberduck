@@ -34,18 +34,16 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     protected static final int SUBVIEWS_VERTICAL_SPACE = 8;
 
-    private final WindowController parent;
     /**
      * If using alert and no custom window
      */
     protected final NSAlert alert;
 
-    public AlertController(final WindowController parent, final NSAlert alert) {
-        this(parent, alert, NSAlert.NSWarningAlertStyle);
+    public AlertController(final NSAlert alert) {
+        this(alert, NSAlert.NSWarningAlertStyle);
     }
 
-    public AlertController(final WindowController parent, final NSAlert alert, final int style) {
-        this.parent = parent;
+    public AlertController(final NSAlert alert, final int style) {
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
@@ -65,7 +63,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         return null;
     }
 
-    public int beginSheet() {
+    public int beginSheet(final WindowController parent) {
         return new SheetInvoker(this, parent, this).beginSheet();
     }
 

@@ -2536,25 +2536,25 @@ public class BrowserController extends WindowController
     @Action
     public void gotoButtonClicked(final ID sender) {
         final GotoController sheet = new GotoController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
         final CreateFileController sheet = new CreateFileController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
         final CreateSymlinkController sheet = new CreateSymlinkController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
         final DuplicateFileController sheet = new DuplicateFileController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
@@ -2562,7 +2562,7 @@ public class BrowserController extends WindowController
         final Location feature = session.getFeature(Location.class);
         final FolderController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
@@ -2570,7 +2570,7 @@ public class BrowserController extends WindowController
         final Location feature = session.getFeature(Location.class);
         final VaultController sheet = new VaultController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action

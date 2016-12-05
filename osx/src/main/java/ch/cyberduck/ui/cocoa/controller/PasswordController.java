@@ -51,7 +51,7 @@ public class PasswordController extends AlertController {
 
     public PasswordController(final WindowController parent, final Credentials credentials,
                               final String title, final String reason, final LoginOptions options) {
-        super(parent, NSAlert.alert(
+        super(NSAlert.alert(
                 title,
                 reason,
                 LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),

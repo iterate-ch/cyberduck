@@ -71,7 +71,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
-        AlertController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
@@ -88,7 +88,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
                 new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
-        final int option = c.beginSheet();
+        final int option = c.beginSheet(parent);
         if(option == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }
@@ -109,7 +109,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
         alert.setShowsHelp(true);
-        AlertController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -126,7 +126,7 @@ public class AlertHostKeyController extends OpenSSHHostKeyVerifier {
                 new DefaultProviderHelpService().help(Scheme.sftp);
             }
         };
-        final int option = c.beginSheet();
+        final int option = c.beginSheet(parent);
         if(option == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }

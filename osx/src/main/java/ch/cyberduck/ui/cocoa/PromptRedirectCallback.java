@@ -54,7 +54,7 @@ public class PromptRedirectCallback implements RedirectCallback {
         );
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        AlertController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -65,7 +65,7 @@ public class PromptRedirectCallback implements RedirectCallback {
                 }
             }
         };
-        final int option = c.beginSheet();
+        final int option = c.beginSheet(parent);
         return option == SheetCallback.DEFAULT_OPTION;
     }
 }

@@ -50,7 +50,7 @@ public class DownloadController extends AlertController {
     }
 
     public DownloadController(final WindowController parent, final String url) {
-        super(parent, NSAlert.alert(
+        super(NSAlert.alert(
                 LocaleFactory.localizedString("New Download", "Download"),
                 LocaleFactory.localizedString("URL", "Download"),
                 LocaleFactory.localizedString("Download", "Download"),

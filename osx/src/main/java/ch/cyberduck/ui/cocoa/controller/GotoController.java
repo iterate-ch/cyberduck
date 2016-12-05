@@ -52,7 +52,7 @@ public class GotoController extends AlertController {
     private final Cache<Path> cache;
 
     public GotoController(final BrowserController parent, final Cache<Path> cache) {
-        super(parent, NSAlert.alert(
+        super(NSAlert.alert(
                 LocaleFactory.localizedString("Go to folder", "Goto"),
                 LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
                 LocaleFactory.localizedString("Go", "Goto"),

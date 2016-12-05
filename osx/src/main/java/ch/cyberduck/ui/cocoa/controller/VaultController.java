@@ -15,17 +15,24 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSLevelIndicator;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PasswordStrengthValidator;
+import ch.cyberduck.core.PasswordStrengthValidator.Strength;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Location;
@@ -37,6 +44,7 @@ import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
@@ -46,16 +54,20 @@ import java.util.Set;
 
 public class VaultController extends FolderController {
 
+    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+
     private final BrowserController parent;
 
     @Outlet
     private final NSSecureTextField passwordField;
-
     @Outlet
     private final NSSecureTextField confirmField;
-
+    @Outlet
+    private final NSLevelIndicator strengthIndicator;
     @Outlet
     private final NSView view;
+
+    private final PasswordStrengthValidator passwordStrengthValidator = new PasswordStrengthValidator();
 
     public VaultController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         super(parent, cache, regions, NSAlert.alert(
@@ -72,18 +84,33 @@ public class VaultController extends FolderController {
         this.passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
         this.confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
+        this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.strengthIndicator.setEnabled(true);
+        this.strengthIndicator.setMinValue(Strength.veryweak.getScore());
+        this.strengthIndicator.setMaxValue(Strength.verystrong.getScore());
+        this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+        this.notificationCenter.addObserver(this.id(),
+                Foundation.selector("passwordFieldTextDidChange:"),
+                NSControl.NSControlTextDidChangeNotification,
+                this.passwordField);
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(NSNotification notification) {
+        strengthIndicator.setFloatValue(passwordStrengthValidator.getScore(passwordField.stringValue()).getScore());
     }
 
     public NSView getAccessoryView() {
         confirmField.setFrameOrigin(new NSPoint(0, 0));
         view.addSubview(confirmField);
+        strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        view.addSubview(strengthIndicator);
         passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(passwordField);
         final NSView accessory = super.getAccessoryView();
         accessory.setFrame(this.getFrame(accessory));
         accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(accessory);
-        view.setFrame(this.getFrame(view));
         return view;
     }
 
