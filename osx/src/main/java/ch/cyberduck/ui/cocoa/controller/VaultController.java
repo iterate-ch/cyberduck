@@ -75,13 +75,13 @@ public class VaultController extends FolderController {
     }
 
     public NSView getAccessoryView() {
-        confirmField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        confirmField.setFrameOrigin(new NSPoint(0, 0));
         view.addSubview(confirmField);
-        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(passwordField);
         final NSView accessory = super.getAccessoryView();
         accessory.setFrame(this.getFrame(accessory));
-        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+        accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(accessory);
         view.setFrame(this.getFrame(view));
         return view;
