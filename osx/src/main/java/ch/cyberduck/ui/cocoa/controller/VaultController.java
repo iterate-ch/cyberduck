@@ -32,7 +32,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
-import ch.cyberduck.core.PasswordStrengthValidator.Strength;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Location;
@@ -86,8 +85,8 @@ public class VaultController extends FolderController {
         this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
-        this.strengthIndicator.setMinValue(Strength.veryweak.getScore());
-        this.strengthIndicator.setMaxValue(Strength.verystrong.getScore());
+        // this.strengthIndicator.setMinValue(PasswordStrengthValidator.Strength.veryweak.getScore());
+        // this.strengthIndicator.setMaxValue(PasswordStrengthValidator.Strength.verystrong.getScore());
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
