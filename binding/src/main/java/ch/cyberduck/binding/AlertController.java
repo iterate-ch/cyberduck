@@ -27,6 +27,7 @@ import ch.cyberduck.ui.InputValidator;
 
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
@@ -82,8 +83,14 @@ public abstract class AlertController extends SheetController implements SheetCa
         }
         final NSView accessory = this.getAccessoryView();
         if(accessory != null) {
-            accessory.setFrame(new NSRect(alert.window().contentView().frame().size.width.floatValue(),
-                    accessory.frame().size.height.floatValue()));
+            final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), 0);
+            final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
+            NSObject next;
+            while(null != (next = enumerator.nextObject())) {
+                final NSView subview = Rococoa.cast(next, NSView.class);
+                frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue());
+            }
+            accessory.setFrame(frame);
             alert.setAccessoryView(accessory);
             alert.window().makeFirstResponder(accessory);
         }
