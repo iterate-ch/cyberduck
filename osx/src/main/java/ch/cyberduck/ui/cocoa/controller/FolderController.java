@@ -66,7 +66,7 @@ public class FolderController extends FileController {
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
         this.parent = parent;
         this.regions = regions;
-        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 56));
+        this.view = NSView.create();
         this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));
         for(Location.Name region : regions) {
             regionPopup.addItemWithTitle(region.toString());
