@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -59,7 +60,7 @@ public class CryptoVaultTest {
                                     "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
                                     "  \"version\": 5\n" +
                                     "}";
-                            return IOUtils.toInputStream(masterKey);
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
                         @Override
@@ -100,7 +101,7 @@ public class CryptoVaultTest {
                                     "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
                                     "  \"version\": 5\n" +
                                     "}";
-                            return IOUtils.toInputStream(masterKey);
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
                         @Override
@@ -157,7 +158,7 @@ public class CryptoVaultTest {
                                     "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
                                     "  \"version\": 5\n" +
                                     "}";
-                            return IOUtils.toInputStream(masterKey);
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
                         }
 
                         @Override
