@@ -37,8 +37,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static ch.cyberduck.binding.application.NSGraphics.NSWindowBelow;
-
 public class FolderController extends FileController {
 
     private final Set<Location.Name> regions;
@@ -49,6 +47,8 @@ public class FolderController extends FileController {
 
     @Outlet
     private final NSView view;
+
+    public final int SUBVIEWS_VERTICAL_SPACE = 8;
 
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         this(parent, cache, regions, NSAlert.alert(
@@ -80,10 +80,10 @@ public class FolderController extends FileController {
     public NSView getAccessoryView() {
         if(this.hasLocation()) {
             // Override accessory view with location menu added
-            regionPopup.setFrameOrigin(new NSPoint(0, 0));
-            view.addSubview_positioned_relativeTo(regionPopup, NSWindowBelow, inputField);
-            inputField.setFrameOrigin(new NSPoint(0, inputField.frame().size.height.doubleValue() + 8));
-            view.addSubview_positioned_relativeTo(inputField, NSWindowBelow, null);
+            regionPopup.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+            view.addSubview(regionPopup);
+            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + (1 + view.subviews().count().doubleValue()) * SUBVIEWS_VERTICAL_SPACE));
+            view.addSubview(inputField);
             return view;
         }
         return super.getAccessoryView();
