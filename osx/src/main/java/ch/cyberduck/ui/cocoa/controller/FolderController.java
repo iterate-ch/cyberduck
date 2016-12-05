@@ -30,25 +30,30 @@ import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static ch.cyberduck.binding.application.NSGraphics.NSWindowBelow;
+
 public class FolderController extends FileController {
 
     private final Set<Location.Name> regions;
-
     private final BrowserController parent;
 
     @Outlet
-    private NSPopUpButton regionPopup;
+    private final NSPopUpButton regionPopup;
+
     @Outlet
-    private NSView view;
+    private final NSView view;
 
     public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
         this(parent, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
-                LocaleFactory.localizedString("Enter the name for the new folder:", "Folder"),
+                LocaleFactory.localizedString("Enter the name for the new folder", "Folder"),
                 LocaleFactory.localizedString("Create", "Folder"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Folder")
@@ -61,32 +66,24 @@ public class FolderController extends FileController {
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
         this.parent = parent;
         this.regions = regions;
-    }
-
-    public void setRegionPopup(final NSPopUpButton regionPopup) {
-        this.regionPopup = regionPopup;
-    }
-
-    public void setView(final NSView view) {
-        this.view = view;
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Folder";
+        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 56));
+        this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));
+        for(Location.Name region : regions) {
+            regionPopup.addItemWithTitle(region.toString());
+            regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
+            if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
+                regionPopup.selectItem(regionPopup.lastItem());
+            }
+        }
     }
 
     public NSView getAccessoryView() {
         if(this.hasLocation()) {
             // Override accessory view with location menu added
-            this.loadBundle();
-            for(Location.Name region : regions) {
-                regionPopup.addItemWithTitle(region.toString());
-                regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
-                if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
-                    regionPopup.selectItem(regionPopup.lastItem());
-                }
-            }
+            regionPopup.setFrameOrigin(new NSPoint(0, 0));
+            view.addSubview_positioned_relativeTo(regionPopup, NSWindowBelow, inputField);
+            inputField.setFrameOrigin(new NSPoint(0, inputField.frame().size.height.doubleValue() + 8));
+            view.addSubview_positioned_relativeTo(inputField, NSWindowBelow, null);
             return view;
         }
         return super.getAccessoryView();

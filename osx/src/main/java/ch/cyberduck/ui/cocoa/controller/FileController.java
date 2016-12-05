@@ -37,13 +37,13 @@ public abstract class FileController extends AlertController {
     private final Cache<Path> cache;
 
     @Outlet
-    protected final NSTextField inputField
-            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+    protected final NSTextField inputField;
 
     public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
         super(parent, alert);
         this.parent = parent;
         this.cache = cache;
+        this.inputField = NSTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         alert.setShowsHelp(true);
     }
 
@@ -55,6 +55,7 @@ public abstract class FileController extends AlertController {
     @Override
     protected void focus() {
         super.focus();
+        window.makeFirstResponder(inputField);
         inputField.selectText(null);
     }
 
