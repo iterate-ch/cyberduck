@@ -184,7 +184,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     View.RemoteFileUrl =
-                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected.remote)
+                        new DefaultUrlProvider(Transfer.getSource()).toUrl(selected.remote)
                                                                   .find(DescriptiveUrl.Type.provider)
                                                                   .getUrl();
                     TransferStatus status = TransferPromptModel.GetStatus(selected);
