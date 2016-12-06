@@ -22,8 +22,9 @@ import ch.cyberduck.ui.cocoa.datasource.UploadPromptDataSource;
 
 public class UploadPromptController extends TransferPromptController {
 
-    public UploadPromptController(final WindowController parent, final UploadTransfer transfer, final SessionPool session) {
+    public UploadPromptController(final WindowController parent, final UploadTransfer transfer,
+                                  final SessionPool source, final SessionPool destination) {
         super(parent, transfer);
-        browserModel = new UploadPromptDataSource(this, session, transfer, cache);
+        browserModel = new UploadPromptDataSource(this, source, destination, transfer, cache);
     }
 }

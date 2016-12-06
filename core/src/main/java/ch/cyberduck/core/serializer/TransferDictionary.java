@@ -24,7 +24,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -195,7 +194,7 @@ public class TransferDictionary {
                         log.warn("Missing target host in copy transfer");
                         return null;
                     }
-                    transfer = new CopyTransfer(host, SessionFactory.create(target), files);
+                    transfer = new CopyTransfer(host, target, files);
                 }
                 else {
                     log.warn("Invalid file mapping for copy transfer");

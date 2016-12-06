@@ -30,6 +30,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -69,12 +70,10 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(),
-                new NullSession(host), PathCache.empty()),
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty()), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(),
-                new NullSession(host), PathCache.empty()),
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty()), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
@@ -98,9 +97,9 @@ public class TransferBackgroundActionTest {
         test.attributes().setSize(0L);
 
         final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CopyTransfer t = new CopyTransfer(host, new NullSession(host), Collections.singletonMap(test, copy)) {
+        final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.overwrite;
             }
         };
@@ -114,28 +113,33 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
         final Session session = new NullSession(host);
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
-            @Override
-            public void start(final Transfer transfer) {
-                assertEquals(t, transfer);
-                start.set(true);
-            }
+        final Session destination = new NullSession(host);
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller,
+                new SingleSessionPool(
+                        new TestLoginConnectionService(), session, PathCache.empty()),
+                new SingleSessionPool(
+                        new TestLoginConnectionService(), destination, PathCache.empty()),
+                new TransferListener() {
+                    @Override
+                    public void start(final Transfer transfer) {
+                        assertEquals(t, transfer);
+                        start.set(true);
+                    }
 
-            @Override
-            public void stop(final Transfer transfer) {
-                assertEquals(t, transfer);
-                stop.set(true);
-            }
+                    @Override
+                    public void stop(final Transfer transfer) {
+                        assertEquals(t, transfer);
+                        stop.set(true);
+                    }
 
-            @Override
-            public void progress(final TransferProgress status) {
-                //
-            }
-        }, t, new TransferOptions());
+                    @Override
+                    public void progress(final TransferProgress status) {
+                        //
+                    }
+                }, t, new TransferOptions());
         action.prepare();
         action.call();
-        assertTrue(t.getDestination().isConnected());
+        assertTrue(destination.isConnected());
         action.finish();
         assertNull(action.getException());
         assertTrue(start.get());
@@ -147,7 +151,6 @@ public class TransferBackgroundActionTest {
     @Test
     public void testCopyBetweenHosts() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
-
         final Session destination = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
 
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
@@ -155,9 +158,9 @@ public class TransferBackgroundActionTest {
         test.attributes().setSize(0L);
 
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new CopyTransfer(session.getHost(), new NullSession(destination.getHost()), Collections.singletonMap(test, copy)) {
+        final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(), Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.overwrite;
             }
         };
@@ -170,8 +173,11 @@ public class TransferBackgroundActionTest {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final TransferBackgroundAction action = new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty()), new TransferListener() {
+        final TransferBackgroundAction action = new TransferBackgroundAction(controller,
+                new SingleSessionPool(
+                        new TestLoginConnectionService(), session, PathCache.empty()),
+                new SingleSessionPool(
+                        new TestLoginConnectionService(), destination, PathCache.empty()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -224,7 +230,7 @@ public class TransferBackgroundActionTest {
             public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
-        }, new TransferAdapter(),
+        }, SessionPool.DISCONNECTED, new TransferAdapter(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
         assertFalse(alert.get());
         // Connect, prepare and run

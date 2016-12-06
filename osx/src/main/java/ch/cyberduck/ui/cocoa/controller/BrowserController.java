@@ -2835,7 +2835,7 @@ public class BrowserController extends WindowController
      */
     public void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
+        this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
     }
 
     /**
@@ -3627,7 +3627,7 @@ public class BrowserController extends WindowController
 
         public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
                                                  final TransferOptions options, final List<TransferItem> downloads) {
-            super(controller, session, new TransferAdapter() {
+            super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     controller.message(status.getProgress());

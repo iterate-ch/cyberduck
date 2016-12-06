@@ -55,7 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractTransferWorker extends Worker<Boolean> implements TransferWorker {
+public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
 
     private final SleepPreventer sleep = SleepPreventerFactory.get();
@@ -133,9 +133,16 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
         this.table = table;
     }
 
-    protected abstract Session<?> borrow() throws BackgroundException;
+    protected enum Connection {
+        source,
+        destination
+    }
 
-    protected abstract void release(Session session) throws BackgroundException;
+    protected abstract void submit(TransferCallable callable) throws BackgroundException;
+
+    protected abstract Session<?> borrow(Connection type) throws BackgroundException;
+
+    protected abstract void release(Session session, Connection type) throws BackgroundException;
 
     @Override
     public void reset() {
@@ -157,22 +164,18 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
-    }
-
-    @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
+    public Boolean run(final Session<?> source, final Session<?> destination) throws BackgroundException {
         final String lock = sleep.lock();
         try {
             // No need for session. Return prematurely to pool
-            this.release(session);
+            this.release(source, Connection.source);
+            this.release(destination, Connection.destination);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
             final TransferAction action;
             // Determine the filter to match files against
-            action = transfer.action(session, options.resumeRequested, options.reloadRequested, prompt,
+            action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
                     new DisabledListProgressListener() {
                         @Override
                         public void message(final String message) {
@@ -196,7 +199,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             }
             this.await();
             meter.reset();
-            transfer.pre(session, table);
+            transfer.pre(source, destination, table);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
@@ -232,10 +235,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
             this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
-                    final Session<?> session = borrow();
+                    final Session<?> source = borrow(Connection.source);
+                    final Session<?> destination = borrow(Connection.destination);
                     try {
                         // Determine transfer filter implementation from selected overwrite action
-                        final TransferPathFilter filter = transfer.filter(session, action, progress);
+                        final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                         // Only prepare the path it will be actually transferred
                         if(!filter.accept(file, local, parent)) {
                             if(log.isInfoEnabled()) {
@@ -267,7 +271,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                 if(file.isDirectory()) {
                                     final List<TransferItem> children;
                                     // Call recursively for all children
-                                    children = transfer.list(session, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progress));
+                                    children = transfer.list(source, destination, file, local, new ActionListProgressListener(AbstractTransferWorker.this, progress));
                                     // Put into cache for later reference when transferring
                                     cache.put(item, new AttributedList<TransferItem>(children));
                                     // Call recursively
@@ -309,7 +313,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     }
                     finally {
                         // Return session to pool
-                        release(session);
+                        release(source, Connection.source);
+                        release(destination, Connection.destination);
                     }
                 }
 
@@ -347,10 +352,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
-                        final Session<?> session = borrow();
+                        final Session<?> source = borrow(Connection.source);
+                        final Session<?> destination = borrow(Connection.destination);
                         try {
                             try {
-                                transfer.transfer(session,
+                                transfer.transfer(source, destination,
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
                                         options, segment, connectionCallback, progress, stream);
@@ -364,7 +370,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                     cache.remove(item);
                                 }
                                 // Determine transfer filter implementation from selected overwrite action
-                                final TransferPathFilter filter = transfer.filter(session, action, progress);
+                                final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                                 // Post process of file.
                                 filter.complete(
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
@@ -404,7 +410,8 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                         }
                         finally {
                             // Return session to pool
-                            release(session);
+                            release(source, Connection.source);
+                            release(destination, Connection.destination);
                         }
                         return segment;
                     }
@@ -431,10 +438,11 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                             }
                         }
                         if(complete) {
-                            final Session<?> session = borrow();
+                            final Session<?> source = borrow(Connection.source);
+                            final Session<?> destination = borrow(Connection.destination);
                             try {
                                 // Determine transfer filter implementation from selected overwrite action
-                                final TransferPathFilter filter = transfer.filter(session, action, progress);
+                                final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                                 // Concatenate segments with completed status set
                                 filter.complete(
                                         status.getRename().remote != null ? status.getRename().remote : item.remote,
@@ -442,7 +450,9 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
                                         options, status.complete(), progress);
                             }
                             finally {
-                                release(session);
+                                // Return session to pool
+                                release(source, Connection.source);
+                                release(destination, Connection.destination);
                             }
                         }
                         else {
@@ -469,7 +479,7 @@ public abstract class AbstractTransferWorker extends Worker<Boolean> implements 
 
     @Override
     public String getActivity() {
-        return BookmarkNameProvider.toString(transfer.getHost());
+        return BookmarkNameProvider.toString(transfer.getSource());
     }
 
     @Override

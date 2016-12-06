@@ -149,36 +149,36 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+    public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(session, session.getHost().getTimezone(), listener).withCache(cache)
+                        new ComparisonServiceFilter(destination, destination.getHost().getTimezone(), listener).withCache(cache)
                 ).withCache(compareCache),
-                download.filter(session, TransferAction.overwrite, listener),
-                upload.filter(session, TransferAction.overwrite, listener),
+                download.filter(source, destination, TransferAction.overwrite, listener),
+                upload.filter(source, destination, TransferAction.overwrite, listener),
                 action
         ).withCache(cache);
     }
 
     @Override
-    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
         log.warn(String.format("Skip pre transfer bulk operation for %s", files));
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
+    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = new DefaultFindFeature(session).withCache(cache);
+        final Find finder = new DefaultFindFeature(destination).withCache(cache);
         if(finder.find(directory)) {
-            final List<TransferItem> list = download.list(session, directory, local, listener);
+            final List<TransferItem> list = download.list(source, destination, directory, local, listener);
             for(TransferItem item : list) {
                 // Nullify attributes not available for local file to fix default comparison with DefaultPathReference.
                 item.remote.attributes().setVersionId(null);
@@ -187,14 +187,14 @@ public class SyncTransfer extends Transfer {
             children.addAll(list);
         }
         if(local.exists()) {
-            final List<TransferItem> list = upload.list(session, directory, local, listener);
+            final List<TransferItem> list = upload.list(source, destination, directory, local, listener);
             children.addAll(list);
         }
         return new ArrayList<TransferItem>(children);
     }
 
     @Override
-    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+    public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -210,7 +210,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path file, final Local local,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status, final ConnectionCallback callback,
                          final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -218,12 +218,12 @@ public class SyncTransfer extends Transfer {
         }
         final Comparison compare = comparison.compare(file, local);
         if(compare.equals(Comparison.remote)) {
-            download.pre(session, Collections.singletonMap(file, status));
-            download.transfer(session, file, local, options, status, callback, progressListener, streamListener);
+            download.pre(source, destination, Collections.singletonMap(file, status));
+            download.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
         }
         else if(compare.equals(Comparison.local)) {
-            upload.pre(session, Collections.singletonMap(file, status));
-            upload.transfer(session, file, local, options, status, callback, progressListener, streamListener);
+            upload.pre(source, destination, Collections.singletonMap(file, status));
+            upload.transfer(source, destination, file, local, options, status, callback, progressListener, streamListener);
         }
     }
 

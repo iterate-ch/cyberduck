@@ -30,9 +30,10 @@ public class SyncPromptDataSource extends TransferPromptDataSource {
 
     private final SyncTransfer transfer;
 
-    public SyncPromptDataSource(final TransferPromptController c, final SessionPool session,
+    public SyncPromptDataSource(final TransferPromptController c,
+                                final SessionPool source, final SessionPool destination,
                                 final SyncTransfer transfer, final Cache<TransferItem> cache) {
-        super(c, session, transfer, cache);
+        super(c, source, destination, transfer, cache);
         this.transfer = transfer;
     }
 

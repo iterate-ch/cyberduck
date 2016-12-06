@@ -25,10 +25,10 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class SyncPromptController : TransferPromptController
     {
-        public SyncPromptController(WindowController parent, Transfer transfer, SessionPool session)
+        public SyncPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
             : base(parent, transfer, session)
         {
-            TransferPromptModel = new SyncPromptModel(this, session, Transfer);
+            TransferPromptModel = new SyncPromptModel(this, source, destination, Transfer);
         }
 
         protected override string TransferName

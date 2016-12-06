@@ -58,9 +58,9 @@ public class TerminalTransferFactoryTest  {
         transfer.withCache(cache);
         cache.clear();
         cache.put(new Path("/remote", EnumSet.of(Path.Type.directory)), new AttributedList<Path>(Collections.singletonList(new Path("/remote/file.css", EnumSet.of(Path.Type.file)))));
-        assertFalse(transfer.list(null, new Path("/remote", EnumSet.of(Path.Type.directory)), new Local("/tmp"), new DisabledListProgressListener()).isEmpty());
+        assertFalse(transfer.list(null, null, new Path("/remote", EnumSet.of(Path.Type.directory)), new Local("/tmp"), new DisabledListProgressListener()).isEmpty());
         cache.clear();
         cache.put(new Path("/remote", EnumSet.of(Path.Type.directory)), new AttributedList<Path>(Collections.singletonList(new Path("/remote/file.png", EnumSet.of(Path.Type.file)))));
-        assertTrue(transfer.list(null, new Path("/remote", EnumSet.of(Path.Type.directory)), new Local("/tmp"), new DisabledListProgressListener()).isEmpty());
+        assertTrue(transfer.list(null, null, new Path("/remote", EnumSet.of(Path.Type.directory)), new Local("/tmp"), new DisabledListProgressListener()).isEmpty());
     }
 }

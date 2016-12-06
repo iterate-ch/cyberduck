@@ -40,7 +40,7 @@ public class TransferPlistReaderTest {
                 new Local("src/test/resources/c44b5120-8dfe-41af-acd3-da99d87b811f.cyberducktransfer")
         );
         assertTrue(t instanceof UploadTransfer);
-        assertEquals("identity.api.rackspacecloud.com", t.getHost().getHostname());
+        assertEquals("identity.api.rackspacecloud.com", t.getSource().getHostname());
         assertEquals("/test.cyberduck.ch/bookmarks_en.png", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Pictures\\bookmarks_en.png", t.getRoot().local.getAbsolute());
     }
@@ -51,7 +51,7 @@ public class TransferPlistReaderTest {
                 new Local("src/test/resources/fcea1809-1d75-42f1-92b5-99b38bc1d63e.cyberducktransfer")
         );
         assertTrue(t instanceof DownloadTransfer);
-        assertEquals("s3.amazonaws.com", t.getHost().getHostname());
+        assertEquals("s3.amazonaws.com", t.getSource().getHostname());
         assertEquals("/cyberduck/Cyberduck-3.3.zip", t.getRoot().remote.getAbsolute());
         assertEquals("C:\\Users\\Yves Langisch\\Desktop\\Cyberduck-3.3.zip", t.getRoot().local.getAbsolute());
     }

@@ -30,13 +30,14 @@ public class TerminalTransferBackgroundAction extends TransferBackgroundAction {
 
     public TerminalTransferBackgroundAction(final TerminalController controller,
                                             final TerminalPromptReader reader,
-                                            final SessionPool session,
+                                            final SessionPool source,
+                                            final SessionPool destination,
                                             final Transfer transfer,
                                             final TransferOptions options,
                                             final TransferPrompt prompt,
                                             final TransferSpeedometer meter,
                                             final StreamListener listener) {
-        super(new TerminalLoginCallback(reader), controller, session,
+        super(new TerminalLoginCallback(reader), controller, source, destination,
                 new TerminalTransferListener(), controller, transfer, options,
                 prompt, new TerminalTransferErrorCallback(reader), meter, listener);
     }

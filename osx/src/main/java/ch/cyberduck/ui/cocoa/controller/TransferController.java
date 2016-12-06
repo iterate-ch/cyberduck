@@ -30,6 +30,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -45,6 +46,7 @@ import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -649,8 +651,11 @@ public final class TransferController extends WindowController implements NSTool
     public void start(final Transfer transfer, final TransferOptions options, final TransferCallback callback) {
         final ProgressController progress = transferTableModel.getController(transfer);
         final PathCache cache = new PathCache(preferences.getInteger("transfer.cache.size"));
+        final Host source = transfer.getSource();
+        final Host destination = transfer.getDestination();
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                SessionPoolFactory.create(this, cache, transfer.getHost()),
+                null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, source),
+                null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, destination),
                 new TransferAdapter() {
                     @Override
                     public void start(final Transfer transfer) {

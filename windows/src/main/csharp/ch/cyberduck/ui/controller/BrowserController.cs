@@ -1019,8 +1019,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
                                 transfer(
-                                    new CopyTransfer(controller.Session.getHost(),
-                                        SessionFactory.create(Session.getHost()),
+                                    new CopyTransfer(controller.Session.getHost(), Session.getHost(),
                                         Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
                                 break;
                             }
@@ -2303,7 +2302,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
+            this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
@@ -2943,8 +2942,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), SessionFactory.create(Session.getHost()),
-                    Utils.ConvertToJavaMap(selected));
+                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session.getHost(), Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
                 transfer(copy, changed, true);

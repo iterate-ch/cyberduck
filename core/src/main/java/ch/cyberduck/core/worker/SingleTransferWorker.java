@@ -37,42 +37,52 @@ import java.util.Map;
 
 public class SingleTransferWorker extends AbstractTransferWorker {
 
-    private final Session session;
+    private final Session source;
+    private final Session destination;
 
-    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
                                 final ConnectionCallback connectionCallback) {
         super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback);
-        this.session = session;
+        this.source = source;
+        this.destination = destination;
     }
 
-    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
                                 final ConnectionCallback connectionCallback, final Cache<TransferItem> cache) {
         super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, cache);
-        this.session = session;
+        this.source = source;
+        this.destination = destination;
     }
 
-    public SingleTransferWorker(final Session session, final Transfer transfer, final TransferOptions options,
+    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener progress, final StreamListener stream, final ConnectionCallback connectionCallback,
                                 final Cache<TransferItem> cache, final Map<Path, TransferStatus> table) {
         super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, cache, table);
-        this.session = session;
+        this.source = source;
+        this.destination = destination;
     }
 
     @Override
-    public Session borrow() {
-        return session;
+    public Session borrow(final Connection type) {
+        switch(type) {
+            case source:
+                return source;
+            case destination:
+                return destination;
+        }
+        return null;
     }
 
     @Override
-    protected void release(final Session session) throws BackgroundException {
+    protected void release(final Session session, final Connection type) throws BackgroundException {
         //
     }
 
@@ -83,7 +93,8 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SingleTransferWorker{");
-        sb.append("session=").append(session);
+        sb.append("source=").append(source);
+        sb.append(", destination=").append(destination);
         sb.append('}');
         return sb.toString();
     }
