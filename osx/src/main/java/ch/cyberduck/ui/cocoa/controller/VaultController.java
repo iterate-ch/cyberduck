@@ -78,15 +78,15 @@ public class VaultController extends FolderController {
         ));
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
         this.parent = parent;
-        this.view = NSView.create();
+        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
         this.passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
         this.confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
-        this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 18));
         this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
-        // this.strengthIndicator.setMinValue(PasswordStrengthValidator.Strength.veryweak.getScore());
-        // this.strengthIndicator.setMaxValue(PasswordStrengthValidator.Strength.verystrong.getScore());
+//        this.strengthIndicator.setMinValue(PasswordStrengthValidator.Strength.veryweak.getScore());
+//        this.strengthIndicator.setMaxValue(PasswordStrengthValidator.Strength.verystrong.getScore());
         this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
@@ -106,7 +106,7 @@ public class VaultController extends FolderController {
         passwordField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(passwordField);
         final NSView accessory = super.getAccessoryView();
-        accessory.setFrame(this.getFrame(accessory));
+        accessory.setFrameSize(this.getFrame(accessory).size);
         accessory.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(accessory);
         return view;
