@@ -2579,29 +2579,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             CallbackDelegate callbackDelegate = delegate
             {
-                // The browser has no session, we are allowed to proceed
-                // Initialize the browser with the new session attaching all listeners
-                SessionPool session = Init(host);
-                background(new MountAction(this, session, host, _limitListener));
+                background(new MountAction(this, SessionPoolFactory.create(this, _cache, host), host, _limitListener));
             };
             Unmount(callbackDelegate);
-        }
-
-        /// <summary>
-        /// Initializes a session for the passed host. Setting up the listeners and adding any callback
-        /// controllers needed for login, trust management and hostkey verification.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns>A session object bound to this browser controller</returns>
-        private SessionPool Init(Host host)
-        {
-            Session = SessionPoolFactory.create(this, _cache, host);
-            SetWorkdir(null);
-            View.SelectedEncoding = host.getEncoding();
-            View.ClearTranscript();
-            _navigation.clear();
-            _pasteboard = PathPasteboardFactory.getPasteboard(host);
-            return Session;
         }
 
         // some simple caching as _session.isConnected() throws a ConnectionCanceledException if not connected
@@ -2706,8 +2686,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
+                SetWorkdir(workdir);
                 _cache.clear();
+                _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
+                View.ClearTranscript();
                 disconnected();
             };
 
@@ -3196,9 +3179,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly BrowserController _controller;
             private readonly Host _host;
+            private readonly SessionPool _pool;
 
-            public MountAction(BrowserController controller, SessionPool session, Host host, ListProgressListener listener)
-                : base(controller, controller.Session, new InnerMountWorker(controller, session, listener))
+            public MountAction(BrowserController controller, SessionPool pool, Host host, ListProgressListener listener)
+                : base(controller, pool, new InnerMountWorker(controller, pool, listener))
             {
                 _controller = controller;
                 _host = host;
@@ -3233,10 +3217,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
+                        _controller.Session = pool;
+                        _pasteboard = PathPasteboardFactory.getPasteboard(_host);
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
                         _controller.View.RefreshBookmark(_session.getHost());
                         _controller.ToggleView(BrowserView.File);
+                        _controller.View.SelectedEncoding = host.getEncoding();
                         _controller.View.SecureConnection = _session.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _session.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
