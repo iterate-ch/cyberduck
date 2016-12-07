@@ -41,7 +41,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -383,9 +382,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         files.put(file, new Path(destination, file.getName(), file.getType()));
                     }
                     final Host target = controller.getSession().getHost();
-                    controller.transfer(new CopyTransfer(pasteboard.getBookmark(),
-                                    SessionFactory.create(target),
-                                    files),
+                    controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
                             new ArrayList<Path>(files.values()), false);
                 }
                 else {

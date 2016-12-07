@@ -20,7 +20,6 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 
 public interface SessionPool {
@@ -72,7 +71,7 @@ public interface SessionPool {
     final class DisconnectedSessionPool implements SessionPool {
         @Override
         public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-            throw new ConnectionCanceledException();
+            return null;
         }
 
         @Override

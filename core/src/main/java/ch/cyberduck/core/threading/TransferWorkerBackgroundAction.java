@@ -1,8 +1,8 @@
 package ch.cyberduck.core.threading;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,8 +13,6 @@ package ch.cyberduck.core.threading;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Controller;
@@ -24,30 +22,32 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.worker.TransferWorker;
 
 import org.apache.log4j.Logger;
 
-public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
+public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
-    protected final Worker<T> worker;
-
+    protected final SessionPool destination;
+    protected final TransferWorker<T> worker;
     protected T result;
 
-    public WorkerBackgroundAction(final Controller controller,
-                                  final SessionPool session,
-                                  final Worker<T> worker) {
-        super(controller, session);
+    public TransferWorkerBackgroundAction(final Controller controller,
+                                          final SessionPool source, final SessionPool destination,
+                                          final TransferWorker<T> worker) {
+        super(controller, source);
+        this.destination = destination;
         this.worker = worker;
     }
 
-    public WorkerBackgroundAction(final Controller controller,
-                                  final SessionPool session,
-                                  final Worker<T> worker,
-                                  final ProgressListener progress,
-                                  final TranscriptListener transcript) {
-        super(controller, session, progress, transcript);
+    public TransferWorkerBackgroundAction(final Controller controller,
+                                          final SessionPool source, final SessionPool destination,
+                                          final TransferWorker<T> worker,
+                                          final ProgressListener progress,
+                                          final TranscriptListener transcript) {
+        super(controller, source, progress, transcript);
+        this.destination = destination;
         this.worker = worker;
     }
 
@@ -58,19 +58,28 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     }
 
     @Override
-    public T run(final Session<?> session) throws BackgroundException {
+    public T run(final Session<?> source) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
         }
+        final Session<?> target = destination.borrow(this);
         try {
-            result = worker.run(session);
+            result = worker.run(source, target);
         }
         catch(ConnectionCanceledException e) {
             worker.cancel();
             throw e;
         }
+        catch(BackgroundException e) {
+            destination.release(source, e);
+            throw e;
+        }
+        finally {
+            destination.release(source, null);
+        }
         return result;
     }
+
 
     @Override
     public void cleanup() {

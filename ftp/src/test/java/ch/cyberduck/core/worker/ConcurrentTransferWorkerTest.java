@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -133,7 +134,7 @@ public class ConcurrentTransferWorkerTest {
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool,
+                pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {

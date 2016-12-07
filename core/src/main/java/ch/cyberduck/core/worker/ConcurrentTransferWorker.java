@@ -41,11 +41,13 @@ import org.apache.log4j.Logger;
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
 
-    private final SessionPool pool;
+    private final SessionPool source;
+    private final SessionPool destination;
 
     private final ThreadPool<TransferStatus> completion;
 
-    public ConcurrentTransferWorker(final SessionPool pool,
+    public ConcurrentTransferWorker(final SessionPool source,
+                                    final SessionPool destination,
                                     final Transfer transfer,
                                     final TransferOptions options,
                                     final TransferSpeedometer meter,
@@ -55,34 +57,63 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener) {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
-        if(pool instanceof DefaultSessionPool) {
-            this.pool = ((DefaultSessionPool) pool).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
+        if(source instanceof DefaultSessionPool) {
+            this.source = ((DefaultSessionPool) source).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
         }
         else {
-            this.pool = pool;
+            this.source = source;
+        }
+        if(destination instanceof DefaultSessionPool) {
+            this.destination = ((DefaultSessionPool) destination).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
+        }
+        else {
+            this.destination = destination;
         }
         this.completion = new DefaultThreadPool<TransferStatus>(
                 PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
     }
 
     @Override
-    protected Session<?> borrow() throws BackgroundException {
-        return pool.borrow(new BackgroundActionState() {
-            @Override
-            public boolean isCanceled() {
-                return ConcurrentTransferWorker.this.isCanceled();
-            }
+    protected Session<?> borrow(final Connection type) throws BackgroundException {
+        switch(type) {
+            case source:
+                return source.borrow(new BackgroundActionState() {
+                    @Override
+                    public boolean isCanceled() {
+                        return ConcurrentTransferWorker.this.isCanceled();
+                    }
 
-            @Override
-            public boolean isRunning() {
-                return true;
-            }
-        });
+                    @Override
+                    public boolean isRunning() {
+                        return true;
+                    }
+                });
+            case destination:
+                return destination.borrow(new BackgroundActionState() {
+                    @Override
+                    public boolean isCanceled() {
+                        return ConcurrentTransferWorker.this.isCanceled();
+                    }
+
+                    @Override
+                    public boolean isRunning() {
+                        return true;
+                    }
+                });
+        }
+        return null;
     }
 
     @Override
-    protected void release(final Session session) {
-        pool.release(session, null);
+    protected void release(final Session session, final Connection type) {
+        switch(type) {
+            case source:
+                source.release(session, null);
+                break;
+            case destination:
+                destination.release(session, null);
+                break;
+        }
     }
 
     @Override
@@ -102,7 +133,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     public String toString() {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
         sb.append("completion=").append(completion);
-        sb.append(", pool=").append(pool);
+        sb.append(", pool=").append(source);
         sb.append('}');
         return sb.toString();
     }

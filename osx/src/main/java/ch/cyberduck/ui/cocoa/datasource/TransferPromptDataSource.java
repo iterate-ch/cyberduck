@@ -30,7 +30,7 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.threading.TransferWorkerBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -52,15 +52,13 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
 
     private final TransferPromptController controller;
 
-    private final SessionPool session;
-
+    private final SessionPool source;
+    private final SessionPool destination;
     private final Transfer transfer;
-
     /**
      * Selected transfer action in prompt
      */
     private TransferAction action;
-
     private final Cache<TransferItem> cache;
 
     /**
@@ -86,10 +84,12 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
      * @param c        The parent window to attach the prompt
      * @param transfer Transfer
      */
-    public TransferPromptDataSource(final TransferPromptController c, final SessionPool session,
+    public TransferPromptDataSource(final TransferPromptController c,
+                                    final SessionPool source, final SessionPool destination,
                                     final Transfer transfer, final Cache<TransferItem> cache) {
         this.controller = c;
-        this.session = session;
+        this.source = source;
+        this.destination = destination;
         this.transfer = transfer;
         this.cache = cache;
         this.action = TransferAction.forName(PreferencesFactory.get().getProperty(
@@ -140,28 +140,28 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory)) {
-            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, session,
+            controller.background(new TransferWorkerBackgroundAction<List<TransferItem>>(controller, source, destination,
                     new TransferPromptListWorker(transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
                             cache.put(directory, new AttributedList<TransferItem>(list));
                             filter();
                         }
-                    }
+                    }, controller, controller
             ));
         }
         return this.get(directory);
     }
 
     private void filter() {
-        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, session,
+        controller.background(new TransferWorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, source, destination,
                 new TransferPromptFilterWorker(transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {
                                 status = accepted;
                                 controller.reload();
                             }
-                        }
+                }, controller, controller
                 )
         );
     }

@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
@@ -671,9 +672,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
                 TransferCallback callback, PathCache cache)
-                : base(
-                    controller,
-                    SessionPoolFactory.create(controller, cache, transfer.getHost()),
+                : base(controller,
+                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getSource()),
+                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getDestination()),
                     controller.GetController(transfer),
                     controller.GetController(transfer), 
                     transfer, options)

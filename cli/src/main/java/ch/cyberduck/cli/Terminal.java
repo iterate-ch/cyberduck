@@ -209,7 +209,8 @@ public class Terminal {
             return Exit.failure;
         }
         this.configure(input);
-        SessionPool pool = null;
+        SessionPool source = SessionPool.DISCONNECTED;
+        SessionPool destination = SessionPool.DISCONNECTED;
         try {
             final TerminalAction action = TerminalActionFinder.get(input);
             if(null == action) {
@@ -219,7 +220,7 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
                     new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-            final Session<?> session = SessionFactory.create(host,
+            source = new SingleSessionPool(connect, SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
@@ -229,7 +230,7 @@ public class Terminal {
             pool = new SingleSessionPool(connect, session, cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
-                final Home home = pool.getFeature(Home.class);
+                final Home home = source.getFeature(Home.class);
                 remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
@@ -237,36 +238,37 @@ public class Terminal {
             }
             switch(action) {
                 case edit:
-                    return this.edit(pool, remote);
+                    return this.edit(source, remote);
                 case list:
                 case longlist:
-                    return this.list(pool, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
+                    return this.list(source, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
                 case mount:
-                    return this.mount(pool);
+                    return this.mount(source);
                 case delete:
-                    return this.delete(pool, remote);
+                    return this.delete(source, remote);
             }
-            final Transfer transfer;
             switch(action) {
                 case download:
                 case upload:
                 case synchronize:
-                    transfer = new TerminalTransferFactory().create(input, host, remote,
-                            new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote)));
-                    break;
+                    return this.transfer(new TerminalTransferFactory().create(input, host, remote,
+                            new ArrayList<TransferItem>(new SingleTransferItemFinder().find(input, action, remote))),
+                            source, SessionPool.DISCONNECTED);
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
-                    transfer = new CopyTransfer(host, session,
-                            Collections.singletonMap(
-                                    remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1])
-                            )
+                    return this.transfer(new CopyTransfer(
+                                    host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
+                            source, destination = new SingleSessionPool(connect, SessionFactory.create(target,
+                                    new CertificateStoreX509TrustManager(
+                                            new DefaultTrustManagerHostnameCallback(target),
+                                            new TerminalCertificateStore(reader)
+                                    ),
+                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))), cache)
                     );
-                    break;
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                             String.format("Unknown transfer type %s", action.name()));
             }
-            return this.transfer(transfer, pool);
         }
         catch(ConnectionCanceledException e) {
             log.warn("Connection canceled", e);
@@ -279,7 +281,8 @@ public class Terminal {
             console.printf("%n%s", b.toString());
         }
         finally {
-            this.disconnect(pool);
+            this.disconnect(source);
+            this.disconnect(destination);
         }
         return Exit.failure;
     }
@@ -314,11 +317,11 @@ public class Terminal {
         }
     }
 
-    protected Exit transfer(final Transfer transfer, final SessionPool session) {
+    protected Exit transfer(final Transfer transfer, final SessionPool source, final SessionPool destination) {
         // Transfer
         final TransferSpeedometer meter = new TransferSpeedometer(transfer);
         final TransferPrompt prompt;
-        final Host host = transfer.getHost();
+        final Host host = transfer.getSource();
         if(input.hasOption(TerminalOptionsBuilder.Params.parallel.name())) {
             host.setTransfer(Host.TransferType.concurrent);
         }
@@ -345,7 +348,7 @@ public class Terminal {
             prompt = new TerminalTransferPrompt(transfer.getType());
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
-                session,
+                source, destination,
                 transfer, new TransferOptions().reload(true), prompt, meter,
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter)
@@ -358,9 +361,8 @@ public class Terminal {
     }
 
     protected Exit mount(final SessionPool session) {
-        final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
-                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)
-        ));
+        final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
+                controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -393,9 +395,7 @@ public class Terminal {
         else {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
-        final SessionBackgroundAction action = new TerminalBackgroundAction<List<Path>>(
-                controller,
-                session, worker);
+        final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -429,7 +429,7 @@ public class Terminal {
                 lock.countDown();
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
-        final SessionBackgroundAction action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
+        final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
         this.execute(action);
         if(action.hasFailed()) {
             return Exit.failure;
@@ -457,10 +457,7 @@ public class Terminal {
             }
             return true;
         }
-        catch(InterruptedException e) {
-            return false;
-        }
-        catch(ExecutionException e) {
+        catch(InterruptedException | ExecutionException e) {
             return false;
         }
     }

@@ -27,8 +27,9 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
     private final Transfer transfer;
     private final TransferCallback callback;
 
-    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool session, final Transfer transfer, final TransferCallback callback) {
-        super(controller, session, new TransferAdapter() {
+    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
+                                           final Transfer transfer, final TransferCallback callback) {
+        super(controller, pool, pool, new TransferAdapter() {
             @Override
             public void progress(final TransferProgress status) {
                 controller.message(status.getProgress());

@@ -101,7 +101,7 @@ public class TransferTableDataSource extends ListDataSource {
                             return true;
                         }
                     }
-                    if(transfer.getHost().getHostname().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
+                    if(transfer.getSource().getHostname().toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
                         return true;
                     }
                     return false;

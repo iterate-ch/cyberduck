@@ -323,7 +323,7 @@ public abstract class TransferPromptController extends SheetController implement
                         }
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                            new DefaultUrlProvider(transfer.getHost()).toUrl(item.remote).find(DescriptiveUrl.Type.provider).getUrl(),
+                            new DefaultUrlProvider(transfer.getSource()).toUrl(item.remote).find(DescriptiveUrl.Type.provider).getUrl(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
                     final TransferStatus status = browserModel.getStatus(item);
                     if(status.getRemote().getSize() == -1) {

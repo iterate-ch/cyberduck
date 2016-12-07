@@ -25,8 +25,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class DownloadPromptModel : TransferPromptModel
     {
-        public DownloadPromptModel(TransferPromptController controller, SessionPool session, Transfer transfer)
-            : base(controller, session, transfer)
+        public DownloadPromptModel(TransferPromptController controller, SessionPool source, SessionPool destination, Transfer transfer)
+            : base(controller, source, destination, transfer)
         {
             ;
         }

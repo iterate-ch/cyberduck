@@ -43,13 +43,14 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
     private final ProgressListener progressListener;
 
     public TransferCollectionBackgroundAction(final Controller controller,
-                                              final SessionPool pool,
+                                              final SessionPool source,
+                                              final SessionPool destination,
                                               final TransferListener transferListener,
                                               final ProgressListener progressListener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, pool, transferListener, progressListener, transfer, options);
-        this.pool = pool;
+        super(controller, source, destination, transferListener, progressListener, transfer, options);
+        this.pool = source;
         this.transfer = transfer;
         this.progressListener = progressListener;
     }

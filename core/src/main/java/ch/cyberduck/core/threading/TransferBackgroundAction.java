@@ -39,7 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
+public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boolean> {
 
     private final Transfer transfer;
 
@@ -61,41 +61,45 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
     private final TransferPrompt prompt;
 
     public TransferBackgroundAction(final Controller controller,
-                                    final SessionPool pool,
+                                    final SessionPool source,
+                                    final SessionPool destination,
                                     final TransferListener listener,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, pool, listener, controller, transfer, options,
-                TransferPromptControllerFactory.get(controller, transfer, pool),
+        this(controller, source, destination, listener, controller, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer, source, destination),
                 TransferErrorCallbackControllerFactory.get(controller),
                 new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final SessionPool pool,
+                                    final SessionPool source,
+                                    final SessionPool destination,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options) {
-        this(controller, pool, listener, progress, transfer, options,
-                TransferPromptControllerFactory.get(controller, transfer, pool),
+        this(controller, source, destination, listener, progress, transfer, options,
+                TransferPromptControllerFactory.get(controller, transfer, source, destination),
                 TransferErrorCallbackControllerFactory.get(controller));
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final SessionPool pool,
+                                    final SessionPool source,
+                                    final SessionPool destination,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
-        this(controller, pool, listener, progress, transfer, options, prompt, error,
+        this(controller, source, destination, listener, progress, transfer, options, prompt, error,
                 new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
-                                    final SessionPool pool,
+                                    final SessionPool source,
+                                    final SessionPool destination,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -105,12 +109,13 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
         this(LoginCallbackFactory.get(controller),
-                controller, pool, listener, progress, transfer, options, prompt, error, meter, stream);
+                controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
                                     final Controller controller,
-                                    final SessionPool pool,
+                                    final SessionPool source,
+                                    final SessionPool destination,
                                     final TransferListener listener,
                                     final ProgressListener progress,
                                     final Transfer transfer,
@@ -119,7 +124,7 @@ public class TransferBackgroundAction extends WorkerBackgroundAction<Boolean> {
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, pool, new ConcurrentTransferWorker(pool, transfer, options, meter, prompt, error, callback, progress, stream));
+        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, progress, stream));
         this.options = options;
         this.meter = meter;
         this.transfer = transfer;

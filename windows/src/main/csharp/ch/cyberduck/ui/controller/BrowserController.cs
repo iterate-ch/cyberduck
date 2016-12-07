@@ -1019,8 +1019,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
                                 transfer(
-                                    new CopyTransfer(controller.Session.getHost(),
-                                        SessionFactory.create(Session.getHost()),
+                                    new CopyTransfer(controller.Session.getHost(), Session.getHost(),
                                         Utils.ConvertToJavaMap(files)), new List<Path>(files.Values), false);
                                 break;
                             }
@@ -2303,7 +2302,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
+            this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
@@ -2580,29 +2579,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             CallbackDelegate callbackDelegate = delegate
             {
-                // The browser has no session, we are allowed to proceed
-                // Initialize the browser with the new session attaching all listeners
-                SessionPool session = Init(host);
-                background(new MountAction(this, session, host, _limitListener));
+                background(new MountAction(this, SessionPoolFactory.create(this, _cache, host), host, _limitListener));
             };
             Unmount(callbackDelegate);
-        }
-
-        /// <summary>
-        /// Initializes a session for the passed host. Setting up the listeners and adding any callback
-        /// controllers needed for login, trust management and hostkey verification.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <returns>A session object bound to this browser controller</returns>
-        private SessionPool Init(Host host)
-        {
-            Session = SessionPoolFactory.create(this, _cache, host);
-            SetWorkdir(null);
-            View.SelectedEncoding = host.getEncoding();
-            View.ClearTranscript();
-            _navigation.clear();
-            _pasteboard = PathPasteboardFactory.getPasteboard(host);
-            return Session;
         }
 
         // some simple caching as _session.isConnected() throws a ConnectionCanceledException if not connected
@@ -2707,8 +2686,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
+                SetWorkdir(null);
                 _cache.clear();
+                _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
+                View.ClearTranscript();
                 disconnected();
             };
 
@@ -2943,8 +2925,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (CheckOverwrite(selected.Values))
             {
-                CopyTransfer copy = new CopyTransfer(Session.getHost(), SessionFactory.create(Session.getHost()),
-                    Utils.ConvertToJavaMap(selected));
+                CopyTransfer copy = new CopyTransfer(Session.getHost(), Session.getHost(), Utils.ConvertToJavaMap(selected));
                 List<Path> changed = new List<Path>();
                 changed.AddRange(selected.Values);
                 transfer(copy, changed, true);
@@ -3198,9 +3179,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly BrowserController _controller;
             private readonly Host _host;
+            private readonly SessionPool _pool;
 
-            public MountAction(BrowserController controller, SessionPool session, Host host, ListProgressListener listener)
-                : base(controller, controller.Session, new InnerMountWorker(controller, session, listener))
+            public MountAction(BrowserController controller, SessionPool pool, Host host, ListProgressListener listener)
+                : base(controller, pool, new InnerMountWorker(controller, pool, listener))
             {
                 _controller = controller;
                 _host = host;
@@ -3235,10 +3217,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
+                        _controller.Session = _session;
+                        _controller._pasteboard = PathPasteboardFactory.getPasteboard(_session.getHost());
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
                         _controller.View.RefreshBookmark(_session.getHost());
                         _controller.ToggleView(BrowserView.File);
+                        _controller.View.SelectedEncoding = _session.getHost().getEncoding();
                         _controller.View.SecureConnection = _session.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _session.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
