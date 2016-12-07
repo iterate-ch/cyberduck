@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+6.0 [https://trac.cyberduck.io/milestone/6.0]
+- [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
+- [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
+- [Feature] Decrypt downloads from vault (Cyptomator)
+
 5.3 [https://trac.cyberduck.io/milestone/5.3]
 - [Feature] Use multiple connections in browser for parallel background task executions
 - [Feature] Choose certificate in bookmark panel for mutual authentication with TLS (WebDAV)
