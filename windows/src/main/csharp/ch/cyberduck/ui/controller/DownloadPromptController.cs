@@ -24,10 +24,10 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class DownloadPromptController : TransferPromptController
     {
-        public DownloadPromptController(WindowController parent, Transfer transfer, SessionPool session)
-            : base(parent, transfer, session)
+        public DownloadPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
+            : base(parent, transfer, source, destination)
         {
-            TransferPromptModel = new DownloadPromptModel(this, session, Transfer);
+            TransferPromptModel = new DownloadPromptModel(this, source, destination, Transfer);
         }
 
         protected override string TransferName

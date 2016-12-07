@@ -21,7 +21,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -84,9 +83,7 @@ public class DuplicateFileController extends FileController {
             @Override
             public void run() {
                 final Host target = parent.getSession().getHost();
-                parent.transfer(new CopyTransfer(parent.getSession().getHost(),
-                                SessionFactory.create(target), selected),
-                        new ArrayList<Path>(selected.values()), true);
+                parent.transfer(new CopyTransfer(target, target, selected), new ArrayList<Path>(selected.values()), true);
             }
         });
     }

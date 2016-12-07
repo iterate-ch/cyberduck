@@ -30,9 +30,10 @@ public class SyncPromptController extends TransferPromptController {
     private final TableColumnFactory tableColumnsFactory
             = new TableColumnFactory();
 
-    public SyncPromptController(final WindowController parent, final SyncTransfer transfer, final SessionPool session) {
+    public SyncPromptController(final WindowController parent, final SyncTransfer transfer,
+                                final SessionPool source, final SessionPool destination) {
         super(parent, transfer);
-        browserModel = new SyncPromptDataSource(this, session, transfer, cache);
+        browserModel = new SyncPromptDataSource(this, source, destination, transfer, cache);
     }
 
     @Override

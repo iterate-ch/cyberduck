@@ -2835,7 +2835,7 @@ public class BrowserController extends WindowController
      */
     public void transfer(final Transfer transfer, final List<Path> selected) {
         // Determine from current browser session if new connection should be opened for transfers
-        this.transfer(transfer, selected, transfer.getHost().getTransferType().equals(Host.TransferType.browser));
+        this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
     }
 
     /**
@@ -3224,39 +3224,22 @@ public class BrowserController extends WindowController
     }
 
     /**
-     * Initializes a session for the passed host. Setting up the listeners and adding any callback
-     * controllers needed for login, trust management and hostkey verification.
-     *
-     * @param bookmark Bookmark
-     * @return A session object bound to this browser controller
-     */
-    private SessionPool init(final Host bookmark) {
-        session = SessionPoolFactory.create(this, cache, bookmark);
-        transcript.clear();
-        navigation.clear();
-        pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
-        this.setWorkdir(null);
-        this.setEncoding(bookmark.getEncoding());
-        return session;
-    }
-
-    /**
      * Open connection in browser
      *
-     * @param host Bookmark
+     * @param bookmark Bookmark
      */
-    public void mount(final Host host) {
+    public void mount(final Host bookmark) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Mount session for %s", host));
+            log.debug(String.format("Mount session for %s", bookmark));
         }
         this.unmount(new Runnable() {
             @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
-                final SessionPool session = init(host);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, session,
-                        new MountWorker(host, cache, listener) {
+                final SessionPool pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark);
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
+                        new MountWorker(bookmark, cache, listener) {
                             @Override
                             public void cleanup(final Path workdir) {
                                 super.cleanup(workdir);
@@ -3269,20 +3252,24 @@ public class BrowserController extends WindowController
                                     });
                                 }
                                 else {
+                                    session = pool;
+                                    pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();
+                                    // Update character encoding in browser
+                                    setEncoding(bookmark.getEncoding());
                                     // Set the working directory
                                     setWorkdir(workdir);
                                     // Close bookmarks
                                     selectBrowser(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view")));
                                     // Set the window title
-                                    window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(host).getAbsolute());
+                                    window.setRepresentedFilename(HistoryCollection.defaultCollection().getFile(bookmark).getAbsolute());
                                     if(preferences.getBoolean("browser.disconnect.confirm")) {
                                         window.setDocumentEdited(true);
                                     }
-                                    securityLabel.setImage(host.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
+                                    securityLabel.setImage(bookmark.getProtocol().isSecure() ? IconCacheFactory.<NSImage>get().iconNamed("NSLockLockedTemplate")
                                             : IconCacheFactory.<NSImage>get().iconNamed("NSLockUnlockedTemplate"));
-                                    securityLabel.setEnabled(session.getFeature(X509TrustManager.class) != null);
+                                    securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
                                 }
                             }
                         }
@@ -3290,7 +3277,7 @@ public class BrowserController extends WindowController
                     @Override
                     public void init() {
                         super.init();
-                        window.setTitle(BookmarkNameProvider.toString(host, true));
+                        window.setTitle(BookmarkNameProvider.toString(bookmark, true));
                         window.setRepresentedFilename(StringUtils.EMPTY);
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3369,6 +3356,8 @@ public class BrowserController extends WindowController
                 setWorkdir(null);
                 window.setTitle(preferences.getProperty("application.name"));
                 window.setRepresentedFilename(StringUtils.EMPTY);
+                transcript.clear();
+                navigation.clear();
                 disconnected.run();
             }
         });
@@ -3627,7 +3616,7 @@ public class BrowserController extends WindowController
 
         public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
                                                  final TransferOptions options, final List<TransferItem> downloads) {
-            super(controller, session, new TransferAdapter() {
+            super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
                 @Override
                 public void progress(final TransferProgress status) {
                     controller.message(status.getProgress());

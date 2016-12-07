@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
+public class TransferPromptFilterWorker extends TransferWorker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
 
     private final Transfer transfer;
@@ -59,7 +59,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     }
 
     @Override
-    public Map<TransferItem, TransferStatus> run(final Session<?> session) throws BackgroundException {
+    public Map<TransferItem, TransferStatus> run(final Session<?> source, final Session<?> destination) throws BackgroundException {
         final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
         for(TransferItem file : transfer.getRoots()) {
             if(this.isCanceled()) {
@@ -67,7 +67,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             }
             status.put(file.getParent(), new TransferStatus().exists(true));
         }
-        final TransferPathFilter filter = transfer.filter(session, action, listener);
+        final TransferPathFilter filter = transfer.filter(source, destination, action, listener);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }

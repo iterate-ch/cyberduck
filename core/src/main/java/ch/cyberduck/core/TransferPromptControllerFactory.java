@@ -32,7 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
     private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
 
-    public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool session) {
+    public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool source, final SessionPool destination) {
         final String clazz = PreferencesFactory.get().getProperty(
                 String.format("factory.transferpromptcallback.%s.class", transfer.getType().name()));
         if(null == clazz) {
@@ -41,13 +41,13 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
         try {
             final Class<TransferPrompt> name = (Class<TransferPrompt>) Class.forName(clazz);
             final Constructor<TransferPrompt> constructor = ConstructorUtils
-                    .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), session.getClass());
+                    .getMatchingAccessibleConstructor(name, c.getClass(), transfer.getClass(), source.getClass(), destination.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(c, transfer, session);
+            return constructor.newInstance(c, transfer, source, destination);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
@@ -59,7 +59,7 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static TransferPrompt get(final Controller c, final Transfer transfer, final SessionPool session) {
-        return new TransferPromptControllerFactory().create(c, transfer, session);
+    public static TransferPrompt get(final Controller c, final Transfer transfer, final SessionPool source, final SessionPool destination) {
+        return new TransferPromptControllerFactory().create(c, transfer, source, destination);
     }
 }

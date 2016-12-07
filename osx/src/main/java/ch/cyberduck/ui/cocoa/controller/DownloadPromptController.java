@@ -22,8 +22,9 @@ import ch.cyberduck.ui.cocoa.datasource.DownloadPromptDataSource;
 
 public class DownloadPromptController extends TransferPromptController {
 
-    public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer, final SessionPool session) {
+    public DownloadPromptController(final WindowController parent, final DownloadTransfer transfer,
+                                    final SessionPool source, final SessionPool destination) {
         super(parent, transfer);
-        browserModel = new DownloadPromptDataSource(this, session, transfer, cache);
+        browserModel = new DownloadPromptDataSource(this, source, destination, transfer, cache);
     }
 }
