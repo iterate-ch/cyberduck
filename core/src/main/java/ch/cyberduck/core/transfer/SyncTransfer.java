@@ -176,7 +176,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = session.getFeature(Find.class, new DefaultFindFeature(destination)).withCache(cache);
+        final Find finder = source.getFeature(Find.class, new DefaultFindFeature(destination)).withCache(cache);
         if(finder.find(directory)) {
             final List<TransferItem> list = download.list(source, destination, directory, local, listener);
             for(TransferItem item : list) {
