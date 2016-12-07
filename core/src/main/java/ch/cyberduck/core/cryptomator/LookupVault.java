@@ -81,7 +81,7 @@ public class LookupVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(type == ListService.class) {
-            return (T) new VaultFinderListService(session, session, new VaultFinderListProgressListener(session, keychain, callback));
+            return (T) new VaultFinderListService(this, session, session, new VaultFinderListProgressListener(session, keychain, callback));
         }
         return delegate;
     }

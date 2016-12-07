@@ -368,7 +368,7 @@ public class CryptoVault implements Vault {
         if(cryptor != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session,
-                        new VaultFinderListService(session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
+                        new VaultFinderListService(this, session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, (Touch) delegate, this);
