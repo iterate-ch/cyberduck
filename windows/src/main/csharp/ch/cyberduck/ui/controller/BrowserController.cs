@@ -2686,7 +2686,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session.shutdown();
                 Session = SessionPool.DISCONNECTED;
-                SetWorkdir(workdir);
+                SetWorkdir(null);
                 _cache.clear();
                 _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
@@ -3217,13 +3217,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        _controller.Session = pool;
-                        _pasteboard = PathPasteboardFactory.getPasteboard(_host);
+                        _controller.Session = _session;
+                        _controller._pasteboard = PathPasteboardFactory.getPasteboard(_session.getHost());
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
                         _controller.View.RefreshBookmark(_session.getHost());
                         _controller.ToggleView(BrowserView.File);
-                        _controller.View.SelectedEncoding = host.getEncoding();
+                        _controller.View.SelectedEncoding = _session.getHost().getEncoding();
                         _controller.View.SecureConnection = _session.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _session.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
