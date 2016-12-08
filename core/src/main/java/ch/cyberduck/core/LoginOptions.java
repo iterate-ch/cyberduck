@@ -24,6 +24,7 @@ public final class LoginOptions {
     public boolean keychain = true;
     public boolean publickey = false;
     public boolean anonymous = false;
+    public String icon;
 
     public LoginOptions() {
         //
@@ -54,6 +55,11 @@ public final class LoginOptions {
         return this;
     }
 
+    public LoginOptions icon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+
     public boolean user() {
         return user;
     }
@@ -72,6 +78,10 @@ public final class LoginOptions {
 
     public boolean isAnonymous() {
         return anonymous;
+    }
+
+    public String icon() {
+        return icon;
     }
 
     /**

@@ -17,20 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
@@ -191,7 +178,7 @@ public class CopyTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        final AttributedList<Path> list = source.list(directory, listener).filter(comparator, filter);
+        final AttributedList<Path> list = source.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
         for(Path p : list) {
             mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));

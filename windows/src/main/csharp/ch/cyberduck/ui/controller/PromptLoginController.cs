@@ -90,7 +90,13 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = credentials.getUsername();
             View.SavePasswordState = credentials.isSaved();
-            View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
+
+            if(_options.icon() != null) {
+                View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
+            }
+            else {
+                View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
+            }
             InitPrivateKeys();
 
             Update();

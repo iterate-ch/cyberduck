@@ -220,12 +220,14 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
                     new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-            source = new SingleSessionPool(connect, SessionFactory.create(host,
+            final Session<?> session = SessionFactory.create(host,
                     new CertificateStoreX509TrustManager(
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))), cache);
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(),
+                    new TerminalPasswordCallback());
+            source = new SingleSessionPool(connect, session, cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -261,7 +263,9 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))), cache)
+                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(),
+                                    new TerminalPasswordCallback()
+                            ), cache)
                     );
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
@@ -359,7 +363,7 @@ public class Terminal {
     }
 
     protected Exit mount(final SessionPool session) {
-        final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
+        final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
                 controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         this.execute(action);
         if(action.hasFailed()) {

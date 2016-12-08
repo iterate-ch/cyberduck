@@ -30,7 +30,7 @@ public class SkipFilterTest {
         SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(Class<T> type) {
+            public <T> T _getFeature(Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
@@ -44,7 +44,7 @@ public class SkipFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal("a") {

@@ -31,10 +31,6 @@ public class CreateDirectoryWorker extends Worker<Boolean> {
 
     private String region;
 
-    public CreateDirectoryWorker(final Path folder) {
-        this.folder = folder;
-    }
-
     public CreateDirectoryWorker(final Path folder, final String region) {
         this.folder = folder;
         this.region = region;

@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -35,13 +36,10 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
 
     private final Cache<Path> cache;
-
     private final Path directory;
-
     private final ListProgressListener listener;
 
-    public SessionListWorker(final Cache<Path> cache, final Path directory,
-                             final ListProgressListener listener) {
+    public SessionListWorker(final Cache<Path> cache, final Path directory, final ListProgressListener listener) {
         this.cache = cache;
         this.directory = directory;
         this.listener = listener;
@@ -55,7 +53,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
                 this.chunk(directory, list);
                 return list;
             }
-            return session.list(directory, this);
+            return session.getFeature(ListService.class).list(directory, listener);
         }
         catch(ListCanceledException e) {
             return e.getChunk();

@@ -1,0 +1,14 @@
+"Create Vault" = "Neuer Tresor";
+
+"Unlock" = "Entsperren";
+"Unlock Vault" = "Tresor entsperren";
+"Provide a passphrase for the Cryptomator Vault “{0}“" = "Neues Passwort für den Cryptomator Tresor “{0}“";
+"Provide your passphrase to unlock the Cryptomator Vault “{0}“" = "Passwort zum Entsperren des Cryptomator Tresors “{0}“";
+"Passphrase" = "Passwort";
+"Confirm Passphrase" = "Passwort bestätigen";
+
+"Very weak" = "Very weak";
+"Weak" = "Weak";
+"Fair" = "Fair";
+"Strong" = "Strong";
+"Very strong" = "Very strong";

@@ -66,7 +66,7 @@ public class NullSession extends Session<Void> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(Class<T> type) {
+    public <T> T _getFeature(Class<T> type) {
         if(type == Write.class) {
             return (T) new AppendWriteFeature(this) {
                 @Override
@@ -98,7 +98,7 @@ public class NullSession extends Session<Void> {
                 }
             };
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }
 

@@ -16,6 +16,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -56,7 +57,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
             final Distribution distribution = cdn.read(file, method, prompt);
             if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                 // Make sure container items are cached for default root object.
-                distribution.setRootDocuments(new ArrayList<>(session.list(containerService.getContainer(file), new DisabledListProgressListener())));
+                distribution.setRootDocuments(new ArrayList<>(session.getFeature(ListService.class).list(containerService.getContainer(file), new DisabledListProgressListener())));
             }
             return distribution;
         }

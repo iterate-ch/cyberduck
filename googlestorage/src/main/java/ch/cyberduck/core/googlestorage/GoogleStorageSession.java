@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
@@ -150,7 +151,7 @@ public class GoogleStorageSession extends S3Session {
         // List all buckets and cache
         try {
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            cache.put(root, this.list(root, new DisabledListProgressListener()));
+            cache.put(root, this.getFeature(ListService.class).list(root, new DisabledListProgressListener()));
         }
         catch(LoginFailureException | InteroperabilityException e) {
             this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
@@ -262,7 +263,7 @@ public class GoogleStorageSession extends S3Session {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new S3SingleUploadService(this);
         }
@@ -302,6 +303,6 @@ public class GoogleStorageSession extends S3Session {
         if(type == UrlProvider.class) {
             return (T) new GoogleStorageUrlProvider(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

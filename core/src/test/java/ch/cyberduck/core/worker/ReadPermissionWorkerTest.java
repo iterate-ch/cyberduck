@@ -53,7 +53,7 @@ public class ReadPermissionWorkerTest {
         PermissionOverwrite overwrite = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
@@ -77,7 +77,7 @@ public class ReadPermissionWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
 

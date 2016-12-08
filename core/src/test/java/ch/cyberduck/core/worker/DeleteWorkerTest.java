@@ -32,16 +32,19 @@ public class DeleteWorkerTest {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
-                return (T) new Delete() {
-                    @Override
-                    public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
-                        assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
-                        assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
-                        assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
-                        assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
-                    }
-                };
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+                            assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
+                            assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
+                            assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
+                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
+                        }
+                    };
+                }
+                return (T) super._getFeature(type);
             }
 
             @Override
@@ -72,7 +75,7 @@ public class DeleteWorkerTest {
         final Session session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 return (T) new Delete() {
                     @Override
                     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {

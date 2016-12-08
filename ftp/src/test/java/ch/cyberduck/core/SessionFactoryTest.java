@@ -14,8 +14,8 @@ public class SessionFactoryTest {
     @Test
     public void testCreateSession() throws Exception {
         assertNotNull(SessionFactory.create(new Host(new FTPProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+                new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordStore(), new DisabledPasswordCallback()));
         assertNotNull(SessionFactory.create(new Host(new FTPTLSProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()));
+                new DefaultX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordStore(), new DisabledPasswordCallback()));
     }
 }

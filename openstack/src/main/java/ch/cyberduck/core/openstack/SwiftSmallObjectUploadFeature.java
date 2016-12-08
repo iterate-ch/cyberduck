@@ -41,7 +41,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
     }
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        super(new SwiftWriteFeature(session, regionService));
+        super(session, new SwiftWriteFeature(session, regionService));
     }
 
     @Override

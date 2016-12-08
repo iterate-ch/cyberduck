@@ -61,7 +61,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     private final AttributesFinder attributes;
 
     public DriveWriteFeature(final DriveSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public DriveWriteFeature(final DriveSession session, final Find finder, final AttributesFinder attributes) {

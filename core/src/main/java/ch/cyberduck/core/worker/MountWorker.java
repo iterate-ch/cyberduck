@@ -39,9 +39,7 @@ public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
 
     private final Host bookmark;
-
     private final Cache<Path> cache;
-
     private final ListProgressListener listener;
 
     public MountWorker(final Host bookmark, final Cache<Path> cache, final ListProgressListener listener) {

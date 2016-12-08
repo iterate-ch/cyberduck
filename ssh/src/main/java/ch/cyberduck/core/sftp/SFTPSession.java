@@ -369,7 +369,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Attributes.class) {
             return (T) new SFTPAttributesFinderFeature(this);
         }
@@ -415,7 +415,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(type == Quota.class) {
             return (T) new SFTPQuotaFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     private static final class StateDisconnectListener implements DisconnectListener {

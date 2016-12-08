@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -96,7 +97,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         feature.setUnixPermission(file, permission);
         if(file.isDirectory()) {
             if(callback.recurse(file, permission)) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child, permission);
                 }
             }

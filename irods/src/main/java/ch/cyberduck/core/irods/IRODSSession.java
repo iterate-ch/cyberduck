@@ -202,7 +202,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new IRODSDirectoryFeature(this);
         }
@@ -230,7 +230,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         if(type == Home.class) {
             return (T) new IRODSHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     public final IRODSFileSystemAO filesystem() {

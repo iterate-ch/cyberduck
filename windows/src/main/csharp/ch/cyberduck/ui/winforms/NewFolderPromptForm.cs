@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Collections.Generic;
@@ -46,7 +46,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                     regionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                     regionComboBox.TabIndex = 3;
                     regionComboBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
-                    Height += regionComboBox.Height + 10;
                     tableLayoutPanel.RowCount++;
                     tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
                     tableLayoutPanel.SetRow(okButton, 3);
@@ -55,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     tableLayoutPanel.SetColumnSpan(regionComboBox, 3);
                 }
             }
-            private get { return regionComboBox != null; }
+            protected get { return regionComboBox != null; }
         }
 
         public string Region

@@ -1,0 +1,13 @@
+"Create Vault" = "Create Vault";
+
+"Unlock Vault" = "Unlock Vault";
+"Provide a passphrase for the Cryptomator Vault “{0}“" = "Provide a passphrase for the Cryptomator Vault “{0}“";
+"Provide your passphrase to unlock the Cryptomator Vault “{0}“" = "Provide your passphrase to unlock the Cryptomator Vault “{0}“";
+"Passphrase" = "Passphrase";
+"Confirm Passphrase" = "Confirm Passphrase";
+
+"Very weak" = "Very weak";
+"Weak" = "Weak";
+"Fair" = "Fair";
+"Strong" = "Strong";
+"Very strong" = "Very strong";

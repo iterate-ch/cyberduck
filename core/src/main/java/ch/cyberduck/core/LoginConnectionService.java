@@ -188,7 +188,7 @@ public class LoginConnectionService implements ConnectionService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
                 bookmark.getProtocol().getName(), hostname));
 
-        session.addTranscriptListener(transcript);
+        session.addListener(transcript);
         // The IP address could successfully be determined
         session.open(key);
 

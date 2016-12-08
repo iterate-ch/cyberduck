@@ -33,7 +33,7 @@ public class ReadMetadataWorkerTest {
         assertTrue(worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -52,7 +52,7 @@ public class ReadMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         }).isEmpty());
     }
@@ -72,7 +72,7 @@ public class ReadMetadataWorkerTest {
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -103,7 +103,7 @@ public class ReadMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
         assertTrue(map.containsKey("key1"));
@@ -127,7 +127,7 @@ public class ReadMetadataWorkerTest {
         final Map<String, String> map = worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
                         @Override
@@ -166,7 +166,7 @@ public class ReadMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
         assertTrue(map.containsKey("key1"));

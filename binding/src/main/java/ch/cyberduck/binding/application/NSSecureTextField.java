@@ -19,5 +19,20 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ObjCClass;
+import org.rococoa.cocoa.foundation.NSRect;
+
 public abstract class NSSecureTextField extends NSTextField {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSSecureTextField", _Class.class);
+
+    public static NSSecureTextField textfieldWithFrame(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
+    }
+
+    public interface _Class extends ObjCClass {
+        NSSecureTextField alloc();
+    }
+
+    @Override
+    public abstract NSSecureTextField initWithFrame(NSRect frameRect);
 }

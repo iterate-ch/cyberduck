@@ -31,14 +31,14 @@ public class SessionPoolFactory {
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
         return pooled(controller, cache, bookmark,
-                LoginCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()),
-                PasswordStoreFactory.get()
+                PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), PasswordCallbackFactory.get(controller),
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
         );
     }
 
     public static SessionPool pooled(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final LoginCallback login, final HostKeyCallback key, final HostPasswordStore keychain) {
+                                     final HostPasswordStore keychain, final LoginCallback login,
+                                     final PasswordCallback password, final HostKeyCallback key) {
         return new DefaultSessionPool(
                 new LoginConnectionService(
                         login,
@@ -47,7 +47,7 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), keychain, login, password, cache, controller, bookmark
         )
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
@@ -55,7 +55,8 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool single(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final LoginCallback login, final HostKeyCallback key, final HostPasswordStore keychain) {
+                                     final HostPasswordStore keychain, final LoginCallback login,
+                                     final PasswordCallback password, final HostKeyCallback key) {
         return new SingleSessionPool(
                 new LoginConnectionService(
                         login,
@@ -65,7 +66,7 @@ public class SessionPoolFactory {
                         controller),
                 SessionFactory.create(bookmark,
                         new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                        new KeychainX509KeyManager(bookmark)), cache
+                        new KeychainX509KeyManager(bookmark), keychain, password), cache
         );
     }
 }

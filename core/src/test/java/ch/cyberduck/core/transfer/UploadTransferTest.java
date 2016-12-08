@@ -317,7 +317,7 @@ public class UploadTransferTest {
         final Session session = new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
                         @Override
@@ -383,7 +383,7 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                return null;
+                return (T) super._getFeature(type);
             }
         };
         final AtomicBoolean set = new AtomicBoolean();

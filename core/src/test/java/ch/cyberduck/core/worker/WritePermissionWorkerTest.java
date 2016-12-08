@@ -64,7 +64,7 @@ public class WritePermissionWorkerTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
@@ -88,7 +88,7 @@ public class WritePermissionWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -119,7 +119,7 @@ public class WritePermissionWorkerTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
@@ -154,7 +154,7 @@ public class WritePermissionWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -187,7 +187,7 @@ public class WritePermissionWorkerTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
@@ -219,7 +219,7 @@ public class WritePermissionWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -246,7 +246,7 @@ public class WritePermissionWorkerTest {
 
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
@@ -270,7 +270,7 @@ public class WritePermissionWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }

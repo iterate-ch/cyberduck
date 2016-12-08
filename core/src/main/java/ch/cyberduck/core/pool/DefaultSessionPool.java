@@ -18,6 +18,9 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -57,18 +60,23 @@ public class DefaultSessionPool implements SessionPool {
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
-
+    private final PasswordStore keychain;
+    private final PasswordCallback password;
     private final PathCache cache;
-
     private final Host bookmark;
 
     private final GenericObjectPool<Session> pool;
 
-    private SessionPool features = DISCONNECTED;
+    private SessionPool features = SessionPool.DISCONNECTED;
+
+    private int retry = PreferencesFactory.get().getInteger("connection.retry");
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
+                              final PasswordStore keychain, final LoginCallback login, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
+        this.keychain = keychain;
+        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -77,7 +85,8 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(
+                new PooledSessionFactory(connect, trust, key, keychain, password, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -119,6 +128,11 @@ public class DefaultSessionPool implements SessionPool {
         return this;
     }
 
+    public DefaultSessionPool withRetry(final int retry) {
+        this.retry = retry;
+        return this;
+    }
+
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final Integer numActive = pool.getNumActive();
@@ -126,7 +140,6 @@ public class DefaultSessionPool implements SessionPool {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
         }
         try {
-            final int retry = PreferencesFactory.get().getInteger("connection.retry");
             /**
              * The number of times this action has been run
              */
@@ -136,7 +149,7 @@ public class DefaultSessionPool implements SessionPool {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrow session from pool %s", pool));
                     }
-                    final Session session = pool.borrowObject();
+                    final Session<?> session = pool.borrowObject();
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
@@ -198,16 +211,9 @@ public class DefaultSessionPool implements SessionPool {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Retry for failure %s", failure));
                 }
-                {
-                    final int max = Math.max(1, pool.getMaxIdle() - 1);
-                    log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
-                    pool.setMaxIdle(max);
-                }
-                {
-                    final int max = Math.max(1, pool.getMaxTotal() - 1);
-                    log.warn(String.format("Lower maximum total pool size to %d connections.", max));
-                    pool.setMaxTotal(max);
-                }
+                final int max = Math.max(1, pool.getMaxIdle() - 1);
+                log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                pool.setMaxIdle(max);
                 // Clear pool from idle connections
                 pool.clear();
                 // This is an automated retry. Wait some time first.
@@ -310,7 +316,9 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getFeature(type);
+            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                    keychain, password
+            ).getFeature(type);
         }
         return features.getFeature(type);
     }

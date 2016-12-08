@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -31,11 +30,8 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     public LoginCallback create(final Controller c) {
-        final String clazz = preferences.getProperty("factory.logincallback.class");
+        final String clazz = PreferencesFactory.get().getProperty("factory.logincallback.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }

@@ -110,7 +110,7 @@ public class ConcurrentTransferWorkerTest {
     @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
-        final int connections = 5;
+        final int connections = 7;
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
@@ -130,8 +130,9 @@ public class ConcurrentTransferWorkerTest {
                         //
                     }
                 }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                        new DisabledProgressListener(), new DisabledTranscriptListener()), new DisabledX509TrustManager(),
-                new DefaultX509KeyManager(), PathCache.empty(), new DisabledProgressListener(), host);
+                        new DisabledProgressListener(), new DisabledTranscriptListener()),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
@@ -142,7 +143,11 @@ public class ConcurrentTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
-        assertTrue(worker.run(null));
+        pool.withMaxTotal(connections);
+        pool.withRetry(10);
+        final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
+        assertTrue(worker.run(s));
+        worker.release(s, ConcurrentTransferWorker.Connection.source);
         assertEquals(0L, transfer.getTransferred(), 0L);
     }
 }

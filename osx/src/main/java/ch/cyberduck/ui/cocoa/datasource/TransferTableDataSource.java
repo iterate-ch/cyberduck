@@ -39,6 +39,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.cocoa.controller.DownloadController;
 import ch.cyberduck.ui.cocoa.controller.ProgressController;
+import ch.cyberduck.ui.cocoa.controller.TransferController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -169,8 +170,9 @@ public class TransferTableDataSource extends ListDataSource {
             String droppedText = draggingInfo.draggingPasteboard().stringForType(NSPasteboard.StringPboardType);// get the data from paste board
             if(StringUtils.isNotBlank(droppedText)) {
                 log.info("NSPasteboard.StringPboardType:" + droppedText);
-                final DownloadController c = new DownloadController(TransferControllerFactory.get(), droppedText);
-                c.beginSheet();
+                final TransferController parent = TransferControllerFactory.get();
+                final DownloadController c = new DownloadController(parent, droppedText);
+                c.beginSheet(parent);
                 return true;
             }
             return false;

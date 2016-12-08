@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -43,7 +44,7 @@ public class DefaultSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> filter, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.containsKey(workdir)) {
-            list = session.list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
+            list = session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
             cache.put(workdir, list);
         }
         else {

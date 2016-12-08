@@ -32,18 +32,18 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
 
-    private final WindowController parent;
+    protected static final int SUBVIEWS_VERTICAL_SPACE = 4;
+
     /**
      * If using alert and no custom window
      */
     protected final NSAlert alert;
 
-    public AlertController(final WindowController parent, final NSAlert alert) {
-        this(parent, alert, NSAlert.NSWarningAlertStyle);
+    public AlertController(final NSAlert alert) {
+        this(alert, NSAlert.NSWarningAlertStyle);
     }
 
-    public AlertController(final WindowController parent, final NSAlert alert, final int style) {
-        this.parent = parent;
+    public AlertController(final NSAlert alert, final int style) {
         this.alert = alert;
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
@@ -63,7 +63,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         return null;
     }
 
-    public int beginSheet() {
+    public int beginSheet(final WindowController parent) {
         return new SheetInvoker(this, parent, this).beginSheet();
     }
 
@@ -84,10 +84,11 @@ public abstract class AlertController extends SheetController implements SheetCa
         final NSView accessory = this.getAccessoryView();
         if(accessory != null) {
             final NSRect frame = this.getFrame(accessory);
-            accessory.setFrame(frame);
+            accessory.setFrameSize(frame.size);
             alert.setAccessoryView(accessory);
             alert.window().makeFirstResponder(accessory);
         }
+        // First call layout and then do any special positioning and sizing of the accessory view prior to running the alert
         alert.layout();
     }
 
@@ -97,7 +98,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         NSObject next;
         while(null != (next = enumerator.nextObject())) {
             final NSView subview = Rococoa.cast(next, NSView.class);
-            frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue());
+            frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue() + SUBVIEWS_VERTICAL_SPACE * 2);
         }
         return frame;
     }

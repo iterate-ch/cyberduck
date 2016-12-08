@@ -210,7 +210,7 @@ public class SyncTransferTest {
         };
         directory.mkdir();
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
-        final List<TransferItem> list = t.list(null, session, root, directory, new DisabledListProgressListener());
+        final List<TransferItem> list = t.list(session, session, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override

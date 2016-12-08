@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -49,7 +50,7 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class Session<C> implements TranscriptListener {
+public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -59,17 +60,19 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected final Host host;
 
+    /**
+     * Cryptomator
+     */
+    protected Vault vault = Vault.DISABLED;
+
     protected C client;
 
-    private Set<TranscriptListener> listeners = new HashSet<>();
+    private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
      */
     private State state = State.closed;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(host.getProtocol().isSecure()) {
@@ -78,6 +81,7 @@ public abstract class Session<C> implements TranscriptListener {
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
+        final Preferences preferences = PreferencesFactory.get();
         if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }
@@ -85,8 +89,8 @@ public abstract class Session<C> implements TranscriptListener {
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
-    public void addTranscriptListener(final TranscriptListener transcript) {
-        listeners.add(transcript);
+    public void addListener(final TranscriptListener transcript) {
+        transcriptListeners.add(transcript);
     }
 
     public enum State {
@@ -105,6 +109,12 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public C getClient() {
         return client;
+    }
+
+    public Session<C> withVault(final Vault vault) {
+        this.vault.close();
+        this.vault = vault;
+        return this;
     }
 
     /**
@@ -187,7 +197,8 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-        listeners.clear();
+        vault.close();
+        transcriptListeners.clear();
     }
 
     /**
@@ -238,7 +249,7 @@ public abstract class Session<C> implements TranscriptListener {
             case opening:
             case open:
             case closing:
-                for(TranscriptListener listener : listeners) {
+                for(TranscriptListener listener : transcriptListeners) {
                     listener.log(request, message);
                 }
                 break;
@@ -249,10 +260,21 @@ public abstract class Session<C> implements TranscriptListener {
      * @param directory Directory
      * @param listener  Callback
      */
+    @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        return vault.getFeature(this, type, this._getFeature(type));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type, final T feature) {
+        return vault.getFeature(this, type, feature);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new DefaultUploadFeature(this);
         }
@@ -285,6 +307,12 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
+        }
+        if(type == ListService.class) {
+            return (T) this;
+        }
+        if(type == Vault.class) {
+            return (T) vault;
         }
         return null;
     }

@@ -83,7 +83,7 @@ public class SingleTransferWorkerTest {
         final SwiftSession session = new SwiftSession(host) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
                     return (T) new SwiftLargeObjectUploadFeature(this, 1024L * 1024L, 5) {
                         @Override
@@ -105,7 +105,7 @@ public class SingleTransferWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());

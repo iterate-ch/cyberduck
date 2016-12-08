@@ -115,7 +115,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new B2TouchFeature(this);
         }
@@ -158,6 +158,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == AttributesFinder.class) {
             return (T) new B2AttributesFinderFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

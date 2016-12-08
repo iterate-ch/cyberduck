@@ -44,11 +44,11 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
-        this(writer, new SpectraBulkService(session));
+        this(session, writer, new SpectraBulkService(session));
     }
 
-    public SpectraUploadFeature(final SpectraWriteFeature writer, final SpectraBulkService bulk) {
-        super(writer);
+    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer, final SpectraBulkService bulk) {
+        super(session, writer);
         this.bulk = bulk;
     }
 

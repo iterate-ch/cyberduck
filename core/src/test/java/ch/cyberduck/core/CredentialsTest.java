@@ -42,6 +42,18 @@ public class CredentialsTest {
     }
 
     @Test
+    public void testNullifyPassword() throws Exception {
+        Credentials c = new Credentials();
+        assertEquals(null, c.getPassword());
+        c.setPassword(null);
+        assertEquals(null, c.getPassword());
+        c.setPassword("n");
+        assertEquals("n", c.getPassword());
+        c.setPassword(null);
+        assertEquals(null, c.getPassword());
+    }
+
+    @Test
     public void testValidateEmpty() throws Exception {
         Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new TestProtocol(Scheme.ftp), new LoginOptions()));

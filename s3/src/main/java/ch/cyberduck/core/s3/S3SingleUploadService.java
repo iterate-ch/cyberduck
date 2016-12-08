@@ -55,7 +55,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     }
 
     public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {
-        super(writer);
+        super(session, writer);
         this.session = session;
     }
 

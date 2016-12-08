@@ -99,10 +99,10 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == DistributionConfiguration.class) {
             return null;
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

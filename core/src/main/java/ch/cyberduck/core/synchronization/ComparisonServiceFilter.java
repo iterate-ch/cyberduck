@@ -50,8 +50,8 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private final ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
-        this.finder = new DefaultFindFeature(session);
-        this.attribute = new DefaultAttributesFinderFeature(session);
+        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
+        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();

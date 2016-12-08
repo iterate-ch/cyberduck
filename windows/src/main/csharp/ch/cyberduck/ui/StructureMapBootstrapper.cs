@@ -16,10 +16,10 @@
 // feedback@cyberduck.io
 // 
 
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui
@@ -36,11 +36,13 @@ namespace Ch.Cyberduck.Ui
                 x.For<IInfoView>().Use<InfoForm>();
                 x.For<IActivityView>().Use<ActivityForm>();
                 x.For<ILoginView>().Use<LoginForm>();
+                x.For<IPasswordPromptView>().Use<PasswordForm>();
                 x.For<IBookmarkView>().Use<BookmarkForm>();
                 x.For<IConnectionView>().Use<ConnectionForm>();
                 x.For<ITransferPromptView>().Use<TransferPromptForm>();
                 x.For<IErrorView>().Use<ErrorForm>();
                 x.For<INewFolderPromptView>().Use<NewFolderPromptForm>();
+                x.For<INewVaultPromptView>().Use<NewVaultPromptForm>();
                 x.For<ICreateFilePromptView>().Use<CreateFilePromptForm>();
                 x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
                 x.For<IGotoPromptView>().Use<GotoPromptForm>();

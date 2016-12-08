@@ -84,7 +84,7 @@ public class SingleTransferWorkerTest {
         final B2Session session = new B2Session(host) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
                     return (T) new B2LargeUploadService(this, 100L * 1024L * 1024L) {
                         @Override
@@ -106,7 +106,7 @@ public class SingleTransferWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
         session.open(new DisabledHostKeyCallback());

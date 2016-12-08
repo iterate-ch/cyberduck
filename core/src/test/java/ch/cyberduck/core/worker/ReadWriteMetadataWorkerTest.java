@@ -117,7 +117,7 @@ public class ReadWriteMetadataWorkerTest {
         Session testSession = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Headers.class) {
                     return (T) new Headers() {
 
@@ -162,7 +162,7 @@ public class ReadWriteMetadataWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         };
 

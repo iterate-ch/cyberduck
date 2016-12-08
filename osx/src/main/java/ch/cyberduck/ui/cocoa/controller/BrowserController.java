@@ -305,7 +305,7 @@ public class BrowserController extends WindowController
         }
     }
 
-    public void setShowHiddenFiles(boolean showHidden) {
+    protected void setShowHiddenFiles(boolean showHidden) {
         if(showHidden) {
             this.filenameFilter = SearchFilterFactory.NULL_FILTER;
             this.showHiddenFiles = true;
@@ -384,6 +384,11 @@ public class BrowserController extends WindowController
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reload data with selected files %s", selected));
         }
+        for(final Path folder : folders) {
+            if(folder.getName().startsWith(".")) {
+                this.setShowHiddenFiles(true);
+            }
+        }
         final BrowserTableDataSource model = this.getSelectedBrowserModel();
         final NSTableView browser = this.getSelectedBrowserView();
         if(folders.isEmpty()) {
@@ -409,7 +414,7 @@ public class BrowserController extends WindowController
                 }
                 // Delay render until path is cached in the background
                 this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
-                                new SessionListWorker(cache, folder, listener) {
+                        new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
                                         // Put into cache
@@ -2531,25 +2536,25 @@ public class BrowserController extends WindowController
     @Action
     public void gotoButtonClicked(final ID sender) {
         final GotoController sheet = new GotoController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void createFileButtonClicked(final ID sender) {
         final CreateFileController sheet = new CreateFileController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
         final CreateSymlinkController sheet = new CreateSymlinkController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
         final DuplicateFileController sheet = new DuplicateFileController(this, cache);
-        sheet.beginSheet();
+        sheet.beginSheet(this);
     }
 
     @Action
@@ -2557,7 +2562,15 @@ public class BrowserController extends WindowController
         final Location feature = session.getFeature(Location.class);
         final FolderController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
-        sheet.beginSheet();
+        sheet.beginSheet(this);
+    }
+
+    @Action
+    public void createEncryptedVaultButtonClicked(final ID sender) {
+        final Location feature = session.getFeature(Location.class);
+        final VaultController sheet = new VaultController(this, cache,
+                feature != null ? feature.getLocations() : Collections.emptySet());
+        sheet.beginSheet(this);
     }
 
     @Action

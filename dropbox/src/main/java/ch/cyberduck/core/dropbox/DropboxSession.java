@@ -139,7 +139,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(Class<T> type) {
+    public <T> T _getFeature(Class<T> type) {
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
         }
@@ -176,6 +176,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         if(type == Quota.class) {
             return (T) new DropboxQuotaFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

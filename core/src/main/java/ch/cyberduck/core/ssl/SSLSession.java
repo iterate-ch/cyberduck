@@ -51,13 +51,13 @@ public abstract class SSLSession<C> extends Session<C> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == X509TrustManager.class) {
             return (T) trust;
         }
         if(type == X509KeyManager.class) {
             return (T) key;
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

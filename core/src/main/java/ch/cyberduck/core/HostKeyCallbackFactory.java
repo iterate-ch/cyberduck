@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -31,12 +30,9 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
-            final String clazz = preferences.getProperty("factory.hostkeycallback.class");
+            final String clazz = PreferencesFactory.get().getProperty("factory.hostkeycallback.class");
             if(null == clazz) {
                 throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
             }

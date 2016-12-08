@@ -243,7 +243,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param help     Help URL
      */
     public void alert(final NSAlert alert, final SheetCallback callback, final String help) {
-        final AlertController c = new AlertController(this, alert) {
+        final AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
@@ -259,7 +259,7 @@ public abstract class WindowController extends BundleController implements NSWin
                 }
             }
         };
-        c.beginSheet();
+        c.beginSheet(this);
     }
 
     /**
@@ -334,7 +334,7 @@ public abstract class WindowController extends BundleController implements NSWin
                         LocaleFactory.localizedString("Cancel", "Alert") // alternate button
                 );
                 alert.setShowsHelp(true);
-                final AlertController c = new AlertController(controller, alert) {
+                final AlertController c = new AlertController(alert) {
                     @Override
                     public void callback(final int returncode) {
                         if(returncode == ALTERNATE_OPTION) {
@@ -347,7 +347,7 @@ public abstract class WindowController extends BundleController implements NSWin
                         new DefaultProviderHelpService().help(host.getProtocol());
                     }
                 };
-                if(c.beginSheet() == SheetCallback.DEFAULT_OPTION) {
+                if(c.beginSheet(controller) == SheetCallback.DEFAULT_OPTION) {
                     return true;
                 }
             }

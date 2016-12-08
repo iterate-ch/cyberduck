@@ -53,7 +53,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                         final DownloadFilterOptions options, final Download download) {
         super(symlinkResolver, session, options);
         this.download = download;
-        this.attribute = new DefaultAttributesFinderFeature(session);
+        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
     }
 
     public AbstractDownloadFilter withCache(final PathCache cache) {

@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -75,7 +76,7 @@ public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature imple
             return new FTPAttributesFinderFeature(session).find(file).getPermission();
         }
         catch(InteroperabilityException e) {
-            for(Path f : session.list(file.getParent(), new DisabledListProgressListener())) {
+            for(Path f : session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener())) {
                 if(f.equals(file)) {
                     return f.attributes().getPermission();
                 }

@@ -78,7 +78,7 @@ public class DAVUploadFeatureTest {
         new DefaultLocalTouchFeature().touch(local);
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
@@ -111,14 +111,14 @@ public class DAVUploadFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());

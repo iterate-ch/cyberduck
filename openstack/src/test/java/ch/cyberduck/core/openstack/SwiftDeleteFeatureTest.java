@@ -28,6 +28,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
@@ -117,6 +118,17 @@ public class SwiftDeleteFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final AtomicBoolean delete = new AtomicBoolean();
         final String name = "placeholder-" + UUID.randomUUID().toString();
+        session.addListener(new TranscriptListener() {
+            @Override
+            public void log(final Type request, final String message) {
+                switch(request) {
+                    case request:
+                        if(("DELETE /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
+                            delete.set(true);
+                        }
+                }
+            }
+        });
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -125,7 +137,7 @@ public class SwiftDeleteFeatureTest {
         new SwiftDirectoryFeature(session).mkdir(placeholder);
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertTrue(find.find(placeholder));
-        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(delete.get());
         Thread.sleep(1000L);
         assertFalse(find.find(placeholder));

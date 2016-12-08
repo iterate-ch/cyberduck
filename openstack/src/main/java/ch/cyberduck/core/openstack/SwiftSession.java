@@ -236,7 +236,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }
@@ -288,6 +288,6 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }
