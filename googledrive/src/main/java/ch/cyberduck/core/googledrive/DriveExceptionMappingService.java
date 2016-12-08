@@ -23,11 +23,15 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
 
+import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
 
@@ -39,6 +43,16 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
             this.append(buffer, error.getDetails().getMessage());
+            switch(error.getDetails().getCode()) {
+                case 403:
+                    final List<GoogleJsonError.ErrorInfo> errors = error.getDetails().getErrors();
+                    for(GoogleJsonError.ErrorInfo info : errors) {
+                        if("usageLimits".equals(info.getDomain())) {
+                            return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
+                        }
+                    }
+                    break;
+            }
         }
         if(failure instanceof HttpResponseException) {
             final HttpResponseException response = (HttpResponseException) failure;
@@ -48,6 +62,7 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
                     // Invalid Credentials. Refresh the access token using the long-lived refresh token
                     return new LoginFailureException(buffer.toString(), failure);
                 case HttpStatus.SC_FORBIDDEN:
+                    // 403: User Rate Limit Exceeded
                     return new AccessDeniedException(buffer.toString(), failure);
                 case HttpStatus.SC_NOT_FOUND:
                     return new NotfoundException(buffer.toString(), failure);
