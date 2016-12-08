@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -181,6 +181,10 @@ namespace Ch.Cyberduck.Core
 
         [DllImport("user32.dll")]
         public static extern void SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam,
+            [MarshalAs(UnmanagedType.LPWStr)] string lParam);
 
         [DllImport("user32.dll", EntryPoint = "ShowCaret")]
         public static extern long ShowCaret(IntPtr hwnd);

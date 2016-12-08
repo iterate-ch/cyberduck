@@ -16,20 +16,13 @@
 // feedback@cyberduck.io
 // 
 
-using System.Drawing;
-
 namespace Ch.Cyberduck.Ui.Controller
 {
-    interface IPasswordView : IView
+    internal interface INewVaultPromptView : INewFolderPromptView
     {
-        Image PwdIcon { set; }
-        bool SavePasswordState { get; set; }
-        bool SavePasswordEnabled { get; set; }
+        string Passphrase { get; }
+        string PassphraseConfirm { get; }
 
-        string Title { set; }
-        string Reason { set; }
-        string PasswordLabel { set; }
-
-        string Password { get; set; }
+        void EnablePassphrase();
     }
 }

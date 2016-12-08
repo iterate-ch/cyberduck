@@ -1,6 +1,6 @@
-﻿namespace Ch.Cyberduck.Ui.Winforms
+﻿namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms
 {
-    partial class NewFolderPromptForm
+    partial class NewVaultPromptForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,14 +30,13 @@
         {
             this.SuspendLayout();
             // 
-            // NewFolderPromptForm
+            // NewVaultPromptForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(462, 133);
-            this.MinimumSize = new System.Drawing.Size(464, 167);
-            this.Name = "NewFolderPromptForm";
+            this.Name = "NewVaultPromptForm";
+            this.Text = "Create Vault";
             this.ResumeLayout(false);
 
         }

@@ -27,7 +27,6 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core.Resources;
 using java.util;
-using Boolean = java.lang.Boolean;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -51,14 +50,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 view.PopulateRegions(r);
             }
+
         }
 
-        public override Bitmap IconView
-        {
-            get { return IconCache.Instance.IconForName("newfolder", 64); }
-        }
+        public override Bitmap IconView => IconCache.Instance.IconForName("newfolder", 64);
 
-        private bool HasLocation()
+        protected bool HasLocation()
         {
             return _regions.Count > 0 && new UploadTargetFinder(Workdir).find(BrowserController.SelectedPath).isRoot();
         }

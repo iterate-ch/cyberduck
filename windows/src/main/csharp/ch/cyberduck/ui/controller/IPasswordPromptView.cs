@@ -16,14 +16,15 @@
 // feedback@cyberduck.io
 // 
 
-using System.Collections.Generic;
-
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal interface INewFolderPromptView : IPromptView
+    internal interface IPasswordPromptView : IPromptView
     {
-        bool RegionsEnabled { set; }
-        string Region { set; get; }
-        void PopulateRegions(IList<KeyValuePair<string, string>> regions);
+        string Title { set; }
+        string Reason { set; }
+        string OkButtonText { set; }
+        string Placeholder { set; }
+
+        bool SavePassword { get; set; }
     }
 }

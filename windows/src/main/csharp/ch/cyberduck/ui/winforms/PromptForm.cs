@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,8 +13,9 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
+
 using System;
 using System.Drawing;
 using System.Media;
@@ -28,23 +29,31 @@ namespace Ch.Cyberduck.Ui.Winforms
         public PromptForm()
         {
             InitializeComponent();
-
+            AutoSize = true;
             FormClosing += delegate(object sender, FormClosingEventArgs args)
-                               {
-                                   bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
-                                   if (cancel)
-                                   {
-                                       args.Cancel = true;
-                                       SystemSounds.Beep.Play();
-                                   }
-                               };
+            {
+                bool valid = false;
+                foreach (var d in ValidateInput.GetInvocationList())
+                {
+                    valid = (bool) d.DynamicInvoke();
+                    if (!valid)
+                    {
+                        break;
+                    }
+                }
+                bool cancel = DialogResult != DialogResult.Cancel && !valid;
+                if (cancel)
+                {
+                    args.Cancel = true;
+                    SystemSounds.Beep.Play();
+                }
+            };
             MinimumSize = new Size(400, 150);
         }
 
-        public override string[] BundleNames
-        {
-            get { return new[] {"Folder"}; }
-        }
+        protected override bool EnableAutoSizePosition => false;
+
+        public override string[] BundleNames => new[] {"Folder", "Cryptomator"};
 
         public string InputText
         {

@@ -20,12 +20,11 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core.Resources;
-using Ch.Cyberduck.Ui.Controller;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    class PromptPasswordController : PasswordCallback
+    class PromptPasswordController : WindowController<IPasswordPromptView>, PasswordCallback
     {
         private readonly WindowController _browser;
 
@@ -34,24 +33,22 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
-        public IPasswordView View { get; set; }
-
         public void prompt(Credentials credentials, string title, string reason, LoginOptions options)
         {
-            View = ObjectFactory.GetInstance<IPasswordView>();
+            View = ObjectFactory.GetInstance<IPasswordPromptView>();
             View.Title = title;
             View.Reason = reason;
-            View.PasswordLabel = credentials.getPasswordPlaceholder();
-            View.PwdIcon = IconCache.Instance.IconForName(options.icon(), 64);
-            View.SavePasswordState = false;
-            AsyncController.AsyncDelegate d = delegate
+            View.Placeholder = credentials.getPasswordPlaceholder();
+            View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
+            View.SavePassword = false;
+            AsyncDelegate d = delegate
             {
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
                     throw new LoginCanceledException();
                 }
-                credentials = new Credentials(null, View.Password);
-                credentials.setSaved(View.SavePasswordState);
+                credentials.setPassword(View.InputText);
+                credentials.setSaved(View.SavePassword);
             };
             _browser.Invoke(d);
         }

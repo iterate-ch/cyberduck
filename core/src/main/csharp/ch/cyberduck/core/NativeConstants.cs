@@ -499,6 +499,8 @@ namespace Ch.Cyberduck.Core
         public const int EM_SETSEL = 0x00B1;
         public const int EM_UNDO = 0x00C7;
 
+        public const int EM_SETCUEBANNER = 0x1501;
+
         public const int EN_ALIGN_LTR_EC = 0x0700,
                          EN_ALIGN_RTL_EC = 0x0701;
 

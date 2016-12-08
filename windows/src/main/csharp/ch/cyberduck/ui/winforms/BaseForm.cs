@@ -150,6 +150,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
+        protected virtual bool EnableAutoSizePosition => true;
+
         public virtual TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
             string help, string verificationText, DialogResponseHandler handler)
         {
@@ -298,17 +300,18 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             // Create PersistenceHandler and load values from it
             PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, GetDefaultBounds());
-            //handlerReady = true;
-
             // Set size and location
-            Bounds = PersistenceHandler.WindowBounds;
+            if (EnableAutoSizePosition)
+            {
+                Bounds = PersistenceHandler.WindowBounds;
+            }
 
             // make sure we are on screen
             if (!BoundsVisible(Bounds))
                 Location = new Point();
 
             // Set state
-            WindowState = Enum.IsDefined(typeof (FormWindowState), PersistenceHandler.WindowState)
+            WindowState = Enum.IsDefined(typeof(FormWindowState), PersistenceHandler.WindowState)
                 ? (FormWindowState) PersistenceHandler.WindowState
                 : FormWindowState.Normal;
 

@@ -16,21 +16,32 @@
 // feedback@cyberduck.io
 // 
 
-using System.Drawing;
+using System.Windows.Forms;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    public partial class PasswordForm : BaseForm, IPasswordView
+    public partial class PasswordForm : PromptForm, IPasswordPromptView
     {
+        private readonly CheckBox saveCheckBox;
+
         public PasswordForm()
         {
             InitializeComponent();
-        }
 
-        public Image DiskIcon
-        {
-            set { pwdPictureBox.Image = value; }
+            saveCheckBox = new CheckBox
+            {
+                Name = "saveCheckBox",
+                TabIndex = 3,
+                Anchor = (((AnchorStyles.Left | AnchorStyles.Right)))
+            };
+            tableLayoutPanel.RowCount++;
+            tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
+            tableLayoutPanel.SetRow(okButton, 3);
+            tableLayoutPanel.SetRow(cancelButton, 3);
+            tableLayoutPanel.Controls.Add(saveCheckBox, 1, 2);
+            tableLayoutPanel.SetColumnSpan(saveCheckBox, 3);
         }
 
         public string Title
@@ -40,37 +51,23 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Reason
         {
-            set { }
+            set { label.Text = value; }
         }
 
-        public string PasswordLabel
+        public string OkButtonText
         {
-            set { labelPassword.Text = value; }
+            set { okButton.Text = value; }
         }
 
-        public string Password
+        public string Placeholder
         {
-            get { return textBoxPassword.Text; }
-            set { textBoxPassword.Text = value; }
+            set { NativeMethods.SendMessage(saveCheckBox.Handle, NativeConstants.EM_SETCUEBANNER, 0, value); }
         }
 
-        public bool SavePasswordState
+        public bool SavePassword
         {
-            get { return checkBoxSavePassword.Checked; }
-            set { checkBoxSavePassword.Checked = value; }
+            get { return saveCheckBox.Checked; }
+            set { saveCheckBox.Checked = value; }
         }
-
-        public bool SavePasswordEnabled
-        {
-            get { return checkBoxSavePassword.Enabled; }
-            set { checkBoxSavePassword.Enabled = value; }
-        }
-
-        public Image PwdIcon
-        {
-            set { pwdPictureBox.Image = value; }
-        }
-
-        public event ValidateInputHandler ValidateInput;
     }
 }
