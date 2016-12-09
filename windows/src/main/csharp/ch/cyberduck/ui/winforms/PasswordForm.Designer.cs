@@ -36,12 +36,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // PasswordForm
             // 
-            this.AcceptButton = null;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
             this.CancelButton = null;
-            this.ClientSize = new System.Drawing.Size(498, 132);
+            this.ClientSize = new System.Drawing.Size(462, 133);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "PasswordForm";
             this.Text = "Password";

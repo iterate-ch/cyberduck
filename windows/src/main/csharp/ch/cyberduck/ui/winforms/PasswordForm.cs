@@ -17,7 +17,6 @@
 // 
 
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -30,11 +29,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            inputTextBox.UseSystemPasswordChar = true;
             saveCheckBox = new CheckBox
             {
                 Name = "saveCheckBox",
                 TabIndex = 3,
-                Anchor = (((AnchorStyles.Left | AnchorStyles.Right)))
+                Anchor = (((AnchorStyles.Left | AnchorStyles.Right))),
+                Text = "Save Password"
             };
             tableLayoutPanel.RowCount++;
             tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
@@ -57,11 +58,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string OkButtonText
         {
             set { okButton.Text = value; }
-        }
-
-        public string Placeholder
-        {
-            set { NativeMethods.SendMessage(saveCheckBox.Handle, NativeConstants.EM_SETCUEBANNER, 0, value); }
         }
 
         public bool SavePassword

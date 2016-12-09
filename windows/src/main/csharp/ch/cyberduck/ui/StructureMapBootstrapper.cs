@@ -19,7 +19,6 @@
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui
