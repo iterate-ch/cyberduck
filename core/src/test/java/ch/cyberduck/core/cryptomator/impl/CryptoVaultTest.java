@@ -80,7 +80,10 @@ public class CryptoVaultTest {
                 credentials.setPassword("vault");
             }
         });
+        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        assertSame(f, vault.encrypt(session, f));
         vault.load(session);
+        assertNotSame(f, vault.encrypt(session, f));
     }
 
     @Test

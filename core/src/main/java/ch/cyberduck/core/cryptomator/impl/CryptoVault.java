@@ -237,7 +237,10 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        return file.equals(home) || file.isChild(home);
+        if(cryptor != null) {
+            return file.equals(home) || file.isChild(home);
+        }
+        return false;
     }
 
     @Override
