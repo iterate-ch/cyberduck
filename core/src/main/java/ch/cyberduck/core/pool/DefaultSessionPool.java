@@ -60,8 +60,6 @@ public class DefaultSessionPool implements SessionPool {
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
-    private final PasswordStore keychain;
-    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
 
@@ -75,8 +73,6 @@ public class DefaultSessionPool implements SessionPool {
                               final PasswordStore keychain, final LoginCallback login, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
-        this.keychain = keychain;
-        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
