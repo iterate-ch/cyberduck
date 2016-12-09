@@ -290,6 +290,7 @@ public class DefaultSessionPool implements SessionPool {
                 log.info(String.format("Close connection pool %s", this));
             }
             pool.close();
+            vault.close();
         }
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
