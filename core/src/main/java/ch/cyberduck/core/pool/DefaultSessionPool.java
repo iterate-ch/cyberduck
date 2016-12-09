@@ -64,8 +64,6 @@ public class DefaultSessionPool implements SessionPool {
 
     private final ConnectionService connect;
     private final ProgressListener progress;
-    private final PasswordStore keychain;
-    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
 
@@ -73,6 +71,10 @@ public class DefaultSessionPool implements SessionPool {
 
     private SessionPool features = SessionPool.DISCONNECTED;
 
+    /**
+     * Vault finder
+     */
+    private final LookupVault finder;
     private Vault vault = Vault.DISABLED;
 
     private int retry = preferences.getInteger("connection.retry");
@@ -81,8 +83,6 @@ public class DefaultSessionPool implements SessionPool {
                               final PasswordStore keychain, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
-        this.keychain = keychain;
-        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -96,6 +96,7 @@ public class DefaultSessionPool implements SessionPool {
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
+        this.finder = new LookupVault(keychain, password, new SessionPoolVaultListener());
     }
 
     public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
@@ -163,7 +164,7 @@ public class DefaultSessionPool implements SessionPool {
                         features = new SingleSessionPool(connect, session, cache);
                     }
                     if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                        session.withVault(Vault.DISABLED == vault ? new LookupVault(keychain, password, new SessionPoolVaultListener()) : vault);
+                        session.withVault(Vault.DISABLED == vault ? finder : vault);
                     }
                     return session;
                 }
