@@ -2343,6 +2343,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool IsMounted()
         {
+            if(Session == SessionPool.DISCONNECTED) {
+                return false;
+            }
             return Workdir != null;
         }
 
