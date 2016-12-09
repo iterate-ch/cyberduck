@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -255,7 +256,7 @@ public class CryptoVaultTest {
             vault.toCleartextSize(0);
             fail();
         }
-        catch(IllegalArgumentException e) {
+        catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize
         assertEquals(0L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()));
@@ -264,7 +265,7 @@ public class CryptoVaultTest {
             vault.toCleartextSize(vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
             fail();
         }
-        catch(IllegalArgumentException e) {
+        catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
         assertEquals(1L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));
