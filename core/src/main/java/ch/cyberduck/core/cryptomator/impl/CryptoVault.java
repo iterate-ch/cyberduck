@@ -45,6 +45,7 @@ import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -361,7 +362,7 @@ public class CryptoVault implements Vault {
                         new VaultFinderListService(this, session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
             }
             if(type == Touch.class) {
-                return (T) new CryptoTouchFeature(session, (Touch) delegate, this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
