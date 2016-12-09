@@ -44,7 +44,7 @@ public class CreateVaultWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            session.withVault(new CryptoVault(directory, keychain, prompt).create(session, region));
+            new CryptoVault(directory, keychain, prompt).create(session, region).close();
         }
         catch(LoginCanceledException e) {
             return false;
