@@ -286,7 +286,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this);
+            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
@@ -310,7 +310,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this);
+            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Location.class) {
             if(this.isConnected()) {

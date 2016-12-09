@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -26,13 +27,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
+
+import java.io.IOException;
 
 public class S3TouchFeature implements Touch {
 
@@ -44,11 +46,15 @@ public class S3TouchFeature implements Touch {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final S3WriteFeature write;
+    private final Write write;
 
     public S3TouchFeature(final S3Session session) {
+        this(session, new S3WriteFeature(session));
+    }
+
+    public S3TouchFeature(final S3Session session, final Write write) {
         this.session = session;
-        this.write = new S3WriteFeature(session);
+        this.write = write;
     }
 
     @Override
@@ -69,12 +75,11 @@ public class S3TouchFeature implements Touch {
     }
 
     protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object key = write.getDetails(containerService.getKey(file), status);
         try {
-            session.getClient().putObject(containerService.getContainer(file).getName(), key);
+            write.write(file, status).close();
         }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Cannot create file {0}", e, file);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
         }
     }
 
