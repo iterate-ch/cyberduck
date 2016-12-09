@@ -26,20 +26,20 @@ import java.lang.reflect.InvocationTargetException;
 public class PasswordCallbackFactory extends Factory<PasswordCallback> {
     private static final Logger log = Logger.getLogger(PasswordCallbackFactory.class);
 
-    public PasswordCallback create(final Controller c) {
+    public PasswordCallback create(final Controller controller) {
         final String clazz = PreferencesFactory.get().getProperty("factory.passwordcallback.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<PasswordCallback> name = (Class<PasswordCallback>) Class.forName(clazz);
-            final Constructor<PasswordCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            final Constructor<PasswordCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, controller.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
+                log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(c);
+            return constructor.newInstance(controller);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));

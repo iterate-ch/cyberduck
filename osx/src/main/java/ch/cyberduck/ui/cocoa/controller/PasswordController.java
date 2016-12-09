@@ -36,6 +36,7 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public class PasswordController extends AlertController {
@@ -43,10 +44,14 @@ public class PasswordController extends AlertController {
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
     @Outlet
-    protected final NSSecureTextField inputField
-            = NSSecureTextField.textfieldWithFrame(new NSRect(0, 22));
+    private final NSView view;
+    @Outlet
+    private final NSSecureTextField inputField;
+    @Outlet
+    private final NSButton keychainCheckbox;
 
     private final Credentials credentials;
+    private final LoginOptions options;
 
     public PasswordController(final Credentials credentials,
                               final String title, final String reason, final LoginOptions options) {
@@ -58,16 +63,22 @@ public class PasswordController extends AlertController {
                 LocaleFactory.localizedString("Cancel", "Alert")
         ), NSAlert.NSInformationalAlertStyle);
         this.credentials = credentials;
-        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
-        alert.setShowsSuppressionButton(options.keychain);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
-        alert.setShowsHelp(true);
-        inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
-        notificationCenter.addObserver(this.id(),
+        this.options = options;
+        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
+        this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
+        this.alert.setShowsHelp(true);
+        this.inputField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
+        this.inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+        this.keychainCheckbox = NSButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 18));
+        this.keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
+        this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
+        this.keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
+        this.keychainCheckbox.setState(NSCell.NSOffState);
+        this.keychainCheckbox.sizeToFit();
+        this.notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.inputField);
-        alert.suppressionButton().setAction(Foundation.selector("keychainCheckboxClicked:"));
     }
 
     @Action
@@ -82,6 +93,14 @@ public class PasswordController extends AlertController {
 
     @Override
     public NSView getAccessoryView() {
+        if(options.keychain) {
+            // Override accessory view with location menu added
+            keychainCheckbox.setFrameOrigin(new NSPoint(0, 0));
+            view.addSubview(keychainCheckbox);
+            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+            view.addSubview(inputField);
+            return view;
+        }
         return inputField;
     }
 
