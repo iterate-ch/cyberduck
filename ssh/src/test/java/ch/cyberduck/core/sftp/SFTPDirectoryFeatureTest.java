@@ -65,7 +65,7 @@ public class SFTPDirectoryFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty());
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -90,7 +90,7 @@ public class SFTPDirectoryFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty());
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));

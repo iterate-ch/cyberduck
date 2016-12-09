@@ -15,11 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.cryptomator.LookupVault;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -54,29 +51,5 @@ public class SessionPoolFactory {
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                 .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
-    }
-
-    public static SessionPool single(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final HostPasswordStore keychain, final LoginCallback login,
-                                     final PasswordCallback password, final HostKeyCallback key) {
-        final Session<?> session = SessionFactory.create(bookmark,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark));
-        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            session.withVault(new LookupVault(keychain, password, new LookupVault.Listener() {
-                @Override
-                public void found(final Vault vault) {
-                    //
-                }
-            }));
-        }
-        return new SingleSessionPool(
-                new LoginConnectionService(
-                        login,
-                        key,
-                        keychain,
-                        controller,
-                        controller), session, cache
-        );
     }
 }
