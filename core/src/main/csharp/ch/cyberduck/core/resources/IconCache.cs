@@ -1,20 +1,20 @@
 ﻿// 
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-//
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-//
+// 
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
 using org.apache.commons.io;
 using org.apache.log4j;
@@ -54,7 +53,7 @@ namespace Ch.Cyberduck.Core.Resources
             Small = 1
         }
 
-        private static readonly Logger Log = Logger.getLogger(typeof (IconCache).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(IconCache).FullName);
 
         private static readonly IconCache instance = new IconCache();
 
@@ -104,6 +103,16 @@ namespace Ch.Cyberduck.Core.Resources
         /// <returns></returns>
         public Bitmap IconForPath(Path path, IconSize size)
         {
+            if (path.getType().contains(AbstractPath.Type.decrypted))
+            {
+                Bitmap overlay = IconForName("unlockedbadge", size);
+                if (path.isDirectory())
+                {
+                    return IconForFolder(overlay, size);
+                }
+                Bitmap unlocked = IconForFilename(path.getName(), size);
+                return OverlayImages(unlocked, overlay);
+            }
             if (path.isSymbolicLink())
             {
                 Bitmap overlay = IconForName("aliasbadge", size);

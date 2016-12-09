@@ -54,7 +54,7 @@ public class CryptoWriteFeature implements Write {
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
                 header.setFilesize(-1);
                 final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
-                final OutputStream proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(file.attributes().getSize())));
+                final OutputStream proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
                 proxy.write(headerBuffer.array());
                 // Content
                 return new CryptoOutputStream(proxy, cryptor, header);
