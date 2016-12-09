@@ -95,16 +95,18 @@ public class CryptoVault implements Vault {
     private final Path home;
     private final PasswordStore keychain;
     private final PasswordCallback callback;
+    private final VaultLookupListener listener;
 
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback) {
+    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback, final VaultLookupListener listener) {
         this.home = home;
         this.keychain = keychain;
         this.callback = callback;
+        this.listener = listener;
     }
 
     @Override
@@ -365,7 +367,8 @@ public class CryptoVault implements Vault {
         if(cryptor != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session,
-                        new VaultFinderListService(this, session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
+                        new VaultFinderListService(this, session, (ListService) delegate,
+                                new VaultFinderListProgressListener(session, keychain, callback, listener)), this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);

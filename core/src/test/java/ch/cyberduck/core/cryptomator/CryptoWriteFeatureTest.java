@@ -67,7 +67,7 @@ public class CryptoWriteFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        });
+        }, new DisabledVaultLookupListener());
         vault.create(session, null);
         int headerSize = vault.getCryptor().fileHeaderCryptor().headerSize();
         // zero file size

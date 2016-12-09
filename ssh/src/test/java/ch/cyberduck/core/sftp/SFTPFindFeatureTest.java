@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -84,7 +85,7 @@ public class SFTPFindFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         assertFalse(session.getFeature(Find.class).find(new Path(vault, "a", EnumSet.of(Path.Type.directory))));
         session.getFeature(Touch.class).touch(test);
@@ -110,7 +111,7 @@ public class SFTPFindFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));

@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -122,7 +123,7 @@ public class SFTPListServiceTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         assertTrue(session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).isEmpty());
         session.getFeature(Touch.class).touch(test);

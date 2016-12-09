@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -64,7 +65,7 @@ public class DefaultTouchFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test);
         assertTrue(session.getFeature(Find.class).find(test));

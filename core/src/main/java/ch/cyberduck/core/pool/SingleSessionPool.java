@@ -21,9 +21,9 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 
@@ -41,7 +41,7 @@ public class SingleSessionPool implements SessionPool {
         this.connect = connect;
         this.session = session;
         if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            session.withVault(new LookupVault(keychain, prompt, new DisabledVaultListener()));
+            session.withVault(new LookupVault(keychain, prompt, new DisabledVaultLookupListener()));
         }
         this.cache = cache;
     }
@@ -70,7 +70,7 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public void shutdown() {
-        //
+        //todo close vault
     }
 
     @Override
@@ -88,10 +88,4 @@ public class SingleSessionPool implements SessionPool {
         return session.getHost();
     }
 
-    private static final class DisabledVaultListener implements LookupVault.Listener {
-        @Override
-        public void found(final Vault vault) {
-            //
-        }
-    }
 }

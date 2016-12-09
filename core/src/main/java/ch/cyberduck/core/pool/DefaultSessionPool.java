@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cryptomator.LookupVault;
+import ch.cyberduck.core.cryptomator.VaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -168,6 +169,7 @@ public class DefaultSessionPool implements SessionPool {
                         features = new SingleSessionPool(connect, session, cache, keychain, password);
                     }
                     if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+                        //todo use finder when current vault is closed
                         session.withVault(Vault.DISABLED == vault ? finder : vault);
                     }
                     return session;
@@ -285,6 +287,7 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Clear idle connections in pool %s", this));
         }
         pool.clear();
+        vault.close();
     }
 
     @Override
@@ -344,7 +347,7 @@ public class DefaultSessionPool implements SessionPool {
         return sb.toString();
     }
 
-    private class SessionPoolVaultListener implements LookupVault.Listener {
+    private class SessionPoolVaultListener implements VaultLookupListener {
         @Override
         public void found(final Vault found) {
             vault = found;

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -95,7 +96,7 @@ public class SFTPAttributesFinderFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(test);
         final PathAttributes attributes = session.getFeature(AttributesFinder.class).find(test);
