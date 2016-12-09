@@ -22,7 +22,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
@@ -39,9 +38,6 @@ import java.io.IOException;
 public class S3TouchFeature implements Touch {
 
     private final S3Session session;
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
 
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
