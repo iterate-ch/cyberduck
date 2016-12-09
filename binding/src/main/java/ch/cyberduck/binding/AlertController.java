@@ -48,7 +48,8 @@ public abstract class AlertController extends SheetController implements SheetCa
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
         this.setValidator(this);
-        this.setWindow(alert.window());
+        final NSWindow window = this.alert.window();
+        this.setWindow(window);
     }
 
     /**
@@ -90,6 +91,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         }
         // First call layout and then do any special positioning and sizing of the accessory view prior to running the alert
         alert.layout();
+        alert.window().recalculateKeyViewLoop();
     }
 
     protected NSRect getFrame(final NSView accessory) {
