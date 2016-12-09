@@ -24,7 +24,10 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -33,26 +36,32 @@ import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.log4j.Logger;
 
-public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
+public class PooledSessionFactory extends BasePooledObjectFactory<Session> implements LookupVault.Listener {
     private static final Logger log = Logger.getLogger(PooledSessionFactory.class);
 
     private final ConnectionService connect;
     private final X509TrustManager trust;
     private final X509KeyManager key;
     private final PasswordStore keychain;
-    private final PasswordCallback login;
+    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
+    private Vault vault = Vault.DISABLED;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final PasswordStore keychain, final PasswordCallback login, final PathCache cache, final Host bookmark) {
+                                final PasswordStore keychain, final PasswordCallback password, final PathCache cache, final Host bookmark) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;
         this.keychain = keychain;
-        this.login = login;
+        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
+    }
+
+    @Override
+    public void found(final Vault vault) {
+        this.vault = vault;
     }
 
     @Override
@@ -60,7 +69,11 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
-        return SessionFactory.create(bookmark, trust, key, keychain, login);
+        final Session<?> session = SessionFactory.create(bookmark, trust, key);
+        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+            session.withVault(Vault.DISABLED == vault ? new LookupVault(keychain, password, this) : vault);
+        }
+        return session;
     }
 
     @Override

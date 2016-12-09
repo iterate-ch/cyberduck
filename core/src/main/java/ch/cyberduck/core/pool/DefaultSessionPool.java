@@ -316,8 +316,7 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(DISCONNECTED == features) {
-            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                    keychain, password
+            return SessionFactory.create(bookmark, new DisabledX509TrustManager(), new DefaultX509KeyManager()
             ).getFeature(type);
         }
         return features.getFeature(type);

@@ -225,8 +225,8 @@ public class Terminal {
                             new DefaultTrustManagerHostnameCallback(host),
                             new TerminalCertificateStore(reader)
                     ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(),
-                    new TerminalPasswordCallback());
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
+            );
             source = new SingleSessionPool(connect, session, cache);
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
@@ -263,8 +263,7 @@ public class Terminal {
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
                                     ),
-                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), PasswordStoreFactory.get(),
-                                    new TerminalPasswordCallback()
+                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))
                             ), cache)
                     );
                 default:

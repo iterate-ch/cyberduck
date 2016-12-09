@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cryptomator.LookupVault;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -36,8 +34,7 @@ public final class SessionFactory {
         //
     }
 
-    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key,
-                                    final PasswordStore keychain, final PasswordCallback login) {
+    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create session for %s", host));
         }
@@ -60,9 +57,6 @@ public final class SessionFactory {
             }
             else {
                 session = constructor.newInstance(host, trust, key);
-            }
-            if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                return session.withVault(new LookupVault(keychain, login));
             }
             return session;
         }

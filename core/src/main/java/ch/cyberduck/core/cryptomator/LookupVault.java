@@ -15,21 +15,25 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 public class LookupVault implements Vault {
     private final PasswordStore keychain;
     private final PasswordCallback callback;
+    private final Listener listener;
 
-    public LookupVault(final PasswordStore keychain, final PasswordCallback callback) {
+    public LookupVault(final PasswordStore keychain, final PasswordCallback callback, final Listener listener) {
         this.keychain = keychain;
         this.callback = callback;
+        this.listener = listener;
     }
 
     @Override
@@ -81,8 +85,23 @@ public class LookupVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(type == ListService.class) {
-            return (T) new VaultFinderListService(this, session, session, new VaultFinderListProgressListener(session, keychain, callback));
+            return (T) new VaultFinderListService(this, session, session, new VaultFinderListProgressListener(session, keychain, callback) {
+                @Override
+                public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
+                    try {
+                        super.visit(list, index, file);
+                    }
+                    catch(VaultFinderListCanceledException e) {
+                        listener.found(e.getVault());
+                        throw e;
+                    }
+                }
+            });
         }
         return delegate;
+    }
+
+    public interface Listener {
+        void found(Vault vault);
     }
 }
