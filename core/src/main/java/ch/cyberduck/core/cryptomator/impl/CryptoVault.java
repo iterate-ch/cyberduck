@@ -60,6 +60,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -420,5 +421,23 @@ public class CryptoVault implements Vault {
             this.id = id;
             this.path = path;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof CryptoVault)) {
+            return false;
+        }
+        final CryptoVault that = (CryptoVault) o;
+        return Objects.equals(home, that.home) &&
+                Objects.equals(cryptor, that.cryptor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(home, cryptor);
     }
 }
