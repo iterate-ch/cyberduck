@@ -368,6 +368,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = checksum;
     }
 
+    public TransferStatus checksum(final Checksum checksum) {
+        this.setChecksum(checksum);
+        return this;
+    }
+
     public PathAttributes getRemote() {
         return remote;
     }
