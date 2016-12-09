@@ -917,7 +917,9 @@ public abstract class Preferences {
         defaults.put("connection.ssl.keystore.type", null);
         defaults.put("connection.ssl.keystore.provider", null);
 
-        defaults.put("connection.ssl.securerandom", "NativePRNG");
+        // Default secure random strong algorithm
+        defaults.put("connection.ssl.securerandom.algorithm", "NativePRNG");
+        defaults.put("connection.ssl.securerandom.provider", "SUN");
 
         /*
           Transfer read buffer size

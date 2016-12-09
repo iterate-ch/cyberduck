@@ -36,11 +36,6 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private readonly INewVaultPromptView _view;
 
-        static VaultController()
-        {
-            Security.setProperty("securerandom.strongAlgorithms", "Windows-PRNG:SunMSCAPI,SHA1PRNG:SUN");
-        }
-
         public VaultController(INewVaultPromptView view, BrowserController browserController,
             IList<Location.Name> regions) : base(view, browserController, regions)
         {
