@@ -281,12 +281,14 @@ public class CryptoVault implements Vault {
                             inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
                                     EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
-                    decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
                         permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                         permission.setOther(permission.getOther().or(Permission.Action.execute));
+                    }
+                    else {
+                        decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                     }
                     return decrypted;
                 }
@@ -296,7 +298,7 @@ public class CryptoVault implements Vault {
                 }
             }
             else {
-                throw new CryptoAuthenticationException(
+                throw new CryptoFilenameMismatchException(
                         String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
             }
         }
@@ -312,16 +314,16 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) {
+    public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
         if(ciphertextFileSize < headerSize) {
-            throw new IllegalArgumentException(String.format("Encrypted file size must be at least %d bytes", headerSize));
+            throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
         }
         final long remainder = (ciphertextFileSize - headerSize) % ciphertextChunkSize;
         if(remainder > 0 && remainder < chunkHeaderSize) {
-            throw new IllegalArgumentException("Invalid file size");
+            throw new CryptoInvalidFilesizeException("Invalid file size");
         }
         return ciphertextFileSize - (headerSize + (ciphertextFileSize / ciphertextChunkSize) * chunkHeaderSize + (remainder == 0 ? 0 : chunkHeaderSize));
     }
