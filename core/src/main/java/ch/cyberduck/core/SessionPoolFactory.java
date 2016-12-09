@@ -49,7 +49,7 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), keychain, login, password, cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), keychain, password, cache, controller, bookmark
         )
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))

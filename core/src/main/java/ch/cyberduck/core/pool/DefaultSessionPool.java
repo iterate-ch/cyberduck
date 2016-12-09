@@ -18,7 +18,6 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
@@ -70,7 +69,7 @@ public class DefaultSessionPool implements SessionPool {
     private int retry = PreferencesFactory.get().getInteger("connection.retry");
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final PasswordStore keychain, final LoginCallback login, final PasswordCallback password,
+                              final PasswordStore keychain, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
         this.cache = cache;
