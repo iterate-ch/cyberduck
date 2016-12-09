@@ -24,8 +24,11 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -53,12 +56,16 @@ public class DefaultSessionPool implements SessionPool {
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;
 
-    private final ProgressListener progress;
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
+    private final ProgressListener progress;
+    private final PasswordStore keychain;
+    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
 
@@ -66,12 +73,16 @@ public class DefaultSessionPool implements SessionPool {
 
     private SessionPool features = SessionPool.DISCONNECTED;
 
-    private int retry = PreferencesFactory.get().getInteger("connection.retry");
+    private Vault vault = Vault.DISABLED;
+
+    private int retry = preferences.getInteger("connection.retry");
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PasswordStore keychain, final PasswordCallback password,
                               final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
+        this.keychain = keychain;
+        this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -150,6 +161,9 @@ public class DefaultSessionPool implements SessionPool {
                     }
                     if(DISCONNECTED == features) {
                         features = new SingleSessionPool(connect, session, cache);
+                    }
+                    if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+                        session.withVault(Vault.DISABLED == vault ? new LookupVault(keychain, password, new SessionPoolVaultListener()) : vault);
                     }
                     return session;
                 }
@@ -322,5 +336,12 @@ public class DefaultSessionPool implements SessionPool {
         sb.append("bookmark=").append(bookmark);
         sb.append('}');
         return sb.toString();
+    }
+
+    private class SessionPoolVaultListener implements LookupVault.Listener {
+        @Override
+        public void found(final Vault found) {
+            vault = found;
+        }
     }
 }
