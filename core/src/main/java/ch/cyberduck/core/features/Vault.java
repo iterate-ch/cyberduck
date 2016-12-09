@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.VaultException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -82,7 +83,7 @@ public interface Vault {
 
     long toCiphertextSize(long cleartextFileSize);
 
-    long toCleartextSize(long ciphertextFileSize);
+    long toCleartextSize(long ciphertextFileSize) throws CryptoInvalidFilesizeException;
 
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
