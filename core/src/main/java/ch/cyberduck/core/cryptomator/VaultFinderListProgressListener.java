@@ -58,7 +58,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
                     vault.load(session);
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getMessage()));
+                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
                     return;
                 }
                 throw new VaultFinderListCanceledException(vault, list);
