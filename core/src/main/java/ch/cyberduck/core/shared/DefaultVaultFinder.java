@@ -31,13 +31,13 @@ public class DefaultVaultFinder implements Home {
     private final Session<?> session;
     private final Home delegate;
     private final PasswordStore keychain;
-    private final PasswordCallback login;
+    private final PasswordCallback prompt;
 
-    public DefaultVaultFinder(final Session<?> session, final Home delegate, final PasswordStore keychain, final PasswordCallback login) {
+    public DefaultVaultFinder(final Session<?> session, final Home delegate, final PasswordStore keychain, final PasswordCallback prompt) {
         this.session = session;
         this.delegate = delegate;
         this.keychain = keychain;
-        this.login = login;
+        this.prompt = prompt;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DefaultVaultFinder implements Home {
 
     private Path load(final Path home) {
         try {
-            session.withVault(new CryptoVault(home, keychain, login).load(session));
+            session.withVault(new CryptoVault(home, keychain, prompt).load(session));
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure loading vault in %s. %s", home, e.getMessage()));
