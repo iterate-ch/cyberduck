@@ -44,6 +44,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.random.FastSecureRandomFactory;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -52,12 +53,9 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
-import org.cryptomator.cryptolib.common.SecureRandomModule;
 import org.cryptomator.cryptolib.v1.Version1CryptorModule;
 
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.Security;
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -74,8 +72,6 @@ public class CryptoVault implements Vault {
 
     protected static final String DIR_PREFIX = "0";
 
-    private static final SecureRandom random;
-
     static {
         final int position = PreferencesFactory.get().getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -83,16 +79,6 @@ public class CryptoVault implements Vault {
             log.info(String.format("Install provider %s at position %d", provider, position));
         }
         Security.insertProviderAt(provider, position);
-    }
-
-    static {
-        try {
-            final SecureRandom seeder = SecureRandom.getInstanceStrong();
-            random = new SecureRandomModule(seeder).provideFastSecureRandom(seeder);
-        }
-        catch(NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA1PRNG must exist in every Java platform.", e);
-        }
     }
 
     public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
@@ -121,7 +107,9 @@ public class CryptoVault implements Vault {
 
     @Override
     public CryptoVault create(final Session<?> session, final String region) throws BackgroundException {
-        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
+                FastSecureRandomFactory.get().provide()
+        );
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
@@ -226,7 +214,9 @@ public class CryptoVault implements Vault {
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
-        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(random);
+        final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
+                FastSecureRandomFactory.get().provide()
+        );
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }

@@ -338,6 +338,10 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
+            // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
+            defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
+            defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
+
             defaults.put("webdav.ntlm.environment", false.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {
