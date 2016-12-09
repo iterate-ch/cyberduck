@@ -20,12 +20,11 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class GoogleStorageDirectoryFeature implements Directory {
+public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
 
     private final GoogleStorageSession session;
 
@@ -33,6 +32,7 @@ public class GoogleStorageDirectoryFeature implements Directory {
             = new S3PathContainerService();
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
+        super(session);
         this.session = session;
     }
 
@@ -48,7 +48,7 @@ public class GoogleStorageDirectoryFeature implements Directory {
             service.create(file, region);
         }
         else {
-            new S3DirectoryFeature(session).mkdir(file, region, status);
+            super.mkdir(file, region, status);
         }
     }
 }
