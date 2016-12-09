@@ -112,7 +112,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     public Session<C> withVault(final Vault vault) {
-        this.vault.close();
         this.vault = vault;
         return this;
     }
@@ -197,7 +196,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-        vault.close();
         transcriptListeners.clear();
     }
 
