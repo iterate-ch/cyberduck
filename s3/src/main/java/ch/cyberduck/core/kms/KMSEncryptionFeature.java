@@ -15,7 +15,6 @@ package ch.cyberduck.core.kms;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -172,7 +171,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     );
                     final Location feature = session.getFeature(Location.class);
                     final Location.Name region = feature.getLocation(container);
-                    client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
+                    try {
+                        client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
+                    }
+                    catch(IllegalArgumentException e) {
+                        log.warn(String.format("Unknown region %s", region.getIdentifier()));
+                    }
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {
