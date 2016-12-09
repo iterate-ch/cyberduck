@@ -36,16 +36,12 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final SpectraSession session;
-
     public SpectraDirectoryFeature(final SpectraSession session) {
         super(session);
-        this.session = session;
     }
 
     public SpectraDirectoryFeature(final SpectraSession session, final SpectraWriteFeature write) {
         super(session, write);
-        this.session = session;
     }
 
     @Override
