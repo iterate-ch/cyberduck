@@ -44,7 +44,6 @@ public class FolderController extends FileController {
 
     @Outlet
     private final NSPopUpButton regionPopup;
-
     @Outlet
     private final NSView view;
 
