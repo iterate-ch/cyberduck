@@ -17,22 +17,21 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -117,6 +116,56 @@ public class S3DirectoryFeatureTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testMakeDirectoryEncrypted() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
+                new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
+        ), new S3Session(host), PathCache.empty());
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        final Path home = session.getFeature(Home.class).find();
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        }).create(session, null);
+        session.withVault(cryptomator);
+        session.getFeature(Directory.class).mkdir(test);
+        assertTrue(session.getFeature(Find.class).find(test));
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testMakeDirectoryLongFilenameEncrypted() throws Exception {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
+                new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
+        ), new S3Session(host), PathCache.empty());
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        final Path home = session.getFeature(Home.class).find();
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.directory));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        }).create(session, null);
+        session.withVault(cryptomator);
+        session.getFeature(Directory.class).mkdir(test);
+        assertTrue(session.getFeature(Find.class).find(test));
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
