@@ -23,11 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Collections;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -40,13 +39,20 @@ public class SwiftDirectoryFeature implements Directory {
 
     private final SwiftRegionService regionService;
 
+    private final Write write;
+
     public SwiftDirectoryFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
     public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        this(session, regionService, session.getFeature(Write.class));
+    }
+
+    public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService, final Write write) {
         this.session = session;
         this.regionService = regionService;
+        this.write = write;
     }
 
     @Override
@@ -55,7 +61,7 @@ public class SwiftDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level
@@ -63,11 +69,16 @@ public class SwiftDirectoryFeature implements Directory {
                         new SwiftLocationFeature.SwiftRegion(region)), file.getName());
             }
             else {
-                // Create virtual directory.
-                session.getClient().storeObject(regionService.lookup(file),
-                        containerService.getContainer(file).getName(),
-                        new ByteArrayInputStream(new byte[]{}), "application/directory", containerService.getKey(file),
-                        Collections.<String, String>emptyMap());
+                if(null == status) {
+                    status = new TransferStatus();
+                }
+                status.setMime("application/directory");
+                try {
+                    write.write(file, status).close();
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
+                }
             }
         }
         catch(GenericException e) {

@@ -25,14 +25,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Collections;
 
 public class SwiftTouchFeature implements Touch {
-
-    private final SwiftSession session;
 
     final PathContainerService containerService
             = new SwiftPathContainerService();
@@ -40,24 +38,26 @@ public class SwiftTouchFeature implements Touch {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final SwiftRegionService regionService;
+    private final Write write;
 
     public SwiftTouchFeature(final SwiftSession session) {
-        this(session, new SwiftRegionService(session));
+        this(session, session.getFeature(Write.class));
     }
 
-    public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this.session = session;
-        this.regionService = regionService;
+    public SwiftTouchFeature(final SwiftSession session, final Write write) {
+        this.write = write;
     }
 
     @Override
     public void touch(final Path file) throws BackgroundException {
+        final TransferStatus status = new TransferStatus();
+        status.setMime(mapping.getMime(file.getName()));
+        this.touch(file, status);
+    }
+
+    private void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            session.getClient().storeObject(regionService.lookup(file),
-                    containerService.getContainer(file).getName(),
-                    new ByteArrayInputStream(new byte[]{}), mapping.getMime(file.getName()), containerService.getKey(file),
-                    Collections.<String, String>emptyMap());
+            write.write(file, status).close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
