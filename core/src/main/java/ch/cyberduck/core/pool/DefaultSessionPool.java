@@ -20,10 +20,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.cryptomator.VaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -169,8 +171,7 @@ public class DefaultSessionPool implements SessionPool {
                         features = new SingleSessionPool(connect, session, cache, keychain, password);
                     }
                     if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                        //todo use finder when current vault is closed
-                        session.withVault(Vault.DISABLED == vault ? finder : vault);
+                        session.withVault(Vault.DISABLED == vault ? finder : new PooledVault(vault));
                     }
                     return session;
                 }
@@ -287,7 +288,6 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Clear idle connections in pool %s", this));
         }
         pool.clear();
-        vault.close();
     }
 
     @Override
@@ -296,8 +296,8 @@ public class DefaultSessionPool implements SessionPool {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Close connection pool %s", this));
             }
-            pool.close();
             vault.close();
+            pool.close();
         }
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
@@ -351,6 +351,72 @@ public class DefaultSessionPool implements SessionPool {
         @Override
         public void found(final Vault found) {
             vault = found;
+        }
+    }
+
+    private class PooledVault implements Vault {
+        final Vault delegate;
+
+        public PooledVault(final Vault delegate) {
+            this.delegate = vault;
+        }
+
+        @Override
+        public Vault create(final Session<?> session, final String region) throws BackgroundException {
+            return delegate.create(session, region);
+        }
+
+        @Override
+        public Vault load(final Session<?> session) throws BackgroundException {
+            return delegate.load(session);
+        }
+
+        @Override
+        public void close() {
+            log.warn(String.format("Keep vault %s open for session pool", delegate));
+        }
+
+        @Override
+        public boolean contains(final Path file) {
+            return delegate.contains(file);
+        }
+
+        @Override
+        public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
+            return delegate.encrypt(session, file);
+        }
+
+        @Override
+        public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
+            return delegate.encrypt(session, file, metadata);
+        }
+
+        @Override
+        public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
+            return delegate.decrypt(session, directory, file);
+        }
+
+        @Override
+        public long toCiphertextSize(final long cleartextFileSize) {
+            return delegate.toCiphertextSize(cleartextFileSize);
+        }
+
+        @Override
+        public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
+            return delegate.toCleartextSize(ciphertextFileSize);
+        }
+
+        @Override
+        public <T> T getFeature(final Session<?> session, final Class<T> type, final T impl) {
+            return delegate.getFeature(session, type, impl);
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("PooledVault{");
+            sb.append("delegate=").append(delegate);
+            sb.append('}');
+            return sb.toString();
         }
     }
 }
