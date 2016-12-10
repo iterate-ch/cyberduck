@@ -358,7 +358,7 @@ public class DefaultSessionPool implements SessionPool {
         final Vault delegate;
 
         public PooledVault(final Vault delegate) {
-            this.delegate = vault;
+            this.delegate = delegate;
         }
 
         @Override
