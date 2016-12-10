@@ -443,4 +443,13 @@ public class CryptoVault implements Vault {
     public int hashCode() {
         return Objects.hash(home, cryptor);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoVault{");
+        sb.append("home=").append(home);
+        sb.append(", cryptor=").append(cryptor);
+        sb.append('}');
+        return sb.toString();
+    }
 }
