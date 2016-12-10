@@ -93,4 +93,11 @@ public class SingleSessionPool implements SessionPool {
         return session.getHost();
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SingleSessionPool{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
+    }
 }
