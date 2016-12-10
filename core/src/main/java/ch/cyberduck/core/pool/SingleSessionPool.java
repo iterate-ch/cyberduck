@@ -70,7 +70,12 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public void shutdown() {
-        //todo close vault
+        try {
+            session.close();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure closing session. %s", e.getMessage()));
+        }
     }
 
     @Override
