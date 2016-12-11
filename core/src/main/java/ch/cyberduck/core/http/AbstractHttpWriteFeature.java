@@ -66,8 +66,8 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
      * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
+    public <T> HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
+                                                 final DelayedHttpEntityCallable<T> command) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
@@ -115,7 +115,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 throw new BackgroundException(target.getException());
             }
             final OutputStream stream = entity.getStream();
-            return new ResponseOutputStream<T>(stream) {
+            return new HttpResponseOutputStream<T>(stream) {
                 /**
                  * Only available after this stream is closed.
                  * @return Response from server for upload
@@ -151,5 +151,5 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
 
 
     @Override
-    public abstract ResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
+    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
 }
