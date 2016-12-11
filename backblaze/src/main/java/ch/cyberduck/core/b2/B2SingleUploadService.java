@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -26,9 +27,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -60,10 +59,9 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
 
     @Override
     public B2FileResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final StreamListener listener, final TransferStatus status,
-                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+                                 final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         status.setChecksum(checksum.compute(local.getInputStream()));
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+        return super.upload(file, local, throttle, listener, status, callback);
     }
 
     @Override
