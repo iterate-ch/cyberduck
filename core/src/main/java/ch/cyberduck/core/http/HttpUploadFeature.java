@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
-import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
@@ -84,7 +83,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             final HttpResponseOutputStream<Output> proxy;
             final OutputStream out;
             if(vault.contains(file)) {
-                out = new CryptoWriteFeature(session, writer, vault).write(file, status);
+                out = vault.getFeature(session, Write.class, writer).write(file, status);
                 proxy = (HttpResponseOutputStream<Output>) ((CryptoOutputStream) out).getProxy();
             }
             else {
