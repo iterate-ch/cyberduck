@@ -9,7 +9,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,7 +45,7 @@ public class S3MultipartWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
+        final HttpResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
@@ -78,7 +78,7 @@ public class S3MultipartWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
+        final HttpResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed

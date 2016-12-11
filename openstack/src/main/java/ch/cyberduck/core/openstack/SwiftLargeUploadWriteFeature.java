@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -90,7 +90,7 @@ public class SwiftLargeUploadWriteFeature implements Write {
     @Override
     public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
-        return new ResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
+        return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getResponse() throws BackgroundException {

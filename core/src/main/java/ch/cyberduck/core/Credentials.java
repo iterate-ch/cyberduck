@@ -22,6 +22,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 /**
  * Stores the login credentials
  */
@@ -223,24 +225,6 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof Credentials)) {
-            return false;
-        }
-        final Credentials that = (Credentials) o;
-        if(password != null ? !password.equals(that.password) : that.password != null) {
-            return false;
-        }
-        if(user != null ? !user.equals(that.user) : that.user != null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public int compareTo(final Credentials o) {
         if(null == user && null == o.user) {
             return 0;
@@ -255,10 +239,23 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Credentials)) {
+            return false;
+        }
+        final Credentials that = (Credentials) o;
+        return Objects.equals(user, that.user) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(identity, that.identity) &&
+                Objects.equals(certificate, that.certificate);
+    }
+
+    @Override
     public int hashCode() {
-        int result = user != null ? user.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
+        return Objects.hash(user, password, identity, certificate);
     }
 
     @Override

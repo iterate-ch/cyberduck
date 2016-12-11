@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -91,7 +91,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public ResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             @Override
             public Void call(final AbstractHttpEntity entity) throws BackgroundException {

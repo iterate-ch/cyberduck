@@ -10,7 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -65,7 +65,7 @@ public class SwiftReadFeatureTest {
         new SwiftTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
+        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -103,7 +103,7 @@ public class SwiftReadFeatureTest {
         new SwiftTouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final ResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
+        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

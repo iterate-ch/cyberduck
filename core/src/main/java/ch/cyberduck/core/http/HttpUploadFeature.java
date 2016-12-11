@@ -81,11 +81,11 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);
             final Vault vault = session.getFeature(Vault.class);
-            final ResponseOutputStream<Output> proxy;
+            final HttpResponseOutputStream<Output> proxy;
             final OutputStream out;
             if(vault.contains(file)) {
                 out = new CryptoWriteFeature(session, writer, vault).write(file, status);
-                proxy = (ResponseOutputStream<Output>) ((CryptoOutputStream) out).getProxy();
+                proxy = (HttpResponseOutputStream<Output>) ((CryptoOutputStream) out).getProxy();
             }
             else {
                 out = proxy = writer.write(file, status);

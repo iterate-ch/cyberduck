@@ -17,7 +17,7 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class DefaultStreamCloserTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testClose() throws Exception {
-        new DefaultStreamCloser().close(new ResponseOutputStream<Void>(new NullOutputStream()) {
+        new DefaultStreamCloser().close(new HttpResponseOutputStream<Void>(new NullOutputStream()) {
             @Override
             public Void getResponse() throws BackgroundException {
                 throw new InteroperabilityException("d");

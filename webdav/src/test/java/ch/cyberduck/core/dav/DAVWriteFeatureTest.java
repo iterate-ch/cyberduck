@@ -14,9 +14,9 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.http.RedirectCallback;
-import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -103,7 +103,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setOffset(0L);
             status.setLength(1024L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -116,7 +116,7 @@ public class DAVWriteFeatureTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -144,7 +144,7 @@ public class DAVWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -156,7 +156,7 @@ public class DAVWriteFeatureTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -189,7 +189,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -198,7 +198,7 @@ public class DAVWriteFeatureTest {
             status.setLength(1L);
             status.setOffset(1L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -224,7 +224,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -233,7 +233,7 @@ public class DAVWriteFeatureTest {
             status.setLength(2L);
             status.setOffset(1L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -253,7 +253,7 @@ public class DAVWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
+        final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
         try {
             write.close();
             write.getResponse();
@@ -319,7 +319,7 @@ public class DAVWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1024);
         status.setLength(content.length);
-        final ResponseOutputStream<String> out = feature.write(test, status);
+        final HttpResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();

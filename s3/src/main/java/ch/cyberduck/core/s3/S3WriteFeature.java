@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -84,7 +84,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     }
 
     @Override
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = this.getDetails(containerService.getKey(file), status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override

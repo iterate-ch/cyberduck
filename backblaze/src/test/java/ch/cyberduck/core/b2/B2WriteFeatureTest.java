@@ -28,7 +28,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -70,7 +70,7 @@ public class B2WriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         try {
             out.close();

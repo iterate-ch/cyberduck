@@ -26,7 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -66,7 +66,7 @@ public class B2ObjectListServiceTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(new byte[0], out);
         out.close();
         final B2FileResponse resopnse = out.getResponse();
@@ -129,7 +129,7 @@ public class B2ObjectListServiceTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-            final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file1, status);
+            final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file1, status);
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = out.getResponse();
@@ -146,7 +146,7 @@ public class B2ObjectListServiceTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-            final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file2, status);
+            final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file2, status);
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = out.getResponse();
