@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
@@ -39,9 +38,6 @@ import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
 
     private final B2Session session;
 
