@@ -15,6 +15,7 @@ package ch.cyberduck.core.spectra;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,22 +23,18 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
 import java.security.MessageDigest;
 import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SpectraUploadFeature.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -53,8 +50,8 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
     }
 
     @Override
-    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // The client-side checksum is passed to the BlackPearl gateway by supplying the applicable CRC HTTP header.
         // If this is done, the BlackPearl gateway verifies that the data received matches the checksum provided.
         // End-to-end data protection requires that the client provide the CRC when uploading the object and then
@@ -71,7 +68,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
-            stored = super.upload(file, local, throttle, listener, chunk, cancel, progress);
+            stored = super.upload(file, local, throttle, listener, chunk, callback);
         }
         return stored;
     }
