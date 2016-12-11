@@ -27,10 +27,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class ResponseOutputStream<T> extends ProxyOutputStream {
+public abstract class HttpResponseOutputStream<T> extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
-    public ResponseOutputStream(final OutputStream proxy) {
+    public HttpResponseOutputStream(final OutputStream proxy) {
         super(proxy);
     }
 

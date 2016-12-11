@@ -25,7 +25,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
@@ -69,7 +69,7 @@ public class SpectraMultipleDeleteFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
-        final ResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length));
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length));
         IOUtils.write(content, out);
         out.close();
         assertTrue(new S3FindFeature(session).find(test));
