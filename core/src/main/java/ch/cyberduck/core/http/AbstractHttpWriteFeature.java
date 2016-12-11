@@ -39,8 +39,7 @@ import java.util.concurrent.ThreadFactory;
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
-    private abstract class FutureHttpResponse<T> implements Runnable {
-
+    private abstract class FutureHttpResponse implements Runnable {
         Exception exception;
         T response;
 
@@ -63,11 +62,10 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
 
     /**
      * @param command Callable writing entity to stream and returning checksum
-     * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
-                                                 final DelayedHttpEntityCallable<T> command) throws BackgroundException {
+    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
@@ -82,7 +80,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
             if(StringUtils.isNotBlank(status.getMime())) {
                 entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
             }
-            final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
+            final FutureHttpResponse target = new FutureHttpResponse() {
                 @Override
                 public void run() {
                     try {
