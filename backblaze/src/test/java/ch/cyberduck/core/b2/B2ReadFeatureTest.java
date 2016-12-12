@@ -30,7 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
@@ -89,7 +89,7 @@ public class B2ReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -123,7 +123,7 @@ public class B2ReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         {

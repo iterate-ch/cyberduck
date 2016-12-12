@@ -39,8 +39,7 @@ import java.util.concurrent.ThreadFactory;
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
-    private abstract class FutureHttpResponse<T> implements Runnable {
-
+    private abstract class FutureHttpResponse implements Runnable {
         Exception exception;
         T response;
 
@@ -63,10 +62,9 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
 
     /**
      * @param command Callable writing entity to stream and returning checksum
-     * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
+    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<T> command) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = new CountDownLatch(1);
@@ -82,7 +80,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
             if(StringUtils.isNotBlank(status.getMime())) {
                 entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
             }
-            final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
+            final FutureHttpResponse target = new FutureHttpResponse() {
                 @Override
                 public void run() {
                     try {
@@ -115,7 +113,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 throw new BackgroundException(target.getException());
             }
             final OutputStream stream = entity.getStream();
-            return new ResponseOutputStream<T>(stream) {
+            return new HttpResponseOutputStream<T>(stream) {
                 /**
                  * Only available after this stream is closed.
                  * @return Response from server for upload
@@ -151,5 +149,5 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
 
 
     @Override
-    public abstract ResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
+    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
 }

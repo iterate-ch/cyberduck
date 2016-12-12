@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.cryptomator;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,20 +15,26 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.exception.AccessDeniedException;
 
-import org.junit.Test;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.junit.Assert.assertNotNull;
+public class CryptoFilenameMismatchException extends AccessDeniedException {
 
-public class SessionFactoryTest {
-
-    @Test
-    public void testCreateSession() throws Exception {
-        assertNotNull(SessionFactory.create(new Host(new SpectraProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+    public CryptoFilenameMismatchException() {
     }
+
+    public CryptoFilenameMismatchException(final String detail) {
+        super(detail);
+    }
+
+    public CryptoFilenameMismatchException(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
+
+    @Override
+    public String getHelp() {
+        return StringUtils.EMPTY;
+    }
+
 }

@@ -23,6 +23,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -78,8 +80,11 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        });
+        }, new DisabledVaultLookupListener());
+        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        assertSame(f, vault.encrypt(session, f));
         vault.load(session);
+        assertNotSame(f, vault.encrypt(session, f));
     }
 
     @Test
@@ -128,7 +133,7 @@ public class CryptoVaultTest {
                 }
                 prompt.set(true);
             }
-        });
+        }, new DisabledVaultLookupListener());
         try {
             vault.load(session);
             fail();
@@ -176,7 +181,7 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
-        });
+        }, new DisabledVaultLookupListener());
         try {
             vault.load(session);
             fail();
@@ -215,7 +220,7 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        });
+        }, new DisabledVaultLookupListener());
         vault.create(session, null);
     }
 
@@ -248,14 +253,14 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        });
+        }, new DisabledVaultLookupListener());
         vault.create(session, null);
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);
             fail();
         }
-        catch(IllegalArgumentException e) {
+        catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize
         assertEquals(0L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()));
@@ -264,7 +269,7 @@ public class CryptoVaultTest {
             vault.toCleartextSize(vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
             fail();
         }
-        catch(IllegalArgumentException e) {
+        catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
         assertEquals(1L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));

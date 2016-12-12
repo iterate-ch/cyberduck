@@ -18,12 +18,11 @@
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal interface IPasswordPromptView : IPromptView
+    public interface IPasswordPromptView : IPromptView
     {
         string Title { set; }
         string Reason { set; }
         string OkButtonText { set; }
-        string Placeholder { set; }
 
         bool SavePassword { get; set; }
     }

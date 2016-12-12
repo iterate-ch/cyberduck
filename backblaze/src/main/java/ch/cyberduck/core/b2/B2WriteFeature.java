@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -67,7 +67,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
     }
 
     @Override
-    public ResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final B2GetUploadUrlResponse uploadUrl;
             if(null == urls.get()) {

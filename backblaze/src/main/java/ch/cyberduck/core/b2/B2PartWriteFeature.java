@@ -24,7 +24,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -51,7 +51,7 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
     }
 
     @Override
-    public ResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final B2GetUploadPartUrlResponse uploadUrl
                     = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));

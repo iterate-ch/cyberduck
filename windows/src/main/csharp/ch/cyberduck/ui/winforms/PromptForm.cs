@@ -32,13 +32,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             AutoSize = true;
             FormClosing += delegate(object sender, FormClosingEventArgs args)
             {
-                bool valid = false;
-                foreach (var d in ValidateInput.GetInvocationList())
+                bool valid = true;
+                if (ValidateInput != null)
                 {
-                    valid = (bool) d.DynamicInvoke();
-                    if (!valid)
+                    foreach (var d in ValidateInput.GetInvocationList())
                     {
-                        break;
+                        valid = (bool) d.DynamicInvoke();
+                        if (!valid)
+                        {
+                            break;
+                        }
                     }
                 }
                 bool cancel = DialogResult != DialogResult.Cancel && !valid;
@@ -53,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         protected override bool EnableAutoSizePosition => false;
 
-        public override string[] BundleNames => new[] {"Folder", "Cryptomator"};
+        public override string[] BundleNames => new[] {"Folder", "Cryptomator", "Keychain"};
 
         public string InputText
         {

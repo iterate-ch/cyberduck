@@ -25,12 +25,12 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
-public class ResponseOutputStreamTest {
+public class HttpResponseOutputStreamTest {
 
     @Test(expected = IOException.class)
     public void testClose() throws Exception {
         try {
-            new ResponseOutputStream<Void>(new NullOutputStream()) {
+            new HttpResponseOutputStream<Void>(new NullOutputStream()) {
                 @Override
                 public Void getResponse() throws BackgroundException {
                     throw new InteroperabilityException("d");

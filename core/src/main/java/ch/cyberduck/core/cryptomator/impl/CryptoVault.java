@@ -60,6 +60,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,16 +95,18 @@ public class CryptoVault implements Vault {
     private final Path home;
     private final PasswordStore keychain;
     private final PasswordCallback callback;
+    private final VaultLookupListener listener;
 
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback) {
+    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback, final VaultLookupListener listener) {
         this.home = home;
         this.keychain = keychain;
         this.callback = callback;
+        this.listener = listener;
     }
 
     @Override
@@ -237,7 +240,10 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        return file.equals(home) || file.isChild(home);
+        if(cryptor != null) {
+            return file.equals(home) || file.isChild(home);
+        }
+        return false;
     }
 
     @Override
@@ -281,12 +287,14 @@ public class CryptoVault implements Vault {
                             inflated.getName().startsWith(DIR_PREFIX) ?
                                     EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
                                     EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
-                    decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));
                         permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                         permission.setOther(permission.getOther().or(Permission.Action.execute));
+                    }
+                    else {
+                        decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                     }
                     return decrypted;
                 }
@@ -296,7 +304,7 @@ public class CryptoVault implements Vault {
                 }
             }
             else {
-                throw new CryptoAuthenticationException(
+                throw new CryptoFilenameMismatchException(
                         String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
             }
         }
@@ -312,16 +320,16 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) {
+    public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
         if(ciphertextFileSize < headerSize) {
-            throw new IllegalArgumentException(String.format("Encrypted file size must be at least %d bytes", headerSize));
+            throw new CryptoInvalidFilesizeException(String.format("Encrypted file size must be at least %d bytes", headerSize));
         }
         final long remainder = (ciphertextFileSize - headerSize) % ciphertextChunkSize;
         if(remainder > 0 && remainder < chunkHeaderSize) {
-            throw new IllegalArgumentException("Invalid file size");
+            throw new CryptoInvalidFilesizeException("Invalid file size");
         }
         return ciphertextFileSize - (headerSize + (ciphertextFileSize / ciphertextChunkSize) * chunkHeaderSize + (remainder == 0 ? 0 : chunkHeaderSize));
     }
@@ -359,7 +367,8 @@ public class CryptoVault implements Vault {
         if(cryptor != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session,
-                        new VaultFinderListService(this, session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
+                        new VaultFinderListService(this, session, (ListService) delegate,
+                                new VaultFinderListProgressListener(session, keychain, callback, listener)), this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
@@ -415,5 +424,32 @@ public class CryptoVault implements Vault {
             this.id = id;
             this.path = path;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof CryptoVault)) {
+            return false;
+        }
+        final CryptoVault that = (CryptoVault) o;
+        return Objects.equals(home, that.home) &&
+                Objects.equals(cryptor, that.cryptor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(home, cryptor);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoVault{");
+        sb.append("home=").append(home);
+        sb.append(", cryptor=").append(cryptor);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -47,26 +46,11 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), keychain, login, password, cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), keychain, password, cache, controller, bookmark
         )
+                .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                 .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
-    }
-
-    public static SessionPool single(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final HostPasswordStore keychain, final LoginCallback login,
-                                     final PasswordCallback password, final HostKeyCallback key) {
-        return new SingleSessionPool(
-                new LoginConnectionService(
-                        login,
-                        key,
-                        keychain,
-                        controller,
-                        controller),
-                SessionFactory.create(bookmark,
-                        new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                        new KeychainX509KeyManager(bookmark), keychain, password), cache
-        );
     }
 }

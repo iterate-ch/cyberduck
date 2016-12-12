@@ -1,4 +1,4 @@
-﻿namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms
+﻿namespace Ch.Cyberduck.Ui.Winforms
 {
     partial class NewVaultPromptForm
     {

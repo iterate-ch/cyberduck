@@ -144,7 +144,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox inputTextBox;
+        protected System.Windows.Forms.TextBox inputTextBox;
         protected System.Windows.Forms.PictureBox pictureBox;
         protected System.Windows.Forms.Label label;
         protected System.Windows.Forms.Button okButton;

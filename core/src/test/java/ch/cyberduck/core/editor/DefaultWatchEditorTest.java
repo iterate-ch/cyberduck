@@ -19,6 +19,8 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
@@ -43,21 +45,21 @@ public class DefaultWatchEditorTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(null, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty()),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(null, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
                 new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplicationNoFile() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty()),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
                 new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty()),
+        final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
                 new Path("/remote.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         new DefaultLocalTouchFeature().touch(editor.getLocal());
         editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());

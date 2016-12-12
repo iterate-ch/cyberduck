@@ -22,10 +22,9 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
-namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms
+namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class NewVaultPromptForm : NewFolderPromptForm, INewVaultPromptView
     {
@@ -64,9 +63,17 @@ namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms
             tableLayoutPanel.RowCount++;
             tableLayoutPanel.RowStyles.Insert(2 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(passphraseTextBox, 1, 2 + offset);
-            tableLayoutPanel.SetColumnSpan(passphraseTextBox, 2);
+            tableLayoutPanel.SetColumnSpan(passphraseTextBox, 3);
             NativeMethods.SendMessage(passphraseTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
                 LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+
+            strengthIndicator = new PasswordStrengthIndicator();
+            strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
+            tableLayoutPanel.RowCount++;
+            tableLayoutPanel.RowStyles.Insert(3 + offset, new RowStyle(SizeType.AutoSize));
+            tableLayoutPanel.Controls.Add(strengthIndicator, 1, 3 + offset);
+            tableLayoutPanel.SetColumnSpan(strengthIndicator, 3);
+            strengthIndicator.Value = 0;
 
             passphraseConfirmTextBox = new TextBox();
             passphraseConfirmTextBox.Location = new Point(84, 70);
@@ -76,18 +83,13 @@ namespace Ch.Cyberduck.windows.src.main.csharp.ch.cyberduck.ui.winforms
             passphraseConfirmTextBox.TabIndex = 4;
             passphraseConfirmTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
             tableLayoutPanel.RowCount++;
-            tableLayoutPanel.RowStyles.Insert(3 + offset, new RowStyle(SizeType.AutoSize));
-            tableLayoutPanel.Controls.Add(passphraseConfirmTextBox, 1, 3 + offset);
-            tableLayoutPanel.SetColumnSpan(passphraseConfirmTextBox, 2);
-            tableLayoutPanel.SetRow(okButton, 4 + offset);
-            tableLayoutPanel.SetRow(cancelButton, 4 + offset);
+            tableLayoutPanel.RowStyles.Insert(4 + offset, new RowStyle(SizeType.AutoSize));
+            tableLayoutPanel.Controls.Add(passphraseConfirmTextBox, 1, 4 + offset);
+            tableLayoutPanel.SetColumnSpan(passphraseConfirmTextBox, 3);
+            tableLayoutPanel.SetRow(okButton, 5 + offset);
+            tableLayoutPanel.SetRow(cancelButton, 5 + offset);
             NativeMethods.SendMessage(passphraseConfirmTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
                 LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
-
-            strengthIndicator = new PasswordStrengthIndicator();
-            strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
-            tableLayoutPanel.Controls.Add(strengthIndicator, 3, 2 + offset);
-            strengthIndicator.Value = 0;
         }
     }
 }

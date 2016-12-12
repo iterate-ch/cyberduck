@@ -25,11 +25,13 @@ import ch.cyberduck.core.features.Vault;
 
 public class LookupVault implements Vault {
     private final PasswordStore keychain;
-    private final PasswordCallback callback;
+    private final PasswordCallback prompt;
+    private final VaultLookupListener listener;
 
-    public LookupVault(final PasswordStore keychain, final PasswordCallback callback) {
+    public LookupVault(final PasswordStore keychain, final PasswordCallback prompt, final VaultLookupListener listener) {
         this.keychain = keychain;
-        this.callback = callback;
+        this.prompt = prompt;
+        this.listener = listener;
     }
 
     @Override
@@ -81,8 +83,9 @@ public class LookupVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(type == ListService.class) {
-            return (T) new VaultFinderListService(this, session, session, new VaultFinderListProgressListener(session, keychain, callback));
+            return (T) new VaultFinderListService(this, session, session, new VaultFinderListProgressListener(session, keychain, prompt, listener));
         }
         return delegate;
     }
+
 }

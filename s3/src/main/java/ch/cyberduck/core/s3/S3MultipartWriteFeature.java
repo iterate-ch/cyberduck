@@ -11,7 +11,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -70,7 +70,7 @@ public class S3MultipartWriteFeature implements Write {
     }
 
     @Override
-    public ResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session)
                 .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
@@ -87,7 +87,7 @@ public class S3MultipartWriteFeature implements Write {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream stream = new MultipartOutputStream(multipart, file, status);
-        return new ResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
+        return new HttpResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getResponse() throws BackgroundException {
