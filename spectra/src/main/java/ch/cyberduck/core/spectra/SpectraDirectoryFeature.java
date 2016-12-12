@@ -55,9 +55,6 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
             super.mkdir(file, region, status);
         }
         else {
-            if(null == status) {
-                status = new TransferStatus();
-            }
             if(preferences.getBoolean("spectra.upload.crc32")) {
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
                         .compute(new NullInputStream(0L), status));

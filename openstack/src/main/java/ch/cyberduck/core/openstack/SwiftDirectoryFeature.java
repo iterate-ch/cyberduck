@@ -57,7 +57,7 @@ public class SwiftDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
@@ -69,9 +69,6 @@ public class SwiftDirectoryFeature implements Directory {
                         new SwiftLocationFeature.SwiftRegion(region)), file.getName());
             }
             else {
-                if(null == status) {
-                    status = new TransferStatus();
-                }
                 status.setMime("application/directory");
                 try {
                     write.write(file, status.length(0L)).close();

@@ -38,7 +38,7 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override

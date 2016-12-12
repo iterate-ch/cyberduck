@@ -58,11 +58,11 @@ public class B2DirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
-    public void mkdir(final Path file, final String type, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String type, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(file).getName(),
@@ -73,9 +73,6 @@ public class B2DirectoryFeature implements Directory {
                 }
             }
             else {
-                if(null == status) {
-                    status = new TransferStatus();
-                }
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(new NullInputStream(0L), status.length(0L)));
                 status.setMime(MIMETYPE);
                 write.write(file, status);

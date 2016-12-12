@@ -58,22 +58,23 @@ public class S3DirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
-    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
         }
         else {
-            if(null == status) {
-                status = new TransferStatus();
+            if(null == status.getEncryption()) {
                 final Encryption encryption = session.getFeature(Encryption.class);
                 if(encryption != null) {
                     status.setEncryption(encryption.getDefault(file));
                 }
+            }
+            if(null == status.getStorageClass()) {
                 final Redundancy redundancy = session.getFeature(Redundancy.class);
                 if(redundancy != null) {
                     status.setStorageClass(redundancy.getDefault());
