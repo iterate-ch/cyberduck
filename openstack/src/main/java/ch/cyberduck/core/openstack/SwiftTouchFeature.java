@@ -56,6 +56,10 @@ public class SwiftTouchFeature implements Touch {
         final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
         status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
+        this.touch(file, status);
+    }
+
+    protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             write.write(file, status).close();
         }
