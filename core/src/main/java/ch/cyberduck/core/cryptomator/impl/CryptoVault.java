@@ -43,6 +43,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -411,6 +412,9 @@ public class CryptoVault implements Vault {
             }
             if(type == Compress.class) {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
+            }
+            if(type == ChecksumCompute.class) {
+                return (T) new CryptoChecksumCompute((ChecksumCompute) delegate, this);
             }
         }
         return delegate;
