@@ -47,6 +47,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -133,7 +134,7 @@ public class CryptoVault implements Vault {
         final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
-        feature.mkdir(home, region, null);
+        feature.mkdir(home, region, new TransferStatus());
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
@@ -142,9 +143,9 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        feature.mkdir(dataDir, region, null);
-        feature.mkdir(firstLevel, region, null);
-        feature.mkdir(secondLevel, region, null);
+        feature.mkdir(dataDir, region, new TransferStatus());
+        feature.mkdir(firstLevel, region, new TransferStatus());
+        feature.mkdir(secondLevel, region, new TransferStatus());
         return this;
     }
 
