@@ -18,10 +18,8 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -38,9 +36,6 @@ import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED
 public class B2TouchFeature implements Touch {
 
     private final B2Session session;
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
 
     private final Write write;
 
@@ -64,7 +59,6 @@ public class B2TouchFeature implements Touch {
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())
                 )
         );
-        status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
         this.touch(file, status);
     }
 

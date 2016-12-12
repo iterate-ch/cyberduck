@@ -70,7 +70,7 @@ public class S3TouchFeature implements Touch {
         if(checksum != null) {
             status.setChecksum(checksum.compute(new NullInputStream(0L), status));
         }
-        this.touch(file, status);
+        this.touch(file, status.length(0L));
     }
 
     protected void touch(final Path file, final TransferStatus status) throws BackgroundException {

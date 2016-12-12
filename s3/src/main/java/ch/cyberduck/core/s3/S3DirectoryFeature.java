@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -80,8 +79,7 @@ public class S3DirectoryFeature implements Directory {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
-            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(new NullInputStream(0L), status));
+            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
             try {

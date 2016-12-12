@@ -17,7 +17,6 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -35,8 +34,7 @@ public class SpectraTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
-        status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status.length(0L)));
     }
 
 
