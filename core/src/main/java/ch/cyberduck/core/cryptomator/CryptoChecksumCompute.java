@@ -63,6 +63,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
                     @Override
                     public TransferStatus call() throws Exception {
+                        out.write(vault.getCryptor().fileHeaderCryptor().encryptHeader(header).array());
                         new StreamCopier(status, status).transfer(in, out);
                         return status;
                     }
