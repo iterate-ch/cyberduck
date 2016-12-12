@@ -29,6 +29,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -147,7 +148,7 @@ public class S3DirectoryFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new S3DirectoryFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))).mkdir(test);
+        new CryptoDirectoryFeature(session, new S3DirectoryFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -171,7 +172,7 @@ public class S3DirectoryFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new S3DirectoryFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))).mkdir(test);
+        new CryptoDirectoryFeature(session, new S3DirectoryFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).mkdir(test);
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
