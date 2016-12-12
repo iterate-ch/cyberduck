@@ -27,6 +27,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class CryptoChecksumCompute extends AbstractChecksumCompute implements ChecksumCompute {
+    private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault vault;
     private final ChecksumCompute delegate;
@@ -49,10 +51,14 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
 
     @Override
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        if(null == status.getHeader()) {
+            log.warn(String.format("Missing file header in status %s", status));
+            return delegate.compute(in, status);
+        }
         return this.compute(in, status.getHeader());
     }
 
-    public Checksum compute(final InputStream in, final FileHeader header) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final FileHeader header) throws ChecksumException {
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream out = new CryptoOutputStream(source, vault.getCryptor(), header);

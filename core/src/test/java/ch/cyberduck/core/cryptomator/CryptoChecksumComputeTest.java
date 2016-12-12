@@ -83,5 +83,6 @@ public class CryptoChecksumComputeTest {
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
         assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
                 sha.compute(new NullInputStream(0L), new TransferStatus()));
+        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(null)).hash);
     }
 }
