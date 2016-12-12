@@ -75,10 +75,13 @@ public class CryptoChecksumComputeTest {
         final Cryptor cryptor = vault.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         // DEFAULT_PIPE_SIZE=1024
-        final CryptoChecksumCompute compute = new CryptoChecksumCompute(new SHA256ChecksumCompute(), vault);
+        final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
+        final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
         assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
         assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)),
                 compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)));
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
+        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
+                sha.compute(new NullInputStream(0L), new TransferStatus()));
     }
 }
