@@ -52,6 +52,9 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -380,6 +383,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
             }
+        }
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.sha256);
         }
         return super._getFeature(type);
     }
