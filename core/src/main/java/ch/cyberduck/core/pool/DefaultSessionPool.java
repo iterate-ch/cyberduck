@@ -77,9 +77,8 @@ public class DefaultSessionPool implements SessionPool {
     private SessionPool features = SessionPool.DISCONNECTED;
 
     /**
-     * Vault finder
+     * Shared vault
      */
-    private final LookupVault finder;
     private Vault vault = Vault.DISABLED;
 
     private int retry = preferences.getInteger("connection.retry");
@@ -99,11 +98,13 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
         this.pool = new GenericObjectPool<Session>(
-                new PooledSessionFactory(connect, trust, key, keychain, password, cache, bookmark), configuration);
+                new PooledSessionFactory(connect, trust, key,
+                        PreferencesFactory.get().getBoolean("cryptomator.enable") ?
+                                new LookupVault(keychain, password, new SessionPoolVaultListener()) : Vault.DISABLED,
+                        cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
-        this.finder = new LookupVault(keychain, password, new SessionPoolVaultListener());
     }
 
     public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
@@ -171,7 +172,12 @@ public class DefaultSessionPool implements SessionPool {
                         features = new SingleSessionPool(connect, session, cache, keychain, password);
                     }
                     if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                        session.withVault(Vault.DISABLED == vault ? finder : new PooledVault(vault));
+                        if(Vault.DISABLED != vault) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Inject vault %s for session %s", vault, session));
+                            }
+                            session.withVault(new PooledVault(vault));
+                        }
                     }
                     return session;
                 }
@@ -347,7 +353,7 @@ public class DefaultSessionPool implements SessionPool {
         return sb.toString();
     }
 
-    private class SessionPoolVaultListener implements VaultLookupListener {
+    public class SessionPoolVaultListener implements VaultLookupListener {
         @Override
         public void found(final Vault found) {
             vault = found;
@@ -371,6 +377,9 @@ public class DefaultSessionPool implements SessionPool {
             return delegate.load(session);
         }
 
+        /**
+         * Pool that is not closed on disconnect. Close vault when pool is shutdown instead.
+         */
         @Override
         public void close() {
             log.warn(String.format("Keep vault %s open for session pool", delegate));
