@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -72,6 +73,7 @@ public class SwiftDirectoryFeature implements Directory {
                 if(null == status) {
                     status = new TransferStatus();
                 }
+                status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
                 status.setMime("application/directory");
                 try {
                     write.write(file, status).close();

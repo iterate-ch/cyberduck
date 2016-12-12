@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -38,6 +39,7 @@ public class SwiftTouchFeature implements Touch {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
+    private final SwiftSession session;
     private final Write write;
 
     public SwiftTouchFeature(final SwiftSession session) {
@@ -45,6 +47,7 @@ public class SwiftTouchFeature implements Touch {
     }
 
     public SwiftTouchFeature(final SwiftSession session, final Write write) {
+        this.session = session;
         this.write = write;
     }
 
@@ -52,10 +55,7 @@ public class SwiftTouchFeature implements Touch {
     public void touch(final Path file) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
-        this.touch(file, status);
-    }
-
-    private void touch(final Path file, final TransferStatus status) throws BackgroundException {
+        status.setLength(session.getFeature(Vault.class).toCiphertextSize(0L));
         try {
             write.write(file, status).close();
         }
