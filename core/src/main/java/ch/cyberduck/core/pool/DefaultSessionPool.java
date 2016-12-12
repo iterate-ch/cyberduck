@@ -31,7 +31,6 @@ import ch.cyberduck.core.cryptomator.VaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -58,9 +57,6 @@ public class DefaultSessionPool implements SessionPool {
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
@@ -278,7 +274,7 @@ public class DefaultSessionPool implements SessionPool {
                 try {
                     pool.invalidateObject(session);
                 }
-                catch(Exception e) {
+                catch(Exception ignored) {
                     log.warn(String.format("Failure invalidating session %s in pool", session));
                 }
             }
