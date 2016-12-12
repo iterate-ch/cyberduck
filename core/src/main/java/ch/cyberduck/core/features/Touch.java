@@ -17,10 +17,11 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Touch {
 
-    void touch(Path file) throws BackgroundException;
+    void touch(Path file, TransferStatus transferStatus) throws BackgroundException;
 
     /**
      * @param workdir Working directory

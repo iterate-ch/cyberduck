@@ -131,7 +131,7 @@ public class IRODSReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(test);
+        new IRODSTouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomStringUtils.random(1000).getBytes();

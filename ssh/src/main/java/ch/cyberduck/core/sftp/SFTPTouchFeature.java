@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -36,7 +37,7 @@ public class SFTPTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         if(file.isFile()) {
             try {
                 final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC));

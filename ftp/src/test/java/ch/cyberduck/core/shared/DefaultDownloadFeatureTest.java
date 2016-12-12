@@ -65,7 +65,7 @@ public class DefaultDownloadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test);
+        new DefaultTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new byte[39864];
         new Random().nextBytes(content);
         {

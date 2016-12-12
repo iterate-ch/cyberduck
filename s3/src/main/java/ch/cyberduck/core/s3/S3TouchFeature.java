@@ -55,8 +55,7 @@ public class S3TouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setMime(mapping.getMime(file.getName()));
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
@@ -70,10 +69,6 @@ public class S3TouchFeature implements Touch {
         if(checksum != null) {
             status.setChecksum(checksum.compute(new NullInputStream(0L), status));
         }
-        this.touch(file, status.length(0L));
-    }
-
-    protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             write.write(file, status).close();
         }

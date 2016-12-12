@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class DriveUrlProviderTest {
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertNotNull(provider.toUrl(test));
         assertTrue(provider.toUrl(test).isEmpty());
-        new DriveTouchFeature(session).touch(test);
+        new DriveTouchFeature(session).touch(test, new TransferStatus());
 //        assertFalse(provider.toUrl(test).isEmpty());
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -45,7 +45,7 @@ public class DefaultTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
         final TransferStatus status = new TransferStatus();

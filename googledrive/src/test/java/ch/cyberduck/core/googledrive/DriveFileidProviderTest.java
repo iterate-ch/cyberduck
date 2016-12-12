@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class DriveFileidProviderTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test);
+        new DriveTouchFeature(session).touch(test, new TransferStatus());
         assertNotNull(new DriveFileidProvider(session)
                 .getFileid(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

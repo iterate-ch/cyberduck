@@ -181,7 +181,7 @@ public class FTPWriteFeatureTest {
         assertEquals(false, new FTPWriteFeature(session).append(
                 new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(f);
+        new DefaultTouchFeature(session).touch(f, new TransferStatus());
         assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.DataObjInp;
@@ -34,7 +35,7 @@ public class IRODSTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             fs.createFile(file.getAbsolute(),

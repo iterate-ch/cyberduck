@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -54,9 +55,9 @@ public class SFTPTouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         // Test override
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final AttributedList<Path> list = session.list(home, new DisabledListProgressListener());
         assertTrue(list.contains(test));
         assertEquals("664", list.get(test).attributes().getPermission().getMode());
@@ -83,7 +84,7 @@ public class SFTPTouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -108,7 +109,7 @@ public class SFTPTouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

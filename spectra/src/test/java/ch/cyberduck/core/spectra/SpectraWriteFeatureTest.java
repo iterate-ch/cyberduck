@@ -111,7 +111,7 @@ public class SpectraWriteFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // Make 0-byte file
-        new SpectraTouchFeature(session).touch(test);
+        new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);

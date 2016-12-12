@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class SwiftUrlProviderTest {
             Thread.sleep(1000L);
         }
         container.attributes().setRegion("DFW");
-        new SwiftTouchFeature(session).touch(file);
+        new SwiftTouchFeature(session).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);
         assertNotNull(signed);

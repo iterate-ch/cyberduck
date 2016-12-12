@@ -14,6 +14,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class S3AttributesFinderFeatureTest {
         session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test);
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -181,7 +182,7 @@ public class S3AttributesFinderFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s~", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(file);
+        new S3TouchFeature(session).touch(file, new TransferStatus());
         new S3AttributesFinderFeature(session).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -200,7 +201,7 @@ public class S3AttributesFinderFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new Path(container, String.format("%s@", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(file);
+        new S3TouchFeature(session).touch(file, new TransferStatus());
         new S3AttributesFinderFeature(session).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

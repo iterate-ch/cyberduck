@@ -11,6 +11,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class SFTPSymlinkFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target);
+        new SFTPTouchFeature(session).touch(target, new TransferStatus());
         final Path link = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
         assertTrue(new SFTPFindFeature(session).find(link));

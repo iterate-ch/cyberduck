@@ -59,7 +59,7 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test);
+        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -118,7 +118,7 @@ public class S3TouchFeatureTest {
         for(int i = 0; i < 200; i++) {
             final String name = String.format("%s-%d", UUID.randomUUID().toString(), i);
             final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-            service.touch(test);
+            service.touch(test, new TransferStatus());
             list.add(test);
         }
         new S3MultipleDeleteFeature(session).delete(list, new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -144,7 +144,7 @@ public class S3TouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new CryptoTouchFeature(session, new S3TouchFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).touch(test);
+        new CryptoTouchFeature(session, new S3TouchFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -169,7 +169,7 @@ public class S3TouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new CryptoTouchFeature(session, new S3TouchFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).touch(test);
+        new CryptoTouchFeature(session, new S3TouchFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

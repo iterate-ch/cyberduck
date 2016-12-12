@@ -28,6 +28,7 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3MetadataFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class SpectraTouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new SpectraTouchFeature(session).touch(test);
+        new SpectraTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
         assertFalse(metadata.isEmpty());

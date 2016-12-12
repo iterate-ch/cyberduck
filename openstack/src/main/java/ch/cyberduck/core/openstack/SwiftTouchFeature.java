@@ -38,7 +38,6 @@ public class SwiftTouchFeature implements Touch {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final SwiftSession session;
     private final Write write;
 
     public SwiftTouchFeature(final SwiftSession session) {
@@ -46,18 +45,13 @@ public class SwiftTouchFeature implements Touch {
     }
 
     public SwiftTouchFeature(final SwiftSession session, final Write write) {
-        this.session = session;
         this.write = write;
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
-        this.touch(file, status.length(0L));
-    }
-
-    protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             write.write(file, status).close();
         }

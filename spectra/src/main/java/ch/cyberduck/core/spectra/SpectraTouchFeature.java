@@ -31,7 +31,7 @@ public class SpectraTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status.length(0L)));

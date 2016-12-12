@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class SwiftMetadataFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(test);
+        new SwiftTouchFeature(session).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new SwiftMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);

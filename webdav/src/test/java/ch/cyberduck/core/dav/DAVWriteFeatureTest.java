@@ -290,7 +290,7 @@ public class DAVWriteFeatureTest {
         assertFalse(feature.append(
                 new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test);
+        new DefaultTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

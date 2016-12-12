@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class AzureTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         try {
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getAppendBlobReference(containerService.getKey(file));

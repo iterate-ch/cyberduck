@@ -28,6 +28,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class GoogleStorageAccessControlListFeatureTest {
         }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         final GoogleStorageAccessControlListFeature f = new GoogleStorageAccessControlListFeature(session);
         final Acl acl = new Acl();
         acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));

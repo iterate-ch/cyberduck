@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class DAVCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy);
         assertTrue(session.getFeature(Find.class).find(test));

@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -63,7 +64,7 @@ public class B2TouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new CryptoTouchFeature(session, new B2TouchFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).touch(test);
+        new CryptoTouchFeature(session, new B2TouchFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

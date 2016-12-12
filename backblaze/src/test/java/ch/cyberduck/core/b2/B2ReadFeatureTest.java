@@ -154,7 +154,7 @@ public class B2ReadFeatureTest {
 
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(test);
+        new B2TouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
@@ -194,7 +194,7 @@ public class B2ReadFeatureTest {
 
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(test);
+        new B2TouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomStringUtils.random(1000).getBytes();

@@ -35,6 +35,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class DefaultAttributesFinderFeatureTest {
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file);
+        new DefaultTouchFeature(session).touch(file, new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test cache

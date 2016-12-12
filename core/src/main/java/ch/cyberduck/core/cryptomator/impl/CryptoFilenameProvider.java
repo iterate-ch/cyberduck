@@ -67,6 +67,7 @@ public class CryptoFilenameProvider {
         final Path firstLevel = secondLevel.getParent();
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
+        //todo region support
         if(!find.find(metadataRoot)) {
             mkdir.mkdir(metadataRoot);
         }

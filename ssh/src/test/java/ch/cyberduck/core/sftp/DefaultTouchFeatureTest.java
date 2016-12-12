@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ public class DefaultTouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test);
+        new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

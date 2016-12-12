@@ -30,6 +30,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -271,7 +272,7 @@ public class DAVSessionTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));

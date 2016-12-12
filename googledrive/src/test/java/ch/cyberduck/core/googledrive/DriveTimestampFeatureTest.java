@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -77,7 +78,7 @@ public class DriveTimestampFeatureTest {
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test);
+        new DriveTouchFeature(session).touch(test, new TransferStatus());
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);

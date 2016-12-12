@@ -13,6 +13,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class SwiftFindFeatureTest {
         catch(NotfoundException e) {
             //
         }
-        new SwiftTouchFeature(session).touch(file);
+        new SwiftTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(file));
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.close();

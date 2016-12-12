@@ -58,7 +58,7 @@ public class S3ReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test);
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -90,7 +90,7 @@ public class S3ReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test);
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));

@@ -35,6 +35,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -116,7 +117,7 @@ public class DriveListServiceTest {
                 new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        new DefaultTouchFeature(session).touch(file);
+        new DefaultTouchFeature(session).touch(file, new TransferStatus());
         new DriveDirectoryFeature(session).mkdir(folder);
         file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
         folder.attributes().setVersionId(new DriveFileidProvider(session).getFileid(folder));

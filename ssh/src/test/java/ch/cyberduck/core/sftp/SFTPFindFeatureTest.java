@@ -10,6 +10,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -88,7 +89,7 @@ public class SFTPFindFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         assertFalse(session.getFeature(Find.class).find(new Path(vault, "a", EnumSet.of(Path.Type.directory))));
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -113,7 +114,7 @@ public class SFTPFindFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -48,8 +48,7 @@ public class B2TouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1))
                 .compute(new NullInputStream(0L), status)
         );
@@ -57,10 +56,6 @@ public class B2TouchFeature implements Touch {
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
-        this.touch(file, status);
-    }
-
-    protected void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             write.write(file, status).close();
         }
