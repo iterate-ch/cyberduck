@@ -18,6 +18,7 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 
@@ -42,7 +43,7 @@ public final class ChecksumComputeFactory {
             default:
                 return new ChecksumCompute() {
                     @Override
-                    public Checksum compute(final InputStream in) throws ChecksumException {
+                    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
                         return null;
                     }
                 };

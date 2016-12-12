@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -41,6 +42,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    private final SpectraSession session;
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
@@ -49,6 +51,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
 
     public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer, final SpectraBulkService bulk) {
         super(session, writer);
+        this.session = session;
         this.bulk = bulk;
     }
 
@@ -62,10 +65,14 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
         if(preferences.getBoolean("spectra.upload.crc32")) {
-            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.crc32).compute(local.getInputStream()));
+            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
+                    .compute(local.getInputStream(), status)
+            );
         }
         if(preferences.getBoolean("spectra.upload.md5")) {
-            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream()));
+            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
+                    .compute(local.getInputStream(), status)
+            );
         }
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);

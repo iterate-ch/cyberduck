@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -65,8 +66,10 @@ public class S3TouchFeature implements Touch {
         if(redundancy != null) {
             status.setStorageClass(redundancy.getDefault());
         }
-        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
-                .compute(new NullInputStream(0L)));
+        final ChecksumCompute checksum = session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256));
+        if(checksum != null) {
+            status.setChecksum(checksum.compute(new NullInputStream(0L), status));
+        }
         this.touch(file, status);
     }
 

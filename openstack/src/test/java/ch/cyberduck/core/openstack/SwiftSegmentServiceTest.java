@@ -10,6 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
@@ -76,7 +77,7 @@ public class SwiftSegmentServiceTest {
         b.setMd5sum("m2");
         b.setSize(1L);
         final Checksum checksum = service.checksum(new MD5ChecksumCompute(), Arrays.asList(a, b));
-        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2", Charset.defaultCharset())), checksum);
+        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2", Charset.defaultCharset()), new TransferStatus()), checksum);
     }
 
     @Test

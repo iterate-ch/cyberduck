@@ -226,8 +226,8 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                         throw new ConnectionCanceledException();
                     }
                     status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(
-                            StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)
-                    ));
+                            StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
+                            status));
                     status.setPart(partNumber);
                     return B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
                         @Override

@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.TimeZone;
@@ -89,7 +90,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                                .compute(local.getInputStream()));
+                                .compute(local.getInputStream(), new TransferStatus()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available

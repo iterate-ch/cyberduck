@@ -41,16 +41,18 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
 
     private final CryptoVault vault;
     private final ChecksumCompute delegate;
-    private final FileHeader header;
 
-    public CryptoChecksumCompute(final CryptoVault vault, final ChecksumCompute delegate, final FileHeader header) {
+    public CryptoChecksumCompute(final ChecksumCompute delegate, final CryptoVault vault) {
         this.vault = vault;
         this.delegate = delegate;
-        this.header = header;
     }
 
     @Override
-    public Checksum compute(final InputStream in) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        return this.compute(in, status.getHeader());
+    }
+
+    public Checksum compute(final InputStream in, final FileHeader header) throws ChecksumException {
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream out = new CryptoOutputStream(source, vault.getCryptor(), header);
@@ -66,7 +68,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
                     }
                 });
                 try {
-                    return delegate.compute(sink);
+                    return delegate.compute(sink, status);
                 }
                 finally {
                     try {

@@ -19,6 +19,7 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
 
@@ -27,7 +28,7 @@ import java.io.InputStream;
 public class SHA256ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public Checksum compute(final InputStream in) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         return new Checksum(HashAlgorithm.sha256, Hex.encodeHexString(this.digest("SHA-256", in)));
     }
 }

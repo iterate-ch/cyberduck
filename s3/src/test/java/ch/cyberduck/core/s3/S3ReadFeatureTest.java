@@ -61,7 +61,7 @@ public class S3ReadFeatureTest {
         new S3TouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -93,7 +93,7 @@ public class S3ReadFeatureTest {
         new S3TouchFeature(session).touch(test);
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -124,7 +124,7 @@ public class S3ReadFeatureTest {
         final byte[] content = new byte[1457];
         new Random().nextBytes(content);
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new S3WriteFeature(session).write(file, status);
@@ -153,7 +153,7 @@ public class S3ReadFeatureTest {
         final byte[] content = new byte[2048];
         new Random().nextBytes(content);
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

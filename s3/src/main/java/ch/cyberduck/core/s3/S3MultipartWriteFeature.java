@@ -12,6 +12,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -156,7 +157,9 @@ public class S3MultipartWriteFeature implements Write {
                             final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
                             switch(session.getSignatureVersion()) {
                                 case AWS4HMACSHA256:
-                                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new ByteArrayInputStream(b, off, len)));
+                                    status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
+                                            .compute(new ByteArrayInputStream(b, off, len), status)
+                                    );
                                     break;
                             }
                             final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
@@ -213,7 +216,7 @@ public class S3MultipartWriteFeature implements Write {
                         concat.append(part.getEtag());
                     }
                     final String expected = String.format("%s-%d",
-                            new MD5ChecksumCompute().compute(concat.toString()), completed.size());
+                            new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
                     final String reference;
                     if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                         reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
