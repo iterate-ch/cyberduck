@@ -294,6 +294,8 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Clear idle connections in pool %s", this));
         }
         pool.clear();
+        vault.close();
+        vault = Vault.DISABLED;
     }
 
     @Override
@@ -302,7 +304,7 @@ public class DefaultSessionPool implements SessionPool {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Close connection pool %s", this));
             }
-            vault.close();
+            this.evict();
             pool.close();
         }
         catch(Exception e) {
