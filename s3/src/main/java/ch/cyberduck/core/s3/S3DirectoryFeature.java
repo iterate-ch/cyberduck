@@ -38,7 +38,7 @@ import java.io.IOException;
 
 public class S3DirectoryFeature implements Directory {
 
-    public static final String MIMETYPE = "application/x-directory";
+    protected static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
 
