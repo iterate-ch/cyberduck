@@ -90,7 +90,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                             throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
                         }
                         return session.getClient().uploadFile(uploadUrl,
-                                containerService.getKey(file),
+                                B2DirectoryFeature.MIMETYPE.equals(status.getMime()) ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
                                 entity, checksum.toString(),
                                 status.getMime(),
                                 status.getMetadata());
