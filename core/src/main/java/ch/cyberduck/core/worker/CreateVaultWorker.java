@@ -20,6 +20,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -44,7 +45,7 @@ public class CreateVaultWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            new CryptoVault(directory, keychain, prompt).create(session, region).close();
+            new CryptoVault(directory, keychain, prompt, new DisabledVaultLookupListener()).create(session, region).close();
         }
         catch(LoginCanceledException e) {
             return false;

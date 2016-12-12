@@ -17,9 +17,14 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
+import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 
 import org.apache.log4j.Logger;
@@ -31,9 +36,13 @@ public class SingleSessionPool implements SessionPool {
     private final Session<?> session;
     private final PathCache cache;
 
-    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache) {
+    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
+                             final PasswordStore keychain, final PasswordCallback prompt) {
         this.connect = connect;
         this.session = session;
+        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+            session.withVault(new LookupVault(keychain, prompt, new DisabledVaultLookupListener()));
+        }
         this.cache = cache;
     }
 
@@ -61,7 +70,12 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public void shutdown() {
-        //
+        try {
+            session.close();
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure closing session. %s", e.getMessage()));
+        }
     }
 
     @Override
@@ -77,5 +91,13 @@ public class SingleSessionPool implements SessionPool {
     @Override
     public Host getHost() {
         return session.getHost();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SingleSessionPool{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
     }
 }

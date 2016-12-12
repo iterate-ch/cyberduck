@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.cryptomator;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -15,20 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.features.Vault;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
-
-public class SessionFactoryTest {
-
-    @Test
-    public void testCreateSession() throws Exception {
-        assertNotNull(SessionFactory.create(new Host(new SpectraProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+public final class DisabledVaultLookupListener implements VaultLookupListener {
+    @Override
+    public void found(final Vault vault) {
+        //
     }
 }

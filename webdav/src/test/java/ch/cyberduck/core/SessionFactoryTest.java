@@ -14,10 +14,10 @@ public class SessionFactoryTest {
     @Test
     public void testCreateSession() throws Exception {
         assertNotNull(SessionFactory.create(new Host(new DAVProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledPasswordCallback()));
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()
+        ));
         assertNotNull(SessionFactory.create(new Host(new DAVSSLProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledPasswordCallback()));
+                new DefaultX509TrustManager(), new DefaultX509KeyManager()
+        ));
     }
 }

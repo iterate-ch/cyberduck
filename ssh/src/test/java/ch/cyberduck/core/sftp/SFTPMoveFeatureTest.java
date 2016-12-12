@@ -31,6 +31,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -115,7 +116,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty());
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -126,7 +127,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));
@@ -149,7 +150,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty());
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -161,7 +162,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));
@@ -186,7 +187,7 @@ public class SFTPMoveFeatureTest {
         ));
         final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
                 new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty());
+        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         final Path home = session.getFeature(Home.class).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -198,7 +199,7 @@ public class SFTPMoveFeatureTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }).create(session, null);
+        }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         session.getFeature(Touch.class).touch(source);
         assertTrue(session.getFeature(Find.class).find(source));

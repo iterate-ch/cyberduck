@@ -60,6 +60,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,16 +95,18 @@ public class CryptoVault implements Vault {
     private final Path home;
     private final PasswordStore keychain;
     private final PasswordCallback callback;
+    private final VaultLookupListener listener;
 
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback) {
+    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback, final VaultLookupListener listener) {
         this.home = home;
         this.keychain = keychain;
         this.callback = callback;
+        this.listener = listener;
     }
 
     @Override
@@ -237,7 +240,10 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        return file.equals(home) || file.isChild(home);
+        if(cryptor != null) {
+            return file.equals(home) || file.isChild(home);
+        }
+        return false;
     }
 
     @Override
@@ -361,7 +367,8 @@ public class CryptoVault implements Vault {
         if(cryptor != null) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session,
-                        new VaultFinderListService(this, session, (ListService) delegate, new VaultFinderListProgressListener(session, keychain, callback)), this);
+                        new VaultFinderListService(this, session, (ListService) delegate,
+                                new VaultFinderListProgressListener(session, keychain, callback, listener)), this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
@@ -417,5 +424,32 @@ public class CryptoVault implements Vault {
             this.id = id;
             this.path = path;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof CryptoVault)) {
+            return false;
+        }
+        final CryptoVault that = (CryptoVault) o;
+        return Objects.equals(home, that.home) &&
+                Objects.equals(cryptor, that.cryptor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(home, cryptor);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoVault{");
+        sb.append("home=").append(home);
+        sb.append(", cryptor=").append(cryptor);
+        sb.append('}');
+        return sb.toString();
     }
 }
