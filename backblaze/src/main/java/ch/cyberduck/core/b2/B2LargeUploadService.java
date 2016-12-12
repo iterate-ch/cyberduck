@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCopier;
@@ -224,7 +225,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
                     if(overall.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(
+                    status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(
                             StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)
                     ));
                     status.setPart(partNumber);
