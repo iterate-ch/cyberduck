@@ -55,8 +55,7 @@ public class B2TouchFeature implements Touch {
         );
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
-                X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())
-                )
+                X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
         this.touch(file, status);
     }
