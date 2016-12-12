@@ -81,7 +81,7 @@ public class DefaultSessionPool implements SessionPool {
      */
     private Vault vault = Vault.DISABLED;
 
-    private int retry = preferences.getInteger("connection.retry");
+    private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final PasswordStore keychain, final PasswordCallback password,

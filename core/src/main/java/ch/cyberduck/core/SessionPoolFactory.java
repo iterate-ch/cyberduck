@@ -48,6 +48,7 @@ public class SessionPoolFactory {
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark), keychain, password, cache, controller, bookmark
         )
+                .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                 .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                 .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
