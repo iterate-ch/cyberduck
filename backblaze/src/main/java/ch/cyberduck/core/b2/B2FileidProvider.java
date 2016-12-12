@@ -63,7 +63,7 @@ public class B2FileidProvider implements IdProvider {
             }
             else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)), containerService.getKey(file), 2);
+                        this.getFileid(containerService.getContainer(file)), containerService.getKey(file), 2);
                 for(B2FileInfoResponse info : response.getFiles()) {
                     if(file.isFile()) {
                         if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
