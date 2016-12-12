@@ -48,10 +48,15 @@ public class CryptoWriteFeature implements Write {
         if(vault.contains(file)) {
             try {
                 final Path encrypted = vault.encrypt(session, file);
-                // Header
                 final Cryptor cryptor = vault.getCryptor();
-                final FileHeader header = cryptor.fileHeaderCryptor().create();
-                header.setFilesize(-1);
+                // Header
+                final FileHeader header;
+                if(null == status.getHeader()) {
+                    header = cryptor.fileHeaderCryptor().create();
+                }
+                else {
+                    header = status.getHeader();
+                }
                 final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
                 final OutputStream proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
                 proxy.write(headerBuffer.array());
