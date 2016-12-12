@@ -37,8 +37,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CryptoChecksumComputeTest {
 
@@ -78,6 +77,7 @@ public class CryptoChecksumComputeTest {
         // DEFAULT_PIPE_SIZE=1024
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(vault, new SHA256ChecksumCompute(), header);
         assertNotNull(compute.compute(new NullInputStream(1025L)).hash);
+        assertNotEquals(compute.compute(new NullInputStream(1025L)), compute.compute(new NullInputStream(1025L)));
         assertNotNull(compute.compute(new NullInputStream(0L)).hash);
     }
 }
