@@ -34,12 +34,14 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
+    private final VaultLookupListener listener;
     private final Session<?> session;
 
-    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final PasswordCallback prompt) {
+    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final PasswordCallback prompt, final VaultLookupListener listener) {
         this.session = session;
         this.keychain = keychain;
         this.prompt = prompt;
+        this.listener = listener;
     }
 
     @Override
@@ -53,9 +55,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path f = list.get(i);
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
-                final CryptoVault vault = new CryptoVault(directory, keychain, prompt);
+                final CryptoVault vault = new CryptoVault(directory, keychain, prompt, listener);
                 try {
-                    vault.load(session);
+                    session.withVault(vault.load(session));
+                    listener.found(vault);
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));

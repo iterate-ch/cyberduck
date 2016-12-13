@@ -15,20 +15,16 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
-
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
-public class SessionFactoryTest {
+public class PasswordStrengthValidatorTest {
 
     @Test
-    public void testCreateSession() throws Exception {
-        assertNotNull(SessionFactory.create(new Host(new SpectraProtocol()),
-                new DefaultX509TrustManager(), new DefaultX509KeyManager()
-        ));
+    public void testGetScore() throws Exception {
+        assertEquals(PasswordStrengthValidator.Strength.veryweak, new PasswordStrengthValidator().getScore(""));
+        assertEquals(PasswordStrengthValidator.Strength.veryweak, new PasswordStrengthValidator().getScore("Cyberduck"));
+        assertEquals(PasswordStrengthValidator.Strength.verystrong, new PasswordStrengthValidator().getScore("ahvae7faY3ae"));
     }
 }

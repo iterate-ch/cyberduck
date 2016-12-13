@@ -16,7 +16,6 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -40,7 +39,7 @@ public class DefaultSessionPoolTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testShutdown() throws Exception {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
+                new DisabledPasswordStore(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
         pool.shutdown();
         pool.borrow(BackgroundActionState.running);
     }
@@ -53,7 +52,7 @@ public class DefaultSessionPoolTest {
                 throw new ConnectionRefusedException("t", new RuntimeException());
             }
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
+                new DisabledPasswordStore(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
         pool.borrow(BackgroundActionState.running);
     }
 }

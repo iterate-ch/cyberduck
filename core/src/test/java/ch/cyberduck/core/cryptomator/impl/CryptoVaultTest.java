@@ -24,6 +24,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
+import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -79,8 +80,11 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        });
+        }, new DisabledVaultLookupListener());
+        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        assertSame(f, vault.encrypt(session, f));
         vault.load(session);
+        assertNotSame(f, vault.encrypt(session, f));
     }
 
     @Test
@@ -129,7 +133,7 @@ public class CryptoVaultTest {
                 }
                 prompt.set(true);
             }
-        });
+        }, new DisabledVaultLookupListener());
         try {
             vault.load(session);
             fail();
@@ -177,7 +181,7 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
-        });
+        }, new DisabledVaultLookupListener());
         try {
             vault.load(session);
             fail();
@@ -216,7 +220,7 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        });
+        }, new DisabledVaultLookupListener());
         vault.create(session, null);
     }
 
@@ -249,7 +253,7 @@ public class CryptoVaultTest {
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        });
+        }, new DisabledVaultLookupListener());
         vault.create(session, null);
         // zero ciphertextFileSize
         try {
