@@ -52,7 +52,12 @@ public class ContentWriter {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
-            IOUtils.closeQuietly(out);
+            try {
+                out.close();
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
     }
 }
