@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -65,6 +66,31 @@ public class B2TouchFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         new CryptoTouchFeature(session, new B2TouchFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
+        assertTrue(session.getFeature(Find.class).find(test));
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testTouchEncryptedDefaultFeature() throws Exception {
+        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                ));
+        final B2Session session = new B2Session(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path home = session.getFeature(Home.class).find();
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        }, new DisabledVaultLookupListener()).create(session, null);
+        session.withVault(cryptomator);
+        new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
