@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
 
@@ -42,7 +41,7 @@ public class DriveMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isDirectory()) {
-            new DriveDirectoryFeature(session).mkdir(renamed, null, new TransferStatus());
+            new DriveDirectoryFeature(session).mkdir(renamed);
             for(Path i : session.getFeature(ListService.class).list(file, new DisabledListProgressListener())) {
                 this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
             }
