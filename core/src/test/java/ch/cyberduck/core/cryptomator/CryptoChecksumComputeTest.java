@@ -78,11 +78,12 @@ public class CryptoChecksumComputeTest {
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
         assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
-        assertEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)),
+        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)),
                 compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)));
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
-        assertEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
-                compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)));
+        final NullInputStream input = new NullInputStream(0L);
+        assertEquals(compute.compute(input, new TransferStatus().withHeader(header)),
+                compute.compute(input, new TransferStatus().withHeader(header)));
         assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
                 sha.compute(new NullInputStream(0L), new TransferStatus()));
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(null)).hash);
