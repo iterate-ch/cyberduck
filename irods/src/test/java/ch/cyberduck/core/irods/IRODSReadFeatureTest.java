@@ -33,7 +33,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -85,7 +84,7 @@ public class IRODSReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(false);
-        final OutputStream out = session.getFeature(Write.class).write(test, status);
+        final OutputStream out = new IRODSWriteFeature(session).write(test, status);
         assertNotNull(out);
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
