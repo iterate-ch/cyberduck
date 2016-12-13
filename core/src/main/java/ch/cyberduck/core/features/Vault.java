@@ -17,9 +17,6 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoAuthenticationException;
-import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
-import ch.cyberduck.core.cryptomator.VaultException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -30,11 +27,9 @@ public interface Vault {
      * Create and open new vault
      *
      * @return Open vault
-     * @throws VaultException                Failure parsing master key
-     * @throws LoginCanceledException        User dismissed passphrase prompt
-     * @throws BackgroundException           Failure reading master key from server
-     * @throws NotfoundException             No master key file in home
-     * @throws CryptoAuthenticationException Failure opening master key file
+     * @throws LoginCanceledException User dismissed passphrase prompt
+     * @throws BackgroundException    Failure reading master key from server
+     * @throws NotfoundException      No master key file in home
      */
     Vault create(Session<?> session, String region) throws BackgroundException;
 
@@ -42,11 +37,9 @@ public interface Vault {
      * Open existing vault
      *
      * @return Open vault
-     * @throws VaultException                Failure parsing master key
-     * @throws LoginCanceledException        User dismissed passphrase prompt
-     * @throws BackgroundException           Failure reading master key from server
-     * @throws NotfoundException             No master key file in home
-     * @throws CryptoAuthenticationException Failure opening master key file
+     * @throws LoginCanceledException User dismissed passphrase prompt
+     * @throws BackgroundException    Failure reading master key from server
+     * @throws NotfoundException      No master key file in home
      */
     Vault load(Session<?> session) throws BackgroundException;
 
@@ -83,7 +76,7 @@ public interface Vault {
 
     long toCiphertextSize(long cleartextFileSize);
 
-    long toCleartextSize(long ciphertextFileSize) throws CryptoInvalidFilesizeException;
+    long toCleartextSize(long ciphertextFileSize) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
