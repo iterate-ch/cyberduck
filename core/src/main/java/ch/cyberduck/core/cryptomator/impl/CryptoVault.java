@@ -444,13 +444,12 @@ public class CryptoVault implements Vault {
             return false;
         }
         final CryptoVault that = (CryptoVault) o;
-        return Objects.equals(home, that.home) &&
-                Objects.equals(cryptor, that.cryptor);
+        return Objects.equals(home, that.home);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(home, cryptor);
+        return Objects.hash(home);
     }
 
     @Override

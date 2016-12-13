@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
@@ -56,6 +57,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
                 final CryptoVault vault = new CryptoVault(directory, keychain, prompt, listener);
+                if(session.getFeature(Vault.class).equals(vault)) {
+                    log.warn(String.format("Ignore vault %sfound already loaded", vault));
+                    return;
+                }
                 try {
                     session.withVault(vault.load(session));
                     listener.found(vault);
