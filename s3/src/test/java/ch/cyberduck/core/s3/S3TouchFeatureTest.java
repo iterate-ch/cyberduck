@@ -20,13 +20,11 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -91,16 +89,27 @@ public class S3TouchFeatureTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        final S3Session session = new S3Session(host);
+        final S3Session session = new S3Session(host) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Encryption.class) {
+                    return (T) new S3EncryptionFeature(this) {
+                        @Override
+                        public Algorithm getDefault(final Path file) {
+                            return S3EncryptionFeature.SSE_AES256;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session, new S3WriteFeature(session));
         final TransferStatus status = new TransferStatus();
-        status.setEncryption(S3EncryptionFeature.SSE_AES256);
-        status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256)
-                .compute(new NullInputStream(0L), status));
         touch.touch(test, status);
     }
 
@@ -171,7 +180,7 @@ public class S3TouchFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         new CryptoTouchFeature(session, new S3TouchFeature(session, session.getFeature(Write.class, new S3WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -196,7 +205,7 @@ public class S3TouchFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
