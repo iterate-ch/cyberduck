@@ -16,24 +16,19 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.pool.SingleSessionPool;
-import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
@@ -97,12 +92,11 @@ public class SFTPCryptomatorInteroperabilityTest {
         cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
     }
 
-    private Session<?> loadRemoteVault() throws Exception {
+    private SFTPSession loadRemoteVault() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
-        final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
-                new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
-        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = session.getFeature(Home.class).find();
         vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
@@ -129,7 +123,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         Files.write(targetFile, content);
 
         // read with Cyberduck and compare
-        Session<?> session = this.loadRemoteVault();
+        SFTPSession session = this.loadRemoteVault();
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = session.getFeature(Read.class).read(p, new TransferStatus());
         final byte[] readContent = new byte[content.length];
