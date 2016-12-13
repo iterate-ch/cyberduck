@@ -53,14 +53,14 @@ public class CryptoDirectoryFeature implements Directory {
             final String directoryId = target.attributes().getDirectoryId();
             final ContentWriter writer = new ContentWriter(session);
             writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
-            final Path firstLevel = target.getParent();
+            final Path intermediate = target.getParent();
+            if(!session._getFeature(Find.class).find(intermediate)) {
+                delegate.mkdir(intermediate, region, status);
+            }
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(header);
-            if(!session._getFeature(Find.class).find(firstLevel)) {
-                delegate.mkdir(firstLevel, region, status);
-            }
         }
         delegate.mkdir(target, region, status);
     }
