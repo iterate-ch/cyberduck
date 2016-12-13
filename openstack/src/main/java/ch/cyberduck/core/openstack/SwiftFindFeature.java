@@ -24,18 +24,19 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
 
 public class SwiftFindFeature implements Find {
 
-    private final SwiftMetadataFeature feature;
+    private final Headers feature;
 
     private PathCache cache;
 
     public SwiftFindFeature(final SwiftSession session) {
-        this(new SwiftMetadataFeature(session));
+        this(session.getFeature(Headers.class));
     }
 
-    public SwiftFindFeature(final SwiftMetadataFeature feature) {
+    public SwiftFindFeature(final Headers feature) {
         this.feature = feature;
         this.cache = PathCache.empty();
     }
