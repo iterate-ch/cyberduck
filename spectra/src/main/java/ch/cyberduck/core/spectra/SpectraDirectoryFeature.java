@@ -50,7 +50,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             super.mkdir(file, region, status);
         }
