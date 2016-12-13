@@ -55,7 +55,7 @@ public class SwiftAttributesFinderFeatureTest {
         container.attributes().setRegion("DFW");
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
