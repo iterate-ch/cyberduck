@@ -58,8 +58,11 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
                 final Vault vault = VaultFactory.get(directory, keychain, prompt, listener);
+                if(vault.equals(Vault.DISABLED)) {
+                    return;
+                }
                 if(session.getFeature(Vault.class).equals(vault)) {
-                    log.warn(String.format("Ignore vault %sfound already loaded", vault));
+                    log.warn(String.format("Ignore vault %s found already loaded", vault));
                     return;
                 }
                 try {

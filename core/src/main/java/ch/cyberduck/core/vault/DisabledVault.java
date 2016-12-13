@@ -20,7 +20,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
-public class DisabledVault implements Vault {
+import java.util.Objects;
+
+public final class DisabledVault implements Vault {
     @Override
     public Vault create(final Session<?> session, final String region) throws BackgroundException {
         return this;
@@ -70,5 +72,21 @@ public class DisabledVault implements Vault {
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         return delegate;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof DisabledVault)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(DisabledVault.class);
     }
 }
