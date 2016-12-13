@@ -20,6 +20,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.vault.DisabledVault;
 
 public interface Vault {
 
@@ -81,56 +82,6 @@ public interface Vault {
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T delegate);
 
-    Vault DISABLED = new Vault() {
-        @Override
-        public Vault create(final Session<?> session, final String region) throws BackgroundException {
-            return this;
-        }
+    Vault DISABLED = new DisabledVault();
 
-        @Override
-        public Vault load(final Session<?> session) throws BackgroundException {
-            return this;
-        }
-
-        @Override
-        public void close() {
-            //
-        }
-
-        @Override
-        public boolean contains(final Path file) {
-            return false;
-        }
-
-        @Override
-        public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-            return file;
-        }
-
-        @Override
-        public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
-            return file;
-        }
-
-        @Override
-        public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
-            return file;
-        }
-
-        @Override
-        public long toCiphertextSize(final long cleartextFileSize) {
-            return cleartextFileSize;
-        }
-
-        @Override
-        public long toCleartextSize(final long ciphertextFileSize) {
-            return ciphertextFileSize;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-            return delegate;
-        }
-    };
 }
