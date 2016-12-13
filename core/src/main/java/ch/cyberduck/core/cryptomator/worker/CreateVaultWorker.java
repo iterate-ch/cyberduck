@@ -1,4 +1,4 @@
-package ch.cyberduck.core.worker;
+package ch.cyberduck.core.cryptomator.worker;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -24,6 +24,7 @@ import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
 import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.worker.Worker;
 
 import java.text.MessageFormat;
 import java.util.Objects;

@@ -33,13 +33,13 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.cryptomator.worker.CreateVaultWorker;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
