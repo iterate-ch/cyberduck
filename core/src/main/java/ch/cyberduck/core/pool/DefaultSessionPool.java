@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.cryptomator.VaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -409,7 +408,7 @@ public class DefaultSessionPool implements SessionPool {
         }
 
         @Override
-        public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
+        public long toCleartextSize(final long ciphertextFileSize) throws BackgroundException {
             return delegate.toCleartextSize(ciphertextFileSize);
         }
 
