@@ -29,20 +29,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
@@ -424,6 +411,9 @@ public class CryptoVault implements Vault {
             }
             if(type == Symlink.class) {
                 return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
+            }
+            if(type == Headers.class) {
+                return (T) new CryptoHeadersFeature(session, (Headers) delegate, this);
             }
             if(type == Compress.class) {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
