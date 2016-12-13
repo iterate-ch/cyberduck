@@ -29,10 +29,10 @@ import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -70,7 +70,7 @@ public class B2TouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        new CryptoTouchFeature(session, new B2TouchFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature(session, new B2TouchFeature(session, new CryptoWriteFeature(session, new B2WriteFeature(session), cryptomator)), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
