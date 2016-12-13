@@ -58,7 +58,7 @@ public class VaultFactory extends Factory<Vault> {
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
-            return new DisabledVault();
+            return Vault.DISABLED;
         }
     }
 }
