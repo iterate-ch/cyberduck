@@ -28,13 +28,13 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -71,7 +71,7 @@ public class DefaultDownloadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = session.getFeature(Write.class).write(test, status);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -116,7 +116,7 @@ public class DefaultDownloadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = session.getFeature(Write.class).write(test, status);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
