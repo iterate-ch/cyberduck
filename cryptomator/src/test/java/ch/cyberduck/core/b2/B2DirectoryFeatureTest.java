@@ -25,13 +25,15 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -67,8 +69,8 @@ public class B2DirectoryFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         new CryptoDirectoryFeature(session, new B2DirectoryFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).mkdir(test);
-        assertTrue(session.getFeature(Find.class).find(test));
-        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
