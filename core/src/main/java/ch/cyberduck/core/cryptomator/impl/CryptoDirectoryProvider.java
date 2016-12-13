@@ -49,7 +49,7 @@ public class CryptoDirectoryProvider {
     private final CryptoVault cryptomator;
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
-        this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory));
+        this.dataRoot = new Path(vault, DATA_DIR_NAME, EnumSet.of(Path.Type.directory, Path.Type.vault));
         this.cryptomator = cryptomator;
     }
 
@@ -93,8 +93,9 @@ public class CryptoDirectoryProvider {
 
     private Path resolve(final String directoryId) {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
-        return new Path(new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted)), dirHash.substring(2),
-                EnumSet.of(Path.Type.directory, Path.Type.encrypted));
+        // Intermediate directory
+        final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
+        return new Path(intermediate, dirHash.substring(2), EnumSet.of(Path.Type.directory, Path.Type.encrypted));
     }
 
     public void close() {

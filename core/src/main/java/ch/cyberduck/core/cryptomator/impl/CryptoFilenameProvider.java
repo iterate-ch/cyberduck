@@ -43,8 +43,8 @@ public class CryptoFilenameProvider {
 
     public CryptoFilenameProvider(final Path vault) {
         // new vault home with encrypted flag set for internal use
-        final Path parent = new Path(vault.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.encrypted), vault.attributes());
-        this.metadataRoot = new Path(parent, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory, Path.Type.encrypted));
+        final Path parent = new Path(vault.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault), vault.attributes());
+        this.metadataRoot = new Path(parent, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
     }
 
     public boolean isDeflated(final String filename) {
@@ -67,7 +67,6 @@ public class CryptoFilenameProvider {
         final Path firstLevel = secondLevel.getParent();
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
-        //todo region support
         if(!find.find(metadataRoot)) {
             mkdir.mkdir(metadataRoot);
         }
@@ -83,8 +82,11 @@ public class CryptoFilenameProvider {
     }
 
     public Path resolve(final String filename) {
-        return new Path(new Path(new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted)),
-                filename.substring(2, 4), EnumSet.of(Path.Type.directory, Path.Type.encrypted)), filename, EnumSet.of(Path.Type.file, Path.Type.encrypted));
+        // Intermediate directory
+        final Path first = new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
+        // Intermediate directory
+        final Path second = new Path(first, filename.substring(2, 4), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
+        return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
     }
 
     public void close() {

@@ -54,7 +54,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             final Path directory = f.getParent();
-            if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file)))) {
+            if(f.equals(new Path(directory, CryptoVault.MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
                 final CryptoVault vault = new CryptoVault(directory, keychain, prompt, listener);
                 try {
                     session.withVault(vault.load(session));

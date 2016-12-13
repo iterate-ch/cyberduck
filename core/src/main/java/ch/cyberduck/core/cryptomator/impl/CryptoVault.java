@@ -116,7 +116,7 @@ public class CryptoVault implements Vault {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomFactory.get().provide()
         );
-        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
         callback.prompt(credentials,
@@ -151,11 +151,11 @@ public class CryptoVault implements Vault {
 
     @Override
     public CryptoVault load(final Session<?> session) throws BackgroundException {
-        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        final Path key = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", file));
+            log.debug(String.format("Attempt to read master key from %s", key));
         }
-        final String json = new ContentReader(session).readToString(file);
+        final String json = new ContentReader(session).readToString(key);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read master key %s", json));
         }
@@ -164,17 +164,17 @@ public class CryptoVault implements Vault {
             master = KeyFile.parse(json.getBytes());
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", key.getName()), e);
         }
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials(bookmark.getHostname(),
-                keychain.getPassword(bookmark.getHostname(), file.getAbsolute())) {
+                keychain.getPassword(bookmark.getHostname(), key.getAbsolute())) {
             @Override
             public String getPasswordPlaceholder() {
                 return LocaleFactory.localizedString("Passphrase", "Cryptomator");
             }
         };
-        this.unlock(file, master, credentials,
+        this.unlock(key, master, credentials,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
@@ -242,6 +242,9 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
+        if(file.getType().contains(Path.Type.vault)) {
+            return false;
+        }
         if(cryptor != null) {
             return file.equals(home) || file.isChild(home);
         }
@@ -257,6 +260,10 @@ public class CryptoVault implements Vault {
         if(this.contains(file)) {
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+                return file;
+            }
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
             if(file.isFile() || metadata) {
@@ -277,6 +284,14 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
         if(this.contains(directory)) {
+            if(file.getType().contains(Path.Type.decrypted)) {
+                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+                return file;
+            }
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+                return file;
+            }
             final Path inflated = this.inflate(session, file);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
             final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
