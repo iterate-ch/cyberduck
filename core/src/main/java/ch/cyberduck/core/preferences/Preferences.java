@@ -49,6 +49,7 @@ import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.random.DefaultSecureRandomProvider;
 import ch.cyberduck.core.resources.DisabledIconCache;
 import ch.cyberduck.core.serializer.impl.dd.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
@@ -65,6 +66,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
+import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -1237,6 +1239,8 @@ public abstract class Preferences {
         defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
         defaults.put("factory.threadpool.class", DefaultThreadPool.class.getName());
         defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
+        defaults.put("factory.vault.class", DisabledVault.class.getName());
+        defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
     }
 
     /**

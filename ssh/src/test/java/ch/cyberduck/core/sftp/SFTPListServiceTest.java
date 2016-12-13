@@ -18,22 +18,12 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
-import ch.cyberduck.core.cryptomator.impl.CryptoVault;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.pool.SingleSessionPool;
-import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -105,35 +95,5 @@ public class SFTPListServiceTest {
         final Path f = new Path(home, "test", EnumSet.of(Path.Type.directory));
         final SFTPListService service = new SFTPListService(session);
         service.list(f, new DisabledListProgressListener());
-    }
-
-    @Test
-    public void testListCryptomator() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SingleSessionPool pool = new SingleSessionPool(new LoginConnectionService(
-                new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()
-        ), new SFTPSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback());
-        final Session<?> session = pool.borrow(BackgroundActionState.running);
-        final Path home = session.getFeature(Home.class).find();
-        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("vault");
-            }
-        }, new DisabledVaultLookupListener()).create(session, null);
-        session.withVault(cryptomator.load(session));
-        assertTrue(session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).isEmpty());
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
-        assertEquals(test, session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).get(0));
-        // Test list of parent unencrypted
-        final AttributedList<Path> parent = session.getFeature(ListService.class).list(home, new DisabledListProgressListener());
-        assertFalse(parent.isEmpty());
-        assertTrue(parent.contains(vault));
-        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

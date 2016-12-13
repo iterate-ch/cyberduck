@@ -17,6 +17,8 @@
 // 
 
 using ch.cyberduck.core.local;
+using ch.cyberduck.core.cryptomator;
+using ch.cyberduck.core.cryptomator.random;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
 using Ch.Cyberduck.Core.Bonjour;
@@ -95,6 +97,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             {
                 defaults.put("factory.updater.class", typeof(WinSparklePeriodicUpdateChecker).AssemblyQualifiedName);
             }
+            defaults.put("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
+            defaults.put("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
         }
     }
 }

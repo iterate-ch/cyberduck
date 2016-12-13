@@ -21,11 +21,11 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.DisabledVaultLookupListener;
-import ch.cyberduck.core.cryptomator.LookupVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.vault.DisabledVaultLookupListener;
+import ch.cyberduck.core.vault.LookupVault;
 
 import org.apache.log4j.Logger;
 

@@ -29,8 +29,8 @@ import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileHeader;
 
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -150,9 +150,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Integer part;
 
     /**
-     * File header for encryption
+     * Encrypted file header
      */
-    private FileHeader header;
+    private ByteBuffer header;
 
     /**
      * Await completion
@@ -477,15 +477,15 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return !segments.isEmpty();
     }
 
-    public FileHeader getHeader() {
+    public ByteBuffer getHeader() {
         return header;
     }
 
-    public void setHeader(final FileHeader header) {
+    public void setHeader(final ByteBuffer header) {
         this.header = header;
     }
 
-    public TransferStatus withHeader(final FileHeader header) {
+    public TransferStatus withHeader(final ByteBuffer header) {
         this.setHeader(header);
         return this;
     }

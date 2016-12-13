@@ -49,6 +49,7 @@
         <module>cli/windows</module>
         <module>cli/osx</module>
         <module>hubic</module>
+        <module>cryptomator</module>
     </modules>
 
     <scm>

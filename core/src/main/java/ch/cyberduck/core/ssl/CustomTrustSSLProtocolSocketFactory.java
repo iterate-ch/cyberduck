@@ -21,7 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.random.FastSecureRandomFactory;
+import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
 
@@ -73,7 +73,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key, final String... protocols) {
-        this(trust, key, FastSecureRandomFactory.get().provide(), protocols);
+        this(trust, key, SecureRandomProviderFactory.get().provide(), protocols);
     }
 
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key,
