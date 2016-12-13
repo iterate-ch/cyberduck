@@ -174,7 +174,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                     try {
                         client.setRegion(Region.getRegion(Regions.fromName(region.getIdentifier())));
                     }
-                    catch(IllegalArgumentException e) {
+                    catch(IllegalArgumentException ignored) {
                         log.warn(String.format("Unknown region %s", region.getIdentifier()));
                     }
                     try {

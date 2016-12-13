@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,9 +28,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -58,8 +57,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                final StreamListener listener, final TransferStatus status,
-                                final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+                                final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
@@ -69,13 +67,13 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
                 break;
         }
         try {
-            return super.upload(file, local, throttle, listener, status, cancel, progress);
+            return super.upload(file, local, throttle, listener, status, callback);
         }
         catch(InteroperabilityException e) {
             if(!session.getSignatureVersion().equals(signatureVersion)) {
                 // Retry if upload fails with Header "x-amz-content-sha256" set to the hex-encoded SHA256 hash of the
                 // request payload is required for AWS Version 4 request signing
-                return this.upload(file, local, throttle, listener, status, cancel, progress);
+                return this.upload(file, local, throttle, listener, status, callback);
             }
             throw e;
         }

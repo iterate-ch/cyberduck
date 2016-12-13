@@ -151,7 +151,7 @@ public class BrowserController extends WindowController
     /**
      * Connection pool
      */
-    private SessionPool session = SessionPool.DISCONNECTED;
+    private SessionPool pool = SessionPool.DISCONNECTED;
 
     /**
      * Log Drawer
@@ -413,7 +413,7 @@ public class BrowserController extends WindowController
                     }
                 }
                 // Delay render until path is cached in the background
-                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, session,
+                this.background(new WorkerBackgroundAction<AttributedList<Path>>(this, pool,
                         new SessionListWorker(cache, folder, listener) {
                                     @Override
                                     public void cleanup(final AttributedList<Path> list) {
@@ -490,12 +490,12 @@ public class BrowserController extends WindowController
                     continue;
                 }
                 downloads.add(new TransferItem(
-                        path, TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), path)));
+                        path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
             }
             if(downloads.size() > 0) {
-                final Transfer download = new DownloadTransfer(session.getHost(), downloads);
+                final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
                 final TransferOptions options = new TransferOptions();
-                this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, download, options, downloads));
+                this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
             }
         }
     }
@@ -1011,7 +1011,7 @@ public class BrowserController extends WindowController
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
         if(this.isMounted()) {
-            int row = this.bookmarkModel.getSource().indexOf(session.getHost());
+            int row = this.bookmarkModel.getSource().indexOf(pool.getHost());
             if(row != -1) {
                 this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
                 this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
@@ -1330,7 +1330,7 @@ public class BrowserController extends WindowController
                     return;
                 }
                 if(tableColumn.identifier().equals(Column.filename.name())) {
-                    cell.setEditable(session.getFeature(Move.class).isSupported(path));
+                    cell.setEditable(pool.getFeature(Move.class).isSupported(path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
@@ -1482,7 +1482,7 @@ public class BrowserController extends WindowController
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(Column.filename.name())) {
-                    cell.setEditable(session.getFeature(Move.class).isSupported(path));
+                    cell.setEditable(pool.getFeature(Move.class).isSupported(path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
@@ -1986,7 +1986,7 @@ public class BrowserController extends WindowController
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
                                     // Delay render until path is cached in the background
-                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, session,
+                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
                                             new SearchWorker(workdir, filenameFilter, cache, listener) {
                                                 @Override
                                                 public void cleanup(final AttributedList<Path> list) {
@@ -2081,7 +2081,7 @@ public class BrowserController extends WindowController
             if(null == selected || !selected.isDirectory()) {
                 selected = this.workdir();
             }
-            bookmark = new HostDictionary().deserialize(session.getHost().serialize(SerializerFactory.get()));
+            bookmark = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
@@ -2313,11 +2313,11 @@ public class BrowserController extends WindowController
         }
         this.setEncoding(encoding);
         if(this.isMounted()) {
-            if(session.getHost().getEncoding().equals(encoding)) {
+            if(pool.getHost().getEncoding().equals(encoding)) {
                 return;
             }
-            session.getHost().setEncoding(encoding);
-            this.mount(session.getHost());
+            pool.getHost().setEncoding(encoding);
+            this.mount(pool.getHost());
         }
     }
 
@@ -2449,7 +2449,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void securityLabelClicked(final ID sender) {
-        final List<X509Certificate> certificates = Arrays.asList(session.getFeature(X509TrustManager.class).getAcceptedIssuers());
+        final List<X509Certificate> certificates = Arrays.asList(pool.getFeature(X509TrustManager.class).getAcceptedIssuers());
         try {
             CertificateStoreFactory.get(this).display(certificates);
         }
@@ -2514,7 +2514,7 @@ public class BrowserController extends WindowController
             selected = this.workdir();
         }
         BrowserController c = MainController.newDocument(true);
-        final Host host = new HostDictionary().deserialize(session.getHost().serialize(SerializerFactory.get()));
+        final Host host = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
         host.setDefaultPath(selected.getAbsolute());
         c.mount(host);
     }
@@ -2525,7 +2525,7 @@ public class BrowserController extends WindowController
      */
     public boolean isEditable(final Path selected) {
         if(this.isMounted()) {
-            if(session.getHost().getCredentials().isAnonymousLogin()) {
+            if(pool.getHost().getCredentials().isAnonymousLogin()) {
                 return false;
             }
             return selected.isFile();
@@ -2559,7 +2559,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
-        final Location feature = session.getFeature(Location.class);
+        final Location feature = pool.getFeature(Location.class);
         final FolderController sheet = new FolderController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
         sheet.beginSheet(this);
@@ -2567,7 +2567,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
-        final Location feature = session.getFeature(Location.class);
+        final Location feature = pool.getFeature(Location.class);
         final VaultController sheet = new VaultController(this, cache,
                 feature != null ? feature.getLocations() : Collections.emptySet());
         sheet.beginSheet(this);
@@ -2590,7 +2590,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        CommandController controller = new CommandController(this, session);
+        CommandController controller = new CommandController(this, pool);
         final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller);
         sheet.beginSheet();
     }
@@ -2599,7 +2599,7 @@ public class BrowserController extends WindowController
     public void editMenuClicked(final NSMenuItem sender) {
         final EditorFactory factory = EditorFactory.instance();
         for(Path selected : this.getSelectedPaths()) {
-            final Editor editor = factory.create(this, session,
+            final Editor editor = factory.create(this, pool,
                     new Application(sender.representedObject()), selected);
             this.edit(editor);
         }
@@ -2613,22 +2613,22 @@ public class BrowserController extends WindowController
     }
 
     public void edit(final Path file) {
-        this.edit(EditorFactory.instance().create(this, session, file));
+        this.edit(EditorFactory.instance().create(this, pool, file));
     }
 
     protected void edit(final Editor editor) {
-        this.background(new WorkerBackgroundAction<Transfer>(this, session, editor.open(
-                new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DefaultEditorListener(this, session, editor))));
+        this.background(new WorkerBackgroundAction<Transfer>(this, pool, editor.open(
+                new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DefaultEditorListener(this, pool, editor))));
     }
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
         final DescriptiveUrlBag list;
         if(this.getSelectionCount() == 1) {
-            list = session.getFeature(UrlProvider.class).toUrl(this.getSelectedPath());
+            list = pool.getFeature(UrlProvider.class).toUrl(this.getSelectedPath());
         }
         else {
-            list = session.getFeature(UrlProvider.class).toUrl(this.workdir());
+            list = pool.getFeature(UrlProvider.class).toUrl(this.workdir());
         }
         if(!list.isEmpty()) {
             BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
@@ -2663,7 +2663,7 @@ public class BrowserController extends WindowController
         downloadToPanel.setCanChooseFiles(false);
         downloadToPanel.setAllowsMultipleSelection(false);
         downloadToPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        downloadToPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
+        downloadToPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(pool.getHost()).getAbsolute(),
                 null, this.window, this.id(),
                 Foundation.selector("downloadToPanelDidEnd:returnCode:contextInfo:"), null);
     }
@@ -2674,12 +2674,12 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
-                new DownloadDirectoryFinder().save(session.getHost(), target);
+                new DownloadDirectoryFinder().save(pool.getHost(), target);
                 final List<TransferItem> downloads = new ArrayList<TransferItem>();
                 for(Path file : this.getSelectedPaths()) {
                     downloads.add(new TransferItem(file, LocalFactory.get(target, file.getName())));
                 }
-                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
+                this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
             }
         }
         downloadToPanel = null;
@@ -2695,7 +2695,7 @@ public class BrowserController extends WindowController
         downloadAsPanel.setNameFieldLabel(LocaleFactory.localizedString("Download As:"));
         downloadAsPanel.setPrompt(LocaleFactory.localizedString("Download", "Transfer"));
         downloadAsPanel.setCanCreateDirectories(true);
-        downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(session.getHost()).getAbsolute(),
+        downloadAsPanel.beginSheetForDirectory(new DownloadDirectoryFinder().find(pool.getHost()).getAbsolute(),
                 this.getSelectedPath().getName(), this.window, this.id(),
                 Foundation.selector("downloadAsPanelDidEnd:returnCode:contextInfo:"), null);
     }
@@ -2706,10 +2706,10 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
-                new DownloadDirectoryFinder().save(session.getHost(), target.getParent());
+                new DownloadDirectoryFinder().save(pool.getHost(), target.getParent());
                 final List<TransferItem> downloads
                         = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
-                this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
+                this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
             }
         }
     }
@@ -2736,7 +2736,7 @@ public class BrowserController extends WindowController
         syncPanel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Synchronize {0} with"),
                 selection.getName()));
         syncPanel.setPrompt(LocaleFactory.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(session.getHost()).getAbsolute(),
+        syncPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(pool.getHost()).getAbsolute(),
                 null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
@@ -2748,7 +2748,7 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
-                new UploadDirectoryFinder().save(session.getHost(), target.getParent());
+                new UploadDirectoryFinder().save(pool.getHost(), target.getParent());
                 final Path selected;
                 if(this.getSelectionCount() == 1 && this.getSelectedPath().isDirectory()) {
                     selected = this.getSelectedPath();
@@ -2756,7 +2756,7 @@ public class BrowserController extends WindowController
                 else {
                     selected = this.workdir();
                 }
-                this.transfer(new SyncTransfer(session.getHost(), new TransferItem(selected, target)));
+                this.transfer(new SyncTransfer(pool.getHost(), new TransferItem(selected, target)));
             }
         }
     }
@@ -2764,12 +2764,12 @@ public class BrowserController extends WindowController
     @Action
     public void downloadButtonClicked(final ID sender) {
         final List<TransferItem> downloads = new ArrayList<TransferItem>();
-        final Local folder = new DownloadDirectoryFinder().find(session.getHost());
+        final Local folder = new DownloadDirectoryFinder().find(pool.getHost());
         for(Path file : this.getSelectedPaths()) {
             downloads.add(new TransferItem(
                     file, LocalFactory.get(folder, file.getName())));
         }
-        this.transfer(new DownloadTransfer(session.getHost(), downloads), Collections.emptyList());
+        this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
     }
 
     private NSOpenPanel uploadPanel;
@@ -2780,7 +2780,7 @@ public class BrowserController extends WindowController
     public void uploadButtonClicked(final ID sender) {
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
-        uploadPanel.setCanChooseFiles(session.getFeature(Touch.class).isSupported(
+        uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
                 new UploadTargetFinder(workdir).find(this.getSelectedPath())
         ));
         uploadPanel.setCanCreateDirectories(false);
@@ -2797,7 +2797,7 @@ public class BrowserController extends WindowController
             uploadPanelHiddenFilesCheckbox.sizeToFit();
             uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
         }
-        uploadPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(session.getHost()).getAbsolute(),
+        uploadPanel.beginSheetForDirectory(new UploadDirectoryFinder().find(pool.getHost()).getAbsolute(),
                 null, this.window,
                 this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
@@ -2821,13 +2821,13 @@ public class BrowserController extends WindowController
             NSObject next;
             while((next = iterator.nextObject()) != null) {
                 final Local local = LocalFactory.get(next.toString());
-                new UploadDirectoryFinder().save(session.getHost(), local.getParent());
+                new UploadDirectoryFinder().save(pool.getHost(), local.getParent());
                 uploads.add(new TransferItem(
                         new Path(destination, local.getName(),
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local
                 ));
             }
-            this.transfer(new UploadTransfer(session.getHost(), uploads));
+            this.transfer(new UploadTransfer(pool.getHost(), uploads));
         }
         uploadPanel = null;
         uploadPanelHiddenFilesCheckbox = null;
@@ -2868,7 +2868,7 @@ public class BrowserController extends WindowController
             }
         };
         if(browser) {
-            this.background(new BrowserTransferBackgroundAction(this, session, transfer, callback));
+            this.background(new BrowserTransferBackgroundAction(this, pool, transfer, callback));
         }
         else {
             TransferControllerFactory.get().start(transfer, new TransferOptions(), callback);
@@ -2947,7 +2947,7 @@ public class BrowserController extends WindowController
      * @return This browser's session or null if not mounted
      */
     public SessionPool getSession() {
-        return session;
+        return pool;
     }
 
     public Cache<Path> getCache() {
@@ -2958,7 +2958,7 @@ public class BrowserController extends WindowController
      * @return true if the remote file system has been mounted
      */
     public boolean isMounted() {
-        if(session == SessionPool.DISCONNECTED) {
+        if(pool == SessionPool.DISCONNECTED) {
             return false;
         }
         return workdir != null;
@@ -2969,7 +2969,7 @@ public class BrowserController extends WindowController
      */
     public boolean isConnected() {
         if(this.isMounted()) {
-            return session.getState() == Session.State.open;
+            return pool.getState() == Session.State.open;
         }
         return false;
     }
@@ -3113,7 +3113,7 @@ public class BrowserController extends WindowController
                         uploads.add(new TransferItem(new Path(workdir, local.getName(),
                                 local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
                     }
-                    this.transfer(new UploadTransfer(session.getHost(), uploads));
+                    this.transfer(new UploadTransfer(pool.getHost(), uploads));
                 }
             }
         }
@@ -3134,10 +3134,10 @@ public class BrowserController extends WindowController
         }
         try {
             final TerminalService terminal = TerminalServiceFactory.get();
-            terminal.open(session.getHost(), workdir);
+            terminal.open(pool.getHost(), workdir);
         }
         catch(AccessDeniedException e) {
-            this.alert(session.getHost(), e, new StringBuilder());
+            this.alert(pool.getHost(), e, new StringBuilder());
         }
     }
 
@@ -3229,7 +3229,7 @@ public class BrowserController extends WindowController
         pathPopupButton.addItemWithTitle(p.getAbsolute());
         pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
         if(p.isVolume()) {
-            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(session.getHost().getProtocol(), 16));
+            pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().volumeIcon(pool.getHost().getProtocol(), 16));
         }
         else {
             pathPopupButton.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(p, 16));
@@ -3265,7 +3265,7 @@ public class BrowserController extends WindowController
                                     });
                                 }
                                 else {
-                                    session = pool;
+                                    BrowserController.this.pool = pool;
                                     pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();
@@ -3323,13 +3323,13 @@ public class BrowserController extends WindowController
      */
     public boolean unmount(final SheetCallback callback, final Runnable disconnected) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Unmount session %s", session));
+            log.debug(String.format("Unmount session %s", pool));
         }
         if(this.isConnected() || this.isActivityRunning()) {
             if(preferences.getBoolean("browser.disconnect.confirm")) {
                 // Defer the unmount to the callback function
                 final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), session.getHost().getHostname()), //title
+                        MessageFormat.format(LocaleFactory.localizedString("Disconnect from {0}"), pool.getHost().getHostname()), //title
                         LocaleFactory.localizedString("The connection will be closed."), // message
                         LocaleFactory.localizedString("Disconnect"), // defaultbutton
                         LocaleFactory.localizedString("Cancel"), // alternate button
@@ -3363,8 +3363,8 @@ public class BrowserController extends WindowController
         this.disconnect(new Runnable() {
             @Override
             public void run() {
-                session.shutdown();
-                session = SessionPool.DISCONNECTED;
+                pool.shutdown();
+                pool = SessionPool.DISCONNECTED;
                 cache.clear();
                 setWorkdir(null);
                 window.setTitle(preferences.getProperty("application.name"));
@@ -3384,7 +3384,7 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        this.background(new DisconnectBackgroundAction(this, session) {
+        this.background(new DisconnectBackgroundAction(this, pool) {
             @Override
             public void cleanup() {
                 super.cleanup();
@@ -3517,7 +3517,7 @@ public class BrowserController extends WindowController
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
             if(this.isMounted()) {
-                item.setState(session.getHost().getEncoding().equalsIgnoreCase(
+                item.setState(pool.getHost().getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
             }
             else {
