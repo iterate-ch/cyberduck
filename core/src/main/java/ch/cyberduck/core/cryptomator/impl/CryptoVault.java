@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -374,7 +375,7 @@ public class CryptoVault implements Vault {
                                 new VaultFinderListProgressListener(session, keychain, callback, listener)), this);
             }
             if(type == Touch.class) {
-                return (T) new CryptoTouchFeature(session, (Touch) delegate, this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
             }
             if(type == Directory.class) {
                 return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
