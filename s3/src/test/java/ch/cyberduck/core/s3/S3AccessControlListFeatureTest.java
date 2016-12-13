@@ -105,7 +105,7 @@ public class S3AccessControlListFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         {
             final Acl acl = new Acl();
@@ -138,7 +138,7 @@ public class S3AccessControlListFeatureTest {
         final Path container = new Path(String.format("cd-%s", RandomStringUtils.randomAlphanumeric(5).toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3BucketCreateService(session).create(container, null);
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         {
             final Acl acl = new Acl();
@@ -175,7 +175,7 @@ public class S3AccessControlListFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
