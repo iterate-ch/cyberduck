@@ -37,7 +37,7 @@ public class SFTPTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile()) {
             try {
                 final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC));

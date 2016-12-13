@@ -35,7 +35,7 @@ public class IRODSTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.filesystem();
             fs.createFile(file.getAbsolute(),

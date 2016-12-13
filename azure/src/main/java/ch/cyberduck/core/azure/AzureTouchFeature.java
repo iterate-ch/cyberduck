@@ -56,7 +56,7 @@ public class AzureTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getAppendBlobReference(containerService.getKey(file));

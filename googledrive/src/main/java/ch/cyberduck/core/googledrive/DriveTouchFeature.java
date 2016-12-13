@@ -40,7 +40,7 @@ public class DriveTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())

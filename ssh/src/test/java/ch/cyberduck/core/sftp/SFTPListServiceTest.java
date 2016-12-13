@@ -125,7 +125,7 @@ public class SFTPListServiceTest {
                 credentials.setPassword("vault");
             }
         }, new DisabledVaultLookupListener()).create(session, null);
-        session.withVault(cryptomator);
+        session.withVault(cryptomator.load(session));
         assertTrue(session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).isEmpty());
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertEquals(test, session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).get(0));
