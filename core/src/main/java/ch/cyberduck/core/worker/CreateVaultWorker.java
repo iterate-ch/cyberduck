@@ -15,7 +15,9 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
@@ -25,6 +27,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 import ch.cyberduck.core.vault.VaultFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.MessageFormat;
 import java.util.Objects;
 
@@ -33,19 +37,19 @@ public class CreateVaultWorker extends Worker<Boolean> {
     private final Path directory;
     private final String region;
     private final PasswordStore keychain;
-    private final PasswordCallback prompt;
+    private final String passphrase;
 
-    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final PasswordCallback prompt) {
+    public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final String passphrase) {
         this.directory = directory;
         this.region = region;
         this.keychain = keychain;
-        this.prompt = prompt;
+        this.passphrase = passphrase;
     }
 
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            VaultFactory.get(directory, keychain, prompt, new DisabledVaultLookupListener()).create(session, region).close();
+            VaultFactory.get(directory, keychain, new StaticPasswordCallback(passphrase), new DisabledVaultLookupListener()).create(session, region).close();
         }
         catch(LoginCanceledException e) {
             return false;
@@ -84,5 +88,21 @@ public class CreateVaultWorker extends Worker<Boolean> {
         sb.append(", region='").append(region).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    private static class StaticPasswordCallback implements PasswordCallback {
+        private final String passphrase;
+
+        public StaticPasswordCallback(final String passphrase) {
+            this.passphrase = passphrase;
+        }
+
+        @Override
+        public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            if(StringUtils.isNotBlank(credentials.getPassword())) {
+                throw new LoginCanceledException();
+            }
+            credentials.setPassword(passphrase);
+        }
     }
 }

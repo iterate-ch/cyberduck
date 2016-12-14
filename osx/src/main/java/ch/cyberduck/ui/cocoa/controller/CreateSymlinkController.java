@@ -21,28 +21,27 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.CreateSymlinkWorker;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.EnumSet;
 
 public class CreateSymlinkController extends FileController {
 
-    public CreateSymlinkController(final BrowserController parent, final Cache<Path> cache) {
-        super(parent, cache, NSAlert.alert(
+    private final Callback callback;
+
+    public CreateSymlinkController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
+        super(workdir, selected, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new symbolic link", "File"),
                 StringUtils.EMPTY,
                 LocaleFactory.localizedString("Create", "File"),
                 null,
                 LocaleFactory.localizedString("Cancel", "File")
         ));
+        this.callback = callback;
         alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
-        final Path selected = this.getSelected();
         inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
         this.setMessage(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"),
                 selected.getName()));
@@ -52,16 +51,11 @@ public class CreateSymlinkController extends FileController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             final Path selected = this.getSelected();
-            this.run(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
+            callback.callback(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
         }
     }
 
-    protected void run(final Path selected, final Path link) {
-        parent.background(new WorkerBackgroundAction<Path>(parent, parent.getSession(), new CreateSymlinkWorker(link, selected) {
-            @Override
-            public void cleanup(final Path symlink) {
-                parent.reload(parent.workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
-            }
-        }));
+    public interface Callback {
+        void callback(final Path selected, final Path link);
     }
 }

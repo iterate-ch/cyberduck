@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(folder, region, PasswordStoreFactory.get(), new StaticPasswordCallback(passphrase))
+                    : base(folder, region, PasswordStoreFactory.get(), passphrase)
                 {
                     _controller = controller;
                     _folder = folder;
@@ -109,21 +109,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     List<Path> folders = new List<Path>() {_folder};
                     _controller.Reload(_controller.Workdir, folders, folders);
-                }
-            }
-
-            private class StaticPasswordCallback : PasswordCallback
-            {
-                private readonly string _password;
-
-                public StaticPasswordCallback(string password)
-                {
-                    _password = password;
-                }
-
-                public void prompt(Credentials credentials, string title, string reason, LoginOptions options)
-                {
-                    credentials.setPassword(_password);
                 }
             }
         }

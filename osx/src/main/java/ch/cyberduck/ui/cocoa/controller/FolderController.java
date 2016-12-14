@@ -26,42 +26,39 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
 public class FolderController extends FileController {
 
     private final Set<Location.Name> regions;
-    private final BrowserController parent;
 
     @Outlet
     private final NSPopUpButton regionPopup;
     @Outlet
     private final NSView view;
+    private final Callback callback;
 
-    public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
-        this(parent, cache, regions, NSAlert.alert(
+    public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Callback callback) {
+        this(workdir, selected, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create new folder", "Folder"),
                 LocaleFactory.localizedString("Enter the name for the new folder", "Folder"),
                 LocaleFactory.localizedString("Create", "Folder"),
                 null,
-                LocaleFactory.localizedString("Cancel", "Folder")
-        ));
+                LocaleFactory.localizedString("Cancel", "Folder")),
+                callback);
     }
 
-    public FolderController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions,
-                            final NSAlert alert) {
-        super(parent, cache, alert);
+    public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions,
+                            final NSAlert alert, final Callback callback) {
+        super(workdir, selected, cache, alert);
+        this.callback = callback;
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
-        this.parent = parent;
         this.regions = regions;
         this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
         this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));
@@ -92,13 +89,7 @@ public class FolderController extends FileController {
             final String filename = inputField.stringValue();
             final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
                     filename, EnumSet.of(Path.Type.directory));
-            parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                    new CreateDirectoryWorker(folder, this.getLocation()) {
-                        @Override
-                        public void cleanup(final Boolean done) {
-                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                        }
-                    }));
+            callback.callback(folder, this.getLocation());
         }
     }
 
@@ -109,5 +100,9 @@ public class FolderController extends FileController {
 
     protected String getLocation() {
         return this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
+    }
+
+    public interface Callback {
+        void callback(final Path folder, final String region);
     }
 }

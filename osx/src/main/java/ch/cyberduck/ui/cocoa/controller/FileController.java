@@ -32,16 +32,17 @@ import java.util.EnumSet;
 
 public abstract class FileController extends AlertController {
 
-    protected final BrowserController parent;
-
+    private final Path workdir;
+    private final Path selected;
     private final Cache<Path> cache;
 
     @Outlet
     protected final NSTextField inputField;
 
-    public FileController(final BrowserController parent, final Cache<Path> cache, final NSAlert alert) {
+    public FileController(final Path workdir, final Path selected, final Cache<Path> cache, final NSAlert alert) {
         super(alert);
-        this.parent = parent;
+        this.workdir = workdir;
+        this.selected = selected;
         this.cache = cache;
         this.inputField = NSTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.inputField.cell().setPlaceholderString(alert.informativeText());
@@ -64,17 +65,11 @@ public abstract class FileController extends AlertController {
      * @return The current working directory or selected folder
      */
     protected Path getWorkdir() {
-        if(parent.getSelectionCount() == 1) {
-            final Path selected = parent.getSelectedPath();
-            if(null != selected) {
-                return selected.getParent();
-            }
-        }
-        return parent.workdir();
+        return workdir;
     }
 
     protected Path getSelected() {
-        return parent.getSelectedPath();
+        return selected;
     }
 
     @Override
