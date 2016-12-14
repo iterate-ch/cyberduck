@@ -4,15 +4,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.io.output.NullOutputStream;
-
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class NullSession extends Session<Void> {
 
@@ -68,37 +60,13 @@ public class NullSession extends Session<Void> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
         if(type == Write.class) {
-            return (T) new AppendWriteFeature(this) {
-                @Override
-                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                    return new NullOutputStream();
-                }
-
-                @Override
-                public boolean temporary() {
-                    return false;
-                }
-
-                @Override
-                public boolean random() {
-                    return false;
-                }
-            };
+            return (T) new NullWriteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new Read() {
-                @Override
-                public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-                    return new NullInputStream(0L);
-                }
-
-                @Override
-                public boolean offset(final Path file) throws BackgroundException {
-                    return false;
-                }
-            };
+            return (T) new NullReadFeature();
         }
         return super._getFeature(type);
     }
+
 }
 

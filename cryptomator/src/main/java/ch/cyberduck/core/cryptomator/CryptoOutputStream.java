@@ -15,16 +15,18 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StatusOutputStream;
+
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-public class CryptoOutputStream extends OutputStream {
+public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
-    private final OutputStream proxy;
+    private final StatusOutputStream<Reply> proxy;
     private final Cryptor cryptor;
     private final FileHeader header;
     private final ByteBuffer buffer;
@@ -34,20 +36,22 @@ public class CryptoOutputStream extends OutputStream {
      */
     private long chunkIndex = 0;
 
-    public CryptoOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header) {
+    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header) {
+        super(proxy);
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
         this.buffer = ByteBuffer.allocate(cryptor.fileContentCryptor().cleartextChunkSize());
     }
 
-    public OutputStream getProxy() {
-        return proxy;
-    }
-
     @Override
     public void write(final int b) throws IOException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Reply getStatus() throws BackgroundException {
+        return proxy.getStatus();
     }
 
     @Override

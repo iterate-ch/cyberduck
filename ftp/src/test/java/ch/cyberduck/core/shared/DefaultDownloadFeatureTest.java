@@ -56,7 +56,7 @@ import static org.junit.Assert.assertNotNull;
 public class DefaultDownloadFeatureTest {
 
     @Test
-    public void testTransferSegment() throws Exception {
+    public void testTransferAppend() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));

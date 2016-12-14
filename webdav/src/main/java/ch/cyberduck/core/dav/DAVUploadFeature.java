@@ -19,7 +19,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -35,12 +35,8 @@ import java.security.NoSuchAlgorithmException;
 public class DAVUploadFeature extends HttpUploadFeature<String, MessageDigest> {
     private static final Logger log = Logger.getLogger(DAVUploadFeature.class);
 
-    public DAVUploadFeature(final DAVSession session) {
-        super(session, new DAVWriteFeature(session));
-    }
-
-    public DAVUploadFeature(final DAVSession session, final AbstractHttpWriteFeature<String> writer) {
-        super(session, writer);
+    public DAVUploadFeature(final Write<String> writer) {
+        super(writer);
     }
 
     @Override

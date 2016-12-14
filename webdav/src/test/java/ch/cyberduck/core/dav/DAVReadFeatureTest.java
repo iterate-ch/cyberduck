@@ -131,7 +131,7 @@ public class DAVReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
+        new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -169,7 +169,7 @@ public class DAVReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
+        new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

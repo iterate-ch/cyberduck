@@ -69,7 +69,7 @@ public class B2ObjectListServiceTest {
         final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(new byte[0], out);
         out.close();
-        final B2FileResponse resopnse = out.getResponse();
+        final B2FileResponse resopnse = out.getStatus();
         final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
         // Not found with missing version ID
         assertFalse(list.contains(file));
@@ -132,7 +132,7 @@ public class B2ObjectListServiceTest {
             final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file1, status);
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = out.getResponse();
+            final B2FileResponse resopnse = out.getStatus();
             final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file1.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file1));
@@ -149,7 +149,7 @@ public class B2ObjectListServiceTest {
             final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file2, status);
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = out.getResponse();
+            final B2FileResponse resopnse = out.getStatus();
             final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file2.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file2));

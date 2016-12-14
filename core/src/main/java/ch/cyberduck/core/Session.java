@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -276,7 +277,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature(this);
+            return (T) new DefaultUploadFeature(this.getFeature(Write.class));
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(this);

@@ -25,6 +25,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
@@ -138,7 +139,7 @@ public class IRODSReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature(session).upload(
+        new DefaultUploadFeature<Void>(new NullWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

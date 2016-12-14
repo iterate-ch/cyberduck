@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
@@ -183,7 +184,7 @@ public class UDTProxyConfiguratorTest {
         status.setLength(content.length);
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled);
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         try {
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
@@ -240,7 +241,7 @@ public class UDTProxyConfiguratorTest {
 
         final Path test = new Path(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled);
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
 

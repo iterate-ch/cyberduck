@@ -15,13 +15,13 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
 
 public class DriveUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-
-    public DriveUploadFeature(final DriveSession session) {
-        super(session, new DriveWriteFeature(session));
+    public DriveUploadFeature(final Write<Void> writer) {
+        super(writer);
     }
 }

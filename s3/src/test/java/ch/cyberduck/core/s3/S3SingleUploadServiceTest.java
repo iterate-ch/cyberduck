@@ -55,12 +55,15 @@ public class S3SingleUploadServiceTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new S3SingleUploadService(new S3Session(new Host(new S3Protocol()))).decorate(n, null).getClass());
+        final S3Session session = new S3Session(new Host(new S3Protocol()));
+        assertSame(NullInputStream.class, new S3SingleUploadService(session,
+                new S3WriteFeature(session, new S3DisabledMultipartService())).decorate(n, null).getClass());
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNotNull(new S3SingleUploadService(new S3Session(new Host(new S3Protocol()))).digest());
+        final S3Session session = new S3Session(new Host(new S3Protocol()));
+        assertNotNull(new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())).digest());
     }
 
     @Test
@@ -72,7 +75,7 @@ public class S3SingleUploadServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -106,7 +109,7 @@ public class S3SingleUploadServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -145,7 +148,7 @@ public class S3SingleUploadServiceTest {
         };
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3SingleUploadService service = new S3SingleUploadService(session);
+        final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -179,7 +182,7 @@ public class S3SingleUploadServiceTest {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3SingleUploadService m = new S3SingleUploadService(session);
+        final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

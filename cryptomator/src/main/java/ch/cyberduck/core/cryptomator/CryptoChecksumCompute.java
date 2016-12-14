@@ -22,6 +22,7 @@ import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -60,7 +61,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
     protected Checksum compute(final InputStream in, final ByteBuffer header) throws ChecksumException {
         try {
             final PipedOutputStream source = new PipedOutputStream();
-            final CryptoOutputStream out = new CryptoOutputStream(source, vault.getCryptor(),
+            final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
                     vault.getCryptor().fileHeaderCryptor().decryptHeader(header));
             final PipedInputStream sink = new PipedInputStream(source);
             final TransferStatus status = new TransferStatus();

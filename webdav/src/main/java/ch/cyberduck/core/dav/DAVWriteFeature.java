@@ -44,7 +44,7 @@ import java.util.List;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
 
-public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
+public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
     private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
 
     private final DAVSession session;

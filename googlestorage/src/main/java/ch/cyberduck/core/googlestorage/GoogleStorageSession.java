@@ -265,7 +265,7 @@ public class GoogleStorageSession extends S3Session {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new S3SingleUploadService(this);
+            return (T) new S3SingleUploadService(this, this.getFeature(Write.class));
         }
         if(type == Write.class) {
             return (T) new S3WriteFeature(this, new S3DisabledMultipartService());

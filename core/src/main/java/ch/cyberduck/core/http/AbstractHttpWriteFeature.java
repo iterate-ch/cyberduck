@@ -32,11 +32,12 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature implements HttpWriteFeature<T> {
+public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> implements HttpWriteFeature<T> {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
     private abstract class FutureHttpResponse implements Runnable {
@@ -115,12 +116,17 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature imp
             }
             final OutputStream stream = entity.getStream();
             return new HttpResponseOutputStream<T>(stream) {
+                @Override
+                public void flush() throws IOException {
+                    stream.flush();
+                }
+
                 /**
                  * Only available after this stream is closed.
                  * @return Response from server for upload
                  */
                 @Override
-                public T getResponse() throws BackgroundException {
+                public T getStatus() throws BackgroundException {
                     try {
                         if(status.isCanceled()) {
                             throw new ConnectionCanceledException();

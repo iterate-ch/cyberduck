@@ -31,8 +31,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -72,7 +74,7 @@ public class S3SingleUploadServiceTest {
                 return null;
             }
         }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3SingleUploadService m = new S3SingleUploadService(session);
+        final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

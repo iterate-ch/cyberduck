@@ -39,13 +39,16 @@ public class SwiftSmallObjectUploadFeatureTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(
-                new SwiftSession(new Host(new SwiftProtocol()))).decorate(n, null).getClass());
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
+        assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+                session, new SwiftRegionService(session))).decorate(n, null).getClass());
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNotNull(new SwiftSmallObjectUploadFeature(new SwiftSession(new Host(new SwiftProtocol()))).digest());
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
+        assertNotNull(new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+                session, new SwiftRegionService(session))).digest());
     }
 
     @Test(expected = ChecksumException.class)
@@ -53,7 +56,9 @@ public class SwiftSmallObjectUploadFeatureTest {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427f");
         try {
-            new SwiftSmallObjectUploadFeature(new SwiftSession(new Host(new SwiftProtocol()))).post(
+            final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
+            new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+                    session, new SwiftRegionService(session))).post(
                     new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
             );
         }
@@ -68,7 +73,9 @@ public class SwiftSmallObjectUploadFeatureTest {
     public void testPostChecksum() throws Exception {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427e");
-        new SwiftSmallObjectUploadFeature(new SwiftSession(new Host(new SwiftProtocol()))).post(
+        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
+        new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
+                session, new SwiftRegionService(session))).post(
                 new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
         );
     }

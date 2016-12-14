@@ -6,6 +6,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
@@ -165,7 +166,7 @@ public class ResumeFilterTest {
     public void testAppendEqualSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length);
@@ -200,7 +201,7 @@ public class ResumeFilterTest {
     public void testAppendSmallerSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length - 1);
@@ -240,7 +241,7 @@ public class ResumeFilterTest {
     public void testAppendLargerSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length + 1);

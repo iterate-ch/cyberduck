@@ -41,7 +41,7 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 
-public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
+public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write<B2FileResponse> {
 
     private final PathContainerService containerService
             = new B2PathContainerService();

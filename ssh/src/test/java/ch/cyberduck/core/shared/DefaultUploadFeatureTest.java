@@ -34,6 +34,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,7 +55,7 @@ import static org.junit.Assert.assertArrayEquals;
 public class DefaultUploadFeatureTest {
 
     @Test
-    public void testTransferSegment() throws Exception {
+    public void testTransferAppend() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
@@ -70,14 +71,14 @@ public class DefaultUploadFeatureTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DefaultUploadFeature(session).upload(
+            new DefaultUploadFeature(new SFTPWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DefaultUploadFeature(session).upload(
+            new DefaultUploadFeature(new SFTPWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());

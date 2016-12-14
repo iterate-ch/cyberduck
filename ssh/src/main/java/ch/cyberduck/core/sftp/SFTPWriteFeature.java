@@ -19,6 +19,8 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -27,14 +29,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-public class SFTPWriteFeature extends AppendWriteFeature {
+public class SFTPWriteFeature extends AppendWriteFeature<Void> {
     private static final Logger log = Logger.getLogger(SFTPWriteFeature.class);
 
     private final SFTPSession session;
@@ -48,7 +49,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final EnumSet<OpenMode> flags;
             if(status.isAppend()) {
@@ -91,7 +92,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
             // Open stream at offset
-            return handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
+            return new VoidStatusOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override
@@ -108,7 +109,7 @@ public class SFTPWriteFeature extends AppendWriteFeature {
                         close.set(true);
                     }
                 }
-            };
+            });
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);

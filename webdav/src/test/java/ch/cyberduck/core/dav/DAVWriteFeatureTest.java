@@ -63,7 +63,7 @@ public class DAVWriteFeatureTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
@@ -256,7 +256,7 @@ public class DAVWriteFeatureTest {
         final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
         try {
             write.close();
-            write.getResponse();
+            write.getStatus();
         }
         catch(IOException e) {
             throw (Exception) e.getCause();

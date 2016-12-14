@@ -20,6 +20,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -49,12 +50,8 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
 
     private final B2Session session;
 
-    public B2SingleUploadService(final B2Session session) {
-        this(session, new B2WriteFeature(session));
-    }
-
-    public B2SingleUploadService(final B2Session session, final B2WriteFeature writer) {
-        super(session, writer);
+    public B2SingleUploadService(final B2Session session, final Write<B2FileResponse> writer) {
+        super(writer);
         this.session = session;
     }
 

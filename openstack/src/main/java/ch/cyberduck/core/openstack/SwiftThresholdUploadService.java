@@ -40,38 +40,34 @@ public class SwiftThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
 
     private final SwiftSession session;
-
     private final SwiftRegionService regionService;
+    private final SwiftLargeObjectUploadFeature largeObjectUploadFeature;
+    private final SwiftSmallObjectUploadFeature smallObjectUploadFeature;
 
     private final Long threshold;
 
-    public final SwiftLargeObjectUploadFeature largeObjectUploadFeature;
-
-    public final SwiftSmallObjectUploadFeature smallObjectUploadFeature;
-
-    public SwiftThresholdUploadService(final SwiftSession session) {
-        this(session, new SwiftRegionService(session));
-    }
-
-    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService) {
+    public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
+                                       final SwiftLargeObjectUploadFeature largeObjectUploadFeature,
+                                       final SwiftSmallObjectUploadFeature smallObjectUploadFeature) {
         this(session, regionService, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"),
-                PreferencesFactory.get().getLong("openstack.upload.largeobject.size"));
+                largeObjectUploadFeature, smallObjectUploadFeature);
     }
 
 
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
-                                       final Long threshold, final Long segment) {
+                                       final Long threshold,
+                                       final SwiftLargeObjectUploadFeature largeObjectUploadFeature,
+                                       final SwiftSmallObjectUploadFeature smallObjectUploadFeature) {
         this.session = session;
         this.regionService = regionService;
         this.threshold = threshold;
-        this.largeObjectUploadFeature = new SwiftLargeObjectUploadFeature(session, regionService, segment,
-                PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
-        this.smallObjectUploadFeature = new SwiftSmallObjectUploadFeature(session, regionService);
+        this.largeObjectUploadFeature = largeObjectUploadFeature;
+        this.smallObjectUploadFeature = smallObjectUploadFeature;
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return new SwiftWriteFeature(session, regionService).append(file, length, cache);
+        return session.getFeature(Write.class, new SwiftWriteFeature(session, regionService)).append(file, length, cache);
     }
 
     @Override

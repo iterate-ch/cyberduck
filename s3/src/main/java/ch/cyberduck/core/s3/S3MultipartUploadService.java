@@ -88,7 +88,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
-        super(session, new S3WriteFeature(session));
+        super(new S3WriteFeature(session));
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;

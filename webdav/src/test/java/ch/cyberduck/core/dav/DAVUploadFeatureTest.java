@@ -56,12 +56,14 @@ public class DAVUploadFeatureTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new DAVUploadFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).decorate(n, null).getClass());
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
+        assertSame(NullInputStream.class, new DAVUploadFeature(new DAVWriteFeature(session)).decorate(n, null).getClass());
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNull(new DAVUploadFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).digest());
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
+        assertNull(new DAVUploadFeature(new DAVWriteFeature(session)).digest());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -78,7 +80,7 @@ public class DAVUploadFeatureTest {
         new DefaultLocalTouchFeature().touch(local);
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
-            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
@@ -111,14 +113,14 @@ public class DAVUploadFeatureTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DAVUploadFeature(session, new DAVWriteFeature(session)).upload(
+            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());

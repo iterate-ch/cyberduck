@@ -21,13 +21,13 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class CryptoWriteFeature implements Write {
 
@@ -42,7 +42,7 @@ public class CryptoWriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<?> write(final Path file, final TransferStatus status) throws BackgroundException {
         if(vault.contains(file)) {
             try {
                 final Path encrypted = vault.encrypt(session, file);
@@ -55,10 +55,9 @@ public class CryptoWriteFeature implements Write {
                 else {
                     header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
                 }
-                final OutputStream proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
+                final StatusOutputStream<?> proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
                 proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
-                // Content
-                return new CryptoOutputStream(proxy, cryptor, header);
+                return new CryptoOutputStream<>(proxy, cryptor, header);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

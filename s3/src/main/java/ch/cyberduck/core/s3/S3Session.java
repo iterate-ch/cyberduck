@@ -284,9 +284,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this));
+                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this),
+                        new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
+                        new S3MultipartUploadService(this)
+                );
             }
-            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
+            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService(),
+                    new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
+                    new S3MultipartUploadService(this)
+            );
         }
         if(type == Directory.class) {
             return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));

@@ -16,13 +16,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
-import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -149,7 +149,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }
@@ -245,7 +245,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }

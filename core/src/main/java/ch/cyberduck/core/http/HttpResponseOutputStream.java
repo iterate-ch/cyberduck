@@ -20,14 +20,14 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StatusOutputStream;
 
-import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class HttpResponseOutputStream<T> extends ProxyOutputStream {
+public abstract class HttpResponseOutputStream<T> extends StatusOutputStream<T> {
     private static final Logger log = Logger.getLogger(HttpResponseOutputStream.class);
 
     public HttpResponseOutputStream(final OutputStream proxy) {
@@ -39,13 +39,13 @@ public abstract class HttpResponseOutputStream<T> extends ProxyOutputStream {
      *
      * @return A specific response header
      */
-    public abstract T getResponse() throws BackgroundException;
+    public abstract T getStatus() throws BackgroundException;
 
     @Override
     public void close() throws IOException {
         super.close();
         try {
-            final T response = this.getResponse();
+            final T response = this.getStatus();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Closed stream %s with response value %s", this, response));
             }
