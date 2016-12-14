@@ -26,20 +26,13 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,15 +40,10 @@ import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
 public class VaultController extends FolderController {
-
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-
-    private final BrowserController parent;
 
     @Outlet
     private final NSSecureTextField passwordField;
@@ -67,17 +55,23 @@ public class VaultController extends FolderController {
     private final NSView view;
 
     private final PasswordStrengthValidator passwordStrengthValidator = new PasswordStrengthValidator();
+    private final Callback callback;
 
-    public VaultController(final BrowserController parent, final Cache<Path> cache, final Set<Location.Name> regions) {
-        super(parent, cache, regions, NSAlert.alert(
+    public VaultController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Callback callback) {
+        super(workdir, selected, cache, regions, NSAlert.alert(
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 LocaleFactory.localizedString("Enter the name for the new folder", "Folder"),
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Folder")
-        ));
+        ), new FolderController.Callback() {
+            @Override
+            public void callback(final Path folder, final String region) {
+                //
+            }
+        });
+        this.callback = callback;
         this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
-        this.parent = parent;
         this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
         this.passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
         this.passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
@@ -85,9 +79,7 @@ public class VaultController extends FolderController {
         this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(window.frame().size.width.doubleValue(), 18));
         this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
-//        this.strengthIndicator.setMinValue(PasswordStrengthValidator.Strength.veryweak.getScore());
-//        this.strengthIndicator.setMaxValue(PasswordStrengthValidator.Strength.verystrong.getScore());
-        this.notificationCenter.addObserver(this.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.passwordField);
@@ -119,19 +111,7 @@ public class VaultController extends FolderController {
             final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
                     filename, EnumSet.of(Path.Type.directory));
             final String passphrase = passwordField.stringValue();
-            parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                    new CreateVaultWorker(folder, this.getLocation(), PasswordStoreFactory.get(), new PasswordCallback() {
-                        @Override
-                        public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                            credentials.setPassword(passphrase);
-                        }
-                    }) {
-                        @Override
-                        public void cleanup(final Boolean done) {
-                            parent.reload(parent.workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
-                        }
-                    })
-            );
+            callback.callback(folder, this.getLocation(), passphrase);
         }
     }
 
@@ -157,5 +137,9 @@ public class VaultController extends FolderController {
         final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/cryptomator");
         BrowserLauncherFactory.get().open(site.toString());
+    }
+
+    public interface Callback {
+        void callback(final Path folder, final String region, final String passphrase);
     }
 }

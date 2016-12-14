@@ -17,11 +17,16 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -33,11 +38,22 @@ public class CryptoWriteFeature implements Write {
 
     private final Session<?> session;
     private final Write delegate;
+    private final Find finder;
+    private final AttributesFinder attributes;
     private final CryptoVault vault;
 
     public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault vault) {
+        this(session, delegate,
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)),
+                vault);
+    }
+
+    public CryptoWriteFeature(final Session<?> session, final Write delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
         this.session = session;
         this.delegate = delegate;
+        this.finder = finder;
+        this.attributes = attributes;
         this.vault = vault;
     }
 
@@ -68,7 +84,11 @@ public class CryptoWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return delegate.append(file, length, cache);
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        }
+        return Write.notfound;
     }
 
     @Override

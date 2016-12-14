@@ -23,23 +23,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.worker.TouchWorker;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
-import java.util.Collections;
 import java.util.EnumSet;
 
 public class CreateFileController extends FileController {
 
-    public CreateFileController(final BrowserController parent, final Cache<Path> cache) {
-        super(parent, cache, NSAlert.alert(
+    private final Callback callback;
+
+    public CreateFileController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
+        super(workdir, selected, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Create new file", "File"),
                 LocaleFactory.localizedString("Enter the name for the new file", "File"),
                 LocaleFactory.localizedString("Create", "File"),
                 EditorFactory.instance().getDefaultEditor() != Application.notfound ? LocaleFactory.localizedString("Edit", "File") : null,
                 LocaleFactory.localizedString("Cancel", "File")
         ));
+        this.callback = callback;
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
     }
 
@@ -56,16 +56,10 @@ public class CreateFileController extends FileController {
 
     private void run(final Path directory, final String filename, final boolean edit) {
         final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
-        parent.background(new WorkerBackgroundAction<Boolean>(parent, parent.getSession(),
-                new TouchWorker(file) {
-                    @Override
-                    public void cleanup(final Boolean done) {
-                        parent.reload(parent.workdir(), Collections.singletonList(file), Collections.singletonList(file));
-                        if(edit) {
-                            file.attributes().setSize(0L);
-                            parent.edit(file);
-                        }
-                    }
-                }));
+        callback.callback(edit, file);
+    }
+
+    public interface Callback {
+        public void callback(final boolean edit, final Path file);
     }
 }

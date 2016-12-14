@@ -18,34 +18,32 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.transfer.CopyTransfer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
 public class DuplicateFileController extends FileController {
 
-    public DuplicateFileController(final BrowserController parent, final Cache<Path> cache) {
-        super(parent, cache, NSAlert.alert(
+    private final Callback callback;
+
+    public DuplicateFileController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
+        super(workdir, selected, cache, NSAlert.alert(
                 LocaleFactory.localizedString("Duplicate File", "Duplicate"),
                 LocaleFactory.localizedString("Enter the name for the new file", "Duplicate"),
                 LocaleFactory.localizedString("Duplicate", "Duplicate"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Duplicate")
         ));
-        final Path selected = this.getSelected();
+        this.callback = callback;
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));
         String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
@@ -79,13 +77,10 @@ public class DuplicateFileController extends FileController {
      *                 files as the value
      */
     public void duplicate(final Map<Path, Path> selected) {
-        new OverwriteController(parent).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
-            @Override
-            public void run() {
-                final Host target = parent.getSession().getHost();
-                parent.transfer(new CopyTransfer(target, target, selected), new ArrayList<Path>(selected.values()), true);
-            }
-        });
+        callback.callback(selected);
     }
 
+    public interface Callback {
+        void callback(final Map<Path, Path> selected);
+    }
 }

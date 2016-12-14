@@ -64,6 +64,7 @@ import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -76,9 +77,13 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.worker.CreateDirectoryWorker;
+import ch.cyberduck.core.worker.CreateSymlinkWorker;
+import ch.cyberduck.core.worker.CreateVaultWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
+import ch.cyberduck.core.worker.TouchWorker;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import ch.cyberduck.ui.browser.PathReloadFinder;
@@ -498,6 +503,16 @@ public class BrowserController extends WindowController
                 this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
             }
         }
+    }
+
+    private Path getWorkdirFromSelection() {
+        if(this.getSelectionCount() == 1) {
+            final Path selected = this.getSelectedPath();
+            if(null != selected) {
+                return selected.getParent();
+            }
+        }
+        return this.workdir();
     }
 
     /**
@@ -2541,35 +2556,94 @@ public class BrowserController extends WindowController
 
     @Action
     public void createFileButtonClicked(final ID sender) {
-        final CreateFileController sheet = new CreateFileController(this, cache);
+        final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
+            @Override
+            public void callback(final boolean edit, final Path file) {
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                        new TouchWorker(file) {
+                            @Override
+                            public void cleanup(final Boolean done) {
+                                reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                                if(edit) {
+                                    file.attributes().setSize(0L);
+                                    edit(file);
+                                }
+                            }
+                        }));
+            }
+
+        });
         sheet.beginSheet(this);
     }
 
     @Action
     public void createSymlinkButtonClicked(final ID sender) {
-        final CreateSymlinkController sheet = new CreateSymlinkController(this, cache);
+        final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
+            public void callback(final Path selected, final Path link) {
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, BrowserController.this.getSession(), new CreateSymlinkWorker(link, selected) {
+                    @Override
+                    public void cleanup(final Path symlink) {
+                        reload(workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
+                    }
+                }));
+            }
+        });
         sheet.beginSheet(this);
     }
 
     @Action
     public void duplicateFileButtonClicked(final ID sender) {
-        final DuplicateFileController sheet = new DuplicateFileController(this, cache);
+        final DuplicateFileController sheet = new DuplicateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new DuplicateFileController.Callback() {
+            @Override
+            public void callback(final Map<Path, Path> selected) {
+                new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(selected.values()), new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        transfer(new CopyTransfer(pool.getHost(), pool.getHost(), selected), new ArrayList<Path>(selected.values()), true);
+                    }
+                });
+            }
+        });
         sheet.beginSheet(this);
     }
 
     @Action
     public void createFolderButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final FolderController sheet = new FolderController(this, cache,
-                feature != null ? feature.getLocations() : Collections.emptySet());
+        final FolderController sheet = new FolderController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+                feature != null ? feature.getLocations() : Collections.emptySet(), new FolderController.Callback() {
+
+            @Override
+            public void callback(final Path folder, final String region) {
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                        new CreateDirectoryWorker(folder, region) {
+                            @Override
+                            public void cleanup(final Boolean done) {
+                                reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            }
+                        }));
+            }
+        });
         sheet.beginSheet(this);
     }
 
     @Action
     public void createEncryptedVaultButtonClicked(final ID sender) {
         final Location feature = pool.getFeature(Location.class);
-        final VaultController sheet = new VaultController(this, cache,
-                feature != null ? feature.getLocations() : Collections.emptySet());
+        final VaultController sheet = new VaultController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache,
+                feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
+            @Override
+            public void callback(final Path folder, final String region, final String passphrase) {
+                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                        new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), passphrase) {
+                            @Override
+                            public void cleanup(final Boolean done) {
+                                reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            }
+                        })
+                );
+            }
+        });
         sheet.beginSheet(this);
     }
 
@@ -3088,7 +3162,12 @@ public class BrowserController extends WindowController
                 new MoveController(this).rename(files);
             }
             if(pasteboard.isCopy()) {
-                new DuplicateFileController(this, cache).duplicate(files);
+                new OverwriteController(BrowserController.this).overwrite(new ArrayList<Path>(files.values()), new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        transfer(new CopyTransfer(pool.getHost(), pool.getHost(), files), new ArrayList<Path>(files.values()), true);
+                    }
+                });
             }
         }
     }
@@ -3617,8 +3696,6 @@ public class BrowserController extends WindowController
 
         archiveMenu.setDelegate(null);
         editMenu.setDelegate(null);
-
-        notificationCenter.removeObserver(this.id());
 
         super.invalidate();
     }
