@@ -29,7 +29,6 @@ import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 
 public class CryptoWriteFeature implements Write {
 
@@ -48,13 +47,17 @@ public class CryptoWriteFeature implements Write {
         if(vault.contains(file)) {
             try {
                 final Path encrypted = vault.encrypt(session, file);
-                // Header
                 final Cryptor cryptor = vault.getCryptor();
-                final FileHeader header = cryptor.fileHeaderCryptor().create();
-                header.setFilesize(-1);
-                final ByteBuffer headerBuffer = cryptor.fileHeaderCryptor().encryptHeader(header);
+                // Header
+                final FileHeader header;
+                if(null == status.getHeader()) {
+                    header = cryptor.fileHeaderCryptor().create();
+                }
+                else {
+                    header = status.getHeader();
+                }
                 final OutputStream proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
-                proxy.write(headerBuffer.array());
+                proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
                 // Content
                 return new CryptoOutputStream(proxy, cryptor, header);
             }

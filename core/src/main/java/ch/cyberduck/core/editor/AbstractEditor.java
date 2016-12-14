@@ -40,6 +40,7 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
@@ -162,10 +163,10 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
+                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Error computing checksum for %s", local));
+                    log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));
                 }
 
             }
@@ -213,10 +214,10 @@ public abstract class AbstractEditor implements Editor {
         try {
             listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
-            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
+            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Error computing checksum for %s", local));
+            log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));
             return Worker.empty();
         }
         if(current.equals(checksum)) {

@@ -46,9 +46,6 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     private final S3Session session;
 
-    private final ChecksumCompute checksum
-            = ChecksumComputeFactory.get(HashAlgorithm.sha256);
-
     public S3SingleUploadService(final S3Session session) {
         this(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
     }
@@ -64,7 +61,9 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
-                status.setChecksum(checksum.compute(local.getInputStream()));
+                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
+                        .compute(local.getInputStream(), status)
+                );
                 break;
         }
         try {
@@ -107,11 +106,10 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final StorageObject part) throws BackgroundException {
-        if(null == part.getServerSideEncryptionAlgorithm()) {
-            this.verify(file, digest, Checksum.parse(part.getETag()));
-        }
-        else {
+        if(null != part.getServerSideEncryptionAlgorithm()) {
             log.warn(String.format("Skip checksum verification for %s with server side encryption enabled", file));
+            return;
         }
+        this.verify(file, digest, Checksum.parse(part.getETag()));
     }
 }

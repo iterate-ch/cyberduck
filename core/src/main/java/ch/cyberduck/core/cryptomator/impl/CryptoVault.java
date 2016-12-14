@@ -29,23 +29,12 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Download;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.FastSecureRandomFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -114,7 +103,7 @@ public class CryptoVault implements Vault {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomFactory.get().provide()
         );
-        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
         callback.prompt(credentials,
@@ -132,7 +121,7 @@ public class CryptoVault implements Vault {
         final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
-        feature.mkdir(home, region, null);
+        feature.mkdir(home, region, new TransferStatus());
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
@@ -141,19 +130,19 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        feature.mkdir(dataDir, region, null);
-        feature.mkdir(firstLevel, region, null);
-        feature.mkdir(secondLevel, region, null);
+        feature.mkdir(dataDir, region, new TransferStatus());
+        feature.mkdir(firstLevel, region, new TransferStatus());
+        feature.mkdir(secondLevel, region, new TransferStatus());
         return this;
     }
 
     @Override
     public CryptoVault load(final Session<?> session) throws BackgroundException {
-        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
+        final Path key = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", file));
+            log.debug(String.format("Attempt to read master key from %s", key));
         }
-        final String json = new ContentReader(session).readToString(file);
+        final String json = new ContentReader(session).readToString(key);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read master key %s", json));
         }
@@ -162,17 +151,17 @@ public class CryptoVault implements Vault {
             master = KeyFile.parse(json.getBytes());
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", file.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", key.getName()), e);
         }
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials(bookmark.getHostname(),
-                keychain.getPassword(bookmark.getHostname(), file.getAbsolute())) {
+                keychain.getPassword(bookmark.getHostname(), key.getAbsolute())) {
             @Override
             public String getPasswordPlaceholder() {
                 return LocaleFactory.localizedString("Passphrase", "Cryptomator");
             }
         };
-        this.unlock(file, master, credentials,
+        this.unlock(key, master, credentials,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
@@ -240,6 +229,9 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
+        if(file.getType().contains(Path.Type.vault)) {
+            return false;
+        }
         if(cryptor != null) {
             return file.equals(home) || file.isChild(home);
         }
@@ -255,6 +247,10 @@ public class CryptoVault implements Vault {
         if(this.contains(file)) {
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+                return file;
+            }
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
             if(file.isFile() || metadata) {
@@ -275,6 +271,14 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
         if(this.contains(directory)) {
+            if(file.getType().contains(Path.Type.decrypted)) {
+                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+                return file;
+            }
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+                return file;
+            }
             final Path inflated = this.inflate(session, file);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
             final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
@@ -409,8 +413,14 @@ public class CryptoVault implements Vault {
             if(type == Symlink.class) {
                 return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
             }
+            if(type == Headers.class) {
+                return (T) new CryptoHeadersFeature(session, (Headers) delegate, this);
+            }
             if(type == Compress.class) {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
+            }
+            if(type == ChecksumCompute.class) {
+                return (T) new CryptoChecksumCompute((ChecksumCompute) delegate, this);
             }
         }
         return delegate;
@@ -435,13 +445,12 @@ public class CryptoVault implements Vault {
             return false;
         }
         final CryptoVault that = (CryptoVault) o;
-        return Objects.equals(home, that.home) &&
-                Objects.equals(cryptor, that.cryptor);
+        return Objects.equals(home, that.home);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(home, cryptor);
+        return Objects.hash(home);
     }
 
     @Override

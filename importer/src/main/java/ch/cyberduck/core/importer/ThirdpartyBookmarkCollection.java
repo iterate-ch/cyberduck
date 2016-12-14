@@ -35,6 +35,7 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -78,7 +79,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             Checksum current = null;
             try {
-                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream());
+                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Current checksum for %s is %s", file, current));
                 }

@@ -121,6 +121,10 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
+        if(file.getType().contains(Path.Type.encrypted)) {
+            log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+            return;
+        }
         if(null == digest) {
             log.debug(String.format("Digest disabled for file %s", file));
             return;

@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class FTPMFMTTimestampFeatureTest {
         final Path home = new FTPWorkdirService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test);
+        new DefaultTouchFeature(session).touch(test, new TransferStatus());
         new FTPMFMTTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, session.list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

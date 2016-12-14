@@ -217,7 +217,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             return (T) new AzureCopyFeature(this, context);
         }
         if(type == Touch.class) {
-            return (T) new AzureTouchFeature(this, context);
+            return (T) new AzureTouchFeature(this);
         }
         if(type == UrlProvider.class) {
             return (T) new AzureUrlProvider(this);

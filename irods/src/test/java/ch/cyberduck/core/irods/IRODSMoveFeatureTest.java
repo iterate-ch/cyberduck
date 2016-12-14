@@ -32,6 +32,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
@@ -91,8 +92,8 @@ public class IRODSMoveFeatureTest {
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(source);
-        new IRODSTouchFeature(session).touch(destination);
+        new IRODSTouchFeature(session).touch(source, new TransferStatus());
+        new IRODSTouchFeature(session).touch(destination, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));

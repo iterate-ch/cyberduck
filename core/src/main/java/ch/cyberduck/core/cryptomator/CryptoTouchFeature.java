@@ -17,25 +17,35 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.impl.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
 
 public class CryptoTouchFeature implements Touch {
 
     private final Session<?> session;
     private final Touch delegate;
-    private final Vault cryptomator;
+    private final CryptoVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch delegate, final Vault cryptomator) {
+    public CryptoTouchFeature(final Session<?> session, final Touch delegate, final CryptoVault vault) {
         this.session = session;
         this.delegate = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
-        delegate.touch(cryptomator.encrypt(session, file));
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+        if(vault.contains(file)) {
+            // Write header
+            final Cryptor cryptor = vault.getCryptor();
+            final FileHeader header = cryptor.fileHeaderCryptor().create();
+            status.setHeader(header);
+        }
+        delegate.touch(vault.encrypt(session, file), status);
     }
 
     @Override

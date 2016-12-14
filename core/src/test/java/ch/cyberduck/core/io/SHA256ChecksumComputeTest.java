@@ -18,6 +18,8 @@ package ch.cyberduck.core.io;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import org.apache.commons.io.input.NullInputStream;
 import org.junit.Test;
 
@@ -28,6 +30,6 @@ public class SHA256ChecksumComputeTest {
     @Test
     public void testCompute() throws Exception {
         assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                new SHA256ChecksumCompute().compute(new NullInputStream(0)).hash);
+                new SHA256ChecksumCompute().compute(new NullInputStream(0), new TransferStatus()).hash);
     }
 }

@@ -13,6 +13,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -54,7 +55,7 @@ public class SwiftAttributesFinderFeatureTest {
         container.attributes().setRegion("DFW");
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(test);
+        new SwiftTouchFeature(session, new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());

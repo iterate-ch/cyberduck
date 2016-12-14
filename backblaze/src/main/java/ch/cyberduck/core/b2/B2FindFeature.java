@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,7 +56,7 @@ public class B2FindFeature implements Find {
             }
             else {
                 try {
-                    return null != new B2FileidProvider(session).getFileid(file);
+                    return null != session.getFeature(IdProvider.class).getFileid(file);
                 }
                 catch(NotfoundException e) {
                     return false;

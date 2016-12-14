@@ -31,6 +31,9 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -106,6 +109,9 @@ public class SpectraSession extends S3Session {
         }
         if(type == DistributionConfiguration.class) {
             return null;
+        }
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.crc32);
         }
         return super._getFeature(type);
     }

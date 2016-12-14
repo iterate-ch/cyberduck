@@ -17,12 +17,15 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -30,60 +33,61 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
+
+import java.io.IOException;
 
 public class S3DirectoryFeature implements Directory {
+
+    protected static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
 
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final S3WriteFeature write;
+    private final Write write;
 
     public S3DirectoryFeature(final S3Session session) {
-        this.session = session;
-        this.write = new S3WriteFeature(session);
+        this(session, session.getFeature(Write.class));
     }
 
-    public S3DirectoryFeature(final S3Session session, final S3WriteFeature write) {
+    public S3DirectoryFeature(final S3Session session, final Write write) {
         this.session = session;
         this.write = write;
     }
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
-    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
         }
         else {
-            if(null == status) {
-                status = new TransferStatus();
+            if(null == status.getEncryption()) {
                 final Encryption encryption = session.getFeature(Encryption.class);
                 if(encryption != null) {
                     status.setEncryption(encryption.getDefault(file));
                 }
+            }
+            if(null == status.getStorageClass()) {
                 final Redundancy redundancy = session.getFeature(Redundancy.class);
                 if(redundancy != null) {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(new NullInputStream(0L)));
+            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
-            status.setMime("application/x-directory");
-            final S3Object key = write.getDetails(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)), status);
+            status.setMime(MIMETYPE);
             try {
-                session.getClient().putObject(containerService.getContainer(file).getName(), key);
+                write.write(file, status).close();
             }
-            catch(ServiceException e) {
-                throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, file);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
             }
         }
     }

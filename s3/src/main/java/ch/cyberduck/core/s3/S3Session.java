@@ -52,6 +52,9 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -286,7 +289,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this);
+            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
@@ -310,7 +313,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this);
+            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Location.class) {
             if(this.isConnected()) {
@@ -380,6 +383,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
             }
+        }
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.sha256);
         }
         return super._getFeature(type);
     }

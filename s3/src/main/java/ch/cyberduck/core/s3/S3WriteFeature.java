@@ -114,7 +114,13 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * Add default metadata
      */
     protected S3Object getDetails(final String key, final TransferStatus status) {
-        final S3Object object = new S3Object(key);
+        final S3Object object;
+        if(S3DirectoryFeature.MIMETYPE.equals(status.getMime())) {
+            object = new S3Object(key.concat(String.valueOf(Path.DELIMITER)));
+        }
+        else {
+            object = new S3Object(key);
+        }
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);

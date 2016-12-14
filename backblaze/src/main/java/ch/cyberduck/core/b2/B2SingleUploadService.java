@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -27,7 +26,9 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -46,8 +47,7 @@ import synapticloop.b2.response.B2FileResponse;
 public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, MessageDigest> {
     private static final Logger log = Logger.getLogger(B2SingleUploadService.class);
 
-    private final ChecksumCompute checksum
-            = ChecksumComputeFactory.get(HashAlgorithm.sha1);
+    private final B2Session session;
 
     public B2SingleUploadService(final B2Session session) {
         this(session, new B2WriteFeature(session));
@@ -55,13 +55,15 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
 
     public B2SingleUploadService(final B2Session session, final B2WriteFeature writer) {
         super(session, writer);
+        this.session = session;
     }
 
     @Override
     public B2FileResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                                 final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        status.setChecksum(checksum.compute(local.getInputStream()));
-        return super.upload(file, local, throttle, listener, status, callback);
+                                 final StreamListener listener, final TransferStatus status,
+                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(local.getInputStream(), status));
+        return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class SFTPWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target);
+        new SFTPTouchFeature(session).touch(target, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(target));
         final String name = UUID.randomUUID().toString();
         final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

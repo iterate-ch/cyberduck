@@ -31,6 +31,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -90,7 +91,7 @@ public class SwiftDeleteFeatureTest {
                 new Path(container, "t", EnumSet.of(Path.Type.directory)),
                 name, EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(test);
+        new SwiftTouchFeature(session).touch(test, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertFalse(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);

@@ -12,6 +12,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class AzureDeleteFeatureTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new AzureDirectoryFeature(session, null).mkdir(container);
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test);
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(container, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(test));

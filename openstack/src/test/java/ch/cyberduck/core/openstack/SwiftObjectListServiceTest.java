@@ -29,6 +29,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -139,9 +140,9 @@ public class SwiftObjectListServiceTest {
         final String basename = UUID.randomUUID().toString();
         final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
         final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(base);
+        new SwiftTouchFeature(session).touch(base, new TransferStatus());
         final Path child = new Path(container, childname, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session).touch(child);
+        new SwiftTouchFeature(session).touch(child, new TransferStatus());
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
             assertTrue(list.contains(base));

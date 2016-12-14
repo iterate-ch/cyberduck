@@ -30,6 +30,7 @@ import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
@@ -76,7 +77,7 @@ public class IRODSAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new IRODSTouchFeature(session).touch(test);
+        new IRODSTouchFeature(session).touch(test, new TransferStatus());
         final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("iterate", attributes.getOwner());

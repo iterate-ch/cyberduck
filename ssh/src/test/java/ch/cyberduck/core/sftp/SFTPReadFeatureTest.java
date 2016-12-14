@@ -71,7 +71,7 @@ public class SFTPReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new byte[39865];
         new Random().nextBytes(content);
         {
@@ -105,7 +105,7 @@ public class SFTPReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
         {

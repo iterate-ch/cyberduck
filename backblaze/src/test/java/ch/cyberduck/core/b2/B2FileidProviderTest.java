@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class B2FileidProviderTest {
         service.connect(session, PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(file);
+        new B2TouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new B2FileidProvider(session).getFileid(file));
         try {
             assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));

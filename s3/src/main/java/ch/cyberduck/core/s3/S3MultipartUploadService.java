@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -189,7 +190,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     concat.append(part.getEtag());
                 }
                 final String expected = String.format("%s-%d",
-                        new MD5ChecksumCompute().compute(concat.toString()), completed.size());
+                        new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
                 final String reference;
                 if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                     reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
@@ -241,9 +242,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
-                            status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.sha256).compute(
-                                    StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset)
-                            ));
+                            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
+                                    .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                            );
                             break;
                     }
                     final StorageObject part = S3MultipartUploadService.super.upload(

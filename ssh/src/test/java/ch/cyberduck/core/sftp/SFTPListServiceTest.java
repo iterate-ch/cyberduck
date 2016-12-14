@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -124,9 +125,9 @@ public class SFTPListServiceTest {
                 credentials.setPassword("vault");
             }
         }, new DisabledVaultLookupListener()).create(session, null);
-        session.withVault(cryptomator);
+        session.withVault(cryptomator.load(session));
         assertTrue(session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).isEmpty());
-        session.getFeature(Touch.class).touch(test);
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertEquals(test, session.getFeature(ListService.class).list(vault, new DisabledListProgressListener()).get(0));
         // Test list of parent unencrypted
         final AttributedList<Path> parent = session.getFeature(ListService.class).list(home, new DisabledListProgressListener());

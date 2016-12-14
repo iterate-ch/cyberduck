@@ -43,6 +43,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.pool.SingleSessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -69,7 +70,7 @@ public class SFTPMoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(new SFTPFindFeature(session).find(test));
@@ -87,9 +88,9 @@ public class SFTPMoveFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(test);
+        new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target);
+        new SFTPTouchFeature(session).touch(target, new TransferStatus());
         new SFTPMoveFeature(session).move(test, target, true, new Delete.DisabledCallback());
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
@@ -129,7 +130,7 @@ public class SFTPMoveFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(source);
+        session.getFeature(Touch.class).touch(source, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(source));
         session.getFeature(Move.class).move(source, target, false, new Delete.Callback() {
             @Override
@@ -164,7 +165,7 @@ public class SFTPMoveFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(source);
+        session.getFeature(Touch.class).touch(source, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(source));
         session.getFeature(Directory.class).mkdir(targetFolder);
         assertTrue(session.getFeature(Find.class).find(targetFolder));
@@ -201,7 +202,7 @@ public class SFTPMoveFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        session.getFeature(Touch.class).touch(source);
+        session.getFeature(Touch.class).touch(source, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(source));
         session.getFeature(Directory.class).mkdir(targetFolder);
         assertTrue(session.getFeature(Find.class).find(targetFolder));

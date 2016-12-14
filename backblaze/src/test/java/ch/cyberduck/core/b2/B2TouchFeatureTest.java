@@ -1,6 +1,20 @@
-package ch.cyberduck.core.openstack;
+package ch.cyberduck.core.b2;
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
+/*
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -23,38 +37,30 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SwiftTouchFeatureTest {
+public class B2TouchFeatureTest {
 
     @Test
-    public void testFile() {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        assertFalse(new SwiftTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new SwiftTouchFeature(session).isSupported(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-    }
-
-
-    @Test
-    public void testTouchLongFilenameEncrypted() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+    public void testTouchEncrypted() throws Exception {
+        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                ));
+        final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = session.getFeature(Home.class).find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.file));
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -62,24 +68,24 @@ public class SwiftTouchFeatureTest {
             }
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        new CryptoTouchFeature(session, new SwiftTouchFeature(session, session.getFeature(Write.class, new SwiftWriteFeature(session, regionService))), cryptomator).touch(test, new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(test));
+        new CryptoTouchFeature(session, new B2TouchFeature(session, session.getFeature(Write.class, new B2WriteFeature(session))), cryptomator).touch(test, new TransferStatus());
+        assertTrue(new B2FindFeature(session).find(test));
         session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
-    public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+    public void testTouchEncryptedDefaultFeature() throws Exception {
+        final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+                new Credentials(
+                        System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                ));
+        final B2Session session = new B2Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = session.getFeature(Home.class).find();
-        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.file));
+        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {

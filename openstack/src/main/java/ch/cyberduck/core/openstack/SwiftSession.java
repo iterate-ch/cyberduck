@@ -247,7 +247,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftThresholdUploadService(this, regionService);
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this, regionService);
+            return (T) new SwiftDirectoryFeature(this, regionService, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
         }
         if(type == Delete.class) {
             return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
@@ -262,7 +262,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMoveFeature(this, regionService);
         }
         if(type == Touch.class) {
-            return (T) new SwiftTouchFeature(this, regionService);
+            return (T) new SwiftTouchFeature(this, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);

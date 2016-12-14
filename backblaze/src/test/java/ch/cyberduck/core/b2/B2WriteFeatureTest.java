@@ -97,7 +97,7 @@ public class B2WriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new B2WriteFeature(session).write(test, status);
         assertNotNull(out);
