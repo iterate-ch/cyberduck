@@ -45,10 +45,6 @@ public class S3TouchFeature implements Touch {
 
     private final Write write;
 
-    public S3TouchFeature(final S3Session session) {
-        this(session, session.getFeature(Write.class));
-    }
-
     public S3TouchFeature(final S3Session session, final Write write) {
         this.session = session;
         this.write = write;
