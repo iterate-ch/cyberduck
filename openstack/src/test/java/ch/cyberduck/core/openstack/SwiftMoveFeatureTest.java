@@ -55,7 +55,7 @@ public class SwiftMoveFeatureTest {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
-        new SwiftTouchFeature(session).touch(test, new TransferStatus());
+        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
@@ -78,10 +78,10 @@ public class SwiftMoveFeatureTest {
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("DFW");
-        new SwiftTouchFeature(session).touch(test, new TransferStatus());
+        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("DFW");
-        new SwiftTouchFeature(session).touch(target, new TransferStatus());
+        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(target, new TransferStatus());
         new SwiftMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(target));

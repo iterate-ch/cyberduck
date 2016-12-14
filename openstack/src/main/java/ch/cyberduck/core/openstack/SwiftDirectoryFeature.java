@@ -46,7 +46,7 @@ public class SwiftDirectoryFeature implements Directory {
     }
 
     public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, session.getFeature(Write.class));
+        this(session, regionService, session.getFeature(Write.class, new SwiftWriteFeature(session, regionService)));
     }
 
     public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService, final Write write) {
