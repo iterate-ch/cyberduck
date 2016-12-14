@@ -15,6 +15,8 @@
         <module>core/dll</module>
         <module>core/native</module>
         <module>i18n</module>
+        <!-- Encryption-->
+        <module>cryptomator</module>
         <!-- Native components -->
         <module>bonjour</module>
         <module>bonjour/dll</module>
@@ -35,9 +37,9 @@
         <module>ftp</module>
         <module>googledrive</module>
         <module>backblaze</module>
+        <module>dropbox</module>
         <module>protocols</module>
         <module>protocols/dll</module>
-        <module>dropbox</module>
         <!-- Test -->
         <module>test</module>
         <!-- Platforms -->
@@ -49,7 +51,6 @@
         <module>cli/windows</module>
         <module>cli/osx</module>
         <module>hubic</module>
-        <module>cryptomator</module>
     </modules>
 
     <scm>
