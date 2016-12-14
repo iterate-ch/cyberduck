@@ -101,6 +101,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\Cyberduck.Importer.dll</HintPath>
     </Reference>
+    <Reference Include="Cyberduck.Cryptomator">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>windows\target\Cyberduck.Cryptomator.dll</HintPath>
+    </Reference>
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>windows\target\CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
