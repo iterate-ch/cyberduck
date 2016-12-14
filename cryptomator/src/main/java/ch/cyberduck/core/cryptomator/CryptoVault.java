@@ -425,6 +425,9 @@ public class CryptoVault implements Vault {
             if(type == Compress.class) {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
+            if(type == Bulk.class) {
+                return (T) new CryptoBulkFeature<>(session, (Bulk) delegate, this);
+            }
             if(type == ChecksumCompute.class) {
                 return (T) new CryptoChecksumCompute((ChecksumCompute) delegate, this);
             }
