@@ -193,14 +193,14 @@ public class CopyTransfer extends Transfer {
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
         final Bulk download = source.getFeature(Bulk.class);
-        if(null != download) {
+        {
             final Object id = download.pre(Type.download, files);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
         }
         final Bulk upload = destination.getFeature(Bulk.class);
-        if(null != upload) {
+        {
             final Map<Path, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                 targets.put(this.mapping.get(entry.getKey()), entry.getValue());

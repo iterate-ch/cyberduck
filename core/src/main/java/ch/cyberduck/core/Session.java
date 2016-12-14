@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -41,6 +42,7 @@ import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
@@ -281,6 +283,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(this);
+        }
+        if(type == Bulk.class) {
+            return (T) new DisabledBulkFeature();
         }
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);

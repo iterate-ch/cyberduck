@@ -226,11 +226,9 @@ public class DownloadTransfer extends Transfer {
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
         final Bulk feature = source.getFeature(Bulk.class);
-        if(null != feature) {
-            final Object id = feature.pre(Type.download, files);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
-            }
+        final Object id = feature.pre(Type.download, files);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
     }
 
