@@ -68,12 +68,12 @@ public class IRODSWriteFeatureTest {
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
-        session1.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session1.open(new DisabledHostKeyCallback());
+        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final IRODSSession session2 = new IRODSSession(host);
-        session2.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session2.open(new DisabledHostKeyCallback());
+        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
