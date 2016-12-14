@@ -17,6 +17,7 @@
         <module>i18n</module>
         <!-- Encryption-->
         <module>cryptomator</module>
+        <module>cryptomator/dll</module>
         <!-- Native components -->
         <module>bonjour</module>
         <module>bonjour/dll</module>

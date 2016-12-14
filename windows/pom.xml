@@ -161,6 +161,13 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Cryptomator</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
                     <groupId>objectlistview</groupId>
                     <artifactId>objectlistview</artifactId>
                     <classifier>native</classifier>

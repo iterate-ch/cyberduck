@@ -116,6 +116,11 @@
           <netfx:NativeImage Id="ngen_Cyberduck.Importer" Platform="32bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="Cyberduck.Cryptomator">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Cryptomator" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="WinSparkle">
         <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
       </Component>

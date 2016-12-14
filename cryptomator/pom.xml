@@ -26,6 +26,36 @@
     <artifactId>cryptomator</artifactId>
     <packaging>jar</packaging>
 
+    <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Core</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Protocols</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>

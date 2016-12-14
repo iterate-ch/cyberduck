@@ -22,11 +22,32 @@
         <relativePath>../../pom.xml</relativePath>
         <version>5.3.0-SNAPSHOT</version>
     </parent>
-    <artifactId>cli-windows</artifactId>
-    <description>Cyberduck CLI Windows</description>
+    <artifactId>Cyberduck.Cryptomator</artifactId>
     <packaging>pom</packaging>
 
     <profiles>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>Mac</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
         <profile>
             <id>windows</id>
             <activation>
@@ -37,7 +58,25 @@
             <build>
                 <plugins>
                     <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-dll</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>attach-artifact</goal>
+                                </goals>
+                                <configuration>
+                                    <artifacts>
+                                        <artifact>
+                                            <type>dll</type>
+                                            <file>${project.build.directory}/Cyberduck.Cryptomator.dll</file>
+                                        </artifact>
+                                    </artifacts>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -62,51 +101,18 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                    </plugin>
                 </plugins>
             </build>
-            <dependencies>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Core.Native</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Protocols</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Cryptomator</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>ch.cyberduck</groupId>
-                    <artifactId>Cyberduck.Cli</artifactId>
-                    <type>dll</type>
-                    <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>cli</artifactId>
+            <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
