@@ -391,7 +391,6 @@ public final class TransferController extends WindowController implements NSTool
         toolbar.setDelegate(null);
         transferTableModel.invalidate();
         bandwidthPopup.menu().setDelegate(null);
-        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 

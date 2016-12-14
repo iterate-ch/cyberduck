@@ -438,12 +438,6 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public void invalidate() {
-        notificationCenter.removeObserver(this.id());
-        super.invalidate();
-    }
-
-    @Override
     protected String getBundleName() {
         return "Info";
     }

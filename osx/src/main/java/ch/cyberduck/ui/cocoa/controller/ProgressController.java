@@ -139,13 +139,6 @@ public class ProgressController extends BundleController implements TransferList
     }
 
     @Override
-    public void invalidate() {
-        filesPopup.menu().setDelegate(null);
-        notificationCenter.removeObserver(this.id());
-        super.invalidate();
-    }
-
-    @Override
     public void start(final Transfer transfer) {
         invoke(new DefaultMainAction() {
             @Override

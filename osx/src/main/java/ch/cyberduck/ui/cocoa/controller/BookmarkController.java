@@ -378,7 +378,6 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Override
     public void invalidate() {
-        notificationCenter.removeObserver(this.id());
         observers.clear();
         super.invalidate();
     }

@@ -247,7 +247,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     public void invalidate() {
         BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
-        notificationCenter.removeObserver(this.id());
         super.invalidate();
     }
 

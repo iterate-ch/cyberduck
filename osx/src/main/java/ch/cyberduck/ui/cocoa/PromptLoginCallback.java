@@ -27,7 +27,6 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
@@ -47,9 +46,6 @@ import org.rococoa.Foundation;
 
 public final class PromptLoginCallback implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
-
-    private final NSNotificationCenter notificationCenter
-            = NSNotificationCenter.defaultCenter();
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -120,12 +116,6 @@ public final class PromptLoginCallback implements LoginCallback {
                 select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
                         null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
                 return this.getSelectedOption();
-            }
-
-            @Override
-            public void invalidate() {
-                notificationCenter.removeObserver(this.id());
-                super.invalidate();
             }
         };
         final int option = sheet.beginSheet();
