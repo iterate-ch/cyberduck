@@ -25,8 +25,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.cryptomator.LookupVault;
-import ch.cyberduck.core.cryptomator.VaultLookupListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -39,6 +37,8 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
+import ch.cyberduck.core.vault.LookupVault;
+import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;

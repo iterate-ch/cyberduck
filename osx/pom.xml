@@ -305,5 +305,10 @@
             <artifactId>importer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

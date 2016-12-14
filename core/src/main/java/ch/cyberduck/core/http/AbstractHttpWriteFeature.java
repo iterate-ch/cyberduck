@@ -36,7 +36,7 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
+public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature implements HttpWriteFeature<T> {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
     private abstract class FutureHttpResponse implements Runnable {
@@ -64,6 +64,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
      * @param command Callable writing entity to stream and returning checksum
      * @return Outputstream to write entity into.
      */
+    @Override
     public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<T> command) throws BackgroundException {
         // Signal on enter streaming
@@ -146,7 +147,6 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
             throw new BackgroundException(e);
         }
     }
-
 
     @Override
     public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;

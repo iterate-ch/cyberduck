@@ -61,7 +61,7 @@ public class SwiftDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 // Create container at top level

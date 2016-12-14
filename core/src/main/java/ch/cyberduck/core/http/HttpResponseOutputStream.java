@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public abstract class HttpResponseOutputStream<T> extends ProxyOutputStream {
-    private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
+    private static final Logger log = Logger.getLogger(HttpResponseOutputStream.class);
 
     public HttpResponseOutputStream(final OutputStream proxy) {
         super(proxy);

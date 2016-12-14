@@ -52,6 +52,11 @@
           <netfx:NativeImage Id="ngen_Cyberduck.Protocols" Platform="32bit" Priority="3" />
         </File>
       </Component>
+      <Component Id="Cyberduck.Cryptomator" Guid="06296D3F-6A87-4E56-A346-53C7B5368E39">
+        <File Source="$(var.CLI.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes">
+          <netfx:NativeImage Id="ngen_Cyberduck.Cryptomator" Platform="32bit" Priority="3" />
+        </File>
+      </Component>
       <Component Id="Cyberduck.Core.Native" Guid="678E99DD-6943-495D-8742-ECE21846365D">
         <File Source="$(var.CLI.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_Cyberduck.Core.Native" Platform="32bit" Priority="3" />

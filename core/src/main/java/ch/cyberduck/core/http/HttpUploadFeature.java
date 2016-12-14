@@ -23,11 +23,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -45,7 +43,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
@@ -53,9 +50,9 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
     private final Session<?> session;
-    private final AbstractHttpWriteFeature<Output> writer;
+    private final HttpWriteFeature<Output> writer;
 
-    public HttpUploadFeature(final Session<?> session, final AbstractHttpWriteFeature<Output> writer) {
+    public HttpUploadFeature(final Session<?> session, final HttpWriteFeature<Output> writer) {
         this.session = session;
         this.writer = writer;
     }
@@ -79,22 +76,13 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
             final Digest digest = this.digest();
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);
-            final Vault vault = session.getFeature(Vault.class);
-            final HttpResponseOutputStream<Output> proxy;
-            final OutputStream out;
-            if(vault.contains(file)) {
-                out = vault.getFeature(session, Write.class, writer).write(file, status);
-                proxy = (HttpResponseOutputStream<Output>) ((CryptoOutputStream) out).getProxy();
-            }
-            else {
-                out = proxy = writer.write(file, status);
-            }
+            final HttpResponseOutputStream<Output> out = writer.write(file, status);
             new StreamCopier(cancel, progress)
                     .withOffset(status.getOffset())
                     .withLimit(status.getLength())
                     .withListener(listener)
                     .transfer(in, new ThrottledOutputStream(out, throttle));
-            final Output response = proxy.getResponse();
+            final Output response = out.getResponse();
             this.post(file, digest, response);
             return response;
         }

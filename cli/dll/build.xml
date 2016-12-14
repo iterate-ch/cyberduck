@@ -31,6 +31,7 @@
                verbose="false">
             <reference path="${build}/Cyberduck.Core.dll"/>
             <reference path="${build}/Cyberduck.Protocols.dll"/>
+            <reference path="${build}/Cyberduck.Cryptomator.dll"/>
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
                 <include name="*.jar"/>

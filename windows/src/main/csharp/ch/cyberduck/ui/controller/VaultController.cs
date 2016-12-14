@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.cryptomator.worker;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;

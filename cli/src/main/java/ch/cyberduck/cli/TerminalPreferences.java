@@ -16,6 +16,8 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.ExecApplicationLauncher;
@@ -66,6 +68,8 @@ public class TerminalPreferences extends MemoryPreferences {
                 defaults.put("factory.symlink.class", DefaultSymlinkFeature.class.getName());
                 break;
         }
+        defaults.put("factory.vault.class", CryptoVault.class.getName());
+        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 
     @Override

@@ -87,6 +87,13 @@
                 </dependency>
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Cryptomator</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Cli</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>

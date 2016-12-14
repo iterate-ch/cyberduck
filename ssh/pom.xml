@@ -38,18 +38,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-core</artifactId>
-            <scope>test</scope>
-            <version>0.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.cryptomator</groupId>
-            <artifactId>cryptofs</artifactId>
-            <scope>test</scope>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>s3</artifactId>
             <version>${project.version}</version>
