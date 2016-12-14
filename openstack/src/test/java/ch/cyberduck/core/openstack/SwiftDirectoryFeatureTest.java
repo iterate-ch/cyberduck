@@ -22,9 +22,9 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -55,10 +55,10 @@ public class SwiftDirectoryFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session);
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         for(Region region : session.getClient().getRegions()) {
             feature.mkdir(container, region.getRegionId(), new TransferStatus());
             assertTrue(new SwiftFindFeature(session).find(container));
@@ -76,7 +76,7 @@ public class SwiftDirectoryFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final AtomicBoolean put = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
+        session.addListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
@@ -87,11 +87,13 @@ public class SwiftDirectoryFeatureTest {
                 }
             }
         });
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("ORD");
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
+        feature.mkdir(placeholder);
         Thread.sleep(1000L);
         assertTrue(put.get());
         assertTrue(new SwiftFindFeature(session).find(placeholder));

@@ -21,11 +21,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -34,10 +31,6 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 
 public class B2BucketListService implements RootListService {
-    private static final Logger log = Logger.getLogger(B2BucketListService.class);
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
 
     private final B2Session session;
 

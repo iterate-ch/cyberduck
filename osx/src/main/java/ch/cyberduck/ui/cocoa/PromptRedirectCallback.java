@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -49,13 +48,13 @@ public class PromptRedirectCallback implements RedirectCallback {
         }
         final NSAlert alert = NSAlert.alert("Redirect", //title
                 LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"),
-                LocaleFactory.localizedString("Allow"), // defaultbutton
+                LocaleFactory.localizedString("Allow"), // default button
                 LocaleFactory.localizedString("Cancel", "Alert"), //alternative button
                 null //other button
         );
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        SheetController c = new AlertController(parent, alert) {
+        AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -66,7 +65,7 @@ public class PromptRedirectCallback implements RedirectCallback {
                 }
             }
         };
-        c.beginSheet();
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
+        final int option = c.beginSheet(parent);
+        return option == SheetCallback.DEFAULT_OPTION;
     }
 }

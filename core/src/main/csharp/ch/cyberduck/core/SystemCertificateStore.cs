@@ -34,9 +34,9 @@ namespace Ch.Cyberduck.Core
 {
     public class SystemCertificateStore : CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SystemCertificateStore).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(SystemCertificateStore).FullName);
 
-        public X509Certificate choose(string[] keyTypes, Principal[] issuers, string hostname, string prompt)
+        public X509Certificate choose(string[] keyTypes, Principal[] issuers, Host bookmark, string prompt)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try
@@ -61,11 +61,14 @@ namespace Ch.Cyberduck.Core
                         Log.debug("Found certificate with DN " + certificate.IssuerName.Name);
                     }
                 }
-                X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
-                    LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
-                foreach (X509Certificate2 c in selected)
+                if (found.Count > 0)
                 {
-                    return ConvertCertificate(c);
+                    X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
+                        LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
+                    foreach (X509Certificate2 c in selected)
+                    {
+                        return ConvertCertificate(c);
+                    }
                 }
                 throw new ConnectionCanceledException();
             }
@@ -143,12 +146,12 @@ namespace Ch.Cyberduck.Core
                         verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
                         content: errorFromChainStatus,
                         commandLinks:
-                            new string[]
-                            {
-                                LocaleFactory.localizedString("Continue", "Credentials"),
-                                LocaleFactory.localizedString("Disconnect"),
-                                LocaleFactory.localizedString("Show Certificate", "Keychain")
-                            },
+                        new string[]
+                        {
+                            LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Disconnect"),
+                            LocaleFactory.localizedString("Show Certificate", "Keychain")
+                        },
                         mainIcon: TaskDialogIcon.Warning, footerIcon: TaskDialogIcon.Information,
                         callback: (dialog, args, data) =>
                         {

@@ -53,6 +53,4 @@ public interface Controller extends ProgressListener, TranscriptListener, Backgr
      * @param wait     Block calling thread
      */
     void invoke(final MainAction runnable, final boolean wait);
-
-    void failure(Exception trace, Exception failure);
 }

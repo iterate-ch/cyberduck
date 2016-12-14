@@ -89,7 +89,7 @@ public class TransferCollectionTest {
         assertEquals("http://ftp.heise.de:21/pub/hacks/listings/1301-130.zip", transfer.getRemote().getUrl());
         assertEquals(109648L, transfer.getSize(), 0L);
         assertEquals(109648L, transfer.getTransferred(), 0L);
-        assertEquals("ftp.heise.de", transfer.getHost().getHostname());
+        assertEquals("ftp.heise.de", transfer.getSource().getHostname());
 //        assertEquals("sudo.ch", ((CopyTransfer) transfer).getDestination().getHost().getHostname());
         assertEquals("1301-130.zip", transfer.getName());
     }

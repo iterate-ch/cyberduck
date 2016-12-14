@@ -117,6 +117,8 @@ public class Distribution {
      */
     private String indexDocument;
 
+    private List<Path> rootDocuments = Collections.emptyList();
+
     /**
      * Custom Error Document Support. Amazon S3 returns your custom error document
      * for only the HTTP 4XX class of error codes.
@@ -431,6 +433,14 @@ public class Distribution {
 
     public void setErrorDocument(String errorDocument) {
         this.errorDocument = errorDocument;
+    }
+
+    public List<Path> getRootDocuments() {
+        return rootDocuments;
+    }
+
+    public void setRootDocuments(final List<Path> rootDocuments) {
+        this.rootDocuments = rootDocuments;
     }
 
     /**

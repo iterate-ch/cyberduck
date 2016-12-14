@@ -33,7 +33,7 @@ public class DropboxDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override

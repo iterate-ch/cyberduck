@@ -33,7 +33,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 
 public class S3FindFeature implements Find {
-    private static final Logger log = Logger.getLogger(S3AttributesFeature.class);
+    private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
 

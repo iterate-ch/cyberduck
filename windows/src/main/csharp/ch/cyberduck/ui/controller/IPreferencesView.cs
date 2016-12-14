@@ -97,11 +97,6 @@ namespace Ch.Cyberduck.Ui.Controller
         int ConnectionTimeout { set; get; }
         int RetryDelay { set; get; }
         int Retries { set; get; }
-        string DocumentExportFormat { set; get; }
-        string PresentationExportFormat { set; get; }
-        string SpreadsheetExportFormat { set; get; }
-        bool ConvertUploads { set; get; }
-        bool OcrUploads { set; get; }
         string CurrentLocale { set; get; }
         bool AutomaticUpdateCheck { set; get; }
         string LastUpdateCheck { set; }
@@ -111,14 +106,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateBookmarkSize(IList<KeyValuePair<int, string>> sizes);
         void MarkDownloadSkipRegex(int position);
         void MarkUploadSkipRegex(int position);
-        void PopulateDocumentExportFormats(IList<KeyValuePair<string, string>> formats);
-        void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats);
-        void PopulateSpreadsheetExportFormats(IList<KeyValuePair<string, string>> formats);
-        event VoidHandler DocumentExportFormatChanged;
-        event VoidHandler PresentationExportFormatChanged;
-        event VoidHandler SpreadsheetExportFormatChanged;
-        event VoidHandler ConvertUploadsChanged;
-        event VoidHandler OcrUploadsChanged;
         void PopulateLocales(IList<KeyValuePair<string, string>> locales);
         event VoidHandler LocaleChanged;
         event VoidHandler AutomaticUpdateChangedEvent;

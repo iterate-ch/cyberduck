@@ -5,11 +5,10 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -60,7 +59,7 @@ public class SingleTransferWorkerTest {
         final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -68,12 +67,12 @@ public class SingleTransferWorkerTest {
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -90,7 +89,7 @@ public class SingleTransferWorkerTest {
                 }), action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
-        }.run(session);
+        }.run(session, session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
     }
 
@@ -119,7 +118,7 @@ public class SingleTransferWorkerTest {
         final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -137,12 +136,12 @@ public class SingleTransferWorkerTest {
                 return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
-        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -152,7 +151,7 @@ public class SingleTransferWorkerTest {
                 super.transfer(item, action);
                 assertFalse(cache.containsKey(new TransferItem(child, local)));
             }
-        }.run(session);
+        }.run(session, session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
@@ -185,7 +184,7 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -198,15 +197,15 @@ public class SingleTransferWorkerTest {
             }
 
             @Override
-            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, action, listener).withAttributes(new Attributes() {
+            public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
                     @Override
                     public PathAttributes find(final Path file) throws BackgroundException {
                         return file.attributes();
                     }
 
                     @Override
-                    public Attributes withCache(final PathCache cache) {
+                    public AttributesFinder withCache(final PathCache cache) {
                         return this;
                     }
                 });
@@ -220,12 +219,12 @@ public class SingleTransferWorkerTest {
                 return children;
             }
         };
-        final SingleTransferWorker worker = new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), cache) {
             @Override
             public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
@@ -238,7 +237,7 @@ public class SingleTransferWorkerTest {
                 }
             }
         };
-        worker.run(session);
+        worker.run(session, session);
         assertFalse(cache.containsKey(new TransferItem(child, local)));
         assertTrue(cache.isEmpty());
     }
@@ -247,7 +246,8 @@ public class SingleTransferWorkerTest {
     public void testUploadFileNotFound() throws Exception {
         // #7791
         final Path root = new Path("/t", EnumSet.of(Path.Type.file));
-        Transfer t = new UploadTransfer(new Host(new TestProtocol()), root,
+        final Host bookmark = new Host(new TestProtocol());
+        final Transfer t = new UploadTransfer(bookmark, root,
                 new NullLocal("l") {
                     @Override
                     public boolean exists() {
@@ -255,26 +255,26 @@ public class SingleTransferWorkerTest {
                         return false;
                     }
                 });
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final NullSession session = new NullSession(bookmark) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         try {
-            new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
                 @Override
                 public TransferAction prompt(final TransferItem file) {
                     return TransferAction.overwrite;
                 }
-            }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+            }, new DisabledTransferErrorCallback(),
                     new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty()) {
                 @Override
                 public void transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
                     // Expected not found
                     fail();
                 }
-            }.run(session);
+            }.run(session, session);
         }
         catch(NotfoundException e) {
             // Expected

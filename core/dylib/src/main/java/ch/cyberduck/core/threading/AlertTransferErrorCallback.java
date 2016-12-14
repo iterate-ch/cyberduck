@@ -22,13 +22,10 @@ import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlertTransferErrorCallback implements TransferErrorCallback {
 
@@ -45,10 +42,9 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
     @Override
     public boolean prompt(final BackgroundException failure) {
         if(suppressed) {
-            return option;
+            return !option;
         }
         if(controller.isVisible()) {
-            final AtomicBoolean c = new AtomicBoolean(true);
             final NSAlert alert = NSAlert.alert(
                     null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
                     null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
@@ -58,30 +54,25 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController sheet = new AlertController(controller, alert) {
+            final AlertController sheet = new AlertController(alert) {
                 @Override
-                protected void beginSheet(final NSWindow window) {
-                    if(suppressed) {
-                        c.set(option);
+                public int beginSheet(final WindowController parent) {
+                    if(!suppressed) {
+                        return super.beginSheet(parent);
                     }
-                    else {
-                        super.beginSheet(window);
-                    }
+                    return option ? SheetCallback.DEFAULT_OPTION : SheetCallback.ALTERNATE_OPTION;
                 }
 
                 @Override
                 public void callback(final int returncode) {
-                    if(returncode == SheetCallback.DEFAULT_OPTION) {
-                        c.set(false);
-                    }
+                    option = returncode == SheetCallback.DEFAULT_OPTION;
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         suppressed = true;
-                        option = c.get();
                     }
                 }
             };
-            sheet.beginSheet();
-            return c.get();
+            sheet.beginSheet(controller);
+            return !option;
         }
         // Abort
         return false;

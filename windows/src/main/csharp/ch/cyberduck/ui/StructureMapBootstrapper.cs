@@ -35,11 +35,13 @@ namespace Ch.Cyberduck.Ui
                 x.For<IInfoView>().Use<InfoForm>();
                 x.For<IActivityView>().Use<ActivityForm>();
                 x.For<ILoginView>().Use<LoginForm>();
+                x.For<IPasswordPromptView>().Use<PasswordForm>();
                 x.For<IBookmarkView>().Use<BookmarkForm>();
                 x.For<IConnectionView>().Use<ConnectionForm>();
                 x.For<ITransferPromptView>().Use<TransferPromptForm>();
                 x.For<IErrorView>().Use<ErrorForm>();
                 x.For<INewFolderPromptView>().Use<NewFolderPromptForm>();
+                x.For<INewVaultPromptView>().Use<NewVaultPromptForm>();
                 x.For<ICreateFilePromptView>().Use<CreateFilePromptForm>();
                 x.For<ICreateSymlinkPromptView>().Use<CreateSymlinkPromptForm>();
                 x.For<IGotoPromptView>().Use<GotoPromptForm>();
@@ -48,6 +50,7 @@ namespace Ch.Cyberduck.Ui
                 x.For<ITransferView>().Use<TransferForm>();
                 x.For<IProgressView>().Use<TransferControl>();
                 x.For<ICommandView>().Use<CommandForm>();
+                x.For<IDonationController>().Use<DonationController>();
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();

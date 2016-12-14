@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -32,15 +32,15 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
-public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
+public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> implements HttpWriteFeature<T> {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
 
-    private abstract class FutureHttpResponse<T> implements Runnable {
-
+    private abstract class FutureHttpResponse implements Runnable {
         Exception exception;
         T response;
 
@@ -57,16 +57,16 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
         super(session);
     }
 
-    public AbstractHttpWriteFeature(final Find finder, final Attributes attributes) {
+    public AbstractHttpWriteFeature(final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
     }
 
     /**
      * @param command Callable writing entity to stream and returning checksum
-     * @param <T>     Type of returned checksum
      * @return Outputstream to write entity into.
      */
-    public <T> ResponseOutputStream<T> write(final Path file, final TransferStatus status,
+    @Override
+    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<T> command) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = new CountDownLatch(1);
@@ -82,7 +82,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
             if(StringUtils.isNotBlank(status.getMime())) {
                 entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
             }
-            final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
+            final FutureHttpResponse target = new FutureHttpResponse() {
                 @Override
                 public void run() {
                     try {
@@ -115,13 +115,18 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
                 throw new BackgroundException(target.getException());
             }
             final OutputStream stream = entity.getStream();
-            return new ResponseOutputStream<T>(stream) {
+            return new HttpResponseOutputStream<T>(stream) {
+                @Override
+                public void flush() throws IOException {
+                    stream.flush();
+                }
+
                 /**
                  * Only available after this stream is closed.
                  * @return Response from server for upload
                  */
                 @Override
-                public T getResponse() throws BackgroundException {
+                public T getStatus() throws BackgroundException {
                     try {
                         if(status.isCanceled()) {
                             throw new ConnectionCanceledException();
@@ -149,7 +154,6 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature {
         }
     }
 
-
     @Override
-    public abstract ResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
+    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
 }

@@ -18,36 +18,22 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import com.microsoft.azure.storage.AccessCondition;
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public class AzureTouchFeature implements Touch {
 
-    private final AzureSession session;
+    private final Write write;
 
-    private final OperationContext context;
+    public AzureTouchFeature(final AzureSession session) {
+        this(session.getFeature(Write.class));
+    }
 
-    private final PathContainerService containerService
-            = new AzurePathContainerService();
-
-    public AzureTouchFeature(final AzureSession session, final OperationContext context) {
-        this.session = session;
-        this.context = context;
+    public AzureTouchFeature(final Write write) {
+        this.write = write;
     }
 
     @Override
@@ -56,22 +42,7 @@ public class AzureTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
-        try {
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
-            final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
-            blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
-        }
-        catch(URISyntaxException e) {
-            throw new NotfoundException(e.getMessage(), e);
-        }
-        catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot create file {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
-        }
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+        write.write(file, status);
     }
 }

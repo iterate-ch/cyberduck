@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -65,6 +66,9 @@ import java.text.MessageFormat;
 public class IRODSSession extends SSLSession<IRODSFileSystem> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private IRODSFileSystemAO filesystem;
 
     public IRODSSession(final Host h) {
@@ -87,9 +91,10 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     protected IRODSFileSystem configure(final IRODSFileSystem client) {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
-        properties.setEncoding(this.getEncoding());
-        properties.setIrodsSocketTimeout(this.timeout());
-        properties.setIrodsParallelSocketTimeout(this.timeout());
+        properties.setEncoding(host.getEncoding());
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        properties.setIrodsSocketTimeout(timeout);
+        properties.setIrodsParallelSocketTimeout(timeout);
         properties.setGetBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         properties.setPutBufferSize(PreferencesFactory.get().getInteger("connection.chunksize"));
         if(log.isDebugEnabled()) {
@@ -197,7 +202,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new IRODSDirectoryFeature(this);
         }
@@ -225,7 +230,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         if(type == Home.class) {
             return (T) new IRODSHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     public final IRODSFileSystemAO filesystem() {

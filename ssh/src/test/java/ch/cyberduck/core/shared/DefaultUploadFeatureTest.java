@@ -23,10 +23,10 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,6 +34,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,13 +55,13 @@ import static org.junit.Assert.assertArrayEquals;
 public class DefaultUploadFeatureTest {
 
     @Test
-    public void testTransferSegment() throws Exception {
+    public void testTransferAppend() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);
@@ -70,14 +71,14 @@ public class DefaultUploadFeatureTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DefaultUploadFeature(session).upload(
+            new DefaultUploadFeature(new SFTPWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DefaultUploadFeature(session).upload(
+            new DefaultUploadFeature(new SFTPWriteFeature(session)).upload(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());

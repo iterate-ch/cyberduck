@@ -17,16 +17,17 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class UploadPromptController : TransferPromptController
     {
-        public UploadPromptController(WindowController parent, Transfer transfer, Session session)
-            : base(parent, transfer, session)
+        public UploadPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
+            : base(parent, transfer, source, destination)
         {
-            TransferPromptModel = new UploadPromptModel(this, Session, Transfer);
+            TransferPromptModel = new UploadPromptModel(this, source, destination, Transfer);
         }
 
         protected override string TransferName

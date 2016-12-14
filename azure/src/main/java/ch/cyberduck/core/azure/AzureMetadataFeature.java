@@ -35,12 +35,11 @@ import java.util.Map;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobProperties;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureMetadataFeature implements Headers {
 
@@ -70,8 +69,8 @@ public class AzureMetadataFeature implements Headers {
                 return container.getMetadata();
             }
             else {
-                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file));
+                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlobReferenceFromServer(containerService.getKey(file));
                 // Populates the blob properties and metadata
                 blob.downloadAttributes(null, null, context);
                 final Map<String, String> metadata = new HashMap<String, String>();
@@ -98,15 +97,14 @@ public class AzureMetadataFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
                 container.setMetadata(new HashMap<String, String>(metadata));
                 container.uploadMetadata(AccessCondition.generateEmptyCondition(), options, context);
             }
             else {
-                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file));
+                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlobReferenceFromServer(containerService.getKey(file));
                 // Populates the blob properties and metadata
                 blob.downloadAttributes();
                 // Replace metadata

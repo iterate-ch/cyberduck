@@ -32,10 +32,10 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.updater;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
-using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
@@ -62,8 +62,8 @@ namespace Ch.Cyberduck.Ui.Winforms
     public partial class BrowserForm : BaseForm, IBrowserView
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
-        private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).FullName);
-        private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof (Keys));
+        private static readonly Logger Log = Logger.getLogger(typeof(BrowserForm).FullName);
+        private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof(Keys));
         private bool _browserStateRestored;
         private BrowserView _currentView;
         private bool _lastActivityRunning;
@@ -244,7 +244,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Image Favicon
         {
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public override string[] BundleNames
@@ -272,6 +275,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event RenamePathname RenameFile;
         public event ValidateCommand ValidateRenameFile;
         public event VoidHandler Delete;
+        public event ValidateCommand ValidateNewVault;
         public event VoidHandler NewFile;
         public event VoidHandler DuplicateFile;
         public event EventHandler<NewBrowserEventArgs> NewBrowser;
@@ -320,6 +324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event EventHandler<PathArgs> Expanding;
         public event VoidHandler NewFolder;
         public event ValidateCommand ValidateNewFolder;
+        public event VoidHandler NewVault;
         public event EditorsHandler GetEditorsForSelection;
         public event ValidateCommand ContextMenuEnabled;
         public event VoidHandler Cut;
@@ -1571,7 +1576,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {connectBookmarkContextToolStripMenuItem,},
                 new[] {connectBookmarkContextMenuItem},
                 (sender, args) =>
-                    ConnectBookmark(this, new ConnectBookmarkArgs(bookmarkListView.SelectedObject as Host)),
+                        ConnectBookmark(this, new ConnectBookmarkArgs(bookmarkListView.SelectedObject as Host)),
                 () => ValidateConnectBookmark());
             Commands.Add(
                 new ToolStripItem[]
@@ -1584,7 +1589,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => NewBookmark(), () => ValidateNewBookmark());
             Commands.Add(
                 new ToolStripItem[]
-                {editBookmarkToolStripMenuItem, editBookmarkContextToolStripMenuItem1, editBookmarkToolStripButton},
+                    {editBookmarkToolStripMenuItem, editBookmarkContextToolStripMenuItem1, editBookmarkToolStripButton},
                 new[] {editBookmarkMainMenuItem, editBookmarkContextMenuItem}, (sender, args) => EditBookmark(),
                 () => ValidateEditBookmark());
             Commands.Add(
@@ -1684,14 +1689,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             //direct commands
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
-                (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("Acknowledgments.rtf")),
-                () => true);
+                (sender, args) =>
+                    BrowserLauncherFactory.get()
+                        .open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                 (sender, args) =>
-                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")), () => true);
+                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")),
+                () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
                 (sender, args) =>
-                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
+                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
                 () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                 (sender, args) =>
@@ -1701,10 +1708,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
-                (sender, args) => ApplicationLauncherFactory.get().open(LocalFactory.get("License.txt")), () => true);
-            bool HasUpdatePrivilges = new WinSparklePeriodicUpdateChecker().hasUpdatePrivileges();
+                (sender, args) =>
+                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")),
+                () => true);
+            bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
-                (sender, args) => new WinSparklePeriodicUpdateChecker().check(false), () => HasUpdatePrivilges);
+                (sender, args) => PeriodicUpdateCheckerFactory.get().check(false), () => HasUpdatePrivilges);
         }
 
         private void ConfigureGoCommands()
@@ -1968,9 +1977,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => NewDownload(), () => ValidateNewDownload());
             Commands.Add(
                 new ToolStripItem[]
-                {newFolderToolStripMenuItem, newFolderContextToolStripMenuItem, newFolderToolStripButton},
+                    {newFolderToolStripMenuItem, newFolderContextToolStripMenuItem, newFolderToolStripButton},
                 new[] {newFolderMainMenuItem, newFolderBrowserContextMenuItem}, (sender, args) => NewFolder(),
                 () => ValidateNewFolder());
+            Commands.Add(
+                new ToolStripItem[]
+                    {newVaultToolStripMenuItem, newVaultContextToolStripMenuItem},
+                new[] {newVaultMainMenuItem, newVaultBrowserContextMenuItem}, (sender, args) => NewVault(),
+                () => ValidateNewVault());
             Commands.Add(new ToolStripItem[] {newFileToolStripMenuItem, newFileContextToolStripMenuItem},
                 new[] {newFileMainMenuItem, newFileBrowserContextMenuItem}, (sender, args) => NewFile(),
                 () => ValidateNewFile());
@@ -1985,7 +1999,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 () => ValidateDuplicateFile());
             Commands.Add(
                 new ToolStripItem[]
-                {openWebURLToolStripMenuItem, openURLContextToolStripMenuItem, openInBrowserToolStripButton},
+                    {openWebURLToolStripMenuItem, openURLContextToolStripMenuItem, openInBrowserToolStripButton},
                 new MenuItem[] {}, (sender, args) => OpenUrl(), () => ValidateOpenWebUrl());
             Commands.Add(
                 new ToolStripItem[] {editWithToolStripMenuItem, editContextToolStripMenuItem, editToolStripSplitButton},
@@ -2009,7 +2023,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 () => ValidateDownloadAs());
             Commands.Add(
                 new ToolStripItem[]
-                {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem, downloadToolStripButton},
+                    {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem, downloadToolStripButton},
                 new[] {downloadToMainMenuItem, downloadToBrowserContextMenuItem}, (sender, args) => DownloadTo(),
                 () => ValidateDownloadTo());
             Commands.Add(
@@ -2048,6 +2062,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("newfolder", 16));
             vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("newfolder", 16));
             newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);
+            vistaMenu1.SetImage(newVaultMainMenuItem, IconCache.Instance.IconForName("cryptomator", 16));
+            vistaMenu1.SetImage(newVaultBrowserContextMenuItem, IconCache.Instance.IconForName("cryptomator", 16));
+            newVaultContextToolStripMenuItem.Image = IconCache.Instance.IconForName("cryptomator", 16);
             vistaMenu1.SetImage(downloadMainMenuItem, IconCache.Instance.IconForName("download", 16));
             vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.Instance.IconForName("download", 16));
             downloadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("download", 16);
@@ -2203,7 +2220,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private static void RemoveItemClickedEvent(ToolStrip b)
         {
-            FieldInfo f1 = typeof (ToolStrip).GetField("EventItemClicked", BindingFlags.Static | BindingFlags.NonPublic);
+            FieldInfo f1 = typeof(ToolStrip).GetField("EventItemClicked", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = f1.GetValue(b);
             PropertyInfo pi = b.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
             EventHandlerList list = (EventHandlerList) pi.GetValue(b, null);

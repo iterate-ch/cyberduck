@@ -19,17 +19,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.OutputStream;
-
-public interface Write {
+public interface Write<Reply> {
 
     /**
      * @param status Transfer status
      * @return Stream to write to for upload
      */
-    OutputStream write(Path file, TransferStatus status) throws BackgroundException;
+    StatusOutputStream<Reply> write(Path file, TransferStatus status) throws BackgroundException;
 
     /**
      * Determine if a file exists and we can append to it.

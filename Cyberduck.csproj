@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>Cyberduck</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>cyberduck-application.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
@@ -54,6 +54,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>1</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>windows\target\</OutputPath>
@@ -63,6 +65,8 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OutputType)' == 'Library'">
     <StartupObject>
@@ -96,6 +100,10 @@
     <Reference Include="Cyberduck.Importer">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>windows\target\Cyberduck.Importer.dll</HintPath>
+    </Reference>
+    <Reference Include="Cyberduck.Cryptomator">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>windows\target\Cyberduck.Cryptomator.dll</HintPath>
     </Reference>
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>windows\target\CustomOpenFileFolderDialog.dll</HintPath>
@@ -176,12 +184,36 @@
     <Reference Include="VistaBridgeLibrary">
       <HintPath>windows\target\VistaBridgeLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Windows">
+      <HintPath>$(MSBuildExtensionsPath32)\..\Windows Kits\10\UnionMetadata\Windows.winmd</HintPath>
+    </Reference>
     <Reference Include="Windows7.DesktopIntegration">
       <HintPath>windows\target\Windows7.DesktopIntegration.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\INewVaultPromptView.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IPasswordPromptView.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\PromptPasswordController.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\VaultController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\preferences\ApplicationPreferences.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\core\uwp\IInitializeWithWindow.cs" />
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\controls\PasswordStrengthIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\NewVaultPromptForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\NewVaultPromptForm.Designer.cs">
+      <DependentUpon>NewVaultPromptForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\PasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\PasswordForm.Designer.cs">
+      <DependentUpon>PasswordForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="windows\target\AssemblyInfo.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\BaseController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\CommandController.cs" />
@@ -296,6 +328,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\InfoForm.resx">
       <DependentUpon>InfoForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\NewVaultPromptForm.resx">
+      <DependentUpon>NewVaultPromptForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\PasswordForm.resx">
+      <DependentUpon>PasswordForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="windows\src\main\csharp\ch\cyberduck\ui\winforms\LoginForm.resx">
@@ -607,27 +646,4 @@
     <Copy SourceFiles="@(SunMSCAPI)" DestinationFolder="$(OutputPath)" />
     <Copy SourceFiles="@(ECSupport)" DestinationFolder="$(OutputPath)" />
   </Target>
-  <Target Name="UsesFrameworkSdk">
-    <GetFrameworkSdkPath>
-      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
-    </GetFrameworkSdkPath>
-    <PropertyGroup>
-      <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
-      <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
-    </PropertyGroup>
-  </Target>
-  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
-    <PropertyGroup>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
-    </PropertyGroup>
-  </Target>
-  <Target Name="AfterBuild" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputPath)$(AssemblyName).exe&quot;" Condition="'$(OutputType)' == 'WinExe'"/>
-  </Target>
-  <PropertyGroup>
-    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
-    if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked
-</PreBuildEvent>
-  </PropertyGroup>
 </Project>

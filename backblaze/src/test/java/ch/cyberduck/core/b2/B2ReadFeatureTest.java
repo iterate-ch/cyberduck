@@ -30,7 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
@@ -67,8 +67,8 @@ public class B2ReadFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         new B2ReadFeature(session).read(new Path(new B2HomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
     }
@@ -88,8 +88,8 @@ public class B2ReadFeatureTest {
         final byte[] content = RandomUtils.nextBytes(923);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -122,8 +122,8 @@ public class B2ReadFeatureTest {
         final byte[] content = RandomUtils.nextBytes(923);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content)));
-        final ResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         {
@@ -149,12 +149,12 @@ public class B2ReadFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(test);
+        new B2TouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
@@ -162,7 +162,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session).upload(
+        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -189,12 +189,12 @@ public class B2ReadFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2TouchFeature(session).touch(test);
+        new B2TouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
@@ -202,7 +202,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session).upload(
+        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

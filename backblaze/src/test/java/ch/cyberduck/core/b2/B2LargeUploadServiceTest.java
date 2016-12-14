@@ -21,10 +21,10 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -60,8 +60,8 @@ public class B2LargeUploadServiceTest {
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
         final Path test = new Path(bucket, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -81,7 +81,7 @@ public class B2LargeUploadServiceTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         // Large files do not have a SHA1 checksum. The value will always be "none".
-        assertNull(new B2AttributesFeature(session).find(test).getChecksum());
+        assertNull(new B2AttributesFinderFeature(session).find(test).getChecksum());
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
@@ -106,8 +106,8 @@ public class B2LargeUploadServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -144,7 +144,7 @@ public class B2LargeUploadServiceTest {
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(random.length, new B2AttributesFeature(session).find(test).getSize());
+        assertEquals(random.length, new B2AttributesFinderFeature(session).find(test).getSize());
         assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[random.length];
@@ -164,8 +164,8 @@ public class B2LargeUploadServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -204,7 +204,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(102L * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new B2FindFeature(session).find(test));
-        assertEquals(102L * 1024L * 1024L, new B2AttributesFeature(session).find(test).getSize(), 0L);
+        assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
         final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);

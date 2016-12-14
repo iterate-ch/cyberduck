@@ -30,7 +30,7 @@ import ch.cyberduck.core.bonjour.RendezvousCollection;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.cocoa.MainController;
+import ch.cyberduck.ui.cocoa.controller.MainController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

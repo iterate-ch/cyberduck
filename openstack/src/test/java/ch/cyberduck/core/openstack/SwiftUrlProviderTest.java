@@ -24,11 +24,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -56,8 +57,8 @@ public class SwiftUrlProviderTest {
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         );
         final SwiftSession session = new SwiftSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         assertEquals("https://storage101.dfw1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
@@ -74,14 +75,14 @@ public class SwiftUrlProviderTest {
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         while(session.accounts.isEmpty()) {
             // Account information loaded in thread pool
             Thread.sleep(1000L);
         }
         container.attributes().setRegion("DFW");
-        new SwiftTouchFeature(session).touch(file);
+        new SwiftTouchFeature(session).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);
         assertNotNull(signed);

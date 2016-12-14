@@ -1,6 +1,32 @@
 Cyberduck
 https://cyberduck.io/
 
+6.0 [https://trac.cyberduck.io/milestone/6.0]
+- [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
+- [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
+- [Feature] Decrypt downloads from vault (Cyptomator)
+
+5.3 [https://trac.cyberduck.io/milestone/5.3]
+- [Feature] Use multiple connections in browser for parallel background task executions
+- [Feature] Choose certificate in bookmark panel for mutual authentication with TLS (WebDAV)
+- [Feature] Choose SSH private key from list in bookmark panel and login prompt (SFTP)
+- [Feature] Use marker and delimiter for listing files (Backblaze B2)
+- [Feature] Option to resume uploads (Azure) (#9770)
+- [Feature] Support for ca-central-1 (Montreal) region (S3)
+- [Feature] Support for eu-west-2 (London) region (S3)
+- [Bugfix] Repeated prompt for client certificate (WebDAV) (#9746)
+- [Bugfix] Modification of distinct metadata for multiple selected files (WebDAV, Azure, S3, OpenStack Swift)
+- [Bugfix] Modification of distinct permissions for multiple selected files (FTP, SFTP)
+
+5.2.2 [https://trac.cyberduck.io/milestone/5.2.2]
+- [Feature] Toggle transfer acceleration for bucket in Info panel (S3)
+- [Feature] Support OpenSSH unencrypted private key format for ed25519 keys (SFTP) (#8548)
+
+5.2.1 [https://trac.cyberduck.io/milestone/5.2.1]
+- [Feature] All embedded assemblies are cryptographically signed (Windows)
+- [Bugfix] Paginate directory listings (Dropbox)
+- [Bugfix] Ignore permission failure for reading transfer acceleration configuration (S3) (#9741)
+
 5.2 [https://trac.cyberduck.io/milestone/5.2]
 - [Feature] Support connecting to Dropbox (Dropbox) (#6427)
 - [Feature] Tabbed windows (macOS 10.12) (#5998)

@@ -21,10 +21,14 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Worker<T> {
@@ -32,7 +36,9 @@ public abstract class Worker<T> {
     private final AtomicBoolean canceled
             = new AtomicBoolean();
 
-    protected String toString(List<Path> files) {
+    protected final PathContainerService containerService = new PathContainerService();
+
+    protected String toString(final List<Path> files) {
         if(files.isEmpty()) {
             return LocaleFactory.localizedString("None");
         }
@@ -43,8 +49,16 @@ public abstract class Worker<T> {
         return String.format("%s…", name);
     }
 
+    protected Set<Path> getContainers(final List<Path> files) {
+        final Set<Path> containers = new HashSet<>();
+        for(Path file : files) {
+            containers.add(containerService.getContainer(file));
+        }
+        return containers;
+    }
+
     public T run(final Session<?> session) throws BackgroundException {
-        return null;
+        throw new ConnectionCanceledException();
     }
 
     public void cleanup(T result) {

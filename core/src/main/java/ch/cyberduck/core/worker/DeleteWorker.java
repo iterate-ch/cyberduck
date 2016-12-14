@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.NullFilter;
@@ -90,7 +91,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.add(file);
         }
         else if(file.isDirectory()) {
-            for(Path child : session.list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
+            for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }

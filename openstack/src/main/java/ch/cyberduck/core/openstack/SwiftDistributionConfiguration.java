@@ -75,7 +75,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public void write(final Path container, final Distribution configuration, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution configuration, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(regionService.lookup(container),
@@ -111,7 +112,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(regionService.lookup(container),

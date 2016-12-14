@@ -117,17 +117,6 @@ public class SFTPSession extends Session<SSHClient> {
         return false;
     }
 
-    /**
-     * @return True if authentication is complete
-     */
-    @Override
-    public boolean isSecured() {
-        if(super.isSecured()) {
-            return client.isAuthenticated();
-        }
-        return false;
-    }
-
     @Override
     public SSHClient connect(final HostKeyCallback key) throws BackgroundException {
         try {
@@ -159,7 +148,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     protected SSHClient connect(final HostKeyCallback key, final Config configuration) throws IOException {
         final SSHClient connection = new SSHClient(configuration);
-        final int timeout = this.timeout();
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         connection.setTimeout(timeout);
         connection.setSocketFactory(socketFactory);
         connection.addHostKeyVerifier(new HostKeyVerifier() {
@@ -223,7 +212,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
         prompt.warn(host.getProtocol(), MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
-                        algorithm),
+                algorithm),
                 MessageFormat.format("{0}. {1}.", LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"),
                         LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
                 LocaleFactory.localizedString("Continue", "Credentials"),
@@ -241,7 +230,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         else {
             if(credentials.isPublicKeyAuthentication()) {
-                methods.add(new SFTPPublicKeyAuthentication(this));
+                methods.add(new SFTPPublicKeyAuthentication(this, keychain));
             }
             else {
                 methods.add(new SFTPChallengeResponseAuthentication(this));
@@ -331,7 +320,8 @@ public class SFTPSession extends Session<SSHClient> {
                     return super.request(req);
                 }
             }.init();
-            sftp.setTimeoutMs(this.timeout());
+            final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+            sftp.setTimeoutMs(timeout);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
@@ -379,9 +369,9 @@ public class SFTPSession extends Session<SSHClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Attributes.class) {
-            return (T) new SFTPAttributesFeature(this);
+            return (T) new SFTPAttributesFinderFeature(this);
         }
         if(type == Read.class) {
             return (T) new SFTPReadFeature(this);
@@ -425,7 +415,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(type == Quota.class) {
             return (T) new SFTPQuotaFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 
     private static final class StateDisconnectListener implements DisconnectListener {

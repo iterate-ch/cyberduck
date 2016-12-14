@@ -50,6 +50,9 @@ public class DefaultPathReference implements CacheReference<Path> {
         final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
         types.remove(Path.Type.placeholder);
         types.remove(Path.Type.volume);
+        types.remove(Path.Type.encrypted);
+        types.remove(Path.Type.decrypted);
+        types.remove(Path.Type.vault);
         return String.valueOf(types);
     }
 

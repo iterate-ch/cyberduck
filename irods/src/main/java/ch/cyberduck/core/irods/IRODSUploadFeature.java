@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -72,7 +73,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
             final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                     preferences.getInteger("connection.retry"));
             final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
-            options.setUseParallelTransfer(session.getTransferType().equals(Host.TransferType.concurrent));
+            options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
             block.setTransferOptions(options);
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
@@ -88,7 +89,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                     log.warn(String.format("Unsupported checksum algorithm %s", value.getChecksumEncoding()));
                 }
                 else {
-                    final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream());
+                    final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), status);
                     if(!expected.equals(fingerprint)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                 MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
@@ -106,7 +107,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(new DefaultFindFeature(session).withCache(cache).find(file)) {
+        if(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(file)) {
             return Write.override;
         }
         return Write.notfound;

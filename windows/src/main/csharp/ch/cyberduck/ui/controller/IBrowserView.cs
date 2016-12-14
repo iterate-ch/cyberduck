@@ -110,6 +110,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateNewDownload;
         event VoidHandler NewFolder;
         event ValidateCommand ValidateNewFolder;
+        event VoidHandler NewVault;
+        event ValidateCommand ValidateNewVault;
         event VoidHandler NewFile;
         event ValidateCommand ValidateNewFile;
         event VoidHandler NewSymbolicLink;

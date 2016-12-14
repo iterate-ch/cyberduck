@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -28,9 +30,11 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -38,6 +42,7 @@ import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
@@ -45,7 +50,10 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
-public abstract class Session<C> implements TranscriptListener {
+import java.util.HashSet;
+import java.util.Set;
+
+public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
     private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
@@ -55,17 +63,19 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected final Host host;
 
+    /**
+     * Cryptomator
+     */
+    protected Vault vault = Vault.DISABLED;
+
     protected C client;
 
-    private TranscriptListener listener;
+    private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
      */
     private State state = State.closed;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(host.getProtocol().isSecure()) {
@@ -74,11 +84,16 @@ public abstract class Session<C> implements TranscriptListener {
         if(host.getCredentials().isAnonymousLogin()) {
             return false;
         }
+        final Preferences preferences = PreferencesFactory.get();
         if(preferences.getBoolean(String.format("connection.unsecure.%s", host.getHostname()))) {
             return false;
         }
         return preferences.getBoolean(
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
+    }
+
+    public void addListener(final TranscriptListener transcript) {
+        transcriptListeners.add(transcript);
     }
 
     public enum State {
@@ -99,21 +114,24 @@ public abstract class Session<C> implements TranscriptListener {
         return client;
     }
 
+    public Session<C> withVault(final Vault vault) {
+        this.vault.close();
+        this.vault = vault;
+        return this;
+    }
+
     /**
      * Connect to host
      *
-     * @param key        Host identity verification callback
-     * @param transcript Transcript
+     * @param key Host identity verification callback
      * @return Client
-     * @throws BackgroundException
      */
-    public C open(final HostKeyCallback key, final TranscriptListener transcript) throws BackgroundException {
+    public C open(final HostKeyCallback key) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
         }
         // Update status flag
         state = State.opening;
-        listener = transcript;
         client = this.connect(key);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection did open to %s", host));
@@ -125,12 +143,6 @@ public abstract class Session<C> implements TranscriptListener {
 
     protected abstract C connect(HostKeyCallback key) throws BackgroundException;
 
-    public void login(final HostPasswordStore keychain,
-                      final LoginCallback prompt, final CancelCallback cancel)
-            throws BackgroundException {
-        this.login(keychain, prompt, cancel, PathCache.empty());
-    }
-
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
@@ -139,10 +151,7 @@ public abstract class Session<C> implements TranscriptListener {
      * @param cancel   Cancel callback
      * @param cache    Directory listing cache
      */
-    public abstract void login(HostPasswordStore keychain,
-                               LoginCallback prompt, CancelCallback cancel,
-                               Cache<Path> cache)
-            throws BackgroundException;
+    public abstract void login(HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel, Cache<Path> cache) throws BackgroundException;
 
     /**
      * Logout and close client connection
@@ -163,7 +172,6 @@ public abstract class Session<C> implements TranscriptListener {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
-            listener = null;
         }
     }
 
@@ -179,7 +187,6 @@ public abstract class Session<C> implements TranscriptListener {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connection did close to %s", host));
             }
-            listener = null;
         }
     }
 
@@ -193,23 +200,8 @@ public abstract class Session<C> implements TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-    }
-
-    /**
-     * @return The timeout in milliseconds
-     */
-    protected int timeout() {
-        return preferences.getInteger("connection.timeout.seconds") * 1000;
-    }
-
-    /**
-     * @return True if the control channel is either tunneled using TLS or SSH
-     */
-    public boolean isSecured() {
-        if(this.isConnected()) {
-            return host.getProtocol().isSecure();
-        }
-        return false;
+        vault.close();
+        transcriptListeners.clear();
     }
 
     /**
@@ -217,19 +209,6 @@ public abstract class Session<C> implements TranscriptListener {
      */
     public Host getHost() {
         return host;
-    }
-
-    /**
-     * @return The custom character encoding specified by the host
-     * of this session or the default encoding if not specified
-     * @see Preferences
-     * @see Host
-     */
-    public String getEncoding() {
-        if(null == host.getEncoding()) {
-            return preferences.getProperty("browser.charset.encoding");
-        }
-        return host.getEncoding();
     }
 
     /**
@@ -244,14 +223,6 @@ public abstract class Session<C> implements TranscriptListener {
         insensitive
     }
 
-    public Host.TransferType getTransferType() {
-        switch(host.getTransfer()) {
-            case unknown:
-                return Host.TransferType.valueOf(preferences.getProperty("queue.transfer.type"));
-            default:
-                return host.getTransfer();
-        }
-    }
 
     /**
      * @return boolean True if the session has not yet been closed.
@@ -281,7 +252,9 @@ public abstract class Session<C> implements TranscriptListener {
             case opening:
             case open:
             case closing:
-                listener.log(request, message);
+                for(TranscriptListener listener : transcriptListeners) {
+                    listener.log(request, message);
+                }
                 break;
         }
     }
@@ -290,15 +263,29 @@ public abstract class Session<C> implements TranscriptListener {
      * @param directory Directory
      * @param listener  Callback
      */
+    @Override
     public abstract AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException;
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
+        return vault.getFeature(this, type, this._getFeature(type));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type, final T feature) {
+        return vault.getFeature(this, type, feature);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new DefaultUploadFeature(this);
+            return (T) new DefaultUploadFeature(this.getFeature(Write.class));
         }
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(this);
+        }
+        if(type == Bulk.class) {
+            return (T) new DisabledBulkFeature();
         }
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(this);
@@ -312,8 +299,8 @@ public abstract class Session<C> implements TranscriptListener {
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
         }
-        if(type == ch.cyberduck.core.features.Attributes.class) {
-            return (T) new DefaultAttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new DefaultAttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new DefaultHomeFinderService(this);
@@ -326,6 +313,12 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
+        }
+        if(type == ListService.class) {
+            return (T) this;
+        }
+        if(type == Vault.class) {
+            return (T) vault;
         }
         return null;
     }

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python26
 # -*- coding: utf-8 -*-
 
 import cgi

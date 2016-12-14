@@ -41,6 +41,7 @@ import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
+import ch.cyberduck.ui.cocoa.controller.MainController;
 
 import org.apache.log4j.Logger;
 

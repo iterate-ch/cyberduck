@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
 
             pictureBox.Padding = new Padding(0, 0, 0, 5);
-            label.Text = LocaleFactory.localizedString("Enter the name for the new file:", "File");
+            label.Text = LocaleFactory.localizedString("Enter the name for the new file", "File");
             okButton.Text = LocaleFactory.localizedString("Create", "File");
 
             // cancelButton is the 'Edit' button now

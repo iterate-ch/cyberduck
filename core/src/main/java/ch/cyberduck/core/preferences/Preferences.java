@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLocale;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledSleepPreventer;
 import ch.cyberduck.core.DisabledTerminalService;
@@ -48,6 +49,7 @@ import ch.cyberduck.core.local.NullLocalSymlinkFeature;
 import ch.cyberduck.core.local.WorkingDirectoryFinderFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
+import ch.cyberduck.core.random.DefaultSecureRandomProvider;
 import ch.cyberduck.core.resources.DisabledIconCache;
 import ch.cyberduck.core.serializer.impl.dd.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.dd.PlistDeserializer;
@@ -64,6 +66,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
+import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -236,13 +239,13 @@ public abstract class Preferences {
         defaults.put("mail.feedback", "mailto:support@cyberduck.io");
 
         defaults.put("website.donate", "https://cyberduck.io/donate/");
-        defaults.put("website.home", "http://cyberduck.io/");
-        defaults.put("website.forum", "http://forum.cyberduck.io/");
-        defaults.put("website.help", "http://help.cyberduck.io/" + this.locale());
+        defaults.put("website.home", "https://cyberduck.io/");
+        defaults.put("website.help", "https://help.cyberduck.io/" + this.locale());
         defaults.put("website.bug", "https://trac.cyberduck.io/newticket?version={0}");
         defaults.put("website.crash", "https://crash.cyberduck.io/report");
         defaults.put("website.cli", "https://duck.sh/");
-        defaults.put("website.qloudsonic", "https://qloudsonic.io/plans");
+        defaults.put("website.license", "https://cyberduck.io/license");
+        defaults.put("website.acknowledgments", "https://cyberduck.io/acknowledgments");
 
         defaults.put("rendezvous.enable", String.valueOf(true));
         defaults.put("rendezvous.loopback.suppress", String.valueOf(true));
@@ -842,6 +845,13 @@ public abstract class Preferences {
         );
 
         /*
+         * Session pool
+         */
+        defaults.put("connection.pool.minidle", String.valueOf(1));
+        defaults.put("connection.pool.maxidle", String.valueOf(5));
+        defaults.put("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
+
+        /*
           Default login name
          */
         defaults.put("connection.login.name", StringUtils.EMPTY);
@@ -851,10 +861,6 @@ public abstract class Preferences {
           Search for passphrases in Keychain
          */
         defaults.put("connection.login.useKeychain", String.valueOf(true));
-        /*
-          Add to Keychain option is checked in login prompt
-         */
-        defaults.put("connection.login.addKeychain", String.valueOf(true));
 
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", Scheme.ftp.name());
@@ -913,7 +919,9 @@ public abstract class Preferences {
         defaults.put("connection.ssl.keystore.type", null);
         defaults.put("connection.ssl.keystore.provider", null);
 
-        defaults.put("connection.ssl.securerandom", "NativePRNG");
+        // Default secure random strong algorithm
+        defaults.put("connection.ssl.securerandom.algorithm", "NativePRNG");
+        defaults.put("connection.ssl.securerandom.provider", "SUN");
 
         /*
           Transfer read buffer size
@@ -1015,6 +1023,8 @@ public abstract class Preferences {
         defaults.put("dropbox.oauth.clientsecret", "yg1uopbf5c1h1rk");
         defaults.put("dropbox.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
+
+        defaults.put("cryptomator.enable", String.valueOf(true));
     }
 
     protected void setLogging() {
@@ -1194,6 +1204,7 @@ public abstract class Preferences {
         defaults.put("factory.local.class", Local.class.getName());
         defaults.put("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", DisabledLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());
         defaults.put("factory.temporaryfiles.class", DefaultTemporaryFileService.class.getName());
@@ -1228,6 +1239,8 @@ public abstract class Preferences {
         defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
         defaults.put("factory.threadpool.class", DefaultThreadPool.class.getName());
         defaults.put("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
+        defaults.put("factory.vault.class", DisabledVault.class.getName());
+        defaults.put("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
     }
 
     /**

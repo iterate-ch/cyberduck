@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class DriveTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())

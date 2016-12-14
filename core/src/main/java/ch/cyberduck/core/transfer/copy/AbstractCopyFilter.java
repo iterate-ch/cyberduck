@@ -34,7 +34,7 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
@@ -86,7 +86,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = new DefaultAttributesFeature(sourceSession).withCache(sourceCache).find(source);
+        final PathAttributes attributes = new DefaultAttributesFinderFeature(sourceSession).withCache(sourceCache).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());

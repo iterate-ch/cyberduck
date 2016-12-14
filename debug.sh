@@ -16,6 +16,8 @@
 
 #!/bin/sh
 
+workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 usage() {
 	echo ""
 	echo "	  Usage: debug.sh [--enable | -e] [--disable | -d]"
@@ -25,11 +27,15 @@ usage() {
 enable() {
 	# When enabled, you can connect to the running application using 
 	# -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
-	cp setup/app/Info.plist.debug osx/target/Cyberduck.app/Contents/Info.plist;
+    basedir="$( cd "$workdir" && pwd )"
+    echo $basedir
+	cp $basedir/setup/app/Info.plist.debug $basedir/osx/target/Cyberduck.app/Contents/Info.plist;
 }
 
 disable() {
-	cp setup/app/Info.plist osx/target/Cyberduck.app/Contents/Info.plist;
+    basedir="$( cd "$workdir" && pwd )"
+    echo $basedir
+	cp $basedir/setup/app/Info.plist $basedir/osx/target/Cyberduck.app/Contents/Info.plist;
 }
 
 while [ "$1" != "" ] # When there are arguments...

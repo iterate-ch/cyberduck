@@ -25,6 +25,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -33,7 +34,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -57,7 +58,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
-import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -70,6 +70,7 @@ import java.util.HashMap;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.SendingRequestEvent;
+import com.microsoft.azure.storage.StorageCredentials;
 import com.microsoft.azure.storage.StorageCredentialsAccountAndKey;
 import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
@@ -99,14 +100,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public CloudBlobClient connect(final HostKeyCallback callback) throws BackgroundException {
         try {
             final StorageCredentialsAccountAndKey credentials
-                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(),
-                    Base64.toBase64String("null".getBytes()));
+                    = new StorageCredentialsAccountAndKey(host.getCredentials().getUsername(), "null");
             // Client configured with no credentials
             final URI uri = new URI(String.format("%s://%s", Scheme.https, host.getHostname()));
             final CloudBlobClient client = new CloudBlobClient(uri, credentials);
             client.setDirectoryDelimiter(String.valueOf(Path.DELIMITER));
-            final BlobRequestOptions options = client.getDefaultRequestOptions();
-            options.setTimeoutIntervalInMs(this.timeout());
+            final BlobRequestOptions options = new BlobRequestOptions();
             options.setRetryPolicyFactory(new RetryNoRetry());
             context.setLoggingEnabled(true);
             context.setLogger(LoggerFactory.getLogger(log.getName()));
@@ -156,10 +155,12 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         // Update credentials
-        ((StorageCredentialsAccountAndKey) client.getCredentials()).updateKey(
-                com.microsoft.azure.storage.core.Base64.decode(host.getCredentials().getPassword()));
+        final StorageCredentials credentials = client.getCredentials();
+        if(credentials instanceof StorageCredentialsAccountAndKey) {
+            ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
+        }
         final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home, this.list(home, new DisabledListProgressListener()));
+        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
     }
 
     @Override
@@ -184,7 +185,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new AzureReadFeature(this, context);
         }
@@ -200,8 +201,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == Headers.class) {
             return (T) new AzureMetadataFeature(this, context);
         }
-        if(type == Attributes.class) {
-            return (T) new AzureAttributesFeature(this, context);
+        if(type == AttributesFinder.class) {
+            return (T) new AzureAttributesFinderFeature(this, context);
         }
         if(type == Logging.class) {
             return (T) new AzureLoggingFeature(this, context);
@@ -216,7 +217,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             return (T) new AzureCopyFeature(this, context);
         }
         if(type == Touch.class) {
-            return (T) new AzureTouchFeature(this, context);
+            return (T) new AzureTouchFeature(this);
         }
         if(type == UrlProvider.class) {
             return (T) new AzureUrlProvider(this);
@@ -224,6 +225,6 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == AclPermission.class) {
             return (T) new AzureAclPermissionFeature(this, context);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

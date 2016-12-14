@@ -23,9 +23,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Location;
@@ -55,9 +55,9 @@ public class S3DirectoryFeatureTest {
         ));
         final S3Session session = new S3Session(host);
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3DirectoryFeature feature = new S3DirectoryFeature(session);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session));
         for(Location.Name region : new S3Protocol().getRegions()) {
             final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
             test.attributes().setRegion(region.getIdentifier());
@@ -76,7 +76,7 @@ public class S3DirectoryFeatureTest {
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.open(new DisabledHostKeyCallback(), new TranscriptListener() {
+        session.addListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {
@@ -87,10 +87,11 @@ public class S3DirectoryFeatureTest {
                 }
             }
         });
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session).mkdir(test);
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(test);
         assertTrue(b.get());
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
@@ -106,11 +107,11 @@ public class S3DirectoryFeatureTest {
         ));
         final S3Session session = new S3Session(host);
         final String name = String.format("%s=", UUID.randomUUID().toString());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new S3DirectoryFeature(session).mkdir(test);
+        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(test);
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));

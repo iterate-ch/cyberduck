@@ -18,19 +18,51 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.StringReader;
+import java.time.Duration;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.RetryException;
+import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
 
     @Override
     public BackgroundException map(final DbxException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getLocalizedMessage());
+        final JsonParser parser = new JsonParser();
+        try {
+            final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
+            this.append(buffer, StringUtils.replace(json.getAsJsonObject("error").getAsJsonPrimitive(".tag").getAsString(), "_", " "));
+        }
+        catch(JsonParseException e) {
+            // Ignore
+            this.append(buffer, failure.getMessage());
+        }
+        if(failure instanceof InvalidAccessTokenException) {
+            return new LoginFailureException(buffer.toString(), failure);
+        }
+        if(failure instanceof RetryException) {
+            final Duration delay = Duration.ofMillis(((RetryException) failure).getBackoffMillis());
+            return new RetriableAccessDeniedException(buffer.toString(), delay);
+        }
+        if(failure instanceof ServerException) {
+            return new ConnectionRefusedException(buffer.toString(), failure);
+        }
         if(failure instanceof GetMetadataErrorException) {
             final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
@@ -106,6 +138,21 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new InteroperabilityException(buffer.toString(), failure);
             }
         }
+        if(failure instanceof UploadSessionFinishErrorException) {
+            final UploadSessionFinishError error = ((UploadSessionFinishErrorException) failure).errorValue;
+            final WriteError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case MALFORMED_PATH:
+                case DISALLOWED_NAME:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NO_WRITE_PERMISSION:
+                case CONFLICT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+                case INSUFFICIENT_SPACE:
+                    return new QuotaException(buffer.toString(), failure);
+            }
+        }
         if(failure instanceof GetTemporaryLinkErrorException) {
             final GetTemporaryLinkError error = ((GetTemporaryLinkErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
@@ -136,6 +183,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new InteroperabilityException(buffer.toString(), failure);
             }
         }
-        return new BackgroundException(buffer.toString(), failure);
+        return new InteroperabilityException(buffer.toString(), failure);
     }
 }

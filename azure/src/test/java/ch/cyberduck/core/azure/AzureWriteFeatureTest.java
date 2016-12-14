@@ -39,7 +39,7 @@ public class AzureWriteFeatureTest {
     public void testWriteOverride() throws Exception {
         final OperationContext context
                 = new OperationContext();
-        final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
@@ -56,12 +56,12 @@ public class AzureWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new AzureFindFeature(session, context).find(test));
-        final PathAttributes attributes = new AzureAttributesFeature(session, context).find(test);
+        final PathAttributes attributes = new AzureAttributesFinderFeature(session, context).find(test);
         assertEquals(content.length, attributes.getSize());
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        assertEquals(0L, new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus());
         IOUtils.readFully(in, buffer);
@@ -74,7 +74,7 @@ public class AzureWriteFeatureTest {
         overwrite.close();
         // Test double close
         overwrite.close();
-        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFeature(session, context).find(test).getSize());
+        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFinderFeature(session, context).find(test).getSize());
         new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

@@ -18,52 +18,46 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.http.entity.ByteArrayEntity;
 
 import java.io.IOException;
 import java.util.Collections;
-
-import synapticloop.b2.exception.B2ApiException;
-import synapticloop.b2.response.B2GetUploadUrlResponse;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2TouchFeature implements Touch {
 
     private final B2Session session;
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
+    private final Write write;
 
     public B2TouchFeature(final B2Session session) {
+        this(session, session.getFeature(Write.class));
+    }
+
+    public B2TouchFeature(final B2Session session, final Write write) {
         this.session = session;
+        this.write = write;
     }
 
     @Override
-    public void touch(final Path file) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1))
+                .compute(new NullInputStream(0L), status)
+        );
+        status.setMime(new MappingMimeTypeService().getMime(file.getName()));
+        status.setMetadata(Collections.singletonMap(
+                X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
+        );
         try {
-            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
-            session.getClient().uploadFile(
-                    uploadUrl,
-                    containerService.getKey(file),
-                    new ByteArrayEntity(new byte[0]),
-                    ChecksumComputeFactory.get(HashAlgorithm.sha1).compute(new NullInputStream(0L)).hash,
-                    new MappingMimeTypeService().getMime(file.getName()),
-                    Collections.singletonMap(
-                            X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis())
-                    )
-            );
-        }
-        catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create file {0}", e, file);
+            write.write(file, status).close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

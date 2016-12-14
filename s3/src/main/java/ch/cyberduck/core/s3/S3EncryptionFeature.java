@@ -72,7 +72,7 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFeature(session).find(file).getEncryption();
+            return new S3AttributesFinderFeature(session).find(file).getEncryption();
         }
         return Algorithm.NONE;
     }

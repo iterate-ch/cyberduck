@@ -20,12 +20,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
-import ch.cyberduck.core.http.ResponseOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -52,7 +52,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     private final Long chunksize;
 
@@ -61,10 +61,10 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session), chunksize);
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)), chunksize);
     }
 
-    public DropboxWriteFeature(final DropboxSession session, final Find finder, final Attributes attributes, final Long chunksize) {
+    public DropboxWriteFeature(final DropboxSession session, final Find finder, final AttributesFinder attributes, final Long chunksize) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;
@@ -82,7 +82,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient());
             final UploadSessionStartUploader start = files.uploadSessionStart();
@@ -109,7 +109,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         return false;
     }
 
-    private final class SegmentingUploadProxyOutputStream extends ResponseOutputStream<String> {
+    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<String> {
 
         private final Path file;
         private final TransferStatus status;
@@ -139,7 +139,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
                     this.next();
                 }
                 catch(DbxException e) {
-                    throw new IOException(e);
+                    throw new IOException(new DropboxExceptionMappingService().map(e));
                 }
             }
         }
@@ -162,7 +162,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
 
         @Override
-        public String getResponse() throws BackgroundException {
+        public String getStatus() throws BackgroundException {
             return sessionId;
         }
 
@@ -181,8 +181,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             catch(IllegalStateException e) {
                 // Already closed
             }
-            catch(DbxException ex) {
-                throw new IOException("Upload failed.", ex);
+            catch(DbxException e) {
+                throw new IOException("Upload failed.", new DropboxExceptionMappingService().map(e));
             }
             finally {
                 super.close();

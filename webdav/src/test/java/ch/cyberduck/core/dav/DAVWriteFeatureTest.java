@@ -7,7 +7,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -15,13 +14,13 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.http.RedirectCallback;
-import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -54,8 +53,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes("UTF-8");
@@ -64,7 +63,7 @@ public class DAVWriteFeatureTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(session);
+        final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(session.getFeature(Find.class).find(test));
@@ -95,8 +94,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
@@ -104,20 +103,20 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setOffset(0L);
             status.setLength(1024L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -134,8 +133,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
@@ -145,19 +144,19 @@ public class DAVWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus();
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -165,7 +164,7 @@ public class DAVWriteFeatureTest {
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
@@ -181,8 +180,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(2);
@@ -190,7 +189,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -199,7 +198,7 @@ public class DAVWriteFeatureTest {
             status.setLength(1L);
             status.setOffset(1L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -216,8 +215,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path("/dav/basic/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] source = RandomUtils.nextBytes(3);
@@ -225,7 +224,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -234,7 +233,7 @@ public class DAVWriteFeatureTest {
             status.setLength(2L);
             status.setOffset(1L);
             status.setAppend(true);
-            final ResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status);
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -251,13 +250,13 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
+        final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
         try {
             write.close();
-            write.getResponse();
+            write.getStatus();
         }
         catch(IOException e) {
             throw (Exception) e.getCause();
@@ -271,8 +270,8 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // With Expect: Continue header
         new DAVWriteFeature(session).write(test, new TransferStatus().length(1L));
@@ -285,13 +284,13 @@ public class DAVWriteFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         assertFalse(feature.append(
                 new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test);
+        new DefaultTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -312,22 +311,22 @@ public class DAVWriteFeatureTest {
                 return true;
             }
         });
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(String.format("/redir-tmp/%s", name), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1024);
         status.setLength(content.length);
-        final ResponseOutputStream<String> out = feature.write(test, status);
+        final HttpResponseOutputStream<String> out = feature.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
-        assertEquals(content.length, new DAVAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(
                 new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))

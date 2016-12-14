@@ -26,9 +26,6 @@ import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
 
 public abstract class SSLSession<C> extends Session<C> {
     private static final Logger log = Logger.getLogger(SSLSession.class);
@@ -52,10 +49,15 @@ public abstract class SSLSession<C> extends Session<C> {
         this.key = key;
     }
 
-    /**
-     * @return List of certificates accepted by all trust managers of this session.
-     */
-    public List<X509Certificate> getAcceptedIssuers() {
-        return Arrays.asList(trust.getAcceptedIssuers());
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == X509TrustManager.class) {
+            return (T) trust;
+        }
+        if(type == X509KeyManager.class) {
+            return (T) key;
+        }
+        return super._getFeature(type);
     }
 }

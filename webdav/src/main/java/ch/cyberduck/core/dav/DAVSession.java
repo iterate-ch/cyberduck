@@ -28,13 +28,14 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -205,7 +206,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 host, e.getResponsePhrase()));
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
-                        cache.put(home, this.list(home, new DisabledListProgressListener()));
+                        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {
@@ -294,7 +295,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
         }
@@ -305,7 +306,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DAVUploadFeature(this);
+            return (T) new DAVUploadFeature(this.getFeature(Write.class));
         }
         if(type == Delete.class) {
             return (T) new DAVDeleteFeature(this);
@@ -319,8 +320,8 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Copy.class) {
             return (T) new DAVCopyFeature(this);
         }
-        if(type == Attributes.class) {
-            return (T) new DAVAttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new DAVAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new DAVTimestampFeature(this);
@@ -331,6 +332,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         if(type == Lock.class) {
             return (T) new DAVLockFeature(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

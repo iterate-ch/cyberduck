@@ -17,7 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -29,15 +28,12 @@ import java.lang.reflect.InvocationTargetException;
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
     protected CertificateStoreFactory() {
         super("factory.certificatestore.class");
     }
 
     public CertificateStore create(final Controller c) {
-        final String clazz = preferences.getProperty("factory.certificatestore.class");
+        final String clazz = PreferencesFactory.get().getProperty("factory.certificatestore.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }

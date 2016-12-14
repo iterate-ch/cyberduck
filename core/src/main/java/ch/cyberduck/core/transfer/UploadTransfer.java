@@ -115,13 +115,13 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> session, final Path remote,
+    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path remote,
                                    final Local directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
         if(directory.isSymbolicLink()) {
-            final Symlink symlink = session.getFeature(Symlink.class);
+            final Symlink symlink = source.getFeature(Symlink.class);
             if(new UploadSymlinkResolver(symlink, roots).resolve(directory)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Do not list children for symbolic link %s", directory));
@@ -140,35 +140,35 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+    public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
-        final Symlink symlink = session.getFeature(Symlink.class);
+        final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
         if(options.temporary) {
-            options.withTemporary(session.getFeature(Write.class).temporary());
+            options.withTemporary(source.getFeature(Write.class).temporary());
         }
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session, options).withCache(cache);
+            return new ResumeFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session, options).withCache(cache);
+            return new RenameFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session, options).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session, options).withCache(cache);
+            return new SkipFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session, options, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session, options).withCache(cache);
+        return new OverwriteFilter(resolver, source, options).withCache(cache);
     }
 
     @Override
-    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+    public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -189,12 +189,12 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Upload write = session.getFeature(Upload.class);
+                final Upload write = source.getFeature(Upload.class);
                 final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
-                        if(this.list(session, upload.remote, upload.local, listener).isEmpty()) {
+                        if(this.list(source, source, upload.remote, upload.local, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -210,25 +210,23 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
-        final Bulk feature = session.getFeature(Bulk.class);
-        if(null != feature) {
-            final Object id = feature.pre(Type.upload, files);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
-            }
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk feature = source.getFeature(Bulk.class);
+        final Object id = feature.pre(Type.upload, files);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status, final ConnectionCallback callback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         if(local.isSymbolicLink()) {
-            final Symlink feature = session.getFeature(Symlink.class);
+            final Symlink feature = source.getFeature(Symlink.class);
             final UploadSymlinkResolver symlinkResolver
                     = new UploadSymlinkResolver(feature, roots);
             if(symlinkResolver.resolve(local)) {
@@ -246,7 +244,7 @@ public class UploadTransfer extends Transfer {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
                     file.getName()));
             // Transfer
-            final Upload upload = session.getFeature(Upload.class);
+            final Upload upload = source.getFeature(Upload.class);
             upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
                 @Override
                 public void sent(final long bytes) {
@@ -259,7 +257,7 @@ public class UploadTransfer extends Transfer {
             if(!status.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         file.getName()));
-                final Directory feature = session.getFeature(Directory.class);
+                final Directory feature = source.getFeature(Directory.class);
                 feature.mkdir(file, null, status);
                 status.setComplete();
             }

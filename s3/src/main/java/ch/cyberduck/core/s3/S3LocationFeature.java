@@ -66,6 +66,9 @@ public class S3LocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return unknown;
+        }
         if(cache.containsRegionForBucketName(container.getName())) {
             return new S3Region(cache.getRegionForBucketName(container.getName()));
         }

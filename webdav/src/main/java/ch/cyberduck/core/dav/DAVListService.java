@@ -24,9 +24,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -36,6 +38,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
 public class DAVListService implements ListService {
+    private static final Logger log = Logger.getLogger(DAVListService.class);
 
     private final DAVSession session;
 
@@ -52,7 +55,12 @@ public class DAVListService implements ListService {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
                 if(href.equals(directory.getAbsolute())) {
-                    continue;
+                    log.warn(String.format("Ignore resource %s", href));
+                    // Do not include self
+                    if(resource.isDirectory()) {
+                        continue;
+                    }
+                    throw new NotfoundException(directory.getAbsolute());
                 }
                 final PathAttributes attributes = new PathAttributes();
                 if(resource.getModified() != null) {

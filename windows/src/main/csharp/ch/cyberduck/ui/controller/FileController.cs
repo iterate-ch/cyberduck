@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,12 +13,13 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core.Resources;
 using java.util;
 
@@ -29,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected readonly BrowserController BrowserController;
         private string _input = string.Empty;
 
-        public FileController(IPromptView view, BrowserController browserController)
+        protected FileController(IPromptView view, BrowserController browserController)
         {
             BrowserController = browserController;
             View = view;
@@ -60,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _input = value; }
         }
 
-        protected Session Session
+        protected SessionPool Session
         {
             get { return BrowserController.Session; }
         }
@@ -74,10 +75,16 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (!string.IsNullOrEmpty(t))
             {
-                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, t, EnumSet.of(Path.Type.file)))) {
+                if (
+                    BrowserController.Cache.get(BrowserController.Workdir)
+                        .contains(new Path(BrowserController.Workdir, t, EnumSet.of(AbstractPath.Type.file))))
+                {
                     return false;
                 }
-                if(BrowserController.Cache.get(BrowserController.Workdir).contains(new Path(BrowserController.Workdir, t, EnumSet.of(Path.Type.directory)))) {
+                if (
+                    BrowserController.Cache.get(BrowserController.Workdir)
+                        .contains(new Path(BrowserController.Workdir, t, EnumSet.of(AbstractPath.Type.directory))))
+                {
                     return false;
                 }
                 return true;

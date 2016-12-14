@@ -23,9 +23,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,13 +52,11 @@ public class FTPDataFallbackTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-        final FTPSession session = new FTPSession(host) {
-            protected int timeout() {
-                return 2000;
-            }
-        };
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final FTPSession session = new FTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.getClient().setDefaultTimeout(2000);
+        session.getClient().setConnectTimeout(2000);
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path path = new Path("/pub/debian/README.html", EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
@@ -90,8 +88,8 @@ public class FTPDataFallbackTest {
         host.setFTPConnectMode(FTPConnectMode.active);
         final AtomicInteger count = new AtomicInteger();
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override

@@ -250,6 +250,14 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage fileIcon(final Path path, final Integer size) {
+        if(path.getType().contains(Path.Type.decrypted)) {
+            final NSImage badge = this.iconNamed("unlockedbadge.tiff", size);
+            badge.setName("unlockedbadge");
+            if(path.isDirectory()) {
+                return this.folderIcon(size, badge);
+            }
+            return this.documentIcon(StringUtils.lowerCase(path.getExtension()), size, badge);
+        }
         if(path.isSymbolicLink()) {
             final NSImage badge = this.iconNamed("aliasbadge.tiff", size);
             badge.setName("aliasbadge");

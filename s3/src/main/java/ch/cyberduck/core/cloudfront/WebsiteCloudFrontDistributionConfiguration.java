@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -31,6 +32,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -40,7 +42,6 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3WebsiteConfig;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -49,15 +50,20 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
+
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
     private final Preferences preferences
             = PreferencesFactory.get();
 
+    private final PathContainerService containerService
+            = new S3PathContainerService();
+
     private final S3Session session;
 
     public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        super(session, trust, key);
+        super(session);
         this.session = session;
     }
 
@@ -155,9 +161,9 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    protected CustomOrigin.OriginProtocolPolicy getPolicy(final Distribution.Method method) {
+    protected OriginProtocolPolicy getPolicy(final Distribution.Method method) {
         if(method.equals(Distribution.WEBSITE_CDN)) {
-            return CustomOrigin.OriginProtocolPolicy.HTTP_ONLY;
+            return OriginProtocolPolicy.HttpOnly;
         }
         return super.getPolicy(method);
     }

@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3ReadFeature;
@@ -91,7 +92,7 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         try {
-            assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+            assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
             tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                     PathCache.empty());
         }
@@ -113,7 +114,7 @@ public class UDTProxyConfiguratorTest {
                 new QloudsonicProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        tunneled.open(new DisabledHostKeyCallback());
     }
 
     @Test(expected = ConnectionCanceledException.class)
@@ -145,7 +146,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
     }
@@ -171,7 +172,7 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
 
         final TransferStatus status = new TransferStatus();
@@ -183,7 +184,7 @@ public class UDTProxyConfiguratorTest {
         status.setLength(content.length);
         final Path test = new Path(new Path("container", EnumSet.of(Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled);
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         try {
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
@@ -206,7 +207,7 @@ public class UDTProxyConfiguratorTest {
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
         tunneled.close();
@@ -224,7 +225,7 @@ public class UDTProxyConfiguratorTest {
                 new LocalhostProxyProvider(), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
@@ -240,7 +241,7 @@ public class UDTProxyConfiguratorTest {
 
         final Path test = new Path(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Upload upload = new S3SingleUploadService(tunneled);
+        final Upload upload = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
 
@@ -280,14 +281,14 @@ public class UDTProxyConfiguratorTest {
         }, new DefaultX509KeyManager());
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
-        assertNotNull(tunneled.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(tunneled.open(new DisabledHostKeyCallback()));
         assertTrue(tunneled.isConnected());
         tunneled.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
                 PathCache.empty());
 
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(tunneled).touch(test);
+        new S3TouchFeature(tunneled).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);

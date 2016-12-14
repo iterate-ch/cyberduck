@@ -18,18 +18,16 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,11 +37,7 @@ import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
-public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
+public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write<B2UploadPartResponse> {
 
     private final B2Session session;
 
@@ -53,7 +47,7 @@ public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartRes
     }
 
     @Override
-    public ResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<B2UploadPartResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final B2GetUploadPartUrlResponse uploadUrl
                     = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));

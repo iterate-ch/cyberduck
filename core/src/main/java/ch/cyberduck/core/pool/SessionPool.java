@@ -17,86 +17,91 @@ package ch.cyberduck.core.pool;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.BackgroundActionState;
 
-import org.apache.commons.pool2.BasePooledObjectFactory;
-import org.apache.commons.pool2.PooledObject;
-import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.log4j.Logger;
+public interface SessionPool {
+    SessionPool DISCONNECTED = new DisconnectedSessionPool();
 
-public class SessionPool extends BasePooledObjectFactory<Session> {
-    private static final Logger log = Logger.getLogger(SessionPool.class);
+    /**
+     * Borrow session from pool
+     *
+     * @param callback Cancel callback
+     * @return Open connection
+     * @throws BackgroundException Failure if opening connection fails
+     */
+    Session<?> borrow(BackgroundActionState callback) throws BackgroundException;
 
-    private final ConnectionService connect;
+    /**
+     * Release session to pool for reuse
+     */
+    void release(Session<?> session, BackgroundException failure);
 
-    private final X509TrustManager trust;
+    /**
+     * Close all idle connections in pool
+     */
+    void evict();
 
-    private final X509KeyManager key;
+    /**
+     * @return Connection configuration
+     */
+    Host getHost();
 
-    private final PathCache cache;
+    /**
+     * @return Current pool connection state
+     */
+    Session.State getState();
 
-    private final Host host;
+    /**
+     * Obtain feature from connection type
+     */
+    <T> T getFeature(final Class<T> type);
 
-    public SessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                       final PathCache cache, final Host host) {
-        this.connect = connect;
-        this.trust = trust;
-        this.key = key;
-        this.cache = cache;
-        this.host = host;
+    /**
+     * Shutdown connection pool
+     */
+    void shutdown();
+
+    interface Callback {
+        boolean isCanceled();
     }
 
-    @Override
-    public Session create() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Create new session for host %s in pool", host));
+    final class DisconnectedSessionPool implements SessionPool {
+        @Override
+        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
+            return null;
         }
-        return SessionFactory.create(host, trust, key);
-    }
 
-    @Override
-    public PooledObject<Session> wrap(Session session) {
-        return new DefaultPooledObject<Session>(session);
-    }
-
-    @Override
-    public void activateObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Activate session %s", session));
+        @Override
+        public void release(final Session<?> session, final BackgroundException failure) {
+            //
         }
-        connect.check(session, cache);
-    }
 
-    @Override
-    public void passivateObject(final PooledObject<Session> p) throws Exception {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Pause session %s", session));
+        @Override
+        public void evict() {
+            //
         }
-    }
 
-    @Override
-    public void destroyObject(final PooledObject<Session> p) throws BackgroundException {
-        final Session session = p.getObject();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Destroy session %s", session));
+        @Override
+        public Host getHost() {
+            return null;
         }
-        session.close();
-    }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("SessionPool{");
-        sb.append("host=").append(host);
-        sb.append('}');
-        return sb.toString();
+        @Override
+        public Session.State getState() {
+            return Session.State.closed;
+        }
+
+        @Override
+        public <T> T getFeature(final Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public void shutdown() {
+            //
+        }
     }
 }

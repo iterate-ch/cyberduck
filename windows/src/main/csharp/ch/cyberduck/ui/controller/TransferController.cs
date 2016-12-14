@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
@@ -628,7 +629,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             ProgressController progressController;
             _transferMap.TryGetValue(transfer, out progressController);
-            background(new TransferBackgroundAction(this, transfer, options, callback));
+            PathCache cache = new PathCache(_preferences.getInteger("transfer.cache.size"));
+            background(new TransferBackgroundAction(this, transfer.withCache(cache), options, callback, cache));
         }
 
         public void TaskbarOverlayIcon(Icon icon, string description)
@@ -669,13 +671,13 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Transfer _transfer;
 
             public TransferBackgroundAction(TransferController controller, Transfer transfer, TransferOptions options,
-                TransferCallback callback)
-                : base(
-                    controller,
-                    SessionFactory.create(transfer.getHost(),
-                        new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(transfer.getHost())),
-                        new KeychainX509KeyManager()), controller.GetController(transfer),
-                    controller.GetController(transfer), controller, transfer, options)
+                TransferCallback callback, PathCache cache)
+                : base(controller,
+                    null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getSource()),
+                    null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, cache, transfer.getDestination()),
+                    controller.GetController(transfer),
+                    controller.GetController(transfer), 
+                    transfer, options)
             {
                 _transfer = transfer;
                 _callback = callback;

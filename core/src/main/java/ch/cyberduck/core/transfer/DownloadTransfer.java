@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -119,7 +120,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> session, final Path directory,
+    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory,
                                    final Local local, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
@@ -137,7 +138,7 @@ public class DownloadTransfer extends Transfer {
                 list = cache.get(directory);
             }
             else {
-                list = session.list(directory, listener);
+                list = source.getFeature(ListService.class).list(directory, listener);
                 cache.put(directory, list);
             }
             final List<TransferItem> children = new ArrayList<TransferItem>();
@@ -150,34 +151,34 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+    public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, session, options).withCache(cache);
+            return new ResumeFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, session, options).withCache(cache);
+            return new RenameFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, session, options).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, session, options).withCache(cache);
+            return new SkipFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, session, options).withCache(cache);
+            return new TrashFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, session, options, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, session, options).withCache(cache);
+        return new OverwriteFilter(resolver, source, options).withCache(cache);
     }
 
     @Override
-    public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+    public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -223,18 +224,16 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
-        final Bulk feature = session.getFeature(Bulk.class);
-        if(null != feature) {
-            final Object id = feature.pre(Type.download, files);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
-            }
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk feature = source.getFeature(Bulk.class);
+        final Object id = feature.pre(Type.download, files);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path file, final Local local, final TransferOptions options,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status, final ConnectionCallback callback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -261,7 +260,7 @@ public class DownloadTransfer extends Transfer {
                 folder.mkdir();
             }
             // Transfer
-            final Download download = session.getFeature(Download.class);
+            final Download download = source.getFeature(Download.class);
             download.download(file, local, bandwidth, new IconUpdateSreamListener(streamListener, status, local) {
                 @Override
                 public void recv(final long bytes) {

@@ -17,17 +17,15 @@ package ch.cyberduck.core.worker;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.concurrent.Callable;
 
-public interface TransferWorker {
-    void cancel();
+public abstract class TransferWorker<T> extends Worker<T> {
 
-    void await() throws BackgroundException;
-
-    void submit(TransferCallable callable) throws BackgroundException;
+    public abstract T run(Session<?> source, Session<?> destination) throws BackgroundException;
 
     interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;

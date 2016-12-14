@@ -65,7 +65,7 @@ test() {
 run() {
 	echo "Running app using `basename $language .lproj`...";
     basedir="$( cd "$workdir/../../../.." && pwd )"
-	arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
+	CA_DEBUG_TRANSACTIONS=1 arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
 
 nib() {

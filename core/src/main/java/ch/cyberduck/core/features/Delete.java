@@ -30,7 +30,7 @@ public interface Delete {
 
     class DisabledCallback implements Callback {
         @Override
-        public void delete(final Path file) {
+        public void delete(Path file) {
             //
         }
     }

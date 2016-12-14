@@ -141,17 +141,6 @@ public abstract class AbstractController implements Controller {
     }
 
     @Override
-    public void failure(final Exception trace, final Exception failure) {
-        try {
-            trace.initCause(failure);
-        }
-        catch(IllegalStateException e) {
-            log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
-        }
-        log.warn(String.format("Failure running background task %s", failure.getMessage()), trace);
-    }
-
-    @Override
     public void start(final BackgroundAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start action %s", action));

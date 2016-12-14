@@ -11,6 +11,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -27,7 +28,7 @@ public class AzureCopyFeatureTest {
 
     @Test
     public void testCopy() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "cyberduck.blob.core.windows.net", new Credentials(
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
@@ -35,7 +36,7 @@ public class AzureCopyFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test);
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session, null).copy(test, copy);
         assertTrue(new AzureFindFeature(session, null).find(test));

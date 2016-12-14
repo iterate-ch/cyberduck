@@ -37,7 +37,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.log4j.Logger;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -54,7 +54,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
                         new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
                 ),
-                new KeychainX509KeyManager(),
+                new KeychainX509KeyManager(
+                        new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
+                ),
                 transcript);
     }
 
@@ -64,7 +66,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                                                            final TranscriptListener transcript) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(new S3Protocol(),
-                new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key), trust, key);
+                new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key));
         this.origin = origin;
         this.transcript = transcript;
     }
@@ -75,27 +77,27 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private <T> T connected(final Connected<T> run) throws BackgroundException {
         if(!session.isConnected()) {
-            session.open(new DisabledHostKeyCallback(), transcript);
+            session.open(new DisabledHostKeyCallback());
         }
         return run.call();
     }
 
     @Override
-    public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+    public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
         return this.connected(new Connected<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
-                return CustomOriginCloudFrontDistributionConfiguration.super.read(container, method, prompt);
+                return CustomOriginCloudFrontDistributionConfiguration.super.read(file, method, prompt);
             }
         });
     }
 
     @Override
-    public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
+    public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         this.connected(new Connected<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                CustomOriginCloudFrontDistributionConfiguration.super.write(container, distribution, prompt);
+                CustomOriginCloudFrontDistributionConfiguration.super.write(file, distribution, prompt);
                 return null;
             }
         });
@@ -103,7 +105,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     public List<Distribution.Method> getMethods(final Path container) {
-        return Arrays.asList(Distribution.CUSTOM);
+        return Collections.singletonList(Distribution.CUSTOM);
     }
 
     @Override

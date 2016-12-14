@@ -5,11 +5,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,14 +38,14 @@ public class S3MultipartWriteFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
+        final HttpResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
@@ -53,7 +53,7 @@ public class S3MultipartWriteFeatureTest {
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         assertTrue(new S3FindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length));
@@ -71,14 +71,14 @@ public class S3MultipartWriteFeatureTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final ResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
+        final HttpResponseOutputStream<List<MultipartPart>> out = feature.write(file, status);
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
@@ -86,7 +86,7 @@ public class S3MultipartWriteFeatureTest {
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         assertTrue(new S3FindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length));

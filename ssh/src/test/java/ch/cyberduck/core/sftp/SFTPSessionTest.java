@@ -48,13 +48,10 @@ public class SFTPSessionTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         assertFalse(session.isConnected());
-        assertFalse(session.isSecured());
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
-        assertFalse(session.isSecured());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isSecured());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -129,7 +126,7 @@ public class SFTPSessionTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         new SFTPHomeDirectoryService(session).find();
     }
 
@@ -158,7 +155,7 @@ public class SFTPSessionTest {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
-            }, new DisabledTranscriptListener());
+            });
         }
         catch(Exception e) {
             assertTrue(verify.get());
@@ -317,7 +314,7 @@ public class SFTPSessionTest {
                     fail();
                     return false;
                 }
-            }, new DisabledTranscriptListener()));
+            }));
             session.close();
             assertNotNull(session.open(new OpenSSHHostKeyVerifier(f) {
                 @Override
@@ -335,7 +332,7 @@ public class SFTPSessionTest {
                 protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     return false;
                 }
-            }, new DisabledTranscriptListener()));
+            }));
             session.close();
         }
         finally {

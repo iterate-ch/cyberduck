@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,12 +30,14 @@ import java.util.TimeZone;
 public class Host implements Serializable, Comparable<Host> {
 
     /**
+     * The credentials to authenticate with for the CDN
+     */
+    private final Credentials cloudfront = new DistributionCredentials();
+    /**
      * The protocol identifier.
      */
     private Protocol protocol;
-
     private String region;
-
     /**
      * The port number to connect to
      *
@@ -45,17 +48,10 @@ public class Host implements Serializable, Comparable<Host> {
      * The fully qualified hostname
      */
     private String hostname;
-
     /**
      * The credentials to authenticate with
      */
     private Credentials credentials = new HostCredentials(this);
-
-    /**
-     * The credentials to authenticate with for the CDN
-     */
-    private final Credentials cloudfront = new DistributionCredentials();
-
     /**
      * Unique identifier
      */
@@ -260,6 +256,9 @@ public class Host implements Serializable, Comparable<Host> {
         if(StringUtils.isNotBlank(encoding)) {
             dict.setStringForKey(encoding, "Encoding");
         }
+        if(StringUtils.isNotBlank(credentials.getCertificate())) {
+            dict.setStringForKey(credentials.getCertificate(), "Client Certificate");
+        }
         if(null != credentials.getIdentity()) {
             dict.setStringForKey(credentials.getIdentity().getAbbreviatedPath(), "Private Key File");
             dict.setObjectForKey(credentials.getIdentity(), "Private Key File Dictionary");
@@ -298,39 +297,6 @@ public class Host implements Serializable, Comparable<Host> {
             dict.setStringForKey(String.valueOf(readonly), "Readonly");
         }
         return dict.getSerialized();
-    }
-
-    public enum TransferType {
-        unknown {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Default");
-            }
-        },
-        browser {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Use browser connection", "Transfer");
-            }
-        },
-        newconnection {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Open new connection", "Transfer");
-            }
-        },
-        concurrent {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Open multiple connections", "Transfer");
-            }
-        },
-        udt {
-            @Override
-            public String toString() {
-                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)", "Transfer");
-            }
-        }
     }
 
     /**
@@ -454,6 +420,9 @@ public class Host implements Serializable, Comparable<Host> {
      * if the default encoding should be used
      */
     public String getEncoding() {
+        if(null == encoding) {
+            return PreferencesFactory.get().getProperty("browser.charset.encoding");
+        }
         return encoding;
     }
 
@@ -482,7 +451,11 @@ public class Host implements Serializable, Comparable<Host> {
      * @return The number of concurrent sessions allowed. -1 if unlimited or null
      * if the default should be used
      */
-    public TransferType getTransfer() {
+    public TransferType getTransferType() {
+        switch(transfer) {
+            case unknown:
+                return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
+        }
         return transfer;
     }
 
@@ -688,5 +661,38 @@ public class Host implements Serializable, Comparable<Host> {
         sb.append(", protocol=").append(protocol);
         sb.append('}');
         return sb.toString();
+    }
+
+    public enum TransferType {
+        unknown {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Default");
+            }
+        },
+        browser {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Use browser connection", "Transfer");
+            }
+        },
+        newconnection {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open new connection", "Transfer");
+            }
+        },
+        concurrent {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Open multiple connections", "Transfer");
+            }
+        },
+        udt {
+            @Override
+            public String toString() {
+                return LocaleFactory.localizedString("Qloudsonic (UDP-based Data Transfer Protocol)", "Transfer");
+            }
+        }
     }
 }

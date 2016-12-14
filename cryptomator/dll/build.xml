@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+<project name="Cyberduck Native Libraries" basedir=".">
+
+    <import file="../../build.xml"/>
+
+    <property name="ikvm.home" value="${build}/ikvm-8.1.5717.0"/>
+
+    <target name="dll" if="platform.windows">
+        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
+            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+        </taskdef>
+        <mkdir dir="${build}"/>
+        <!-- Create DLL Cyberduck.Importer -->
+        <ikvmc target="library" out="${build}/Cyberduck.Cryptomator.dll" home="${ikvm.home}"
+               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}" debug="${ikvm.debug}"
+               verbose="false">
+            <reference path="${build}/Cyberduck.Core.dll"/>
+            <reference path="${build}/Cyberduck.Protocols.dll"/>
+            <arg value="-skipDuplicates"/>
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+                <exclude name="asm-*.jar"/>
+                <exclude name="cglib-*.jar"/>
+                <exclude name="*-sources.jar"/>
+                <exclude name="*-tests.jar"/>
+            </fileset>
+        </ikvmc>
+    </target>
+
+    <target name="build" depends="version,dll" />
+</project>

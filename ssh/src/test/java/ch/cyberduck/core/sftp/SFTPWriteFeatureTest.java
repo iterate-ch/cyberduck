@@ -8,7 +8,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -17,7 +16,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledOutputStream;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,8 +47,8 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
@@ -87,11 +86,11 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPTouchFeature(session).touch(target);
+        new SFTPTouchFeature(session).touch(target, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(target));
         final String name = UUID.randomUUID().toString();
         final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -130,8 +129,8 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPWriteFeature(session).write(test, new TransferStatus());
     }
@@ -142,8 +141,8 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertEquals(false, new SFTPWriteFeature(session).append(
@@ -158,8 +157,8 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SFTPWriteFeature feature = new SFTPWriteFeature(session);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(64000);
@@ -174,7 +173,7 @@ public class SFTPWriteFeatureTest {
             out.close();
         }
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(1024L, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus().exists(true);
@@ -198,8 +197,8 @@ public class SFTPWriteFeatureTest {
                 System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final SFTPWriteFeature feature = new SFTPWriteFeature(session);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(2048);
@@ -214,7 +213,7 @@ public class SFTPWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus().exists(true);
@@ -227,12 +226,12 @@ public class SFTPWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

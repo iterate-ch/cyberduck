@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.transfer;
 using org.apache.log4j;
 
@@ -24,10 +25,8 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class DownloadPromptModel : TransferPromptModel
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (DownloadPromptModel).Name);
-
-        public DownloadPromptModel(TransferPromptController controller, Session session, Transfer transfer)
-            : base(controller, session, transfer)
+        public DownloadPromptModel(TransferPromptController controller, SessionPool source, SessionPool destination, Transfer transfer)
+            : base(controller, source, destination, transfer)
         {
             ;
         }

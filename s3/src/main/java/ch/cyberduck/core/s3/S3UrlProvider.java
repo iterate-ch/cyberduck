@@ -99,12 +99,14 @@ public class S3UrlProvider implements UrlProvider {
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Torrent"))));
         }
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
-                containerService.getContainer(file).getName(),
-                containerService.isContainer(file)
-                        ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-                DescriptiveUrl.Type.provider,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        if(!file.isRoot()) {
+            list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
+                    containerService.getContainer(file).getName(),
+                    containerService.isContainer(file)
+                            ? "/" : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        }
         return list;
     }
 

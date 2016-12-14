@@ -22,19 +22,18 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -42,8 +41,7 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 
-public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
+public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> implements Write<B2FileResponse> {
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -52,16 +50,16 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
 
     private final Find finder;
 
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
             = new ThreadLocal<B2GetUploadUrlResponse>();
 
     public B2WriteFeature(final B2Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
-    public B2WriteFeature(final B2Session session, final Find finder, final Attributes attributes) {
+    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;
@@ -69,7 +67,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
     }
 
     @Override
-    public ResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<B2FileResponse> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final B2GetUploadUrlResponse uploadUrl;
             if(null == urls.get()) {
@@ -92,7 +90,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<B2FileResponse> imp
                             throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
                         }
                         return session.getClient().uploadFile(uploadUrl,
-                                containerService.getKey(file),
+                                file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
                                 entity, checksum.toString(),
                                 status.getMime(),
                                 status.getMetadata());

@@ -17,22 +17,26 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
+using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
 using org.apache.log4j;
 using StructureMap;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class PromptLoginController : LoginCallback
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (PromptLoginController).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(PromptLoginController).FullName);
         private readonly WindowController _browser;
+        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
 
         private readonly HostPasswordStore keychain = PasswordStoreFactory.get();
 
@@ -85,9 +89,15 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = credentials.getUsername();
-            View.SavePasswordState = PreferencesFactory.get().getBoolean("connection.login.useKeychain") &&
-                                     PreferencesFactory.get().getBoolean("connection.login.addKeychain");
-            View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
+            View.SavePasswordState = credentials.isSaved();
+
+            if(_options.icon() != null) {
+                View.DiskIcon = IconCache.Instance.IconForName(_options.icon(), 64);
+            }
+            else {
+                View.DiskIcon = IconCache.Instance.IconForName(_bookmark.getProtocol().disk(), 64);
+            }
+            InitPrivateKeys();
 
             Update();
 
@@ -97,9 +107,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     throw new LoginCanceledException();
                 }
-                credentials.setSaved(View.SavePasswordState);
-                credentials.setUsername(Utils.SafeString(View.Username));
-                credentials.setPassword(Utils.SafeString(View.Password));
             };
             _browser.Invoke(d);
         }
@@ -109,22 +116,17 @@ namespace Ch.Cyberduck.Ui.Controller
             return identity;
         }
 
-        private void View_ChangedPkCheckboxEvent()
+        private void InitPrivateKeys()
         {
-            if (View.PkCheckboxState)
+            foreach (
+                Local key in
+                Utils.ConvertFromJavaList<Local>(
+                    new OpenSSHPrivateKeyConfigurator(
+                        LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
             {
-                string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-                if (null != _credentials.getIdentity())
-                {
-                    selectedKeyFile = _credentials.getIdentity().getAbsolute();
-                }
-
-                View.ShowPrivateKeyBrowser(selectedKeyFile);
+                _keys.Add(key.getAbsolute());
             }
-            else
-            {
-                View_ChangedPrivateKey(this, new PrivateKeyArgs(null));
-            }
+            View.PopulatePrivateKeys(_keys);
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -146,17 +148,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            PreferencesFactory.get().setProperty("connection.login.addKeychain", View.SavePasswordState);
+            _credentials.setSaved(View.SavePasswordState);
         }
 
         private void View_ChangedPasswordEvent()
         {
-            _credentials.setPassword(View.Password);
+            _credentials.setPassword(Utils.SafeString(View.Password));
         }
 
         private void View_ChangedUsernameEvent()
         {
-            _credentials.setUsername(View.Username);
+            _credentials.setUsername(Utils.SafeString(View.Username));
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
                 String password = keychain.getPassword(_bookmark.getProtocol().getScheme(), _bookmark.getPort(),
@@ -175,9 +177,20 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedPasswordEvent += View_ChangedPasswordEvent;
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
-            View.ChangedPkCheckboxEvent += View_ChangedPkCheckboxEvent;
             View.ChangedPrivateKey += View_ChangedPrivateKey;
             View.ValidateInput += View_ValidateInput;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+        }
+
+        private void View_OpenPrivateKeyBrowserEvent()
+        {
+            string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
+            if (!LocaleFactory.localizedString("None").Equals(View.SelectedPrivateKey))
+            {
+                selectedKeyFile = Path.GetDirectoryName(View.SelectedPrivateKey);
+            }
+            View.PasswordEnabled = true;
+            View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
         private bool View_ValidateInput()
@@ -188,6 +201,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
         {
             _credentials.setIdentity(null == e.KeyFile ? null : LocalFactory.get(e.KeyFile));
+            if (!_keys.Contains(e.KeyFile))
+            {
+                _keys.Add(e.KeyFile);
+                View.PopulatePrivateKeys(_keys);
+            }
             Update();
         }
 
@@ -214,16 +232,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.AnonymousState = false;
             }
-            View.PkCheckboxEnabled = _options.isPublickey();
+            View.PrivateKeyFieldEnabled = _options.isPublickey();
             if (_options.isPublickey() && _credentials.isPublicKeyAuthentication())
             {
-                View.PkCheckboxState = true;
-                View.PkLabel = _credentials.getIdentity().getAbbreviatedPath();
-            }
-            else
-            {
-                View.PkCheckboxState = false;
-                View.PkLabel = LocaleFactory.localizedString("No Private Key selected", "Credentials");
+                View.SelectedPrivateKey = _credentials.getIdentity().getAbsolute();
             }
         }
     }

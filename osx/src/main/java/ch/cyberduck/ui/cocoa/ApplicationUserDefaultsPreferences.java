@@ -19,13 +19,19 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.bonjour.RendezvousResponder;
+import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AlertTransferErrorCallback;
-import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
 import ch.cyberduck.ui.browser.Column;
+import ch.cyberduck.ui.cocoa.controller.AlertHostKeyController;
+import ch.cyberduck.ui.cocoa.controller.CopyPromptController;
+import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
+import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
+import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -37,21 +43,21 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         // Parent defaults
         super.setDefaults();
 
-        if(null == Updater.getFeed()) {
-            defaults.put("factory.updater.class", DisabledPeriodicUpdater.class.getName());
-        }
-        else {
+        if(null != Updater.getFeed()) {
             defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
         }
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.hostkeycallback.class", AlertHostKeyController.class.getName());
-        defaults.put("factory.logincallback.class", PromptLoginController.class.getName());
+        defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", AlertTransferErrorCallback.class.getName());
         defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
         defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
+        defaults.put("factory.vault.class", CryptoVault.class.getName());
+        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
 
         defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
         defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
@@ -78,6 +84,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
         defaults.put("browser.sort.column", Column.filename.name());
     }
+
     @Override
     protected void post() {
         super.post();

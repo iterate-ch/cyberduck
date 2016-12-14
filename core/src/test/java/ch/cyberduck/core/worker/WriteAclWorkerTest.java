@@ -33,7 +33,7 @@ public class WriteAclWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(Class<T> type) {
+            public <T> T _getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
                     return (T) new DefaultAclFeature() {
                         @Override
@@ -58,7 +58,7 @@ public class WriteAclWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -76,7 +76,7 @@ public class WriteAclWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(Class<T> type) {
+            public <T> T _getFeature(Class<T> type) {
                 if(type.equals(AclPermission.class)) {
                     return (T) new DefaultAclFeature() {
                         @Override
@@ -101,7 +101,7 @@ public class WriteAclWorkerTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
     }
@@ -120,7 +120,7 @@ public class WriteAclWorkerTest {
         worker.run(new NullSession(new Host(new TestProtocol())) {
                        @Override
                        @SuppressWarnings("unchecked")
-                       public <T> T getFeature(Class<T> type) {
+                       public <T> T _getFeature(Class<T> type) {
                            if(type.equals(AclPermission.class)) {
                                return (T) new DefaultAclFeature() {
                                    @Override
@@ -146,7 +146,7 @@ public class WriteAclWorkerTest {
                                    }
                                };
                            }
-                           return super.getFeature(type);
+                           return super._getFeature(type);
                        }
                    }
         );

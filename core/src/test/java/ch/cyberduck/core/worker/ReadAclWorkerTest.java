@@ -47,7 +47,7 @@ public class ReadAclWorkerTest {
         assertEquals(1, worker.run(new NullSession(new Host(new TestProtocol())) {
                     @Override
                     @SuppressWarnings("unchecked")
-                    public <T> T getFeature(final Class<T> type) {
+                    public <T> T _getFeature(final Class<T> type) {
                         if(type == AclPermission.class) {
                             return (T) new DefaultAclFeature() {
                                 @Override
@@ -71,7 +71,7 @@ public class ReadAclWorkerTest {
                                 }
                             };
                         }
-                        return super.getFeature(type);
+                        return super._getFeature(type);
                     }
                 }).size()
         );

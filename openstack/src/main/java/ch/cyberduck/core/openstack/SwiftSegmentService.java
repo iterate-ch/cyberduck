@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -161,6 +162,6 @@ public class SwiftSegmentService {
         for(StorageObject s : objects) {
             concatenated.append(s.getMd5sum());
         }
-        return checksum.compute(IOUtils.toInputStream(concatenated.toString(), Charset.defaultCharset()));
+        return checksum.compute(IOUtils.toInputStream(concatenated.toString(), Charset.defaultCharset()), new TransferStatus());
     }
 }

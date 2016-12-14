@@ -51,9 +51,9 @@ public class SFTPChallengeResponseAuthentication implements SFTPAuthentication {
     }
 
     @Override
-    public boolean authenticate(final Host host, final LoginCallback controller, CancelCallback cancel)
+    public boolean authenticate(final Host bookmark, final LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException {
-        return this.authenticate(host, host.getCredentials(), controller);
+        return this.authenticate(bookmark, bookmark.getCredentials(), prompt);
     }
 
     public boolean authenticate(final Host host, final Credentials credentials, final LoginCallback controller)

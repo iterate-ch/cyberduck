@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Headers;
@@ -28,9 +27,6 @@ import java.util.Map;
 public class B2MetadataFeature implements Headers {
 
     public static final String X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS = "src_last_modified_millis";
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -47,7 +43,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new B2AttributesFeature(session).find(file).getMetadata();
+        return new B2AttributesFinderFeature(session).find(file).getMetadata();
     }
 
     @Override

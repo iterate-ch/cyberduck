@@ -19,14 +19,12 @@ import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.worker.Worker;
 
 import java.text.MessageFormat;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
 
@@ -46,7 +44,6 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             return option;
         }
         if(controller.isVisible()) {
-            final AtomicBoolean c = new AtomicBoolean(false);
             final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Apply changes recursively"),
                     MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
@@ -57,30 +54,25 @@ public class AlertRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController sheet = new AlertController(controller, alert) {
+            final AlertController sheet = new AlertController(alert) {
                 @Override
-                protected void beginSheet(final NSWindow window) {
-                    if(suppressed) {
-                        c.set(option);
+                public int beginSheet(final WindowController parent) {
+                    if(!suppressed) {
+                        return super.beginSheet(parent);
                     }
-                    else {
-                        super.beginSheet(window);
-                    }
+                    return option ? SheetCallback.DEFAULT_OPTION : SheetCallback.ALTERNATE_OPTION;
                 }
 
                 @Override
                 public void callback(final int returncode) {
-                    if(returncode == SheetCallback.DEFAULT_OPTION) {
-                        c.set(true);
-                    }
+                    option = returncode == SheetCallback.DEFAULT_OPTION;
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         suppressed = true;
-                        option = c.get();
                     }
                 }
             };
-            sheet.beginSheet();
-            return c.get();
+            sheet.beginSheet(controller);
+            return option;
         }
         // Abort
         return false;

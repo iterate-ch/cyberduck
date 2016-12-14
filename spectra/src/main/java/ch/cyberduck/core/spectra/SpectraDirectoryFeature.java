@@ -18,6 +18,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
@@ -49,19 +50,18 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public void mkdir(final Path file, final String region, TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(file)) {
             super.mkdir(file, region, status);
         }
         else {
-            if(null == status) {
-                status = new TransferStatus();
-            }
             if(preferences.getBoolean("spectra.upload.crc32")) {
-                status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.crc32).compute(new NullInputStream(0L)));
+                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
+                        .compute(new NullInputStream(0L), status));
             }
             if(preferences.getBoolean("spectra.upload.md5")) {
-                status.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(new NullInputStream(0L)));
+                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
+                        .compute(new NullInputStream(0L), status));
             }
             super.mkdir(file, region, status);
         }

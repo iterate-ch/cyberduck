@@ -75,7 +75,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u102</version>
+                                            <version>8u112</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <excludes>**/*.dylib</excludes>

@@ -35,7 +35,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -236,7 +236,7 @@ public class SwiftSession extends HttpSession<Client> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }
@@ -244,10 +244,14 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this, regionService);
+            return (T) new SwiftThresholdUploadService(this, regionService,
+                    new SwiftLargeObjectUploadFeature(this, regionService,
+                            PreferencesFactory.get().getLong("openstack.upload.largeobject.size"),
+                            PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency")),
+                    new SwiftSmallObjectUploadFeature(this.getFeature(Write.class, new SwiftWriteFeature(this, regionService))));
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this, regionService);
+            return (T) new SwiftDirectoryFeature(this, regionService, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
         }
         if(type == Delete.class) {
             return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
@@ -262,7 +266,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMoveFeature(this, regionService);
         }
         if(type == Touch.class) {
-            return (T) new SwiftTouchFeature(this, regionService);
+            return (T) new SwiftTouchFeature(this, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);
@@ -282,12 +286,12 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == UrlProvider.class) {
             return (T) new SwiftUrlProvider(this, accounts, regionService);
         }
-        if(type == Attributes.class) {
-            return (T) new SwiftAttributesFeature(this, regionService);
+        if(type == AttributesFinder.class) {
+            return (T) new SwiftAttributesFinderFeature(this, regionService);
         }
         if(type == Home.class) {
             return (T) new SwiftHomeFinderService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

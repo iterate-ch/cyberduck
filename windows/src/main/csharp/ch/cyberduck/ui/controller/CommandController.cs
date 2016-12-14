@@ -19,6 +19,8 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.exception;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
 using StructureMap;
 
@@ -27,14 +29,14 @@ namespace Ch.Cyberduck.Ui.Controller
     internal class CommandController : WindowController<ICommandView>, TranscriptListener
     {
         private readonly WindowController _parent;
-        private readonly Session _session;
+        private readonly SessionPool _session;
 
-        public CommandController(WindowController parent, Session session)
+        public CommandController(WindowController parent, SessionPool session)
             : this(parent, session, ObjectFactory.GetInstance<ICommandView>())
         {
         }
 
-        private CommandController(WindowController parent, Session session, ICommandView view)
+        private CommandController(WindowController parent, SessionPool session, ICommandView view)
         {
             View = view;
             _parent = parent;
@@ -54,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Utils.IsNotBlank(command))
             {
                 View.StartActivityAnimation();
-                _parent.Background(new CommandControllerBackgroundAction(this, _session, PathCache.empty(), command));
+                _parent.Background(new CommandControllerBackgroundAction(this, _session, command));
             }
         }
 
@@ -62,24 +64,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly string _command;
             private readonly CommandController _controller;
-            private readonly Session _session;
 
-            public CommandControllerBackgroundAction(CommandController controller, Session session, PathCache cache,
-                string command) : base(controller, session, cache)
+            public CommandControllerBackgroundAction(CommandController controller, SessionPool session,
+                string command) : base(controller, session)
             {
                 _controller = controller;
-                _session = session;
                 _command = command;
             }
 
-            public override bool alert()
+            public override bool alert(BackgroundException failure)
             {
                 return false;
             }
 
-            public override object run()
+            public override object run(Session session)
             {
-                Command feature = (Command) _session.getFeature(typeof (Command));
+                Command feature = (Command) session.getFeature(typeof (Command));
                 feature.send(_command, this, _controller);
                 return null;
             }

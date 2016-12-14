@@ -11,18 +11,18 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
 import org.junit.Test;
 
-import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,7 +51,7 @@ public class RenameExistingFilterTest {
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
@@ -66,7 +66,7 @@ public class RenameExistingFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -108,21 +108,21 @@ public class RenameExistingFilterTest {
                 return this;
             }
         };
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
@@ -149,7 +149,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }
@@ -212,21 +212,21 @@ public class RenameExistingFilterTest {
                 return this;
             }
         };
-        final Attributes attributes = new Attributes() {
+        final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(PathCache cache) {
+            public AttributesFinder withCache(PathCache cache) {
                 return this;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
@@ -245,7 +245,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }

@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -37,7 +34,7 @@ public final class SessionFactory {
         //
     }
 
-    public static Session create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+    public static Session<?> create(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create session for %s", host));
         }
@@ -48,25 +45,23 @@ public final class SessionFactory {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
                     host.getClass(), trust.getClass(), key.getClass());
+            final Session<?> session;
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s, %s, %s", host.getClass(), trust.getClass(), key.getClass()));
                 final Constructor<Session> fallback = ConstructorUtils.getMatchingAccessibleConstructor(name,
                         host.getClass());
                 if(fallback == null) {
-                    log.warn(String.format("No matching constructor for parameter %s", host.getClass()));
-                    return null;
+                    throw new FactoryException(String.format("No matching constructor for parameter %s", host.getClass()));
                 }
-                return fallback.newInstance(host);
+                session = fallback.newInstance(host);
             }
-            return constructor.newInstance(host, trust, key);
+            else {
+                session = constructor.newInstance(host, trust, key);
+            }
+            return session;
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(String.format("Failure loading session class for %s protocol. Failure %s", protocol, e));
         }
-    }
-
-    public static Session create(final Host target) {
-        return create(target, new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(target)),
-                new KeychainX509KeyManager());
     }
 }

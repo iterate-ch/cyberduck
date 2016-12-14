@@ -20,9 +20,9 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
@@ -49,19 +49,19 @@ public class GoogleStorageDirectoryFeatureTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test);
         assertTrue(new S3FindFeature(session).find(test));
@@ -75,19 +75,19 @@ public class GoogleStorageDirectoryFeatureTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new GoogleStorageDirectoryFeature(session).mkdir(test);

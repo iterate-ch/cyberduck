@@ -1,11 +1,16 @@
 package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.AbstractController;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.pool.SingleSessionPool;
 
 import org.junit.Test;
 
@@ -15,16 +20,17 @@ public class RegistryBackgroundActionTest {
 
     @Test
     public void testGetSessions() throws Exception {
-        assertNotNull(new RegistryBackgroundAction(new AbstractController() {
+        assertNotNull(new RegistryBackgroundAction<Boolean>(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
                 throw new UnsupportedOperationException();
             }
-        }, new NullSession(new Host(new TestProtocol())), PathCache.empty()) {
+        }, new SingleSessionPool(
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback())) {
             @Override
-            public Boolean run() throws BackgroundException {
+            public Boolean run(final Session<?> session) throws BackgroundException {
                 return false;
             }
-        }.session);
+        }.pool);
     }
 }

@@ -131,7 +131,7 @@ public class DriveReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DriveUploadFeature(session).upload(
+        new DriveUploadFeature(new DriveWriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

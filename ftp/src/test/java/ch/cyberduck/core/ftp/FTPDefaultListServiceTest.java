@@ -23,10 +23,10 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,8 +48,8 @@ public class FTPDefaultListServiceTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.list);
@@ -64,8 +64,8 @@ public class FTPDefaultListServiceTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
                 new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
                 FTPListService.Command.lista);

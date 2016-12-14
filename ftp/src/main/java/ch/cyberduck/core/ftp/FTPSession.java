@@ -153,10 +153,11 @@ public class FTPSession extends SSLSession<FTPClient> {
     protected void configure(final FTPClient client) throws IOException {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(socketFactory);
-        client.setControlEncoding(this.getEncoding());
-        client.setConnectTimeout(this.timeout());
-        client.setDefaultTimeout(this.timeout());
-        client.setDataTimeout(this.timeout());
+        client.setControlEncoding(host.getEncoding());
+        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
+        client.setDefaultTimeout(timeout);
+        client.setDataTimeout(timeout);
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(preferences.getBoolean("ftp.datachannel.verify"));
@@ -270,7 +271,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     // Negotiate data connection security
                     client.execPROT(preferences.getProperty("ftp.tls.datachannel"));
                 }
-                if("UTF-8".equals(this.getEncoding())) {
+                if("UTF-8".equals(host.getEncoding())) {
                     if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
                             log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));
@@ -319,7 +320,7 @@ public class FTPSession extends SSLSession<FTPClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Directory.class) {
             return (T) new FTPDirectoryFeature(this);
         }
@@ -353,6 +354,6 @@ public class FTPSession extends SSLSession<FTPClient> {
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);
         }
-        return super.getFeature(type);
+        return super._getFeature(type);
     }
 }

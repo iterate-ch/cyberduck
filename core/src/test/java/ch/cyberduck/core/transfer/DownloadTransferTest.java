@@ -45,7 +45,7 @@ public class DownloadTransferTest {
             }
         };
         assertEquals(Collections.singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
-                t.list(session, root, new NullLocal("t") {
+                t.list(session, session, root, new NullLocal("t") {
                     @Override
                     public boolean exists() {
                         return true;
@@ -69,7 +69,7 @@ public class DownloadTransferTest {
         {
             Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(root, new NullLocal("l"))), new DownloadRegexFilter(),
                     new DownloadRegexPriorityComparator(".*\\.html"));
-            final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
+            final List<TransferItem> list = t.list(session, session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {
                     return true;
@@ -81,7 +81,7 @@ public class DownloadTransferTest {
         {
             Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(root, new NullLocal("l"))), new DownloadRegexFilter(),
                     new DownloadRegexPriorityComparator());
-            final List<TransferItem> list = t.list(session, root, new NullLocal("t") {
+            final List<TransferItem> list = t.list(session, session, root, new NullLocal("t") {
                 @Override
                 public boolean exists() {
                     return true;
@@ -102,7 +102,7 @@ public class DownloadTransferTest {
                 return AttributedList.emptyList();
             }
         };
-        assertTrue(t.list(session, root, new NullLocal("t") {
+        assertTrue(t.list(session, session, root, new NullLocal("t") {
             @Override
             public boolean exists() {
                 return true;
@@ -118,8 +118,8 @@ public class DownloadTransferTest {
         final Session<?> session = new NullSession(host);
         final Path test = new Path("/Cyberduck-4.6.zip", EnumSet.of(Path.Type.file));
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
-                new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
                 TransferAction.overwrite
@@ -144,14 +144,14 @@ public class DownloadTransferTest {
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()), new TransferStatus().exists(true),
                 TransferAction.overwrite
@@ -180,9 +180,9 @@ public class DownloadTransferTest {
         out.close();
         final Transfer transfer = new DownloadTransfer(host, test, local) {
             @Override
-            public AbstractDownloadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+            public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
+                        new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(destination) {
                     @Override
                     public boolean offset(final Path file) throws BackgroundException {
                         return true;
@@ -192,14 +192,14 @@ public class DownloadTransferTest {
         };
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
         final TransferStatus status = new TransferStatus();
@@ -229,7 +229,7 @@ public class DownloadTransferTest {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.callback, t.action(new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.callback, t.action(null, new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
@@ -254,7 +254,8 @@ public class DownloadTransferTest {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        assertEquals(TransferAction.overwrite, t.action(session, session, false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
@@ -279,7 +280,8 @@ public class DownloadTransferTest {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.callback, t.action(new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
+        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        assertEquals(TransferAction.callback, t.action(session, session, false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
@@ -304,7 +306,7 @@ public class DownloadTransferTest {
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
-        assertEquals(TransferAction.overwrite, t.action(new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.overwrite, t.action(null, new NullSession(new Host(new TestProtocol())), false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
@@ -318,7 +320,7 @@ public class DownloadTransferTest {
     public void testActionResume() throws Exception {
         final Path root = new Path("t", EnumSet.of(Path.Type.file));
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, new NullLocal(System.getProperty("java.io.tmpdir")));
-        assertEquals(TransferAction.resume, t.action(new NullSession(new Host(new TestProtocol())), true, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.resume, t.action(null, new NullSession(new Host(new TestProtocol())), true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
@@ -349,7 +351,7 @@ public class DownloadTransferTest {
                 return l;
             }
         };
-        final List<TransferItem> list = t.list(session, parent,
+        final List<TransferItem> list = t.list(session, session, parent,
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(1, list.size());
         assertFalse(list.contains(new TransferItem(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)))));
@@ -370,7 +372,7 @@ public class DownloadTransferTest {
                 return l;
             }
         };
-        final List<TransferItem> list = t.list(session, parent,
+        final List<TransferItem> list = t.list(session, session, parent,
                 new NullLocal(System.getProperty("java.io.tmpdir")), new DisabledListProgressListener());
         assertEquals(2, list.size());
         // Make sure folder is first in list

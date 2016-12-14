@@ -21,9 +21,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import java.util.concurrent.Callable;
-
-public interface BackgroundAction<T> extends Callable<T> {
+public interface BackgroundAction<T> extends BackgroundActionState {
 
     /**
      * Called before synchronized with other pending actions
@@ -41,8 +39,8 @@ public interface BackgroundAction<T> extends Callable<T> {
 
     /**
      * Called form a worker thread not blocking the user interface
+     *
      */
-    @Override
     T call() throws BackgroundException;
 
     /**
@@ -51,8 +49,6 @@ public interface BackgroundAction<T> extends Callable<T> {
      * @see #run
      */
     void finish();
-
-    boolean isRunning();
 
     /**
      * To be called from the main interface thread after the #run
@@ -64,8 +60,6 @@ public interface BackgroundAction<T> extends Callable<T> {
      * Mark this action as canceled. Will not execute if scheduled.
      */
     void cancel();
-
-    boolean isCanceled();
 
     /**
      * @return The name of the activity to display in the activity window
@@ -88,7 +82,8 @@ public interface BackgroundAction<T> extends Callable<T> {
     void removeListener(BackgroundActionListener listener);
 
     /**
+     * @param e Connection failure
      * @return True to retry
      */
-    boolean alert();
+    boolean alert(BackgroundException e);
 }

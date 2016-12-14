@@ -71,6 +71,27 @@ public abstract class AbstractPath {
             public int legacy() {
                 return 0;
             }
+        },
+        encrypted {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
+        decrypted {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
+        /**
+         * File is internal part of a secure vault
+         */
+        vault {
+            @Override
+            public int legacy() {
+                return 0;
+            }
         };
 
         public abstract int legacy();

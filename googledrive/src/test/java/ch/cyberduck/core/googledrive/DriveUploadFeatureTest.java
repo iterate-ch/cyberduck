@@ -84,7 +84,7 @@ public class DriveUploadFeatureTest {
         final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(
                 new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
         );
-        final DriveUploadFeature upload = new DriveUploadFeature(session);
+        final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));

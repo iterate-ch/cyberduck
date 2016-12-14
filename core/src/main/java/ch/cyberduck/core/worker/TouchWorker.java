@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
@@ -37,7 +38,7 @@ public class TouchWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
         if(feature.isSupported(file.getParent())) {
-            feature.touch(file);
+            feature.touch(file, new TransferStatus());
             return true;
         }
         return false;

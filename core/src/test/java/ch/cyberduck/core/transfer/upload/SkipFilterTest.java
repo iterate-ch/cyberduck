@@ -11,7 +11,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -30,7 +30,7 @@ public class SkipFilterTest {
         SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(Class<T> type) {
+            public <T> T _getFeature(Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
@@ -44,7 +44,7 @@ public class SkipFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         });
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal("a") {
@@ -63,14 +63,14 @@ public class SkipFilterTest {
                 return AttributedList.emptyList();
             }
         });
-        f.withAttributes(new Attributes() {
+        f.withAttributes(new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return file.attributes();
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         });
@@ -90,14 +90,14 @@ public class SkipFilterTest {
                 return AttributedList.emptyList();
             }
         });
-        f.withAttributes(new Attributes() {
+        f.withAttributes(new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return file.attributes();
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         });

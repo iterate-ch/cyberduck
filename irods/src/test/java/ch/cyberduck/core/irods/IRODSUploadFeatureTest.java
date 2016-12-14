@@ -23,10 +23,10 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
@@ -72,8 +72,8 @@ public class IRODSUploadFeatureTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);
@@ -119,8 +119,8 @@ public class IRODSUploadFeatureTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);
@@ -136,7 +136,7 @@ public class IRODSUploadFeatureTest {
                 new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, status.getOffset());
-        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute())));
+        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), status));
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);
@@ -155,8 +155,8 @@ public class IRODSUploadFeatureTest {
         ));
 
         final IRODSSession session = new IRODSSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);

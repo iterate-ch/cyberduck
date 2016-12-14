@@ -28,7 +28,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -40,13 +39,13 @@ import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.worker.TransferWorker;
 
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
-public class EditSaveWorker extends Worker<Transfer> {
+public class EditSaveWorker extends TransferWorker<Transfer> {
     private static final Logger log = Logger.getLogger(EditSaveWorker.class);
 
     private final AbstractEditor editor;
@@ -63,15 +62,15 @@ public class EditSaveWorker extends Worker<Transfer> {
         this.callback = callback;
         this.upload = new UploadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new NullFilter<Local>()) {
             @Override
-            public TransferAction action(final Session<?> session,
+            public TransferAction action(final Session<?> source, final Session<?> destination,
                                          final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.overwrite;
             }
 
             @Override
-            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, action, listener).withOptions(new UploadFilterOptions()
+            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return super.filter(source, destination, action, listener).withOptions(new UploadFilterOptions()
                         .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
                         .withPermission(PreferencesFactory.get().getBoolean("queue.upload.permissions.change")));
             }
@@ -81,14 +80,19 @@ public class EditSaveWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
+        return this.run(session, session);
+    }
+
+    @Override
+    public Transfer run(final Session<?> source, final Session<?> destination) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run upload action for editor %s", editor));
         }
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, upload, new TransferOptions(),
-                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
+                = new SingleTransferWorker(source, source, upload, new TransferOptions(),
+                new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
-        worker.run(session);
+        worker.run(source, destination);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));
         }

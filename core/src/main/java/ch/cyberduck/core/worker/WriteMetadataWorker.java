@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -27,9 +28,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Headers;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,15 +53,15 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     private final ProgressListener listener;
 
-    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
-                                  final boolean recursive,
-                                  final ProgressListener listener) {
+    public WriteMetadataWorker(List<Path> files, final Map<String, String> metadata,
+                               final boolean recursive,
+                               final ProgressListener listener) {
         this(files, metadata, new BooleanRecursiveCallback<String>(recursive), listener);
     }
 
-    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
-                                  final RecursiveCallback<String> callback,
-                                  final ProgressListener listener) {
+    public WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata,
+                               final RecursiveCallback<String> callback,
+                               final ProgressListener listener) {
         this.files = files;
         this.metadata = metadata;
         this.callback = callback;
@@ -71,6 +72,9 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Headers feature = session.getFeature(Headers.class);
         for(Path file : files) {
+            if(this.isCanceled()) {
+                throw new ConnectionCanceledException();
+            }
             this.write(session, feature, file);
         }
         return true;
@@ -80,21 +84,32 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
-        if(!metadata.equals(file.attributes().getMetadata())) {
-            for(Map.Entry<String, String> entry : metadata.entrySet()) {
-                // Prune metadata from entries which are unique to a single file. For example md5-hash.
-                if(StringUtils.isBlank(entry.getValue())) {
-                    // Reset with previous value
-                    metadata.put(entry.getKey(), file.attributes().getMetadata().get(entry.getKey()));
-                }
+        // Read online metadata (storing non-edited metadata entries)
+        final Map<String, String> update = new HashMap<>(file.attributes().getMetadata());
+        // purge removed entries
+        for(Iterator<Map.Entry<String, String>> iterator = update.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry<String, String> entry = iterator.next();
+            if(!metadata.containsKey(entry.getKey())) {
+                iterator.remove();
             }
+        }
+        // iterate all metadata entries and
+        for(Map.Entry<String, String> entry : metadata.entrySet()) {
+            // check if update is non-null (should not) && entry value is not null
+            if(update.get(entry.getKey()) != null && entry.getValue() != null) {
+                // update
+                update.put(entry.getKey(), entry.getValue());
+            }
+        }
+        // If anything has changed save metadata, otherwise continue and do for everything underneath this directory
+        if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                     file.getName()));
-            feature.setMetadata(file, metadata);
+            feature.setMetadata(file, update);
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
-                for(Path child : session.list(file, new ActionListProgressListener(this, listener))) {
+                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener))) {
                     this.write(session, feature, child);
                 }
             }
@@ -103,8 +118,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
-                this.toString(files));
+        return MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"), this.toString(files));
     }
 
     @Override

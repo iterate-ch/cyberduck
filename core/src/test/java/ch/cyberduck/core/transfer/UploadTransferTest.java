@@ -4,12 +4,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -41,7 +43,7 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root,
                 new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
-        assertTrue(t.list(new NullSession(new Host(new TestProtocol())), root, new NullLocal("t") {
+        assertTrue(t.list(null, new NullSession(new Host(new TestProtocol())), root, new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
                 return AttributedList.emptyList();
@@ -62,7 +64,7 @@ public class UploadTransferTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local);
         assertEquals(Collections.<TransferItem>singletonList(new TransferItem(new Path("/t/c", EnumSet.of(Path.Type.file)), new NullLocal("t", "c"))),
-                t.list(new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener()));
+                t.list(null, new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener()));
     }
 
     @Test
@@ -80,13 +82,13 @@ public class UploadTransferTest {
         {
             Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(root, local)),
                     new UploadRegexFilter(), new UploadRegexPriorityComparator(".*\\.html"));
-            final List<TransferItem> list = t.list(new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener());
+            final List<TransferItem> list = t.list(null, new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(0).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(1).local);
         }
         {
             Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local, new UploadRegexFilter());
-            final List<TransferItem> list = t.list(new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener());
+            final List<TransferItem> list = t.list(null, new NullSession(new Host(new TestProtocol())), root, local, new DisabledListProgressListener());
             assertEquals(new NullLocal(local.getAbsolute(), "c.html"), list.get(1).local);
             assertEquals(new NullLocal(local.getAbsolute(), "c"), list.get(0).local);
         }
@@ -137,7 +139,7 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -146,14 +148,14 @@ public class UploadTransferTest {
         };
         final TransferOptions options = new TransferOptions();
         options.resumeRequested = true;
-        new SingleTransferWorker(session, t, options, new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, session, t, options, new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
+        }, new DisabledTransferErrorCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session, session);
         assertEquals(1, c.get());
     }
 
@@ -200,20 +202,20 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 //
             }
         };
-        new SingleTransferWorker(session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.rename;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
+        }, new DisabledTransferErrorCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session, session);
         assertEquals(1, c.get());
     }
 
@@ -239,14 +241,14 @@ public class UploadTransferTest {
         final Transfer transfer = new UploadTransfer(host, test, local);
         Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
                 TransferAction.overwrite);
@@ -286,14 +288,14 @@ public class UploadTransferTest {
         final Transfer transfer = new UploadTransfer(host, test, directory);
         final Map<Path, TransferStatus> table
                 = new HashMap<Path, TransferStatus>();
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, directory, new TransferStatus().exists(true),
                 TransferAction.resume);
@@ -316,7 +318,7 @@ public class UploadTransferTest {
         final Session session = new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
                         @Override
@@ -344,15 +346,15 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                if(type.equals(ch.cyberduck.core.features.Attributes.class)) {
-                    return (T) new ch.cyberduck.core.features.Attributes() {
+                if(type.equals(AttributesFinder.class)) {
+                    return (T) new AttributesFinder() {
                         @Override
                         public PathAttributes find(final Path file) throws BackgroundException {
                             return new PathAttributes();
                         }
 
                         @Override
-                        public ch.cyberduck.core.features.Attributes withCache(PathCache cache) {
+                        public AttributesFinder withCache(PathCache cache) {
                             return this;
                         }
                     };
@@ -360,7 +362,7 @@ public class UploadTransferTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }
@@ -382,7 +384,7 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                return null;
+                return (T) super._getFeature(type);
             }
         };
         final AtomicBoolean set = new AtomicBoolean();
@@ -392,7 +394,7 @@ public class UploadTransferTest {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public void transfer(final Session<?> session, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertEquals(table.get(test).getRename().remote, file);
@@ -401,18 +403,18 @@ public class UploadTransferTest {
             }
 
             @Override
-            public AbstractUploadFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, action, listener).withOptions(new UploadFilterOptions().withTemporary(true));
+            public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+                return super.filter(source, destination, action, listener).withOptions(new UploadFilterOptions().withTemporary(true));
             }
         };
-        final SingleTransferWorker worker = new SingleTransferWorker(session, transfer, new TransferOptions(),
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, transfer, new TransferOptions(),
                 new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
+        }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), TransferItemCache.empty(), table);
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(table.get(test));
@@ -425,8 +427,9 @@ public class UploadTransferTest {
     @Test
     public void testTemporaryDisabledLargeUpload() throws Exception {
         final Host h = new Host(new TestProtocol());
+        final NullSession session = new NullSession(h);
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
-                .filter(new NullSession(h), TransferAction.overwrite, new DisabledProgressListener());
+                .filter(session, session, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertNull(status.getRename().local);
@@ -436,8 +439,9 @@ public class UploadTransferTest {
     @Test
     public void testTemporaryDisabledMultipartUpload() throws Exception {
         final Host h = new Host(new TestProtocol());
+        final NullSession session = new NullSession(h);
         final AbstractUploadFilter f = new UploadTransfer(h, Collections.<TransferItem>emptyList())
-                .filter(new NullSession(h), TransferAction.overwrite, new DisabledProgressListener());
+                .filter(session, session, TransferAction.overwrite, new DisabledProgressListener());
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus());
         assertNull(status.getRename().local);

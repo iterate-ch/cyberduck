@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
@@ -117,7 +116,7 @@ public class TransferDictionaryTest {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
-        transfer.action(null, true, false, new DisabledTransferPrompt() {
+        transfer.action(null, null, true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.upload;
@@ -125,7 +124,7 @@ public class TransferDictionaryTest {
         }, new DisabledListProgressListener());
         final Transfer serialized = new TransferDictionary().deserialize(transfer.serialize(SerializerFactory.get()));
         assertNotSame(transfer, serialized);
-        assertEquals(TransferAction.upload, serialized.action(null, true, false, new DisabledTransferPrompt() {
+        assertEquals(TransferAction.upload, serialized.action(null, null, true, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
@@ -160,14 +159,14 @@ public class TransferDictionaryTest {
             }
         });
         final NullSession session = new NullSession(host);
-        new SingleTransferWorker(session, t, new TransferOptions(),
+        new SingleTransferWorker(session, session, t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
-        }, new DisabledTransferErrorCallback(), new DisabledTransferItemCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session);
+        }, new DisabledTransferErrorCallback(),
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback()).run(session, session);
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);

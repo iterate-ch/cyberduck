@@ -20,8 +20,11 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -38,11 +41,24 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
         if(ExceptionUtils.getRootCause(e) instanceof UnknownHostException) {
             return new NotfoundException(buffer.toString(), e);
         }
-        if(403 == e.getHttpStatusCode()) {
-            return new LoginFailureException(buffer.toString(), e);
-        }
-        if(404 == e.getHttpStatusCode()) {
-            return new NotfoundException(buffer.toString(), e);
+        switch(e.getHttpStatusCode()) {
+            case 403:
+                return new LoginFailureException(buffer.toString(), e);
+            case 404:
+                return new NotfoundException(buffer.toString(), e);
+            case 304:
+            case 405:
+            case 400:
+            case 411:
+            case 412:
+                return new InteroperabilityException(buffer.toString(), e);
+            case 500:
+                // InternalError
+                // OperationTimedOut
+                return new ConnectionTimeoutException(buffer.toString(), e);
+            case 503:
+                // ServerBusy
+                return new RetriableAccessDeniedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

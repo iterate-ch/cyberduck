@@ -20,9 +20,9 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -48,19 +48,19 @@ public class GoogleStorageBucketCreateServiceTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
         assertTrue(session.getFeature(Find.class).find(bucket));

@@ -47,7 +47,7 @@ public class BackgroundCallableTest {
             }
 
             @Override
-            public boolean alert() {
+            public boolean alert(final BackgroundException e) {
                 // Retry enabled
                 return true;
             }

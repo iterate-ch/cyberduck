@@ -19,21 +19,19 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.s3.S3AttributesFeature;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
@@ -67,13 +65,13 @@ public class SpectraWriteFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
@@ -83,14 +81,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
-        try {
-            bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
-            fail();
-        }
-        catch(AccessDeniedException e) {
-            // Conflict
-        }
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         {
@@ -98,7 +89,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -115,16 +106,16 @@ public class SpectraWriteFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // Make 0-byte file
-        new SpectraTouchFeature(session).touch(test);
+        new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content)));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         final OutputStream out = new SpectraWriteFeature(session).write(test, status);
@@ -154,7 +145,7 @@ public class SpectraWriteFeatureTest {
             public Find withCache(final PathCache cache) {
                 return this;
             }
-        }, new Attributes() {
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
@@ -163,7 +154,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         });

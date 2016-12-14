@@ -17,7 +17,6 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -36,8 +35,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class FTPMlsdListServiceTest {
@@ -67,22 +64,6 @@ public class FTPMlsdListServiceTest {
         final ListService list = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
         final Path directory = new FTPWorkdirService(session).find();
         list.list(directory, new DisabledListProgressListener());
-        session.close();
-    }
-
-    @Test
-    public void testList() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "ftp.crushftp.com", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        host.setFTPConnectMode(FTPConnectMode.active);
-        final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
-        final ListService s = new FTPMlsdListService(session, new DisabledPasswordStore(), new DisabledLoginCallback());
-        final Path directory = new FTPWorkdirService(session).find();
-        final AttributedList<Path> list = s.list(directory, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
         session.close();
     }
 }

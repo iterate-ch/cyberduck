@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -31,23 +30,20 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
 
-    private static final Preferences preferences
-            = PreferencesFactory.get();
-
-    public LoginCallback create(final Controller c) {
-        final String clazz = preferences.getProperty("factory.logincallback.class");
+    public LoginCallback create(final Controller controller) {
+        final String clazz = PreferencesFactory.get().getProperty("factory.logincallback.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<LoginCallback> name = (Class<LoginCallback>) Class.forName(clazz);
-            final Constructor<LoginCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, c.getClass());
+            final Constructor<LoginCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, controller.getClass());
             if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
+                log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(c);
+            return constructor.newInstance(controller);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));

@@ -7,14 +7,13 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -47,8 +46,8 @@ public class SwiftWriteFeatureTest {
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
         final byte[] content = "test".getBytes("UTF-8");
@@ -162,14 +161,14 @@ public class SwiftWriteFeatureTest {
             public Find withCache(final PathCache cache) {
                 return this;
             }
-        }, new Attributes() {
+        }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
 
             @Override
-            public Attributes withCache(final PathCache cache) {
+            public AttributesFinder withCache(final PathCache cache) {
                 return this;
             }
         }

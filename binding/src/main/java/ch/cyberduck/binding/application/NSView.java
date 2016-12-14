@@ -59,8 +59,13 @@ public abstract class NSView extends NSResponder {
         return CLASS.alloc().init();
     }
 
+    public static NSView create(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
+    }
+
     public interface _Class extends ObjCClass {
         NSView alloc();
+
         /**
          * Original signature : <code>NSView* focusView()</code><br>
          * <i>native declaration : :213</i>
@@ -81,6 +86,8 @@ public abstract class NSView extends NSResponder {
     }
 
     public abstract NSView init();
+
+    public abstract NSView initWithFrame(NSRect frameRect);
 
     /**
      * <i>native declaration : :115</i><br>
@@ -178,11 +185,14 @@ public abstract class NSView extends NSResponder {
      * <i>native declaration : :138</i>
      */
     public abstract void addSubview(NSView aView);
+
     /**
      * <i>native declaration : :139</i><br>
      * Conversion Error : /// Original signature : <code>void addSubview(NSView*, null, NSView*)</code><br>
      * - (void)addSubview:(NSView*)aView positioned:(null)place relativeTo:(NSView*)otherView; (Argument place cannot be converted)
      */
+    public abstract void addSubview_positioned_relativeTo(NSView aView, int place, NSView otherView);
+
     /**
      * Original signature : <code>void viewWillMoveToWindow(NSWindow*)</code><br>
      * <i>native declaration : :141</i>
@@ -961,6 +971,7 @@ public abstract class NSView extends NSResponder {
      * Conversion Error : /// Original signature : <code>void setFocusRingType(null)</code><br>
      */
     public abstract void setFocusRingType(int focusRingType);
+
     /**
      * Original signature : <code>focusRingType()</code><br>
      * <i>from NSKeyboardUI native declaration : :356</i>

@@ -22,17 +22,17 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,33 +49,34 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.util.List;
 import java.util.Map;
 
-public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
+public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = Logger.getLogger(S3WriteFeature.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final S3Session session;
-
     private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3Session session;
     private final S3MultipartService multipartService;
-
     private final Find finder;
-
-    private final Attributes attributes;
+    private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, new S3DefaultMultipartService(session),
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, multipartService,
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
-                          final Find finder, final Attributes attributes) {
+                          final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;
@@ -84,7 +85,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     }
 
     @Override
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         final S3Object object = this.getDetails(containerService.getKey(file), status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
@@ -114,7 +115,13 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * Add default metadata
      */
     protected S3Object getDetails(final String key, final TransferStatus status) {
-        final S3Object object = new S3Object(key);
+        final S3Object object;
+        if(S3DirectoryFeature.MIMETYPE.equals(status.getMime())) {
+            object = new S3Object(key.concat(String.valueOf(Path.DELIMITER)));
+        }
+        else {
+            object = new S3Object(key);
+        }
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);

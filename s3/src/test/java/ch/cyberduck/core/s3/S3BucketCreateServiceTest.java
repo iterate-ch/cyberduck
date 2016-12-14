@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -48,7 +47,7 @@ public class S3BucketCreateServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         final S3FindFeature find = new S3FindFeature(session);
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         final S3BucketCreateService create = new S3BucketCreateService(session);

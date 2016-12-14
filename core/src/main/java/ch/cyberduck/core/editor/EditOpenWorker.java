@@ -30,7 +30,6 @@ import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.transfer.DisabledTransferItemCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -40,14 +39,14 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.SingleTransferWorker;
-import ch.cyberduck.core.worker.Worker;
+import ch.cyberduck.core.worker.TransferWorker;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 
-public class EditOpenWorker extends Worker<Transfer> {
+public class EditOpenWorker extends TransferWorker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
 
     private final AbstractEditor editor;
@@ -73,7 +72,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
                 new DownloadDuplicateFilter()) {
             @Override
-            public TransferAction action(final Session<?> session, final boolean resumeRequested, final boolean reloadRequested,
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
                 return TransferAction.trash;
             }
@@ -84,6 +83,11 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
+        return this.run(session, session);
+    }
+
+    @Override
+    public Transfer run(final Session<?> source, final Session<?> destination) throws BackgroundException {
         final Path file = editor.getRemote();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run edit action for editor %s", file));
@@ -93,10 +97,10 @@ public class EditOpenWorker extends Worker<Transfer> {
         options.quarantine = false;
         options.open = false;
         final SingleTransferWorker worker
-                = new SingleTransferWorker(session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback, new DisabledTransferItemCallback(),
+                = new SingleTransferWorker(source, destination, download, options, new TransferSpeedometer(download),
+                new DisabledTransferPrompt(), callback,
                 listener, new DisabledStreamListener(), new DisabledLoginCallback());
-        worker.run(session);
+        worker.run(source, destination);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }

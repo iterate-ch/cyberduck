@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
@@ -37,9 +36,11 @@ import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
@@ -75,7 +76,7 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Session for transfers
      */
-    private final Session<?> session;
+    private final SessionPool session;
 
     private final ProgressListener listener;
 
@@ -84,7 +85,7 @@ public abstract class AbstractEditor implements Editor {
     private final ApplicationFinder applicationFinder;
 
     public AbstractEditor(final Application application,
-                          final Session session,
+                          final SessionPool session,
                           final Path file,
                           final ProgressListener listener) {
         this(application, session, file, ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
@@ -92,7 +93,7 @@ public abstract class AbstractEditor implements Editor {
     }
 
     public AbstractEditor(final Application application,
-                          final Session session,
+                          final SessionPool session,
                           final Path file,
                           final ApplicationLauncher launcher,
                           final ApplicationFinder finder,
@@ -162,10 +163,10 @@ public abstract class AbstractEditor implements Editor {
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
+                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Error computing checksum for %s", local));
+                    log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));
                 }
 
             }
@@ -213,10 +214,10 @@ public abstract class AbstractEditor implements Editor {
         try {
             listener.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
-            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream());
+            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Error computing checksum for %s", local));
+            log.warn(String.format("Error computing checksum for %s. %s", local, e.getDetail()));
             return Worker.empty();
         }
         if(current.equals(checksum)) {
@@ -264,9 +265,6 @@ public abstract class AbstractEditor implements Editor {
         if(local != null ? !local.equals(that.local) : that.local != null) {
             return false;
         }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
-            return false;
-        }
         return true;
     }
 
@@ -274,7 +272,6 @@ public abstract class AbstractEditor implements Editor {
     public int hashCode() {
         int result = local != null ? local.hashCode() : 0;
         result = 31 * result + (application != null ? application.hashCode() : 0);
-        result = 31 * result + (session != null ? session.hashCode() : 0);
         return result;
     }
 

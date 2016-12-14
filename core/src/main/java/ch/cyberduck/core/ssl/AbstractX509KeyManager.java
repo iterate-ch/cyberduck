@@ -18,11 +18,51 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import javax.net.ssl.X509ExtendedKeyManager;
+import javax.security.auth.x500.X500Principal;
 import java.net.Socket;
 import java.security.Principal;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager implements X509KeyManager {
+    private static final Logger log = Logger.getLogger(AbstractX509KeyManager.class);
+
+    /**
+     * @param issuers The list of acceptable CA issuer subject names or null if it does not matter which issuers are used
+     * @return True if certificate matches issuer and key type
+     */
+    protected boolean matches(final Certificate c, final String[] keyTypes, final Principal[] issuers) {
+        if(!(c instanceof X509Certificate)) {
+            log.warn(String.format("Certificate %s is not of type X509", c));
+            return false;
+        }
+        if(!Arrays.asList(keyTypes).contains(c.getPublicKey().getAlgorithm())) {
+            log.warn(String.format("Key type %s does not match any of %s", c.getPublicKey().getAlgorithm(),
+                    Arrays.toString(keyTypes)));
+            return false;
+        }
+        if(null == issuers || Arrays.asList(issuers).isEmpty()) {
+            // null if it does not matter which issuers are used
+            return true;
+        }
+        final X500Principal issuer = ((X509Certificate) c).getIssuerX500Principal();
+        if(!Arrays.asList(issuers).contains(issuer)) {
+            log.warn(String.format("Issuer %s does not match", issuer));
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public List<String> list() {
+        return Collections.emptyList();
+    }
 
     @Override
     public String chooseServerAlias(String s, Principal[] principals, Socket socket) {

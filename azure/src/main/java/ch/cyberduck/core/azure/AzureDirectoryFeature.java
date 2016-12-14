@@ -32,11 +32,10 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
 
 public class AzureDirectoryFeature implements Directory {
 
@@ -54,14 +53,13 @@ public class AzureDirectoryFeature implements Directory {
 
     @Override
     public void mkdir(Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
-            options.setRetryPolicyFactory(new RetryNoRetry());
             if(containerService.isContainer(file)) {
                 // Container name must be lower case.
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
@@ -69,7 +67,7 @@ public class AzureDirectoryFeature implements Directory {
             }
             else {
                 // Create delimiter placeholder
-                final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                         .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
                 blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
             }

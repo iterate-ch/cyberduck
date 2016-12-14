@@ -87,6 +87,9 @@ public class SwiftLocationFeature implements Location {
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return unknown;
+        }
         if(cache.containsKey(container)) {
             return cache.get(container);
         }

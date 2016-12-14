@@ -15,6 +15,9 @@
         <module>core/dll</module>
         <module>core/native</module>
         <module>i18n</module>
+        <!-- Encryption-->
+        <module>cryptomator</module>
+        <module>cryptomator/dll</module>
         <!-- Native components -->
         <module>bonjour</module>
         <module>bonjour/dll</module>
@@ -35,9 +38,9 @@
         <module>ftp</module>
         <module>googledrive</module>
         <module>backblaze</module>
+        <module>dropbox</module>
         <module>protocols</module>
         <module>protocols/dll</module>
-        <module>dropbox</module>
         <!-- Test -->
         <module>test</module>
         <!-- Platforms -->
@@ -211,7 +214,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.45</version>
+                <version>1.11.65</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -500,7 +503,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>maven.iterate.ch-snapshot</id>
+            <id>maven.cyberduck.io-snapshots</id>
             <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/snapshots</url>
             <layout>default</layout>
             <releases>

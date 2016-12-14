@@ -59,6 +59,10 @@ using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 using Utils = Ch.Cyberduck.Ui.Core.Utils;
+using StructureMap;
+using ch.cyberduck.core.updater;
+using Windows.Services.Store;
+using Ch.Cyberduck.Ui.Core.UWP;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -94,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private WinSparkle.win_sparkle_can_shutdown_callback_t _canShutdownCallback;
         private WinSparkle.win_sparkle_shutdown_request_callback_t _shutdownRequestCallback;
 
-        private WinSparklePeriodicUpdateChecker _updater;
+        private PeriodicUpdateChecker _updater;
 
         static MainController()
         {
@@ -357,6 +361,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ApplicationDidFinishLaunching(object sender, StartupEventArgs e)
         {
             Logger.debug("ApplicationDidFinishLaunching");
+
+            /* UWP Registration, initialize as soon as possible */
+            if (Cyberduck.Core.Utils.IsUWPSupported)
+            {
+                var storeContext = StoreContext.GetDefault();
+                var initWindow = (IInitializeWithWindow)(object)storeContext;
+                initWindow.Initialize(MainForm.Handle);
+            }
+
             _controller.Background(delegate
             {
                 TransferCollection.defaultCollection().load();
@@ -535,7 +548,7 @@ namespace Ch.Cyberduck.Ui.Controller
             WinSparklePeriodicUpdateChecker.SetShutdownRequestCallback(_shutdownRequestCallback);
             if (PreferencesFactory.get().getBoolean("update.check"))
             {
-                _updater = new WinSparklePeriodicUpdateChecker();
+                _updater = PeriodicUpdateCheckerFactory.get();
                 if (_updater.hasUpdatePrivileges())
                 {
                     DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
@@ -623,9 +636,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             foreach (BrowserController browser in Browsers)
             {
-                if (browser.HasSession())
+                if (browser.IsMounted())
                 {
-                    if (browser.Session.getHost().equals(bookmark))
+                    if (bookmark.equals(browser.Session.getHost()))
                     {
                         Logger.debug("Default bookmark already mounted");
                         return;
@@ -670,8 +683,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Do not display if shown in the reminder interval
                     return true;
                 }
-                DonationController controller = new DonationController();
-                controller.Show();
+                ObjectFactory.GetInstance<IDonationController>().Show();
             }
             return true;
         }
@@ -785,7 +797,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (!c.HasSession())
+                    if (!c.IsMounted())
                     {
                         c.Invoke(delegate { c.View.BringToFront(); });
 

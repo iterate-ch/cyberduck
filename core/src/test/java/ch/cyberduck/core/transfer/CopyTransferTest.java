@@ -45,7 +45,7 @@ public class CopyTransferTest {
     public void testSerialize() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new TestProtocol()),
-                new NullSession(new Host(new TestProtocol())), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
+                new Host(new TestProtocol()), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
         final Transfer serialized = new TransferDictionary(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
@@ -60,10 +60,11 @@ public class CopyTransferTest {
     @Test
     public void testActionPromptCancel() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
-        CopyTransfer t = new CopyTransfer(new Host(new TestProtocol(), "t"),
-                new NullSession(new Host(new TestProtocol(), "t")),
+        final Host target = new Host(new TestProtocol(), "t");
+        CopyTransfer t = new CopyTransfer(target,
+                target,
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.cancel, t.action(new NullSession(new Host(new TestProtocol(), "t")), false, true,
+        assertEquals(TransferAction.cancel, t.action(new NullSession(target), new NullSession(target), false, true,
                 new DisabledTransferPrompt(), new DisabledListProgressListener()));
     }
 
@@ -71,9 +72,10 @@ public class CopyTransferTest {
     public void testActionPrompt() throws Exception {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new TestProtocol(), "t"),
-                new NullSession(new Host(new TestProtocol(), "t")),
+                new Host(new TestProtocol(), "t"),
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.comparison, t.action(new NullSession(new Host(new TestProtocol(), "t")), false, true,
+        final NullSession session = new NullSession(new Host(new TestProtocol(), "t"));
+        assertEquals(TransferAction.comparison, t.action(session, session, false, true,
                 new DisabledTransferPrompt() {
                     @Override
                     public TransferAction prompt(final TransferItem file) {
@@ -85,7 +87,7 @@ public class CopyTransferTest {
     @Test
     public void testList() throws Exception {
         Transfer t = new CopyTransfer(new Host(new TestProtocol()),
-                new NullSession(new Host(new TestProtocol())), new HashMap<>(Collections.singletonMap(
+                new Host(new TestProtocol()), new HashMap<>(Collections.singletonMap(
                 new Path("/s", EnumSet.of(Path.Type.directory)),
                 new Path("/t", EnumSet.of(Path.Type.directory)))));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -97,7 +99,7 @@ public class CopyTransferTest {
             }
         };
         assertEquals(Collections.singletonList(new TransferItem(new Path("/s/c", EnumSet.of(Path.Type.file)))),
-                t.list(session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
+                t.list(session, session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
         );
     }
 }

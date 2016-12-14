@@ -21,33 +21,44 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.entity.ByteArrayEntity;
+import org.apache.commons.io.input.NullInputStream;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2GetUploadUrlResponse;
 
 public class B2DirectoryFeature implements Directory {
 
-    public static final String PLACEHOLDER = "/.bzEmpty";
+    protected static final String MIMETYPE = "application/octet-stream";
+    protected static final String PLACEHOLDER = "/.bzEmpty";
+
     private final PathContainerService containerService
             = new B2PathContainerService();
+
     private final B2Session session;
+    private final Write write;
 
     public B2DirectoryFeature(final B2Session session) {
+        this(session, session.getFeature(Write.class, new B2WriteFeature(session)));
+    }
+
+    public B2DirectoryFeature(final B2Session session, final Write write) {
         this.session = session;
+        this.write = write;
     }
 
     @Override
     public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, null);
+        this.mkdir(file, null, new TransferStatus());
     }
 
     @Override
@@ -62,12 +73,9 @@ public class B2DirectoryFeature implements Directory {
                 }
             }
             else {
-                final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(
-                        new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
-                session.getClient().uploadFile(uploadUrl,
-                        String.format("%s%s", containerService.getKey(file), PLACEHOLDER),
-                        new ByteArrayEntity(new byte[0]), "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                        "application/octet-stream", Collections.emptyMap());
+                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(new NullInputStream(0L), status.length(0L)));
+                status.setMime(MIMETYPE);
+                write.write(file, status);
             }
         }
         catch(B2ApiException e) {

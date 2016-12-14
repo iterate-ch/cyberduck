@@ -17,20 +17,7 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Filter;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
@@ -73,14 +60,14 @@ public class CopyTransfer extends Transfer {
      */
     protected final Map<Path, Path> mapping;
 
-    private final Session<?> destination;
+    private final Host destination;
 
-    public CopyTransfer(final Host source, final Session destination,
+    public CopyTransfer(final Host source, final Host destination,
                         final Map<Path, Path> selected) {
         this(source, destination, selected, new BandwidthThrottle(PreferencesFactory.get().getFloat("queue.download.bandwidth.bytes")));
     }
 
-    public CopyTransfer(final Host source, final Session destination,
+    public CopyTransfer(final Host source, final Host destination,
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
         super(source, new ArrayList<TransferItem>(), bandwidth);
         this.destination = destination;
@@ -100,7 +87,8 @@ public class CopyTransfer extends Transfer {
         return Type.copy;
     }
 
-    public Session getDestination() {
+    @Override
+    public Host getDestination() {
         return destination;
     }
 
@@ -114,7 +102,7 @@ public class CopyTransfer extends Transfer {
         dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
         dict.setObjectForKey(host, "Host");
         if(destination != null) {
-            dict.setObjectForKey(destination.getHost(), "Destination");
+            dict.setObjectForKey(destination, "Destination");
         }
         dict.setListForKey(new ArrayList<Serializable>(mapping.values()), "Destinations");
         dict.setListForKey(new ArrayList<Serializable>(mapping.keySet()), "Roots");
@@ -131,7 +119,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferAction action(final Session<?> session, boolean resumeRequested, boolean reloadRequested,
+    public TransferAction action(final Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
@@ -158,7 +146,7 @@ public class CopyTransfer extends Transfer {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         // List files in target directory
-                        if(this.list(destination, copy, null, listener).isEmpty()) {
+                        if(this.list(source, destination, copy, null, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -174,23 +162,23 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final Session<?> session, final TransferAction action, final ProgressListener listener) {
+    public TransferPathFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action));
         }
         if(action.equals(TransferAction.comparison)) {
-            return new ChecksumFilter(session, destination, mapping);
+            return new ChecksumFilter(source, destination, mapping);
         }
-        return new OverwriteFilter(session, destination, mapping);
+        return new OverwriteFilter(source, destination, mapping);
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
+    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        final AttributedList<Path> list = session.list(directory, listener).filter(comparator, filter);
+        final AttributedList<Path> list = source.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
         for(Path p : list) {
             mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
@@ -203,16 +191,16 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> session, final Map<Path, TransferStatus> files) throws BackgroundException {
-        final Bulk download = session.getFeature(Bulk.class);
-        if(null != download) {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+        final Bulk download = source.getFeature(Bulk.class);
+        {
             final Object id = download.pre(Type.download, files);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
         }
         final Bulk upload = destination.getFeature(Bulk.class);
-        if(null != upload) {
+        {
             final Map<Path, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                 targets.put(this.mapping.get(entry.getKey()), entry.getValue());
@@ -225,7 +213,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void transfer(final Session<?> session, final Path source, final Local n,
+    public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback callback,
                          final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
@@ -267,14 +255,14 @@ public class CopyTransfer extends Transfer {
      * @param throttle The bandwidth limit
      * @param status   Transfer status
      */
-    private void copy(final Session<?> session, final Path file, final Session<?> target, final Path copy,
+    private void copy(final Session<?> source, final Path file, final Session<?> target, final Path copy,
                       final BandwidthThrottle throttle, final StreamListener streamListener,
                       final TransferStatus status) throws BackgroundException {
         InputStream in = null;
         OutputStream out = null;
         try {
             if(file.isFile()) {
-                in = new ThrottledInputStream(session.getFeature(Read.class).read(file, status), throttle);
+                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status), throttle);
                 // Make sure to use S3MultipartWriteFeature, see #9362
                 out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
                 new StreamCopier(status, status)

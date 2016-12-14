@@ -6,14 +6,15 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
@@ -54,7 +55,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
-            public <T> T getFeature(final Class<T> type) {
+            public <T> T _getFeature(final Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
@@ -68,7 +69,7 @@ public class ResumeFilterTest {
                         }
                     };
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -118,11 +119,12 @@ public class ResumeFilterTest {
             }
 
             @Override
-            public <T> T getFeature(Class<T> type) {
-                if(type == Attributes.class) {
-                    return (T) new DefaultAttributesFeature(this);
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(Class<T> type) {
+                if(type == AttributesFinder.class) {
+                    return (T) new DefaultAttributesFinderFeature(this);
                 }
-                return super.getFeature(type);
+                return super._getFeature(type);
             }
         }, new UploadFilterOptions().withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
@@ -164,7 +166,7 @@ public class ResumeFilterTest {
     public void testAppendEqualSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length);
@@ -199,7 +201,7 @@ public class ResumeFilterTest {
     public void testAppendSmallerSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length - 1);
@@ -239,7 +241,7 @@ public class ResumeFilterTest {
     public void testAppendLargerSize() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature(session) {
+                new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
             public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
                 return new Write.Append(length + 1);

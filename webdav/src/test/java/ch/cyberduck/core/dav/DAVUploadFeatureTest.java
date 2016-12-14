@@ -23,10 +23,10 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -56,12 +56,14 @@ public class DAVUploadFeatureTest {
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        assertSame(NullInputStream.class, new DAVUploadFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).decorate(n, null).getClass());
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
+        assertSame(NullInputStream.class, new DAVUploadFeature(new DAVWriteFeature(session)).decorate(n, null).getClass());
     }
 
     @Test
     public void testDigest() throws Exception {
-        assertNull(new DAVUploadFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).digest());
+        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
+        assertNull(new DAVUploadFeature(new DAVWriteFeature(session)).digest());
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -71,8 +73,8 @@ public class DAVUploadFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         new DefaultLocalTouchFeature().touch(local);
@@ -100,8 +102,8 @@ public class DAVUploadFeatureTest {
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);

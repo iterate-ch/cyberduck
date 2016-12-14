@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.StreamProgress;
 
 import org.apache.log4j.Logger;
 
+import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -147,6 +148,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Part number
      */
     private Integer part;
+
+    /**
+     * Encrypted file header
+     */
+    private ByteBuffer header;
 
     /**
      * Await completion
@@ -368,6 +374,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = checksum;
     }
 
+    public TransferStatus checksum(final Checksum checksum) {
+        this.setChecksum(checksum);
+        return this;
+    }
+
     public PathAttributes getRemote() {
         return remote;
     }
@@ -464,6 +475,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public boolean isSegmented() {
         return !segments.isEmpty();
+    }
+
+    public ByteBuffer getHeader() {
+        return header;
+    }
+
+    public void setHeader(final ByteBuffer header) {
+        this.header = header;
+    }
+
+    public TransferStatus withHeader(final ByteBuffer header) {
+        this.setHeader(header);
+        return this;
     }
 
     @Override

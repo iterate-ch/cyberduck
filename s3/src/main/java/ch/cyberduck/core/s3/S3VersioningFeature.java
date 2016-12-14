@@ -72,7 +72,8 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LoginCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(current.isMultifactor()) {
@@ -80,17 +81,17 @@ public class S3VersioningFeature implements Versioning {
                 final Credentials factor = this.getToken(prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
-                        log.debug("Versioning already enabled for bucket " + container);
+                        log.debug(String.format("Versioning already enabled for bucket %s", container));
                     }
                     else {
                         // Enable versioning if not already active.
-                        log.debug("Enable bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                        log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), container));
                         session.getClient().enableBucketVersioningWithMFA(container.getName(),
                                 factor.getUsername(), factor.getPassword());
                     }
                 }
                 else {
-                    log.debug("Suspend bucket versioning with MFA " + factor.getUsername() + " for " + container);
+                    log.debug(String.format("Suspend bucket versioning with MFA %s for %s", factor.getUsername(), container));
                     session.getClient().suspendBucketVersioningWithMFA(container.getName(),
                             factor.getUsername(), factor.getPassword());
                 }
@@ -133,7 +134,11 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public VersioningConfiguration getConfiguration(final Path container) throws BackgroundException {
+    public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return VersioningConfiguration.empty();
+        }
         if(cache.containsKey(container)) {
             return cache.get(container);
         }

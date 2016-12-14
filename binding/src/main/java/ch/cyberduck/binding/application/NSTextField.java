@@ -28,7 +28,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :8</i>
 public abstract class NSTextField extends NSControl {
-
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSTextField", _Class.class);
 
     public static NSTextField textfieldWithFrame(NSRect frameRect) {

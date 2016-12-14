@@ -35,7 +35,7 @@ public interface Encryption {
      * @param prompt Login callback
      * @return List of key names
      */
-    Set<Algorithm> getKeys(final Path file, LoginCallback prompt) throws BackgroundException;
+    Set<Algorithm> getKeys(Path file, LoginCallback prompt) throws BackgroundException;
 
     /**
      * Enable server side encryption for file
@@ -49,7 +49,7 @@ public interface Encryption {
      * @param file Default encryption setting for file
      * @return Default server side algorithm to use or null if SSE is disabled
      */
-    Algorithm getDefault(final Path file);
+    Algorithm getDefault(Path file);
 
     /**
      * Get server side encryption algorithm

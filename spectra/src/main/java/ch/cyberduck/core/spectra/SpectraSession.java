@@ -31,6 +31,9 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -38,9 +41,9 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-public class SpectraSession extends S3Session {
+import org.jets3t.service.Jets3tProperties;
 
-    private final SpectraBulkService bulk = new SpectraBulkService(this);
+public class SpectraSession extends S3Session {
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -51,10 +54,18 @@ public class SpectraSession extends S3Session {
     }
 
     @Override
+    protected Jets3tProperties configure() {
+        final Jets3tProperties configuration = super.configure();
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        return configuration;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Bulk.class) {
-            return (T) bulk;
+            return (T) new SpectraBulkService(this);
         }
         if(type == Touch.class) {
             return (T) new SpectraTouchFeature(this);
@@ -85,13 +96,13 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraWriteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new SpectraReadFeature(this, bulk);
+            return (T) new SpectraReadFeature(this, new SpectraBulkService(this));
         }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(new SpectraWriteFeature(this), bulk);
+            return (T) new SpectraUploadFeature(this, this.getFeature(Write.class), new SpectraBulkService(this));
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, bulk));
+            return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
         }
         if(type == Headers.class) {
             return null;
@@ -99,6 +110,9 @@ public class SpectraSession extends S3Session {
         if(type == DistributionConfiguration.class) {
             return null;
         }
-        return super.getFeature(type);
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.crc32);
+        }
+        return super._getFeature(type);
     }
 }

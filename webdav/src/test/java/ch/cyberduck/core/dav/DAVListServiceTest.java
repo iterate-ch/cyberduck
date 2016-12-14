@@ -24,9 +24,9 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
@@ -47,10 +47,10 @@ public class DAVListServiceTest {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         new DAVListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
         session.close();
@@ -62,21 +62,54 @@ public class DAVListServiceTest {
                 PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener()));
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path directory = new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new DAVListService(session).list(directory,
                 new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        assertFalse(list.contains(new Path(directory, "trunk", EnumSet.of(Path.Type.directory))));
         for(Path p : list) {
-            assertEquals(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)), p.getParent());
+            assertEquals(directory, p.getParent());
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getCreationDate());
             assertNotNull(p.attributes().getSize());
             assertNull(p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }
+        session.close();
+    }
+
+    @Test
+    public void testListEmpty() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/bookmarks", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new DisabledListProgressListener());
+        assertTrue(list.isEmpty());
+        session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListFileException() throws Exception {
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+        ));
+        final DAVSession session = new DAVSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final AttributedList<Path> list = new DAVListService(session).list(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new DisabledListProgressListener());
         session.close();
     }
 }

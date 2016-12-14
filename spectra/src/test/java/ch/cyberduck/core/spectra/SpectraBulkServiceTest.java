@@ -17,7 +17,6 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
@@ -59,7 +58,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
         final Path file = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
@@ -87,7 +86,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final Path directory = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
         final TransferStatus directoryStatus = new TransferStatus().length(0L);
@@ -115,7 +114,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
         ));
@@ -134,7 +133,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus()
         ));
@@ -154,7 +153,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
         final Path file = new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
@@ -167,13 +166,13 @@ public class SpectraBulkServiceTest {
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
-        assertEquals(2, list.size());
-        assertEquals(100000000000L, list.get(0).getLength());
-        assertEquals(0L, list.get(0).getOffset());
-        assertEquals("0", list.get(0).getParameters().get("offset"));
-        assertEquals(12640000000L, list.get(1).getLength());
-        assertEquals(100000000000L, list.get(1).getOffset());
-        assertEquals("100000000000", list.get(1).getParameters().get("offset"));
+        assertFalse(list.isEmpty());
+        long offset = 0;
+        for(TransferStatus s : list) {
+            assertEquals(offset, s.getOffset());
+            assertTrue(s.getLength() > 0);
+            offset += s.getLength();
+        }
         try {
             service.pre(Transfer.Type.download, files);
             fail();
@@ -197,7 +196,7 @@ public class SpectraBulkServiceTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         final Map<Path, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
         files.put(new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)),
@@ -214,13 +213,13 @@ public class SpectraBulkServiceTest {
         assertNotNull(status.getParameters().get("job"));
         for(Path file : files.keySet()) {
             final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
-            assertEquals(2, list.size());
-            assertEquals(100000000000L, list.get(0).getLength());
-            assertEquals(0L, list.get(0).getOffset());
-            assertEquals("0", list.get(0).getParameters().get("offset"));
-            assertEquals(18111600640L, list.get(1).getLength());
-            assertEquals(100000000000L, list.get(1).getOffset());
-            assertEquals("100000000000", list.get(1).getParameters().get("offset"));
+            assertFalse(list.isEmpty());
+            long offset = 0;
+            for(TransferStatus s : list) {
+                assertEquals(offset, s.getOffset());
+                offset += s.getLength();
+                assertTrue(s.getLength() > 0);
+            }
         }
         new SpectraDeleteFeature(session).delete(new ArrayList<Path>(files.keySet()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

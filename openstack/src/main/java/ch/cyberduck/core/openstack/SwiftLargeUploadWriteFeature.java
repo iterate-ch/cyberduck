@@ -21,12 +21,12 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -46,40 +46,36 @@ import java.util.List;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeUploadWriteFeature implements Write {
+public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> {
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
-
-    private final SwiftSession session;
-
-    private final Find finder;
-
-    private final Attributes attributes;
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
 
+    private final SwiftSession session;
+    private final Find finder;
+    private final AttributesFinder attributes;
     private final SwiftSegmentService segmentService;
-
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, regionService, new SwiftSegmentService(session, regionService), session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, new DefaultFindFeature(session), new DefaultAttributesFeature(session));
+        this(session, regionService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
-    public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final Attributes attributes) {
+    public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
         this(session, new SwiftRegionService(session), new SwiftSegmentService(session), finder, attributes);
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService,
-                                        final Find finder, final Attributes attributes) {
+                                        final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.regionService = regionService;
         this.segmentService = segmentService;
@@ -88,12 +84,12 @@ public class SwiftLargeUploadWriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
-        return new ResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
+        return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
-            public List<StorageObject> getResponse() throws BackgroundException {
+            public List<StorageObject> getStatus() throws BackgroundException {
                 return stream.getCompleted();
             }
         };

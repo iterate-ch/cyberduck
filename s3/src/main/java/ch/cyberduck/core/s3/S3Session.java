@@ -26,6 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -51,6 +52,9 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -226,7 +230,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         final Path home = new S3HomeFinderService(this).find();
-        cache.put(home, this.list(home, new DisabledListProgressListener() {
+        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                 try {
@@ -265,7 +269,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
@@ -280,12 +284,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this));
+                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this),
+                        new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
+                        new S3MultipartUploadService(this)
+                );
             }
-            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService());
+            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService(),
+                    new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
+                    new S3MultipartUploadService(this)
+            );
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this);
+            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
@@ -309,7 +319,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this);
+            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
         }
         if(type == Location.class) {
             if(this.isConnected()) {
@@ -368,15 +378,21 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);
         }
-        if(type == Attributes.class) {
-            return (T) new S3AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new S3AttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new S3HomeFinderService(this);
         }
         if(type == TransferAcceleration.class) {
-            return (T) new S3TransferAccelerationService(this);
+            // Only for AWS
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3TransferAccelerationService(this);
+            }
         }
-        return super.getFeature(type);
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.sha256);
+        }
+        return super._getFeature(type);
     }
 }

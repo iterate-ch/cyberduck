@@ -26,11 +26,12 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.TimeZone;
@@ -39,7 +40,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Find finder;
 
-    private Attributes attribute;
+    private AttributesFinder attribute;
 
     private final ComparisonService checksum;
 
@@ -50,8 +51,8 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private final ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
-        this.finder = new DefaultFindFeature(session);
-        this.attribute = new DefaultAttributesFeature(session);
+        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
+        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
         this.timestamp = new TimestampComparisonService(tz);
         this.size = new SizeComparisonService();
         this.checksum = new ChecksumComparisonService();
@@ -63,7 +64,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
         return this;
     }
 
-    public ComparisonServiceFilter withAttributes(final Attributes attribute) {
+    public ComparisonServiceFilter withAttributes(final AttributesFinder attribute) {
         this.attribute = attribute;
         return this;
     }
@@ -89,7 +90,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                                .compute(local.getInputStream()));
+                                .compute(local.getInputStream(), new TransferStatus()));
                         final Comparison comparison = checksum.compare(attributes, local.attributes());
                         if(!Comparison.notequal.equals(comparison)) {
                             // Decision is available

@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -36,12 +37,16 @@ public class S3LifecycleConfiguration implements Lifecycle {
 
     private final S3Session session;
 
+    private final PathContainerService containerService
+            = new S3PathContainerService();
+
     public S3LifecycleConfiguration(final S3Session session) {
         this.session = session;
     }
 
     @Override
-    public void setConfiguration(final Path bucket, final LifecycleConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LifecycleConfiguration configuration) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
         try {
             if(configuration.getTransition() != null || configuration.getExpiration() != null) {
                 final LifecycleConfig config = new LifecycleConfig();
@@ -54,22 +59,26 @@ public class S3LifecycleConfiguration implements Lifecycle {
                 if(configuration.getExpiration() != null) {
                     rule.newExpiration().setDays(configuration.getExpiration());
                 }
-                session.getClient().setLifecycleConfig(bucket.getName(), config);
+                session.getClient().setLifecycleConfig(container.getName(), config);
             }
             else {
-                session.getClient().deleteLifecycleConfig(bucket.getName());
+                session.getClient().deleteLifecycleConfig(container.getName());
             }
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, bucket);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 
 
     @Override
-    public LifecycleConfiguration getConfiguration(final Path bucket) throws BackgroundException {
+    public LifecycleConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path container = containerService.getContainer(file);
+        if(container.isRoot()) {
+            return LifecycleConfiguration.empty();
+        }
         try {
-            final LifecycleConfig status = session.getClient().getLifecycleConfig(bucket.getName());
+            final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
             if(null != status) {
                 Integer transition = null;
                 Integer expiration = null;
@@ -89,10 +98,10 @@ public class S3LifecycleConfiguration implements Lifecycle {
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, container);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", bucket, e.getMessage()));
+                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
         }

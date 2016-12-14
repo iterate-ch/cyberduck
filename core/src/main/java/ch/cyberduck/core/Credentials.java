@@ -22,6 +22,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 /**
  * Stores the login credentials
  */
@@ -38,14 +40,19 @@ public class Credentials implements Comparable<Credentials> {
     private String password;
 
     /**
-     * If not null, use public key authentication if SSH is the protocol
+     * Private key identity for SSH public key authentication.
      */
     private Local identity;
 
     /**
+     * Client certificate alias for TLS
+     */
+    private String certificate;
+
+    /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean keychained;
+    private boolean persist;
 
     /**
      * Passed authentication successfully
@@ -114,20 +121,20 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     /**
+     * @return true if the password will be added to the system keychain when logged in successfully
+     */
+    public boolean isSaved() {
+        return this.persist;
+    }
+
+    /**
      * Use this to define if passwords should be added to the keychain
      *
      * @param saved If true, the password of the login is added to the keychain upon
      *              successful login
      */
     public void setSaved(final boolean saved) {
-        this.keychained = saved;
-    }
-
-    /**
-     * @return true if the password will be added to the system keychain when logged in successfully
-     */
-    public boolean isSaved() {
-        return this.keychained;
+        this.persist = saved;
     }
 
     public boolean isPassed() {
@@ -162,16 +169,6 @@ public class Credentials implements Comparable<Credentials> {
         return identity.exists();
     }
 
-    /**
-     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
-     *
-     * @param file Private key file
-     */
-    public void setIdentity(final Local file) {
-        this.identity = file;
-        this.passed = false;
-    }
-
     public Credentials withIdentity(final Local file) {
         this.identity = file;
         this.passed = false;
@@ -183,6 +180,31 @@ public class Credentials implements Comparable<Credentials> {
      */
     public Local getIdentity() {
         return identity;
+    }
+
+    /**
+     * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
+     *
+     * @param file Private key file
+     */
+    public void setIdentity(final Local file) {
+        this.identity = file;
+        this.passed = false;
+    }
+
+    public String getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(final String certificate) {
+        this.certificate = certificate;
+    }
+
+    public boolean isCertificateAuthentication() {
+        if(null == certificate) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -203,24 +225,6 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof Credentials)) {
-            return false;
-        }
-        final Credentials that = (Credentials) o;
-        if(password != null ? !password.equals(that.password) : that.password != null) {
-            return false;
-        }
-        if(user != null ? !user.equals(that.user) : that.user != null) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public int compareTo(final Credentials o) {
         if(null == user && null == o.user) {
             return 0;
@@ -235,10 +239,23 @@ public class Credentials implements Comparable<Credentials> {
     }
 
     @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(!(o instanceof Credentials)) {
+            return false;
+        }
+        final Credentials that = (Credentials) o;
+        return Objects.equals(user, that.user) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(identity, that.identity) &&
+                Objects.equals(certificate, that.certificate);
+    }
+
+    @Override
     public int hashCode() {
-        int result = user != null ? user.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
+        return Objects.hash(user, password, identity, certificate);
     }
 
     @Override

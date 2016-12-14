@@ -25,15 +25,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -48,47 +48,45 @@ import java.util.List;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
+public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private final SwiftSession session;
-
-    private final SwiftSegmentService segmentService;
-
-    private final SwiftObjectListService listService;
-
-    private final Find finder;
-
-    private final Attributes attributes;
-
     private final Preferences preferences
             = PreferencesFactory.get();
 
+    private final SwiftSession session;
+    private final SwiftSegmentService segmentService;
+    private final SwiftObjectListService listService;
+    private final Find finder;
+    private final AttributesFinder attributes;
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new DefaultFindFeature(session));
+        this(session, regionService,
+                new SwiftObjectListService(session, regionService),
+                new SwiftSegmentService(session, regionService),
+                session.getFeature(Find.class, new DefaultFindFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
-        this(session, regionService, listService, segmentService, new DefaultFindFeature(session));
+        this(session, regionService, listService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFeature(session));
+        this(session, regionService, listService, segmentService, finder, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService,
-                             final Find finder, final Attributes attributes) {
+                             final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.listService = listService;
@@ -99,7 +97,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public ResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
         // Submit store run to background thread
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             /**

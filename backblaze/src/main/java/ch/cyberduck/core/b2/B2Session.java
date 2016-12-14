@@ -27,7 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -39,6 +39,10 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -47,8 +51,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
-
 import javax.net.SocketFactory;
 import java.io.IOException;
 
@@ -56,7 +58,6 @@ import synapticloop.b2.B2ApiClient;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2Session extends HttpSession<B2ApiClient> {
-    private static final Logger log = Logger.getLogger(B2Session.class);
 
     public B2Session(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -118,7 +119,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Class<T> type) {
+    public <T> T _getFeature(final Class<T> type) {
         if(type == Touch.class) {
             return (T) new B2TouchFeature(this);
         }
@@ -126,7 +127,10 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2ReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new B2ThresholdUploadService(this);
+            return (T) new B2ThresholdUploadService(this,
+                    new B2LargeUploadService(this, PreferencesFactory.get().getLong("b2.upload.largeobject.size")),
+                    new B2SingleUploadService(this, this.getFeature(Write.class))
+            );
         }
         if(type == Write.class) {
             return (T) new B2WriteFeature(this);
@@ -143,8 +147,8 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Find.class) {
             return (T) new B2FindFeature(this);
         }
-        if(type == Attributes.class) {
-            return (T) new B2AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new B2AttributesFinderFeature(this);
         }
         if(type == Home.class) {
             return (T) new B2HomeFinderService(this);
@@ -158,9 +162,12 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == IdProvider.class) {
             return (T) new B2FileidProvider(this);
         }
-        if(type == Attributes.class) {
-            return (T) new B2AttributesFeature(this);
+        if(type == AttributesFinder.class) {
+            return (T) new B2AttributesFinderFeature(this);
         }
-        return super.getFeature(type);
+        if(type == ChecksumCompute.class) {
+            return (T) ChecksumComputeFactory.get(HashAlgorithm.sha1);
+        }
+        return super._getFeature(type);
     }
 }

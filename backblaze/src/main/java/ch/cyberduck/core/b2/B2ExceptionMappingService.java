@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -54,7 +55,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 // 401 Unauthorized.
                 if("expired_auth_token".equalsIgnoreCase(e.getCode())) {
                     try {
-                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                                PathCache.empty());
                         return new RetriableAccessDeniedException(buffer.toString());
                     }
                     catch(BackgroundException f) {
@@ -82,7 +84,13 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 if("file_not_present".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
                 }
+                if("bad_bucket_id".equalsIgnoreCase(e.getCode())) {
+                    return new NotfoundException(buffer.toString(), e);
+                }
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                    return new QuotaException(buffer.toString(), e);
+                }
+                if("too_many_buckets".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
                 if("bad_request".equalsIgnoreCase(e.getCode())) {

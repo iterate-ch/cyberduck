@@ -20,6 +20,7 @@ package ch.cyberduck.core.io;
 
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -33,9 +34,9 @@ import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
-    public Checksum compute(final String data) throws ChecksumException {
+    public Checksum compute(final String data, final TransferStatus status) throws ChecksumException {
         try {
-            return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())));
+            return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())), status);
         }
         catch(DecoderException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);

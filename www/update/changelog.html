@@ -13,11 +13,8 @@
 
         p.mountainduck {
             display: block;
-            background-image: url(https://mountainduck.io/images/mountainduck_y_32.png);
-            background-repeat: no-repeat;
-            background-position: 5px 5px;
             padding: 15px 10px 15px 50px;
-            background-color: #E5E5DB;
+            background: #E5E5DB url(https://mountainduck.io/images/mountainduck_y_32.png) no-repeat 5px 5px;
             border: 1px solid #cccccc;
             color: black;
         }
@@ -27,8 +24,50 @@
 <body>
 
 <p class="mountainduck">
-    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file explorer for Mac &amp; Windows.
+    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for mounting volumes in the file
+    explorer for Mac &amp; Windows.
 </p>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.3"><strong>Version 5.3</strong></a>
+</p>
+<ul>
+    <li>[Feature] Use multiple connections in browser for parallel background task executions</li>
+    <li>[Feature] Choose certificate in bookmark panel for mutual authentication with TLS (WebDAV)</li>
+    <li>[Feature] Choose SSH private key from list in bookmark panel and login prompt (SFTP)</li>
+    <li>[Feature] Use marker and delimiter for listing files (Backblaze B2)</li>
+    <li>[Feature] Option to resume uploads (Azure) (<a
+            href="https://trac.cyberduck.io/ticket/9770">#9770</a>)
+    </li>
+    <li>[Feature] Support for ca-central-1 (Montreal) region (S3)</li>
+    <li>[Feature] Support for eu-west-2 (London) region (S3)</li>
+    <li>[Bugfix] Repeated prompt for client certificate (WebDAV) (<a
+            href="https://trac.cyberduck.io/ticket/9746">#9746</a>)
+    </li>
+    <li>[Bugfix] Modification of distinct metadata for multiple selected files (WebDAV, Azure, S3, OpenStack Swift)</li>
+    <li>[Bugfix] Modification of distinct permissions for multiple selected files (FTP, SFTP)</li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.2.2"><strong>Version 5.2.2</strong></a>
+</p>
+<ul>
+    <li>[Feature] Toggle transfer acceleration for bucket in Info panel (S3)</li>
+    <li>[Feature] Support OpenSSH private key format for ed25519 keys (SFTP) (<a
+            href="https://trac.cyberduck.io/ticket/8548">#8548</a>)
+    </li>
+</ul>
+
+<p>
+    <a href="https://trac.cyberduck.io/milestone/5.2.1"><strong>Version 5.2.1</strong></a>
+</p>
+<ul>
+    <li>[Feature] All embedded assemblies are cryptographically signed (Windows)</li>
+    <li>[Bugfix] Paginate directory listings (Dropbox)</li>
+    <li>[Bugfix] Ignore permission failure for reading transfer acceleration configuration (S3) (<a
+            href="https://trac.cyberduck.io/ticket/9741">#9741</a>)
+    </li>
+</ul>
 
 <p>
     <a href="https://trac.cyberduck.io/milestone/5.2"><strong>Version 5.2</strong></a>
@@ -243,7 +282,9 @@
             href="https://trac.cyberduck.io/ticket/9426">#9426</a>)
     </li>
     <li>[Feature] Default to use AWS4 signature version for authentication (S3)</li>
-    <li>[Feature] Repeat failed transfers for single segments of multipart large file transfer (S3, OpenStack Swift, Backblaze B2)</li>
+    <li>[Feature] Repeat failed transfers for single segments of multipart large file transfer (S3, OpenStack Swift,
+        Backblaze B2)
+    </li>
     <li>[Bugfix] Retry transfer for 421 error reply from server with a delay (FTP) (<a
             href="https://trac.cyberduck.io/ticket/9368">#9368</a>)
     </li>

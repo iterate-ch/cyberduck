@@ -43,7 +43,7 @@ public class DriveListService implements ListService {
 
     private final int pagesize;
 
-    private final DriveAttributesFeature attributes;
+    private final DriveAttributesFinderFeature attributes;
 
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
@@ -54,7 +54,7 @@ public class DriveListService implements ListService {
     public DriveListService(final DriveSession session, final int pagesize) {
         this.session = session;
         this.pagesize = pagesize;
-        this.attributes = new DriveAttributesFeature(session);
+        this.attributes = new DriveAttributesFinderFeature(session);
     }
 
     @Override
@@ -74,14 +74,14 @@ public class DriveListService implements ListService {
                         continue;
                     }
                     final String filename;
-                    if(!DriveAttributesFeature.DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), DriveAttributesFeature.GOOGLE_APPS_PREFIX)) {
+                    if(!DriveAttributesFinderFeature.DRIVE_FOLDER.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), DriveAttributesFinderFeature.GOOGLE_APPS_PREFIX)) {
                         filename = String.format("%s.%s", PathNormalizer.name(f.getName()), urlFileWriter.getExtension());
                     }
                     else {
                         filename = PathNormalizer.name(f.getName());
                     }
-                    final EnumSet<AbstractPath.Type> type = DriveAttributesFeature.DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
-                            StringUtils.startsWith(f.getMimeType(), DriveAttributesFeature.GOOGLE_APPS_PREFIX)
+                    final EnumSet<AbstractPath.Type> type = DriveAttributesFinderFeature.DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
+                            StringUtils.startsWith(f.getMimeType(), DriveAttributesFinderFeature.GOOGLE_APPS_PREFIX)
                                     ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
 
                     final Path child = new Path(directory, filename, type, properties);

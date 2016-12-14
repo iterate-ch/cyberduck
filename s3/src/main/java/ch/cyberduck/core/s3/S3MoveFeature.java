@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -83,7 +84,7 @@ public class S3MoveFeature implements Move {
                         containerService.getKey(source));
             }
             if(source.isDirectory()) {
-                for(Path i : session.list(source, new DisabledListProgressListener())) {
+                for(Path i : session.getFeature(ListService.class).list(source, new DisabledListProgressListener())) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
             }

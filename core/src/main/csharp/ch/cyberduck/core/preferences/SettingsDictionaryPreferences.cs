@@ -30,6 +30,7 @@ using java.security;
 using java.util;
 using org.apache.log4j;
 using sun.security.mscapi;
+using Windows.Storage;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -337,6 +338,10 @@ namespace Ch.Cyberduck.Core.Preferences
             defaults.put("connection.ssl.keystore.type", "Windows-MY");
             defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
 
+            // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
+            defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
+            defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
+
             defaults.put("webdav.ntlm.environment", false.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {
@@ -362,6 +367,13 @@ namespace Ch.Cyberduck.Core.Preferences
                 {
                     // The name of this computer cannot be obtained.
                 }
+            }
+
+            // UWP
+            if (Utils.IsUWPSupported)
+            {
+                defaults.put("update.check", $"{false}");
+                defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
             }
         }
 

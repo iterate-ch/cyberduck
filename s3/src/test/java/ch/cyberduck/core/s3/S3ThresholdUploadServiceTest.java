@@ -20,11 +20,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -58,10 +58,13 @@ public class S3ThresholdUploadServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+        );
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -76,10 +79,13 @@ public class S3ThresholdUploadServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+        );
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -95,7 +101,7 @@ public class S3ThresholdUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
@@ -113,10 +119,14 @@ public class S3ThresholdUploadServiceTest {
                         new Credentials(
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+
+        );
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -132,7 +142,7 @@ public class S3ThresholdUploadServiceTest {
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFeature(session).find(test);
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);

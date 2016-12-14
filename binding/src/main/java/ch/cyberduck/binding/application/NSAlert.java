@@ -21,6 +21,7 @@ package ch.cyberduck.binding.application;
 
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.core.StringAppender;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
@@ -52,7 +53,8 @@ public abstract class NSAlert extends NSObject {
     public static NSAlert alert(
             String title, String message, String defaultButton, String alternateButton, String otherButton) {
         return CLASS.alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
-                title, defaultButton, alternateButton, otherButton, message);
+                title, defaultButton, alternateButton, otherButton,
+                new StringAppender().append(message).toString());
     }
 
     public interface _Class extends ObjCClass {

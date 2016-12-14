@@ -61,7 +61,23 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-ant-package-target</id>
+                                <id>run-ant-verify-target</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="verify" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-deploy-target</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -73,7 +89,7 @@
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="git.revision" value="${git.revision}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
+                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="." />
                                     </tasks>
                                 </configuration>
                             </execution>
@@ -140,6 +156,13 @@
                 <dependency>
                     <groupId>ch.cyberduck</groupId>
                     <artifactId>Cyberduck.Importer</artifactId>
+                    <type>dll</type>
+                    <version>${project.version}</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>ch.cyberduck</groupId>
+                    <artifactId>Cyberduck.Cryptomator</artifactId>
                     <type>dll</type>
                     <version>${project.version}</version>
                     <scope>runtime</scope>
@@ -214,6 +237,11 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>importer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

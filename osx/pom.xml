@@ -115,7 +115,7 @@
                                             <groupId>org.sparkle-project</groupId>
                                             <artifactId>sparkle</artifactId>
                                             <type>zip</type>
-                                            <version>1.14.0</version>
+                                            <version>1.15.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -133,7 +133,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u102</version>
+                                            <version>8u112</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -303,6 +303,11 @@
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>importer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

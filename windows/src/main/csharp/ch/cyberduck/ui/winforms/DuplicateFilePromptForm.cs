@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Text = LocaleFactory.localizedString("Duplicate File", "Duplicate");
 
             pictureBox.Width = 32;
-            label.Text = LocaleFactory.localizedString("Enter the name for the new file:", "Duplicate");
+            label.Text = LocaleFactory.localizedString("Enter the name for the new file", "Duplicate");
             okButton.Text = LocaleFactory.localizedString("Duplicate", "Duplicate");
             cancelButton.Text = LocaleFactory.localizedString("Cancel", "Duplicate");
         }

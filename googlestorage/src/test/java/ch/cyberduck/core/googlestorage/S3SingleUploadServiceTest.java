@@ -21,18 +21,20 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3SingleUploadService;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -59,20 +61,20 @@ public class S3SingleUploadServiceTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         final GoogleStorageSession session = new GoogleStorageSession(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledTranscriptListener());
+        session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("Google OAuth2 Access Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
                     return System.getProperties().getProperty("google.accesstoken");
                 }
-                if(user.equals("Google OAuth2 Refresh Token")) {
+                if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
                     return System.getProperties().getProperty("google.refreshtoken");
                 }
                 return null;
             }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final S3SingleUploadService m = new S3SingleUploadService(session);
+        }, new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());

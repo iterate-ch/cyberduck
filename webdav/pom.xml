@@ -39,7 +39,7 @@
         <dependency>
             <groupId>ch.iterate.webdav</groupId>
             <artifactId>sardine</artifactId>
-            <version>5.8.3</version>
+            <version>5.8.4</version>
         </dependency>
     </dependencies>
 </project>

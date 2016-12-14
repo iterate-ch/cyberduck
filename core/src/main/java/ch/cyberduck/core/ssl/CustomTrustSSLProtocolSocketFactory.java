@@ -21,6 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
 
@@ -71,23 +72,18 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this(trust, key, PreferencesFactory.get().getProperty("connection.ssl.protocols").split(","));
     }
 
+    public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key, final String... protocols) {
+        this(trust, key, SecureRandomProviderFactory.get().provide(), protocols);
+    }
+
     public CustomTrustSSLProtocolSocketFactory(final X509TrustManager trust, final X509KeyManager key,
+                                               final SecureRandom seeder,
                                                final String... protocols) {
         this.trust = trust;
         this.key = key;
-        final String random = preferences.getProperty("connection.ssl.securerandom");
-        SecureRandom rpng = null;
-        try {
-            // Obtains random numbers from the underlying native OS, without blocking to prevent
-            // from excessive stalling. For example, /dev/urandom
-            rpng = SecureRandom.getInstance(random);
-        }
-        catch(NoSuchAlgorithmException e) {
-            log.warn(String.format("Failure %s obtaining secure random %s", e.getMessage(), random));
-        }
         try {
             context = SSLContext.getInstance("TLS");
-            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, rpng);
+            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
             }

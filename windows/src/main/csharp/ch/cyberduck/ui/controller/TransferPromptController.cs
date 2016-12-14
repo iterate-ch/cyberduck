@@ -24,6 +24,7 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.pool;
 using ch.cyberduck.core.shared;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
@@ -37,7 +38,8 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));
         private static readonly string UnknownString = LocaleFactory.localizedString("Unknown");
-        protected readonly Session Session;
+        protected readonly SessionPool Source;
+        protected readonly SessionPool Destination;
 
         protected readonly Transfer Transfer;
         private readonly WindowController _parent;
@@ -47,12 +49,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected TransferPromptModel TransferPromptModel;
 
-        protected TransferPromptController(WindowController parent, Transfer transfer, Session session)
+        protected TransferPromptController(WindowController parent, Transfer transfer, SessionPool source, SessionPool destination)
         {
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
             Transfer = transfer;
-            Session = session;
+            Source = source;
+            Destination = destination;
             View.Title = LocaleFactory.localizedString(TransferName);
 
             PopulateActions();
@@ -181,7 +184,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     View.RemoteFileUrl =
-                        new DefaultUrlProvider(Transfer.getHost()).toUrl(selected.remote)
+                        new DefaultUrlProvider(Transfer.getSource()).toUrl(selected.remote)
                                                                   .find(DescriptiveUrl.Type.provider)
                                                                   .getUrl();
                     TransferStatus status = TransferPromptModel.GetStatus(selected);

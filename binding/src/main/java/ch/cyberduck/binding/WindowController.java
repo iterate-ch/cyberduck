@@ -21,14 +21,10 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSPrintInfo;
 import ch.cyberduck.binding.application.NSPrintOperation;
 import ch.cyberduck.binding.application.NSPrintPanel;
-import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
-import ch.cyberduck.binding.foundation.NSAttributedString;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
@@ -57,6 +53,14 @@ public abstract class WindowController extends BundleController implements NSWin
 
     protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 
+    private final Set<WindowListener> listeners
+            = Collections.synchronizedSet(new HashSet<WindowListener>());
+    /**
+     * The window this controller is owner of
+     */
+    @Outlet
+    protected NSWindow window;
+
     public WindowController() {
         super();
     }
@@ -69,15 +73,6 @@ public abstract class WindowController extends BundleController implements NSWin
         }
         super.invalidate();
     }
-
-    /**
-     * The window this controller is owner of
-     */
-    @Outlet
-    protected NSWindow window;
-
-    private final Set<WindowListener> listeners
-            = Collections.synchronizedSet(new HashSet<WindowListener>());
 
     /**
      * @param listener Callback on window close
@@ -95,8 +90,9 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void setWindow(final NSWindow window) {
         this.window = window;
-        window.setReleasedWhenClosed(!this.isSingleton());
-        window.setDelegate(this.id());
+        this.window.recalculateKeyViewLoop();
+        this.window.setReleasedWhenClosed(!this.isSingleton());
+        this.window.setDelegate(this.id());
     }
 
     public NSWindow window() {
@@ -170,6 +166,7 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     @Override
     public void windowWillClose(final NSNotification notification) {
+        window.endEditingFor(null);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Window will close %s", notification));
         }
@@ -247,7 +244,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param help     Help URL
      */
     public void alert(final NSAlert alert, final SheetCallback callback, final String help) {
-        final SheetController c = new AlertController(this, alert) {
+        final AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
@@ -263,22 +260,17 @@ public abstract class WindowController extends BundleController implements NSWin
                 }
             }
         };
-        c.beginSheet();
+        c.beginSheet(this);
     }
 
     /**
      * Attach a sheet to this window
      *
      * @param sheet The sheet to be attached to this window
-     * @see SheetController#beginSheet()
+     * @see SheetInvoker#beginSheet()
      */
     protected void alert(final NSWindow sheet) {
-        this.alert(sheet, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                //
-            }
-        });
+        this.alert(sheet, new DisabledSheetCallback());
     }
 
     /**
@@ -286,38 +278,15 @@ public abstract class WindowController extends BundleController implements NSWin
      *
      * @param sheet    The sheet to be attached to this window
      * @param callback The callback to call after the sheet is dismissed
-     * @see SheetController#beginSheet()
+     * @see SheetInvoker#beginSheet()
      */
     protected void alert(final NSWindow sheet, final SheetCallback callback) {
-        final SheetController c = new SheetController(this) {
-            @Override
-            public void callback(final int returncode) {
-                callback.callback(returncode);
-            }
-
-            @Override
-            public NSWindow window() {
-                return sheet;
-            }
-        };
+        final SheetInvoker c = new SheetInvoker(callback, this, sheet);
         c.beginSheet();
     }
 
-    protected void updateField(final NSTextView f, final String value) {
-        f.setString(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
-    }
-
-    protected void updateField(final NSTextField f, final String value) {
-        f.setStringValue(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
-    }
-
-    protected void updateField(final NSTextField f, final String value, final NSDictionary attributes) {
-        f.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY, attributes));
-
-    }
-
     @Action
-    public void helpButtonClicked(final NSButton sender) {
+    public void helpButtonClicked(final ID sender) {
         BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help"));
     }
 
@@ -366,7 +335,7 @@ public abstract class WindowController extends BundleController implements NSWin
                         LocaleFactory.localizedString("Cancel", "Alert") // alternate button
                 );
                 alert.setShowsHelp(true);
-                final AlertController c = new AlertController(controller, alert) {
+                final AlertController c = new AlertController(alert) {
                     @Override
                     public void callback(final int returncode) {
                         if(returncode == ALTERNATE_OPTION) {
@@ -379,8 +348,7 @@ public abstract class WindowController extends BundleController implements NSWin
                         new DefaultProviderHelpService().help(host.getProtocol());
                     }
                 };
-                c.beginSheet();
-                if(c.returnCode() == SheetCallback.DEFAULT_OPTION) {
+                if(c.beginSheet(controller) == SheetCallback.DEFAULT_OPTION) {
                     return true;
                 }
             }

@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -36,11 +37,10 @@ import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.RetryNoRetry;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobInputStream;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.core.SR;
 
 public class AzureReadFeature implements Read {
@@ -66,11 +66,10 @@ public class AzureReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final CloudBlockBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlockBlobReference(containerService.getKey(file));
+            final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getBlobReferenceFromServer(containerService.getKey(file));
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
-            options.setRetryPolicyFactory(new RetryNoRetry());
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);
             if(status.isAppend()) {
                 try {
@@ -87,6 +86,10 @@ public class AzureReadFeature implements Read {
                     if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {
                         log.warn(String.format("Ignore failure %s", e));
                         return;
+                    }
+                    final Throwable cause = ExceptionUtils.getRootCause(e);
+                    if(cause instanceof StorageException) {
+                        throw new IOException(e.getMessage(), new AzureExceptionMappingService().map((StorageException) cause));
                     }
                     throw e;
                 }

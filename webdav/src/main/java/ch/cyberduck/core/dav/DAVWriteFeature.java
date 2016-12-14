@@ -19,14 +19,14 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Attributes;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.http.ResponseOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,7 +44,7 @@ import java.util.List;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
 
-public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write {
+public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
     private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
 
     private final DAVSession session;
@@ -64,14 +64,14 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         this.expect = expect;
     }
 
-    public DAVWriteFeature(final DAVSession session, final Find finder, final Attributes attributes, final boolean expect) {
+    public DAVWriteFeature(final DAVSession session, final Find finder, final AttributesFinder attributes, final boolean expect) {
         super(finder, attributes);
         this.session = session;
         this.expect = expect;
     }
 
     @Override
-    public ResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status) throws BackgroundException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
@@ -92,7 +92,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         return this.write(file, headers, status);
     }
 
-    private ResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
+    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
             throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {

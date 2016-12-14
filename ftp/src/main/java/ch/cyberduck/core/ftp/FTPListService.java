@@ -202,11 +202,6 @@ public class FTPListService implements ListService {
             final List<Path> verified = new ArrayList<Path>();
             for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
                 final Path file = iter.next();
-                if(!file.isChild(directory)) {
-                    log.warn(String.format("Skip file %s", file));
-                    iter.remove();
-                    continue;
-                }
                 if(file.isSymbolicLink()) {
                     // Make sure we remove and add because hash code will change
                     iter.remove();
