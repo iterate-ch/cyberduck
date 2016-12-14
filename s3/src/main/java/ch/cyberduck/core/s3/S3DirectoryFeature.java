@@ -47,10 +47,6 @@ public class S3DirectoryFeature implements Directory {
 
     private final Write write;
 
-    public S3DirectoryFeature(final S3Session session) {
-        this(session, session.getFeature(Write.class));
-    }
-
     public S3DirectoryFeature(final S3Session session, final Write write) {
         this.session = session;
         this.write = write;

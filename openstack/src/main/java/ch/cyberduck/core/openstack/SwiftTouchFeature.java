@@ -40,11 +40,7 @@ public class SwiftTouchFeature implements Touch {
 
     private final Write write;
 
-    public SwiftTouchFeature(final SwiftSession session) {
-        this(session, session.getFeature(Write.class));
-    }
-
-    public SwiftTouchFeature(final SwiftSession session, final Write write) {
+    public SwiftTouchFeature(final Write write) {
         this.write = write;
     }
 

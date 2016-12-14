@@ -288,7 +288,7 @@ public class UDTProxyConfiguratorTest {
 
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(tunneled).touch(test, new TransferStatus());
+        new S3TouchFeature(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService())).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length));
         assertNotNull(out);

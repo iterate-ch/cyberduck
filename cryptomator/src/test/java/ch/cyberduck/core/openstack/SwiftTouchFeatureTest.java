@@ -71,7 +71,7 @@ public class SwiftTouchFeatureTest {
         }, new DisabledVaultLookupListener()).create(session, null);
         session.withVault(cryptomator);
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        new CryptoTouchFeature(session, new SwiftTouchFeature(session, session.getFeature(Write.class, new SwiftWriteFeature(session, regionService))), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature(session, new SwiftTouchFeature(session.getFeature(Write.class, new SwiftWriteFeature(session, regionService))), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

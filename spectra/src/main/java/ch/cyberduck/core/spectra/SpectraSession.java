@@ -71,7 +71,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraTouchFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new SpectraDirectoryFeature(this);
+            return (T) new SpectraDirectoryFeature(this, this.getFeature(Write.class));
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();

@@ -266,7 +266,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMoveFeature(this, regionService);
         }
         if(type == Touch.class) {
-            return (T) new SwiftTouchFeature(this, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
+            return (T) new SwiftTouchFeature(this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);
