@@ -274,7 +274,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new GoogleStorageDirectoryFeature(this);
+            return (T) new GoogleStorageDirectoryFeature(this, this.getFeature(Write.class));
         }
         if(type == AclPermission.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);
