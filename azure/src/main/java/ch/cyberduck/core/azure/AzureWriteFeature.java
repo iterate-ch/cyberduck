@@ -110,6 +110,7 @@ public class AzureWriteFeature extends AppendWriteFeature implements Write {
             options.setStoreBlobContentMD5(preferences.getBoolean("azure.upload.md5"));
             final BlobOutputStream out;
             if(status.isAppend()) {
+                options.setStoreBlobContentMD5(false);
                 out = blob.openWriteExisting(AccessCondition.generateEmptyCondition(), options, context);
             }
             else {
