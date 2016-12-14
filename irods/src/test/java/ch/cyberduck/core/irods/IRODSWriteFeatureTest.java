@@ -84,6 +84,8 @@ public class IRODSWriteFeatureTest {
         final OutputStream out2 = new IRODSWriteFeature(session1).write(test2, new TransferStatus().append(false).length(content.length));
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         out2.close();
+
+        // Error code received from iRODS:-23000
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
         out1.close();
         {
@@ -94,7 +96,55 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(content, buffer1);
         }
         {
-            final InputStream in2 = session1.getFeature(Read.class).read(test2, new TransferStatus());
+            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
+            final byte[] buffer2 = new byte[content.length];
+            IOUtils.readFully(in2, buffer2);
+            in2.close();
+            assertArrayEquals(content, buffer2);
+        }
+        session1.close();
+        session2.close();
+    }
+
+    @Test
+    public void testWriteConcurentSessionClosing() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+
+        final IRODSSession session1 = new IRODSSession(host);
+        session1.open(new DisabledHostKeyCallback());
+        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final IRODSSession session2 = new IRODSSession(host);
+        session2.open(new DisabledHostKeyCallback());
+        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+
+        final byte[] content = RandomUtils.nextBytes(68400);
+
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session1).write(test2, new TransferStatus().append(false).length(content.length));
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
+        out2.close();
+        session2.getClient().getIrodsSession().closeSession(session2.filesystem().getIRODSAccount());
+        // Error code received from iRODS:-345000.
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
+        out1.close();
+        session1.getClient().getIrodsSession().closeSession(session2.filesystem().getIRODSAccount());
+        {
+            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+            final byte[] buffer1 = new byte[content.length];
+            IOUtils.readFully(in1, buffer1);
+            in1.close();
+            assertArrayEquals(content, buffer1);
+        }
+        {
+            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
             final byte[] buffer2 = new byte[content.length];
             IOUtils.readFully(in2, buffer2);
             in2.close();
