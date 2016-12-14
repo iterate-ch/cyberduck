@@ -18,6 +18,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -39,12 +40,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
 
     private final SpectraSession session;
 
-    public SpectraDirectoryFeature(final SpectraSession session) {
-        super(session);
-        this.session = session;
-    }
-
-    public SpectraDirectoryFeature(final SpectraSession session, final SpectraWriteFeature write) {
+    public SpectraDirectoryFeature(final SpectraSession session, final Write write) {
         super(session, write);
         this.session = session;
     }
