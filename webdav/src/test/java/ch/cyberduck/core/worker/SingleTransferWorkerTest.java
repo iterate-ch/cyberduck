@@ -33,6 +33,7 @@ import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
+import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -83,7 +84,7 @@ public class SingleTransferWorkerTest {
         host.setDefaultPath("/dav/basic");
         final AtomicBoolean failed = new AtomicBoolean();
         final DAVSession session = new DAVSession(host) {
-            final DAVUploadFeature upload = new DAVUploadFeature(this) {
+            final DAVUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(this)) {
                 @Override
                 protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                     if(failed.get()) {

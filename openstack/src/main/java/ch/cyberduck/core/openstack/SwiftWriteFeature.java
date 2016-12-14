@@ -48,29 +48,27 @@ import java.util.List;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
+public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
 
-    private final SwiftSession session;
-
-    private final SwiftSegmentService segmentService;
-
-    private final SwiftObjectListService listService;
-
-    private final Find finder;
-
-    private final AttributesFinder attributes;
-
     private final Preferences preferences
             = PreferencesFactory.get();
 
+    private final SwiftSession session;
+    private final SwiftSegmentService segmentService;
+    private final SwiftObjectListService listService;
+    private final Find finder;
+    private final AttributesFinder attributes;
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), session.getFeature(Find.class, new DefaultFindFeature(session)));
+        this(session, regionService,
+                new SwiftObjectListService(session, regionService),
+                new SwiftSegmentService(session, regionService),
+                session.getFeature(Find.class, new DefaultFindFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,

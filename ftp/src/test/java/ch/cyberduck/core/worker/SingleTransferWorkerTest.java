@@ -36,6 +36,7 @@ import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -84,13 +85,13 @@ public class SingleTransferWorkerTest {
         final FTPSession session = new FTPSession(host) {
             final FTPWriteFeature write = new FTPWriteFeature(this) {
                 @Override
-                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                    final OutputStream out = super.write(file, status);
+                public StatusOutputStream<Integer> write(final Path file, final TransferStatus status) throws BackgroundException {
+                    final StatusOutputStream<Integer> proxy = super.write(file, status);
                     if(failed.get()) {
                         // Second attempt successful
-                        return out;
+                        return proxy;
                     }
-                    return new CountingOutputStream(out) {
+                    return new StatusOutputStream<Integer>(new CountingOutputStream(proxy) {
                         @Override
                         protected void afterWrite(final int n) throws IOException {
                             super.afterWrite(n);
@@ -100,6 +101,11 @@ public class SingleTransferWorkerTest {
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
+                        }
+                    }) {
+                        @Override
+                        public Integer getStatus() throws BackgroundException {
+                            return proxy.getStatus();
                         }
                     };
                 }
@@ -127,7 +133,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), counter, new DisabledLoginCallback(), TransferItemCache.empty()) {
 
-        }.run(session));
+        }.run(session, session));
         local.delete();
         assertEquals(62768L, counter.getSent(), 0L);
         assertEquals(62768L, new DefaultAttributesFinderFeature(session).find(test).getSize());

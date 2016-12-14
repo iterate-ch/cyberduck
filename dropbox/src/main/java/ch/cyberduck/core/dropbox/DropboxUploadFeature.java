@@ -16,13 +16,13 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
 
 public class DropboxUploadFeature extends HttpUploadFeature<String, MessageDigest> {
-
-    public DropboxUploadFeature(final DropboxSession session) {
-        super(session, new DropboxWriteFeature(session));
+    public DropboxUploadFeature(final Write<String> writer) {
+        super(writer);
     }
 }

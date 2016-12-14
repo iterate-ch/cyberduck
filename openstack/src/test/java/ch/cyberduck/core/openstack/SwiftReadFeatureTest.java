@@ -69,7 +69,7 @@ public class SwiftReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -107,7 +107,7 @@ public class SwiftReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         final TransferStatus status = new TransferStatus();
         // Set to unknown length
         status.setLength(-1L);

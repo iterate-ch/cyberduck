@@ -162,7 +162,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session).upload(
+        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -202,7 +202,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session).upload(
+        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

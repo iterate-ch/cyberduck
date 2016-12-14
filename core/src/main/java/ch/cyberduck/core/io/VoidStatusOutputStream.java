@@ -16,21 +16,16 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
 
-import org.apache.commons.io.output.NullOutputStream;
-import org.junit.Test;
+import java.io.OutputStream;
 
-public class DefaultStreamCloserTest {
+public class VoidStatusOutputStream extends StatusOutputStream<Void> {
+    public VoidStatusOutputStream(final OutputStream proxy) {
+        super(proxy);
+    }
 
-    @Test(expected = InteroperabilityException.class)
-    public void testClose() throws Exception {
-        new DefaultStreamCloser().close(new HttpResponseOutputStream<Void>(new NullOutputStream()) {
-            @Override
-            public Void getStatus() throws BackgroundException {
-                throw new InteroperabilityException("d");
-            }
-        });
+    @Override
+    public Void getStatus() throws BackgroundException {
+        return null;
     }
 }

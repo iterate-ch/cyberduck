@@ -53,7 +53,7 @@ public class S3MultipartWriteFeatureTest {
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         assertTrue(new S3FindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length));
@@ -86,7 +86,7 @@ public class S3MultipartWriteFeatureTest {
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNotNull(out.getResponse());
+        assertNotNull(out.getStatus());
         assertTrue(new S3FindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length));

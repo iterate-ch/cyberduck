@@ -20,8 +20,6 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -54,22 +52,5 @@ public abstract class HttpSession<C> extends SSLSession<C> {
 
     public HttpConnectionPoolBuilder getBuilder() {
         return builder;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T _getFeature(Class<T> type) {
-        if(type == Upload.class) {
-            return (T) new HttpUploadFeature(this, (HttpWriteFeature<?>) this.getFeature(Write.class));
-        }
-        return super._getFeature(type);
-    }
-
-    @Override
-    public <T> T getFeature(final Class<T> type) {
-        if(type == Write.class || type == HttpWriteFeature.class) {
-
-        }
-        return super.getFeature(type);
     }
 }

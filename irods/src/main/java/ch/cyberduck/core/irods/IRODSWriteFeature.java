@@ -19,6 +19,7 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -26,10 +27,9 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
+import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
 
-import java.io.OutputStream;
-
-public class IRODSWriteFeature extends AppendWriteFeature {
+public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
 
     private final IRODSSession session;
 
@@ -39,12 +39,12 @@ public class IRODSWriteFeature extends AppendWriteFeature {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public FileDescriptorOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
                 final IRODSFileSystemAO fs = session.filesystem();
-                return fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
+                return new FileDescriptorOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
+                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
             }
             catch(JargonRuntimeException e) {
                 if(e.getCause() instanceof JargonException) {
@@ -66,5 +66,19 @@ public class IRODSWriteFeature extends AppendWriteFeature {
     @Override
     public boolean random() {
         return false;
+    }
+
+    private final class FileDescriptorOutputStream extends StatusOutputStream<Integer> {
+        private final IRODSFileOutputStream proxy;
+
+        public FileDescriptorOutputStream(final IRODSFileOutputStream proxy) {
+            super(proxy);
+            this.proxy = proxy;
+        }
+
+        @Override
+        public Integer getStatus() throws BackgroundException {
+            return proxy.getFileDescriptor();
+        }
     }
 }

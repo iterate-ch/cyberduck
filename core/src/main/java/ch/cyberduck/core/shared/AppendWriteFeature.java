@@ -27,7 +27,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 
-public abstract class AppendWriteFeature implements Write {
+public abstract class AppendWriteFeature<Reply> implements Write<Reply> {
 
     private final Find finder;
 

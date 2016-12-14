@@ -42,6 +42,7 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -126,7 +127,10 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2ReadFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new B2ThresholdUploadService(this);
+            return (T) new B2ThresholdUploadService(this,
+                    new B2LargeUploadService(this, PreferencesFactory.get().getLong("b2.upload.largeobject.size")),
+                    new B2SingleUploadService(this, this.getFeature(Write.class))
+            );
         }
         if(type == Write.class) {
             return (T) new B2WriteFeature(this);

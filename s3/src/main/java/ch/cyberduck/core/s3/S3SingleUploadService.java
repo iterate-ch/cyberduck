@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -46,12 +47,8 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
 
     private final S3Session session;
 
-    public S3SingleUploadService(final S3Session session) {
-        this(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
-    }
-
-    public S3SingleUploadService(final S3Session session, final S3WriteFeature writer) {
-        super(session, writer);
+    public S3SingleUploadService(final S3Session session, final Write<StorageObject> writer) {
+        super(writer);
         this.session = session;
     }
 

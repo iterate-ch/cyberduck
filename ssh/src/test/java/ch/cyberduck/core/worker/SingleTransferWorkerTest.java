@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -84,13 +85,13 @@ public class SingleTransferWorkerTest {
         final SFTPSession session = new SFTPSession(host) {
             final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override
-                public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
-                    final OutputStream out = super.write(file, status);
+                public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+                    final StatusOutputStream<Void> proxy = super.write(file, status);
                     if(failed.get()) {
                         // Second attempt successful
-                        return out;
+                        return proxy;
                     }
-                    return new CountingOutputStream(out) {
+                    return new StatusOutputStream<Void>(new CountingOutputStream(proxy) {
                         @Override
                         protected void afterWrite(final int n) throws IOException {
                             super.afterWrite(n);
@@ -100,6 +101,11 @@ public class SingleTransferWorkerTest {
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
+                        }
+                    }) {
+                        @Override
+                        public Void getStatus() throws BackgroundException {
+                            return proxy.getStatus();
                         }
                     };
                 }

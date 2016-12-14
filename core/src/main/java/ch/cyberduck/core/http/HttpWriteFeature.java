@@ -20,9 +20,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface HttpWriteFeature<T> extends Write {
-    @Override
-    HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
-
+public interface HttpWriteFeature<T> extends Write<T> {
     HttpResponseOutputStream<T> write(Path file, TransferStatus status, DelayedHttpEntityCallable<T> command) throws BackgroundException;
 }

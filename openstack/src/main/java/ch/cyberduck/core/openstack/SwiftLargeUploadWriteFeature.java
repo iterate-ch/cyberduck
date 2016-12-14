@@ -46,20 +46,16 @@ import java.util.List;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeUploadWriteFeature implements Write {
+public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> {
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
-
-    private final SwiftSession session;
-
-    private final Find finder;
-
-    private final AttributesFinder attributes;
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
 
+    private final SwiftSession session;
+    private final Find finder;
+    private final AttributesFinder attributes;
     private final SwiftSegmentService segmentService;
-
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
@@ -88,12 +84,12 @@ public class SwiftLargeUploadWriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status) throws BackgroundException {
         final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
-            public List<StorageObject> getResponse() throws BackgroundException {
+            public List<StorageObject> getStatus() throws BackgroundException {
                 return stream.getCompleted();
             }
         };

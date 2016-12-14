@@ -22,43 +22,38 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 
-public class DefaultUploadFeature implements Upload<Void> {
+public class DefaultUploadFeature<Reply> implements Upload<Reply> {
 
-    private final Write writer;
+    private final Write<Reply> writer;
 
-    public DefaultUploadFeature(final Session<?> session) {
-        this(session.getFeature(Write.class));
-    }
-
-    public DefaultUploadFeature(final Write writer) {
+    public DefaultUploadFeature(final Write<Reply> writer) {
         this.writer = writer;
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                       final StreamListener listener, final TransferStatus status,
-                       final ConnectionCallback callback) throws BackgroundException {
+    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                        final StreamListener listener, final TransferStatus status,
+                        final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = local.getInputStream();
-        final OutputStream out = writer.write(file, status);
+        final StatusOutputStream<Reply> out = writer.write(file, status);
         new StreamCopier(status, status)
                 .withOffset(status.getOffset())
                 .withLimit(status.getLength())
                 .withListener(listener)
                 .transfer(in, new ThrottledOutputStream(out, throttle));
-        return null;
+        return out.getStatus();
     }
 
     @Override

@@ -33,24 +33,26 @@ public class B2ThresholdUploadService implements Upload {
     private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
 
     private final B2Session session;
+    private final B2LargeUploadService largeUploadService;
+    private final B2SingleUploadService singleUploadService;
 
     private final Long threshold;
 
-    public final B2LargeUploadService largeUploadService;
-
-    public final B2SingleUploadService singleUploadService;
-
-    public B2ThresholdUploadService(final B2Session session) {
-        this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"),
-                PreferencesFactory.get().getLong("b2.upload.largeobject.size"));
+    public B2ThresholdUploadService(final B2Session session,
+                                    final B2LargeUploadService largeUploadService,
+                                    final B2SingleUploadService singleUploadService) {
+        this(session, largeUploadService, singleUploadService, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
     }
 
 
-    public B2ThresholdUploadService(final B2Session session, final Long threshold, final Long partsize) {
+    public B2ThresholdUploadService(final B2Session session,
+                                    final B2LargeUploadService largeUploadService,
+                                    final B2SingleUploadService singleUploadService,
+                                    final Long threshold) {
         this.session = session;
+        this.largeUploadService = largeUploadService;
+        this.singleUploadService = singleUploadService;
         this.threshold = threshold;
-        this.largeUploadService = new B2LargeUploadService(session, partsize);
-        this.singleUploadService = new B2SingleUploadService(session);
     }
 
     @Override

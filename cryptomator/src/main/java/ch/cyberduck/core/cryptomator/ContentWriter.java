@@ -21,13 +21,13 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class ContentWriter {
 
@@ -38,13 +38,13 @@ public class ContentWriter {
     }
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
-        final Write write = session._getFeature(Write.class);
+        final Write<?> write = session._getFeature(Write.class);
         final TransferStatus status = new TransferStatus().length(content.length);
         final ChecksumCompute checksum = session._getFeature(ChecksumCompute.class);
         if(null != checksum) {
             status.setChecksum(checksum.compute(new ByteArrayInputStream(content), new TransferStatus()));
         }
-        final OutputStream out = write.write(file, status);
+        final StatusOutputStream<?> out = write.write(file, status);
         try {
             IOUtils.write(content, out);
         }

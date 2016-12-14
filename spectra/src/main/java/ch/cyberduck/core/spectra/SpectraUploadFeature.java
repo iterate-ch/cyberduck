@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -42,12 +43,8 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
     private final SpectraSession session;
     private final SpectraBulkService bulk;
 
-    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer) {
-        this(session, writer, new SpectraBulkService(session));
-    }
-
-    public SpectraUploadFeature(final SpectraSession session, final SpectraWriteFeature writer, final SpectraBulkService bulk) {
-        super(session, writer);
+    public SpectraUploadFeature(final SpectraSession session, final Write<StorageObject> writer, final SpectraBulkService bulk) {
+        super(writer);
         this.session = session;
         this.bulk = bulk;
     }

@@ -88,7 +88,7 @@ public class B2LargeUploadService extends HttpUploadFeature<B2UploadPartResponse
     }
 
     public B2LargeUploadService(final B2Session session, final B2PartWriteFeature writer, final Long partSize, final Integer concurrency) {
-        super(session, writer);
+        super(writer);
         this.session = session;
         this.partSize = partSize;
         this.concurrency = concurrency;

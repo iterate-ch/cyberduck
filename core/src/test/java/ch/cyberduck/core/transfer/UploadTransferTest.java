@@ -11,6 +11,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -361,7 +362,7 @@ public class UploadTransferTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
                             fail();
                             return null;
                         }

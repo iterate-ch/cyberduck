@@ -48,7 +48,7 @@ public class B2DirectoryFeature implements Directory {
     private final Write write;
 
     public B2DirectoryFeature(final B2Session session) {
-        this(session, session.getFeature(Write.class));
+        this(session, session.getFeature(Write.class, new B2WriteFeature(session)));
     }
 
     public B2DirectoryFeature(final B2Session session, final Write write) {

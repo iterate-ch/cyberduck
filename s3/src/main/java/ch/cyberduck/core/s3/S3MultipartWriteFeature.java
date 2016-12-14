@@ -91,7 +91,7 @@ public class S3MultipartWriteFeature implements Write {
         return new HttpResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
-            public List<MultipartPart> getResponse() throws BackgroundException {
+            public List<MultipartPart> getStatus() throws BackgroundException {
                 return stream.getCompleted();
             }
         };

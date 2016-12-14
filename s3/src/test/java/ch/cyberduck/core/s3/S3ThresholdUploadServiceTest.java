@@ -61,7 +61,10 @@ public class S3ThresholdUploadServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+        );
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -79,7 +82,10 @@ public class S3ThresholdUploadServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+        );
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -116,7 +122,11 @@ public class S3ThresholdUploadServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L);
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), 5 * 1024L,
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())),
+                new S3MultipartUploadService(session)
+
+        );
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));

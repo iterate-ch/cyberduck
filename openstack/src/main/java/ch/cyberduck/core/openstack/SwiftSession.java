@@ -244,7 +244,11 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this, regionService);
+            return (T) new SwiftThresholdUploadService(this, regionService,
+                    new SwiftLargeObjectUploadFeature(this, regionService,
+                            PreferencesFactory.get().getLong("openstack.upload.largeobject.size"),
+                            PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency")),
+                    new SwiftSmallObjectUploadFeature(this.getFeature(Write.class, new SwiftWriteFeature(this, regionService))));
         }
         if(type == Directory.class) {
             return (T) new SwiftDirectoryFeature(this, regionService, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));

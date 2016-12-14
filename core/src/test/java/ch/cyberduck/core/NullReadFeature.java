@@ -1,4 +1,4 @@
-package ch.cyberduck.core.io;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -16,21 +16,21 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.NullOutputStream;
-import org.junit.Test;
+import org.apache.commons.io.input.NullInputStream;
 
-public class DefaultStreamCloserTest {
+import java.io.InputStream;
 
-    @Test(expected = InteroperabilityException.class)
-    public void testClose() throws Exception {
-        new DefaultStreamCloser().close(new HttpResponseOutputStream<Void>(new NullOutputStream()) {
-            @Override
-            public Void getStatus() throws BackgroundException {
-                throw new InteroperabilityException("d");
-            }
-        });
+public class NullReadFeature implements Read {
+    @Override
+    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+        return new NullInputStream(0L);
+    }
+
+    @Override
+    public boolean offset(final Path file) throws BackgroundException {
+        return false;
     }
 }

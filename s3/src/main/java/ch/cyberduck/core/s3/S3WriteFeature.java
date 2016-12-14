@@ -49,29 +49,30 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.util.List;
 import java.util.Map;
 
-public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write {
+public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
     private static final Logger log = Logger.getLogger(S3WriteFeature.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final S3Session session;
-
     private final PathContainerService containerService
             = new S3PathContainerService();
 
+    private final S3Session session;
     private final S3MultipartService multipartService;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session), session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new S3DefaultMultipartService(session),
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, multipartService,
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,

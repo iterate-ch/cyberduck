@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -46,14 +46,12 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.text.MessageFormat;
 
-public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
+public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private final Session<?> session;
-    private final HttpWriteFeature<Output> writer;
+    private final Write<Reply> writer;
 
-    public HttpUploadFeature(final Session<?> session, final HttpWriteFeature<Output> writer) {
-        this.session = session;
+    public HttpUploadFeature(final Write<Reply> writer) {
         this.writer = writer;
     }
 
@@ -63,26 +61,26 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
     }
 
     @Override
-    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                        final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return this.upload(file, local, throttle, listener, status, status, status);
     }
 
-    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle,
-                         final StreamListener listener, final TransferStatus status,
-                         final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                        final StreamListener listener, final TransferStatus status,
+                        final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
         try {
             InputStream in;
             final Digest digest = this.digest();
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);
-            final HttpResponseOutputStream<Output> out = writer.write(file, status);
+            final StatusOutputStream<Reply> out = writer.write(file, status);
             new StreamCopier(cancel, progress)
                     .withOffset(status.getOffset())
                     .withLimit(status.getLength())
                     .withListener(listener)
                     .transfer(in, new ThrottledOutputStream(out, throttle));
-            final Output response = out.getResponse();
+            final Reply response = out.getStatus();
             this.post(file, digest, response);
             return response;
         }
@@ -102,7 +100,7 @@ public class HttpUploadFeature<Output, Digest> implements Upload<Output> {
         return null;
     }
 
-    protected void post(final Path file, final Digest digest, final Output response) throws BackgroundException {
+    protected void post(final Path file, final Digest digest, final Reply response) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Received response %s", response));
         }

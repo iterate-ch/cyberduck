@@ -45,19 +45,15 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> {
-    private static final Logger log = Logger.getLogger(DriveWriteFeature.class);
+public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
 
     private final DriveSession session;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
 
     public DriveWriteFeature(final DriveSession session) {

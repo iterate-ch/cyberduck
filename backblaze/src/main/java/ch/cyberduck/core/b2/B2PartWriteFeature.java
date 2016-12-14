@@ -37,7 +37,7 @@ import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2GetUploadPartUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
-public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write {
+public class B2PartWriteFeature extends AbstractHttpWriteFeature<B2UploadPartResponse> implements Write<B2UploadPartResponse> {
 
     private final B2Session session;
 

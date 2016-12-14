@@ -32,7 +32,7 @@ public class HttpResponseOutputStreamTest {
         try {
             new HttpResponseOutputStream<Void>(new NullOutputStream()) {
                 @Override
-                public Void getResponse() throws BackgroundException {
+                public Void getStatus() throws BackgroundException {
                     throw new InteroperabilityException("d");
                 }
             }.close();

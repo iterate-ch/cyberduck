@@ -25,19 +25,19 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 
@@ -49,7 +49,7 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudAppendBlob;
 import com.microsoft.azure.storage.core.SR;
 
-public class AzureWriteFeature extends AppendWriteFeature implements Write {
+public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write<Void> {
     private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
 
     private final AzureSession session;
@@ -85,7 +85,7 @@ public class AzureWriteFeature extends AppendWriteFeature implements Write {
     }
 
     @Override
-    public OutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CloudAppendBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getAppendBlobReference(containerService.getKey(file));
@@ -116,7 +116,7 @@ public class AzureWriteFeature extends AppendWriteFeature implements Write {
             else {
                 out = blob.openWriteNew(AccessCondition.generateEmptyCondition(), options, context);
             }
-            return new ProxyOutputStream(out) {
+            return new VoidStatusOutputStream(out) {
                 @Override
                 protected void handleIOException(final IOException e) throws IOException {
                     if(StringUtils.equals(SR.STREAM_CLOSED, e.getMessage())) {

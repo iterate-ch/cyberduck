@@ -162,7 +162,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
 
         @Override
-        public String getResponse() throws BackgroundException {
+        public String getStatus() throws BackgroundException {
             return sessionId;
         }
 
