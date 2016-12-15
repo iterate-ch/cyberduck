@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
@@ -37,6 +38,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHeadersFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -316,6 +318,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == ListService.class) {
             return (T) this;
+        }
+        if(type == Headers.class) {
+            return (T) new DefaultHeadersFeature();
         }
         if(type == Vault.class) {
             return (T) vault;
