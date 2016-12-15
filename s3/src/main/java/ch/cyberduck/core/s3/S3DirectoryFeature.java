@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,14 +26,13 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.IOException;
 
 public class S3DirectoryFeature implements Directory {
 
@@ -83,12 +81,8 @@ public class S3DirectoryFeature implements Directory {
             status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
-            try {
-                write.write(file, status).close();
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
-            }
+            status.setLength(0L);
+            new DefaultStreamCloser().close(write.write(file, status));
         }
     }
 }

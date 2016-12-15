@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -26,9 +25,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import java.io.IOException;
 
 public class SwiftTouchFeature implements Touch {
 
@@ -52,12 +50,8 @@ public class SwiftTouchFeature implements Touch {
     public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
-        try {
-            write.write(file, status).close();
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
-        }
+        status.setLength(0L);
+        new DefaultStreamCloser().close(write.write(file, status));
     }
 
     @Override

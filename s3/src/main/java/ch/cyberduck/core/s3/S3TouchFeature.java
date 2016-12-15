@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -29,12 +28,11 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-
-import java.io.IOException;
 
 public class S3TouchFeature implements Touch {
 
@@ -69,12 +67,8 @@ public class S3TouchFeature implements Touch {
         if(checksum != null) {
             status.setChecksum(checksum.compute(new NullInputStream(0L), status));
         }
-        try {
-            write.write(file, status).close();
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
-        }
+        status.setLength(0L);
+        new DefaultStreamCloser().close(write.write(file, status));
     }
 
     @Override
