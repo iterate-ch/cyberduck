@@ -143,6 +143,10 @@ public class SheetInvoker extends ProxyController {
     }
 
     protected int beginSheet(final NSWindow window) {
+        if(!parent.isVisible()) {
+            log.warn(String.format("Skip diplaying sheet %s for controller %s with no visible window", window, parent));
+            return SheetCallback.CANCEL_OPTION;
+        }
         parent.makeKeyAndOrderFront(null);
         application.beginSheet(window, //sheet
                 parent, // modalForWindow
