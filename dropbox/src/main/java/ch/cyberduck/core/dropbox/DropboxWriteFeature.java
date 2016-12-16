@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -25,6 +24,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -86,13 +86,10 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient());
             final UploadSessionStartUploader start = files.uploadSessionStart();
-            start.getOutputStream().close();
+            new DefaultStreamCloser().close(start.getOutputStream());
             final String sessionId = start.finish().getSessionId();
             final UploadSessionAppendV2Uploader uploader = open(files, sessionId, 0L);
             return new SegmentingUploadProxyOutputStream(file, status, files, uploader, sessionId);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(DbxException ex) {
             throw new DropboxExceptionMappingService().map("Upload failed.", ex, file);

@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -70,12 +71,8 @@ public class SwiftDirectoryFeature implements Directory {
             }
             else {
                 status.setMime("application/directory");
-                try {
-                    write.write(file, status.length(0L)).close();
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
-                }
+                status.setLength(0L);
+                new DefaultStreamCloser().close(write.write(file, status));
             }
         }
         catch(GenericException e) {
