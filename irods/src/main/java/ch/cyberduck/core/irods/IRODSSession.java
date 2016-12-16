@@ -178,7 +178,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         catch(IllegalArgumentException e) {
             throw new LoginFailureException(e.getMessage(), e);
         }
-        return factory.authenticateIRODSAccountUtilizingCachedConnectionIfPresent(account);
+        return factory.authenticateIRODSAccount(account);
     }
 
     @Override
