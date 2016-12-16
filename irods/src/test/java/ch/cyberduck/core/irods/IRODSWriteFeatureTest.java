@@ -81,7 +81,7 @@ public class IRODSWriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(68400);
 
         final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
-        final OutputStream out2 = new IRODSWriteFeature(session1).write(test2, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         out2.close();
 
@@ -128,7 +128,7 @@ public class IRODSWriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(68400);
 
         final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
-        final OutputStream out2 = new IRODSWriteFeature(session1).write(test2, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
         out2.close();
         session2.getClient().getIrodsSession().closeSession(session2.filesystem().getIRODSAccount());
