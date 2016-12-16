@@ -122,7 +122,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            final AuthResponse response = this.authenticate();
+            final AuthResponse response = this.authenticate(client.getIRODSAccessObjectFactory());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connected to %s", response.getStartupResponse()));
             }
@@ -136,7 +136,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
     }
 
-    protected AuthResponse authenticate() throws BackgroundException, JargonException {
+    protected AuthResponse authenticate(final IRODSAccessObjectFactory factory) throws BackgroundException, JargonException {
         final String region = this.getRegion();
         final String resource = this.getResource();
         final String user;
@@ -178,8 +178,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         catch(IllegalArgumentException e) {
             throw new LoginFailureException(e.getMessage(), e);
         }
-        return client.getIRODSAccessObjectFactory()
-                .authenticateIRODSAccountUtilizingCachedConnectionIfPresent(account);
+        return factory.authenticateIRODSAccountUtilizingCachedConnectionIfPresent(account);
     }
 
     @Override
@@ -237,7 +236,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     public final IRODSFileSystemAO filesystem() throws BackgroundException {
         try {
             final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
-            final AuthResponse auth = this.authenticate();
+            final AuthResponse auth = this.authenticate(factory);
             if(!auth.isSuccessful()) {
                 throw new AccessDeniedException(auth.getAuthMessage());
             }
