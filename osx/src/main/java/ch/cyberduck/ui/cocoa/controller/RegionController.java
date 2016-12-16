@@ -66,12 +66,12 @@ public class RegionController extends AlertController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            callback.callback(regionPopup.selectedItem().representedObject());
+            callback.callback(new Location.Name(regionPopup.selectedItem().representedObject()));
         }
     }
 
 
     public interface Callback {
-        void callback(final String region);
+        void callback(final Location.Name region);
     }
 }
