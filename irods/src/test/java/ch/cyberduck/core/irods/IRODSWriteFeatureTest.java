@@ -35,12 +35,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -51,6 +53,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class IRODSWriteFeatureTest {
 
     @BeforeClass
