@@ -34,7 +34,7 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     private final IRODSSession session;
 
     public IRODSWriteFeature(IRODSSession session) {
-        super(session);
+        super(new IRODSFindFeature(session), new IRODSAttributesFinderFeature(session));
         this.session = session;
     }
 
@@ -42,7 +42,7 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     public FileDescriptorOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
-                final IRODSFileSystemAO fs = session.filesystem();
+                final IRODSFileSystemAO fs = session.getClient();
                 return new FileDescriptorOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
                         file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
             }

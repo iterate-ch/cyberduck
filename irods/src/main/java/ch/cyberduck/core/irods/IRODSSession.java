@@ -28,7 +28,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -64,7 +63,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-public class IRODSSession extends SSLSession<IRODSFileSystem> {
+public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 
     private final Preferences preferences
@@ -79,9 +78,11 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     }
 
     @Override
-    protected IRODSFileSystem connect(final HostKeyCallback key) throws BackgroundException {
+    protected IRODSFileSystemAO connect(final HostKeyCallback key) throws BackgroundException {
         try {
-            return this.configure(IRODSFileSystem.instance());
+            final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
+            final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
+            return factory.getIRODSFileSystemAO(this.account(host.getCredentials()));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
@@ -122,7 +123,10 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            final AuthResponse response = this.authenticate(client.getIRODSAccessObjectFactory());
+            final IRODSAccount account = client.getIRODSAccount();
+            account.setUserName(host.getCredentials().getUsername());
+            account.setPassword(host.getCredentials().getPassword());
+            final AuthResponse response = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Connected to %s", response.getStartupResponse()));
             }
@@ -136,12 +140,11 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
     }
 
-    protected AuthResponse authenticate(final IRODSAccessObjectFactory factory) throws BackgroundException, JargonException {
+    protected IRODSAccount account(final Credentials credentials) throws BackgroundException {
         final String region = this.getRegion();
         final String resource = this.getResource();
         final String user;
         final AuthScheme scheme;
-        final Credentials credentials = host.getCredentials();
         if(StringUtils.contains(credentials.getUsername(), ':')) {
             // Support non default auth scheme (PAM)
             user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
@@ -178,13 +181,13 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         catch(IllegalArgumentException e) {
             throw new LoginFailureException(e.getMessage(), e);
         }
-        return factory.authenticateIRODSAccount(account);
+        return account;
     }
 
     @Override
     protected void logout() throws BackgroundException {
         try {
-            client.close();
+            client.getIRODSSession().closeSession();
             client = null;
         }
         catch(JargonException e) {
@@ -231,19 +234,5 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
             return (T) new IRODSHomeFinderService(this);
         }
         return super._getFeature(type);
-    }
-
-    public final IRODSFileSystemAO filesystem() throws BackgroundException {
-        try {
-            final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
-            final AuthResponse auth = this.authenticate(factory);
-            if(!auth.isSuccessful()) {
-                throw new AccessDeniedException(auth.getAuthMessage());
-            }
-            return factory.getIRODSFileSystemAO(auth.getAuthenticatedIRODSAccount());
-        }
-        catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map(e);
-        }
     }
 }

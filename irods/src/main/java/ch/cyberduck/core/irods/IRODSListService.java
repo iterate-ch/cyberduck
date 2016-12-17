@@ -25,15 +25,11 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.Checksum;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
-import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.io.File;
@@ -51,7 +47,7 @@ public class IRODSListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
             if(!f.exists()) {
                 throw new NotfoundException(directory.getAbsolute());
@@ -62,13 +58,6 @@ public class IRODSListService implements ListService {
                     continue;
                 }
                 final PathAttributes attributes = new PathAttributes();
-                final ObjStat stats = fs.getObjStat(file.getAbsolutePath());
-                attributes.setModificationDate(stats.getModifiedAt().getTime());
-                attributes.setCreationDate(stats.getCreatedAt().getTime());
-                attributes.setSize(stats.getObjSize());
-                attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
-                attributes.setOwner(stats.getOwnerName());
-                attributes.setGroup(stats.getOwnerZone());
                 children.add(new Path(directory, PathNormalizer.name(normalized),
                         file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
                         attributes));

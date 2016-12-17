@@ -42,7 +42,7 @@ public class IRODSDirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             fs.mkdir(f, false);
         }

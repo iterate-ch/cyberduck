@@ -68,7 +68,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                            final StreamListener listener, final TransferStatus status,
                            final ConnectionCallback callback) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                     preferences.getInteger("connection.retry"));
