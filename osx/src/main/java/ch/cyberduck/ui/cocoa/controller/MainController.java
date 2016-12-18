@@ -1342,16 +1342,14 @@ public class MainController extends BundleController implements NSApplication.De
             log.debug(String.format("Application will quit with notification %s", notification));
         }
         this.invalidate();
-
         // Clear temporary files
         TemporaryFileServiceFactory.get().shutdown();
-
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();
-
+        // Remove notifications from center
+        NotificationServiceFactory.get().unregister();
         // Disable update
         updater.unregister();
-
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
         preferences.save();
