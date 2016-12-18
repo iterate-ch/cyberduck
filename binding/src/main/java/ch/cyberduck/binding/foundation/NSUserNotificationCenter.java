@@ -20,7 +20,6 @@ package ch.cyberduck.binding.foundation;
  */
 
 import org.rococoa.ObjCClass;
-import org.rococoa.cocoa.foundation.NSObject;
 
 public abstract class NSUserNotificationCenter extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSUserNotificationCenter", _Class.class);
@@ -49,4 +48,6 @@ public abstract class NSUserNotificationCenter extends NSObject {
     // Cancels a notification. If the deliveryDate occurs before the cancellation finishes, the notification
     // may still be delivered. If the notification is not in the scheduled list, nothing happens.
     public abstract void removeScheduledNotification(NSUserNotification notification);
+
+    public abstract void removeAllDeliveredNotifications();
 }

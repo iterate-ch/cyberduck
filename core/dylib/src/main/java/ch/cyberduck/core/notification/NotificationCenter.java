@@ -23,6 +23,8 @@ import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 
+import org.rococoa.Foundation;
+
 public class NotificationCenter implements NotificationService {
 
     private final NSUserNotificationCenter center
@@ -35,7 +37,9 @@ public class NotificationCenter implements NotificationService {
 
     @Override
     public void unregister() {
-        //
+        if(center.respondsToSelector(Foundation.selector("removeAllDeliveredNotifications"))) {
+            center.removeAllDeliveredNotifications();
+        }
     }
 
     private NSUserNotification create(final String title, final String description) {
