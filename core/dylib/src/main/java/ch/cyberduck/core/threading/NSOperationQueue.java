@@ -15,11 +15,12 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.foundation.NSObject;
+
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSArray;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSObject;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class NSOperationQueue extends NSObject {
