@@ -38,7 +38,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.irods.jargon</groupId>
+            <groupId>ch.iterate.jargon</groupId>
             <artifactId>jargon-core</artifactId>
             <version>4.1.10.0-SNAPSHOT</version>
             <exclusions>
