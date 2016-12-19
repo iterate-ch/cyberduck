@@ -15,15 +15,22 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
 import org.apache.log4j.Logger;
+
+import java.net.URI;
+import java.text.MessageFormat;
 
 public class CryptoUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
@@ -41,7 +48,15 @@ public class CryptoUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         try {
-            return delegate.toUrl(vault.encrypt(session, file));
+            final Path encrypt = vault.encrypt(session, file);
+            final DescriptiveUrlBag set = delegate.toUrl(encrypt);
+            set.add(new DescriptiveUrl(URI.create(String.format("%s%s",
+                    new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute()))),
+                    DescriptiveUrl.Type.provider,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                            LocaleFactory.localizedString("Encrypted", "Cryptomator")))
+            );
+            return set;
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure encrypting filename. %s", e.getMessage()));
