@@ -23,6 +23,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultLookupListener;
 
@@ -37,9 +38,15 @@ public class SingleSessionPool implements SessionPool, VaultLookupListener {
 
     public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
                              final PasswordCallback password) {
+        this(connect, session, cache, new DisabledVaultLookupListener());
+        session.addListener(new LoadingVaultLookupListener(session, this, password));
+    }
+
+    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
+                             final VaultLookupListener listener) {
         this.connect = connect;
         this.session = session;
-        this.session.addListener(new LoadingVaultLookupListener(this, session, password));
+        this.session.addListener(listener);
         this.cache = cache;
     }
 

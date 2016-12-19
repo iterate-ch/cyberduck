@@ -25,7 +25,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -34,7 +33,7 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -47,7 +46,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.NoSuchElementException;
 
-public class DefaultSessionPool implements SessionPool, VaultLookupListener {
+public class DefaultSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
@@ -66,11 +65,6 @@ public class DefaultSessionPool implements SessionPool, VaultLookupListener {
 
     private SessionPool features = SessionPool.DISCONNECTED;
 
-    /**
-     * Shared vault
-     */
-    private Vault vault = Vault.DISABLED;
-
     private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
@@ -85,14 +79,10 @@ public class DefaultSessionPool implements SessionPool, VaultLookupListener {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, password, this, cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, password, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
-    }
-
-    public void found(final Vault vault) throws BackgroundException {
-        this.vault = vault;
     }
 
     public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
@@ -157,12 +147,8 @@ public class DefaultSessionPool implements SessionPool, VaultLookupListener {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache, password);
+                        features = new SingleSessionPool(connect, session, cache, new DisabledVaultLookupListener());
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Inject vault %s for session %s", vault, session));
-                    }
-                    session.withVault(new PooledVault(vault));
                     return session;
                 }
                 catch(IllegalStateException e) {
@@ -278,8 +264,6 @@ public class DefaultSessionPool implements SessionPool, VaultLookupListener {
             log.info(String.format("Clear idle connections in pool %s", this));
         }
         pool.clear();
-        vault.close();
-        vault = Vault.DISABLED;
     }
 
     @Override

@@ -23,10 +23,13 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class PooledVault implements Vault {
     private static final Logger log = Logger.getLogger(PooledVault.class);
 
     private final Vault delegate;
+    private final AtomicInteger open = new AtomicInteger(0);
 
     public PooledVault(final Vault delegate) {
         this.delegate = delegate;
@@ -39,7 +42,10 @@ public final class PooledVault implements Vault {
 
     @Override
     public Vault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
-        return delegate.load(session, prompt);
+        if(1 == open.incrementAndGet()) {
+            delegate.load(session, prompt);
+        }
+        return this;
     }
 
     /**
@@ -48,6 +54,9 @@ public final class PooledVault implements Vault {
     @Override
     public void close() {
         log.warn(String.format("Keep vault %s open for pool", delegate));
+        if(0 == open.decrementAndGet()) {
+            delegate.close();
+        }
     }
 
     @Override

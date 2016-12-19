@@ -26,10 +26,12 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
     private final Session<?> session;
+    private final VaultLookupListener listener;
     private final PasswordCallback prompt;
 
     public LoadingVaultLookupListener(final Session<?> session, final VaultLookupListener listener, final PasswordCallback prompt) {
         this.session = session;
+        this.listener = listener;
         this.prompt = prompt;
     }
 
@@ -42,6 +44,6 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("Loading vault %s for session %s", vault, session));
         }
-        vault.load(session, prompt);
+        listener.found(vault.load(session, prompt));
     }
 }
