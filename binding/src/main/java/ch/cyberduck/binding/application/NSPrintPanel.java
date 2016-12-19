@@ -1,6 +1,7 @@
 package ch.cyberduck.binding.application;
 
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 
 import org.rococoa.ObjCClass;
@@ -11,7 +12,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  * a tool written by <a href="http://ochafik.free.fr/">Olivier Chafik</a> that <a href="http://code.google.com/p/jnaerator/wiki/CreditsAndLicense">uses a few opensource projects.</a>.<br>
  * For help, please visit <a href="http://nativelibs4java.googlecode.com/">NativeLibs4Java</a>, <a href="http://rococoa.dev.java.net/">Rococoa</a>, or <a href="http://jna.dev.java.net/">JNA</a>.
  */
-public abstract class NSPrintPanel extends org.rococoa.cocoa.foundation.NSObject implements org.rococoa.ObjCObject {
+public abstract class NSPrintPanel extends NSObject implements org.rococoa.ObjCObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPrintPanel", _Class.class);
 
 

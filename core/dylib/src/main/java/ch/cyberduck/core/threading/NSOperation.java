@@ -15,9 +15,10 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.foundation.NSObject;
+
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSObject;
 
 public abstract class NSOperation extends NSObject {
     public static final _Class CLASS = Rococoa.createClass(NSOperation.class.getSimpleName(), _Class.class);

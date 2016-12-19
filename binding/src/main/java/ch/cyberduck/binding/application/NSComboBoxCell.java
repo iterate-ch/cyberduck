@@ -19,6 +19,8 @@ package ch.cyberduck.binding.application;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSObject;
+
 import org.rococoa.ObjCClass;
 
 /**
@@ -57,7 +59,7 @@ public abstract class NSComboBoxCell extends NSTextFieldCell {
      * Original signature : <code>-(id)intercellSpacing</code><br>
      * <i>native declaration : NSComboBoxCell.h:40</i>
      */
-    public abstract org.rococoa.cocoa.foundation.NSObject intercellSpacing();
+    public abstract NSObject intercellSpacing();
     /**
      * <i>native declaration : NSComboBoxCell.h:41</i><br>
      * Conversion Error : /// Original signature : <code>-(void)setIntercellSpacing:()</code><br>
@@ -237,13 +239,13 @@ public abstract class NSComboBoxCell extends NSTextFieldCell {
      * Original signature : <code>-(id)itemObjectValueAtIndex:(NSInteger)</code><br>
      * <i>native declaration : NSComboBoxCell.h:82</i>
      */
-    public abstract org.rococoa.cocoa.foundation.NSObject itemObjectValueAtIndex(org.rococoa.cocoa.foundation.NSInteger index);
+    public abstract NSObject itemObjectValueAtIndex(org.rococoa.cocoa.foundation.NSInteger index);
 
     /**
      * Original signature : <code>-(id)objectValueOfSelectedItem</code><br>
      * <i>native declaration : NSComboBoxCell.h:83</i>
      */
-    public abstract org.rococoa.cocoa.foundation.NSObject objectValueOfSelectedItem();
+    public abstract NSObject objectValueOfSelectedItem();
 
     /**
      * Original signature : <code>-(NSInteger)indexOfItemWithObjectValue:(id)</code><br>
