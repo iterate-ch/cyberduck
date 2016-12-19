@@ -45,7 +45,7 @@ public class IRODSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             try {
-                final IRODSFileSystemAO fs = session.filesystem();
+                final IRODSFileSystemAO fs = session.getClient();
                 final IRODSFileFactory factory = fs.getIRODSFileFactory();
                 final IRODSFile f = factory.instanceIRODSFile(file.getAbsolute());
                 if(f.exists()) {

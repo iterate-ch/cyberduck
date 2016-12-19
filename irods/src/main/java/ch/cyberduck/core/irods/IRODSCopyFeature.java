@@ -41,7 +41,7 @@ public class IRODSCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                     .getDataTransferOperations(fs.getIRODSAccount());
             transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),

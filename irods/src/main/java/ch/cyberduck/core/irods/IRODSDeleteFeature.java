@@ -58,15 +58,15 @@ public class IRODSDeleteFeature extends ThreadedDeleteFeature implements Delete 
                 public void delete(final Path file) throws BackgroundException {
                     callback.delete(file);
                     try {
-                        final IRODSFile f = session.filesystem().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+                        final IRODSFile f = session.getClient().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
                         if(!f.exists()) {
                             throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
                         }
                         if(f.isFile()) {
-                            session.filesystem().fileDeleteForce(f);
+                            session.getClient().fileDeleteForce(f);
                         }
                         else if(f.isDirectory()) {
-                            session.filesystem().directoryDeleteForce(f);
+                            session.getClient().directoryDeleteForce(f);
                         }
                     }
                     catch(JargonException e) {

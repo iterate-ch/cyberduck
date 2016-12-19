@@ -41,7 +41,7 @@ public class IRODSAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(!f.exists()) {
                 throw new NotfoundException(file.getAbsolute());

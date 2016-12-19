@@ -60,7 +60,7 @@ public class IRODSFindFeature implements Find {
             return false;
         }
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             final boolean found = fs.isFileExists(f);
             if(found) {

@@ -51,7 +51,7 @@ public class IRODSListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(directory.getAbsolute());
             if(!f.exists()) {
                 throw new NotfoundException(directory.getAbsolute());

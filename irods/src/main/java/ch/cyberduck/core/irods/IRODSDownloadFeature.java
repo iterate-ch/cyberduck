@@ -56,7 +56,7 @@ public class IRODSDownloadFeature implements Download {
                          final StreamListener listener, final TransferStatus status,
                          final ConnectionCallback callback) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(f.exists()) {
                 final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,

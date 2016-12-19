@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -31,6 +30,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
@@ -40,6 +40,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -50,6 +51,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
@@ -59,6 +61,156 @@ public class IRODSWriteFeatureTest {
     @BeforeClass
     public static void protocol() {
         ProtocolFactory.register(new IRODSProtocol());
+    }
+
+    @Test
+    public void testWriteConcurrent() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+
+        final IRODSSession session1 = new IRODSSession(host);
+        session1.open(new DisabledHostKeyCallback());
+        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final IRODSSession session2 = new IRODSSession(host);
+        session2.open(new DisabledHostKeyCallback());
+        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+
+        final byte[] content = RandomUtils.nextBytes(68400);
+
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
+        // Error code received from iRODS:-23000
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
+
+        {
+            final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+            final byte[] buffer1 = new byte[content.length];
+            IOUtils.readFully(in1, buffer1);
+            in1.close();
+            assertArrayEquals(content, buffer1);
+        }
+        {
+            final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
+            final byte[] buffer2 = new byte[content.length];
+            IOUtils.readFully(in2, buffer2);
+            in2.close();
+            assertArrayEquals(content, buffer2);
+        }
+        session1.close();
+        session2.close();
+    }
+
+    @Test
+    public void testWriteThreaded() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+        ));
+
+        final IRODSSession session1 = new IRODSSession(host);
+        session1.open(new DisabledHostKeyCallback());
+        session1.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final IRODSSession session2 = new IRODSSession(host);
+        session2.open(new DisabledHostKeyCallback());
+        session2.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+
+        final CountDownLatch cw1 = new CountDownLatch(1);
+        final CountDownLatch cw2 = new CountDownLatch(1);
+
+        final Path test1 = new Path(new IRODSHomeFinderService(session1).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test2 = new Path(new IRODSHomeFinderService(session2).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+
+        final byte[] content = RandomUtils.nextBytes(68400);
+
+        final OutputStream out1 = new IRODSWriteFeature(session1).write(test1, new TransferStatus().append(false).length(content.length));
+        final OutputStream out2 = new IRODSWriteFeature(session2).write(test2, new TransferStatus().append(false).length(content.length));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out2);
+                }
+                catch(BackgroundException e) {
+                    fail();
+                }
+                finally {
+                    cw1.countDown();
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out1);
+                }
+                catch(BackgroundException e) {
+                    fail();
+                }
+                finally {
+                    cw2.countDown();
+                }
+            }
+        }).start();
+
+        cw1.await();
+        cw2.await();
+
+        final CountDownLatch cr1 = new CountDownLatch(1);
+        final CountDownLatch cr2 = new CountDownLatch(1);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final InputStream in1 = session1.getFeature(Read.class).read(test1, new TransferStatus());
+                    final byte[] buffer1 = new byte[content.length];
+                    IOUtils.readFully(in1, buffer1);
+                    in1.close();
+                    assertArrayEquals(content, buffer1);
+                }
+                catch(Exception e) {
+                    fail();
+                }
+                finally {
+                    cr1.countDown();
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final InputStream in2 = session2.getFeature(Read.class).read(test2, new TransferStatus());
+                    final byte[] buffer2 = new byte[content.length];
+                    IOUtils.readFully(in2, buffer2);
+                    in2.close();
+                    assertArrayEquals(content, buffer2);
+                }
+                catch(Exception e) {
+                    fail();
+                }
+                finally {
+                    cr2.countDown();
+                }
+            }
+        }).start();
+
+        cr1.await();
+        cr2.await();
+
+        session1.close();
+        session2.close();
     }
 
     @Test
@@ -89,10 +241,9 @@ public class IRODSWriteFeatureTest {
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            out.close();
             assertTrue(session.getFeature(Find.class).find(test));
 
-            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(content.length, attributes.getSize());
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
@@ -115,10 +266,9 @@ public class IRODSWriteFeatureTest {
             assertNotNull(out);
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
-            out.close();
             assertTrue(session.getFeature(Find.class).find(test));
 
-            final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+            final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
@@ -161,10 +311,9 @@ public class IRODSWriteFeatureTest {
         assertNotNull(out);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
-        final PathAttributes attributes = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
 
         final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus());
@@ -188,10 +337,9 @@ public class IRODSWriteFeatureTest {
         assertNotNull(out_append);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content_append), out_append);
-        out_append.close();
         assertTrue(session.getFeature(Find.class).find(test));
 
-        final PathAttributes attributes_complete = session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes_complete = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(content.length + content_append.length, attributes_complete.getSize());
 
         final InputStream in_append = session.getFeature(Read.class).read(test, new TransferStatus());

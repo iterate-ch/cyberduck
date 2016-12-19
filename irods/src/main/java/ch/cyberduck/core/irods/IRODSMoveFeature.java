@@ -41,7 +41,7 @@ public class IRODSMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            final IRODSFileSystemAO fs = session.filesystem();
+            final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile s = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
             if(!s.exists()) {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));

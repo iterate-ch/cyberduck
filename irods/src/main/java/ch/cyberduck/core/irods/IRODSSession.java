@@ -63,13 +63,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-public class IRODSSession extends SSLSession<IRODSFileSystem> {
+public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     private static final Logger log = Logger.getLogger(IRODSSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
-
-    private IRODSFileSystemAO filesystem;
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -80,9 +78,11 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     }
 
     @Override
-    protected IRODSFileSystem connect(final HostKeyCallback key) throws BackgroundException {
+    protected IRODSFileSystemAO connect(final HostKeyCallback key) throws BackgroundException {
         try {
-            return this.configure(IRODSFileSystem.instance());
+            final IRODSFileSystem fs = this.configure(IRODSFileSystem.instance());
+            final IRODSAccessObjectFactory factory = fs.getIRODSAccessObjectFactory();
+            return factory.getIRODSFileSystemAO(this.account(host.getCredentials()));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
@@ -123,54 +123,14 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
         try {
-            final String region = this.getRegion();
-            final String resource = this.getResource();
-            final String user;
-            final AuthScheme scheme;
-            final Credentials credentials = host.getCredentials();
-            if(StringUtils.contains(credentials.getUsername(), ':')) {
-                // Support non default auth scheme (PAM)
-                user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
-                // Defaults to standard if not found
-                scheme = AuthScheme.findTypeByString(StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0]);
+            final IRODSAccount account = client.getIRODSAccount();
+            account.setUserName(host.getCredentials().getUsername());
+            account.setPassword(host.getCredentials().getPassword());
+            final AuthResponse response = client.getIRODSAccessObjectFactory().authenticateIRODSAccount(account);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Connected to %s", response.getStartupResponse()));
             }
-            else {
-                user = credentials.getUsername();
-                // We can default to Standard if not specified
-                scheme = AuthScheme.STANDARD;
-            }
-            final IRODSAccount account;
-            try {
-                account = new IRODSAccount(host.getHostname(), host.getPort(),
-                        user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(), region, resource) {
-                    @Override
-                    public URI toURI(final boolean includePassword) throws JargonException {
-                        try {
-                            return new URI(String.format("irods://%s.%s%s@%s:%d%s",
-                                    this.getUserName(),
-                                    this.getZone(),
-                                    includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
-                                    this.getHost(),
-                                    this.getPort(),
-                                    URIEncoder.encode(this.getHomeDirectory())));
-                        }
-                        catch(URISyntaxException e) {
-                            throw new JargonException(e.getMessage());
-                        }
-                    }
-                };
-                account.setAuthenticationScheme(scheme);
-            }
-            catch(IllegalArgumentException e) {
-                throw new LoginFailureException(e.getMessage(), e);
-            }
-
-            final IRODSAccessObjectFactory factory = client.getIRODSAccessObjectFactory();
-            final AuthResponse auth = factory.authenticateIRODSAccount(account);
-            if(auth.isSuccessful()) {
-                filesystem = factory.getIRODSFileSystemAO(auth.getAuthenticatedIRODSAccount());
-            }
-            else {
+            if(!response.isSuccessful()) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
                         "Login {0} with username and password", "Credentials"), host.getHostname()));
             }
@@ -180,11 +140,54 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
         }
     }
 
+    protected IRODSAccount account(final Credentials credentials) throws BackgroundException {
+        final String region = this.getRegion();
+        final String resource = this.getResource();
+        final String user;
+        final AuthScheme scheme;
+        if(StringUtils.contains(credentials.getUsername(), ':')) {
+            // Support non default auth scheme (PAM)
+            user = StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[1];
+            // Defaults to standard if not found
+            scheme = AuthScheme.findTypeByString(StringUtils.splitPreserveAllTokens(credentials.getUsername(), ':')[0]);
+        }
+        else {
+            user = credentials.getUsername();
+            // We can default to Standard if not specified
+            scheme = AuthScheme.STANDARD;
+        }
+        final IRODSAccount account;
+        try {
+            account = new IRODSAccount(host.getHostname(), host.getPort(),
+                    user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(), region, resource) {
+                @Override
+                public URI toURI(final boolean includePassword) throws JargonException {
+                    try {
+                        return new URI(String.format("irods://%s.%s%s@%s:%d%s",
+                                this.getUserName(),
+                                this.getZone(),
+                                includePassword ? String.format(":%s", this.getPassword()) : StringUtils.EMPTY,
+                                this.getHost(),
+                                this.getPort(),
+                                URIEncoder.encode(this.getHomeDirectory())));
+                    }
+                    catch(URISyntaxException e) {
+                        throw new JargonException(e.getMessage());
+                    }
+                }
+            };
+            account.setAuthenticationScheme(scheme);
+        }
+        catch(IllegalArgumentException e) {
+            throw new LoginFailureException(e.getMessage(), e);
+        }
+        return account;
+    }
+
     @Override
     protected void logout() throws BackgroundException {
         try {
-            client.close();
-            filesystem = null;
+            client.getIRODSSession().closeSession();
             client = null;
         }
         catch(JargonException e) {
@@ -231,9 +234,5 @@ public class IRODSSession extends SSLSession<IRODSFileSystem> {
             return (T) new IRODSHomeFinderService(this);
         }
         return super._getFeature(type);
-    }
-
-    public final IRODSFileSystemAO filesystem() {
-        return filesystem;
     }
 }
