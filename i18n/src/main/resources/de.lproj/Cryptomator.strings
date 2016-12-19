@@ -7,8 +7,11 @@
 "Passphrase" = "Passwort";
 "Confirm Passphrase" = "Passwort bestätigen";
 
-"Very weak" = "Very weak";
-"Weak" = "Weak";
-"Fair" = "Fair";
-"Strong" = "Strong";
-"Very strong" = "Very strong";
+"Very weak" = "Sehr schwach";
+"Weak" = "Schwach";
+"Fair" = "Mittelmässig";
+"Strong" = "Stark";
+"Very strong" = "Sehr stark";
+
+"Encrypted" = "Verschlüsselte";
+"Decrypted" = "Entschlüsselte";
