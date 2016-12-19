@@ -53,9 +53,11 @@ public final class PooledVault implements Vault {
      */
     @Override
     public void close() {
-        log.warn(String.format("Keep vault %s open for pool", delegate));
         if(0 == open.decrementAndGet()) {
             delegate.close();
+        }
+        else {
+            log.warn(String.format("Keep vault %s open for pool", delegate));
         }
     }
 
