@@ -100,10 +100,16 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     }
 
     public void addListener(final TranscriptListener listener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Add listener %s", listener));
+        }
         transcriptListeners.add(listener);
     }
 
     public void addListener(final VaultLookupListener listener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Add listener %s", listener));
+        }
         vaultListeners.add(listener);
     }
 
@@ -328,8 +334,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == ListService.class) {
             if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
                 return (T) new VaultFinderListService(vault, this, this,
-                        new VaultFinderListProgressListener(this, PasswordStoreFactory.get(),
-                                new DelegatingVaultLookupListener(vaultListeners)));
+                        new VaultFinderListProgressListener(PasswordStoreFactory.get(), new DelegatingVaultLookupListener(vaultListeners)));
             }
             return (T) this;
         }
