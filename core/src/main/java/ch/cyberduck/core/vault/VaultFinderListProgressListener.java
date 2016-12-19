@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -35,10 +34,8 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     private final PasswordStore keychain;
     private final VaultLookupListener listener;
-    private final Session<?> session;
 
-    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final VaultLookupListener listener) {
-        this.session = session;
+    public VaultFinderListProgressListener(final PasswordStore keychain, final VaultLookupListener listener) {
         this.keychain = keychain;
         this.listener = listener;
     }
@@ -56,10 +53,6 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             if(f.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
                 final Vault vault = VaultFactory.get(directory, keychain);
                 if(vault.equals(Vault.DISABLED)) {
-                    return;
-                }
-                if(session.getFeature(Vault.class).equals(vault)) {
-                    log.warn(String.format("Ignore vault %s found already loaded", vault));
                     return;
                 }
                 try {

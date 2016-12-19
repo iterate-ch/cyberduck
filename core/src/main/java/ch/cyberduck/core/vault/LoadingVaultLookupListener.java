@@ -25,12 +25,10 @@ import org.apache.log4j.Logger;
 public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
-    private final VaultLookupListener proxy;
     private final Session<?> session;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final VaultLookupListener proxy, final Session<?> session, final PasswordCallback prompt) {
-        this.proxy = proxy;
+    public LoadingVaultLookupListener(final Session<?> session, final VaultLookupListener listener, final PasswordCallback prompt) {
         this.session = session;
         this.prompt = prompt;
     }
@@ -40,6 +38,10 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("Loading vault %s for session %s", vault, session));
         }
-        proxy.found(vault.load(session, prompt));
+        if(session.getFeature(Vault.class).equals(vault)) {
+            log.warn(String.format("Ignore vault %s found already loaded", vault));
+            return;
+        }
+        vault.load(session, prompt);
     }
 }
