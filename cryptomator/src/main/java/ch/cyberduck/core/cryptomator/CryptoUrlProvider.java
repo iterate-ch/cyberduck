@@ -48,8 +48,8 @@ public class CryptoUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         try {
+            final DescriptiveUrlBag set = delegate.toUrl(file);
             final Path encrypt = vault.encrypt(session, file);
-            final DescriptiveUrlBag set = delegate.toUrl(encrypt);
             set.add(new DescriptiveUrl(URI.create(String.format("%s%s",
                     new HostUrlProvider(false).get(session.getHost()), URIEncoder.encode(encrypt.getAbsolute()))),
                     DescriptiveUrl.Type.provider,
