@@ -19,8 +19,6 @@ import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -28,7 +26,6 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -37,7 +34,6 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.core.vault.LookupVault;
 import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.commons.pool2.PooledObject;
@@ -51,7 +47,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.NoSuchElementException;
 
-public class DefaultSessionPool implements SessionPool {
+public class DefaultSessionPool implements SessionPool, VaultLookupListener {
     private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
@@ -62,7 +58,6 @@ public class DefaultSessionPool implements SessionPool {
 
     private final ConnectionService connect;
     private final ProgressListener progress;
-    private final PasswordStore keychain;
     private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
@@ -79,10 +74,8 @@ public class DefaultSessionPool implements SessionPool {
     private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final PasswordStore keychain, final PasswordCallback password,
-                              final PathCache cache, final ProgressListener progress, final Host bookmark) {
+                              final PasswordCallback password, final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
-        this.keychain = keychain;
         this.password = password;
         this.cache = cache;
         this.bookmark = bookmark;
@@ -92,14 +85,14 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(
-                new PooledSessionFactory(connect, trust, key,
-                        PreferencesFactory.get().getBoolean("cryptomator.enable") ?
-                                new LookupVault(keychain, password, new SessionPoolVaultListener()) : Vault.DISABLED,
-                        cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, password, this, cache, bookmark), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
+    }
+
+    public void found(final Vault vault) throws BackgroundException {
+        this.vault = vault;
     }
 
     public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
@@ -164,16 +157,12 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache, keychain, password);
+                        features = new SingleSessionPool(connect, session, cache, password);
                     }
-                    if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                        if(Vault.DISABLED != vault) {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Inject vault %s for session %s", vault, session));
-                            }
-                            session.withVault(new PooledVault(vault));
-                        }
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Inject vault %s for session %s", vault, session));
                     }
+                    session.withVault(new PooledVault(vault));
                     return session;
                 }
                 catch(IllegalStateException e) {
@@ -348,81 +337,5 @@ public class DefaultSessionPool implements SessionPool {
         sb.append("bookmark=").append(bookmark);
         sb.append('}');
         return sb.toString();
-    }
-
-    public class SessionPoolVaultListener implements VaultLookupListener {
-        @Override
-        public void found(final Vault found) {
-            vault = found;
-        }
-    }
-
-    private class PooledVault implements Vault {
-        final Vault delegate;
-
-        public PooledVault(final Vault delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public Vault create(final Session<?> session, final String region) throws BackgroundException {
-            return delegate.create(session, region);
-        }
-
-        @Override
-        public Vault load(final Session<?> session) throws BackgroundException {
-            return delegate.load(session);
-        }
-
-        /**
-         * Pool that is not closed on disconnect. Close vault when pool is shutdown instead.
-         */
-        @Override
-        public void close() {
-            log.warn(String.format("Keep vault %s open for session pool", delegate));
-        }
-
-        @Override
-        public boolean contains(final Path file) {
-            return delegate.contains(file);
-        }
-
-        @Override
-        public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-            return delegate.encrypt(session, file);
-        }
-
-        @Override
-        public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
-            return delegate.encrypt(session, file, metadata);
-        }
-
-        @Override
-        public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
-            return delegate.decrypt(session, directory, file);
-        }
-
-        @Override
-        public long toCiphertextSize(final long cleartextFileSize) {
-            return delegate.toCiphertextSize(cleartextFileSize);
-        }
-
-        @Override
-        public long toCleartextSize(final long ciphertextFileSize) throws BackgroundException {
-            return delegate.toCleartextSize(ciphertextFileSize);
-        }
-
-        @Override
-        public <T> T getFeature(final Session<?> session, final Class<T> type, final T impl) {
-            return delegate.getFeature(session, type, impl);
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("PooledVault{");
-            sb.append("delegate=").append(delegate);
-            sb.append('}');
-            return sb.toString();
-        }
     }
 }

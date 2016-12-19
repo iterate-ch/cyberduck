@@ -1,4 +1,4 @@
-package ch.cyberduck.core.vault;
+package ch.cyberduck.core.pool;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
@@ -21,73 +21,75 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
-import java.util.Objects;
+import org.apache.log4j.Logger;
 
-public final class DisabledVault implements Vault {
+public final class PooledVault implements Vault {
+    private static final Logger log = Logger.getLogger(PooledVault.class);
+
+    private final Vault delegate;
+
+    public PooledVault(final Vault delegate) {
+        this.delegate = delegate;
+    }
+
     @Override
     public Vault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
-        return this;
+        return delegate.create(session, region, prompt);
     }
 
     @Override
     public Vault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
-        return this;
+        return delegate.load(session, prompt);
     }
 
+    /**
+     * Pool that is not closed on disconnect. Close vault when pool is shutdown instead.
+     */
     @Override
     public void close() {
-        //
+        log.warn(String.format("Keep vault %s open for pool", delegate));
     }
 
     @Override
     public boolean contains(final Path file) {
-        return false;
+        return delegate.contains(file);
     }
 
     @Override
     public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return file;
+        return delegate.encrypt(session, file);
     }
 
     @Override
     public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
-        return file;
+        return delegate.encrypt(session, file, metadata);
     }
 
     @Override
     public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
-        return file;
+        return delegate.decrypt(session, directory, file);
     }
 
     @Override
     public long toCiphertextSize(final long cleartextFileSize) {
-        return cleartextFileSize;
+        return delegate.toCiphertextSize(cleartextFileSize);
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) {
-        return ciphertextFileSize;
+    public long toCleartextSize(final long ciphertextFileSize) throws BackgroundException {
+        return delegate.toCleartextSize(ciphertextFileSize);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-        return delegate;
+    public <T> T getFeature(final Session<?> session, final Class<T> type, final T impl) {
+        return delegate.getFeature(session, type, impl);
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof DisabledVault)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(DisabledVault.class);
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PooledVault{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

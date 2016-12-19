@@ -19,6 +19,7 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
@@ -26,6 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -38,16 +41,18 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private final ConnectionService connect;
     private final X509TrustManager trust;
     private final X509KeyManager key;
-    private final Vault finder;
+    private final PasswordCallback password;
+    private final VaultLookupListener listener;
     private final PathCache cache;
     private final Host bookmark;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final Vault finder, final PathCache cache, final Host bookmark) {
+                                final PasswordCallback password, final VaultLookupListener listener, final PathCache cache, final Host bookmark) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;
-        this.finder = finder;
+        this.password = password;
+        this.listener = listener;
         this.cache = cache;
         this.bookmark = bookmark;
     }
@@ -57,7 +62,9 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
-        return SessionFactory.create(bookmark, trust, key).withVault(finder);
+        final Session<?> session = SessionFactory.create(bookmark, trust, key);
+        session.addListener(new SessionPoolVaultListener(session, new LoadingVaultLookupListener(listener, session, password)));
+        return session;
     }
 
     @Override
@@ -97,5 +104,27 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         sb.append("host=").append(bookmark);
         sb.append('}');
         return sb.toString();
+    }
+
+
+    private static final class SessionPoolVaultListener implements VaultLookupListener {
+        private static final Logger log = Logger.getLogger(SessionPoolVaultListener.class);
+
+        private final Session<?> session;
+        private final VaultLookupListener proxy;
+
+        public SessionPoolVaultListener(final Session<?> session, final VaultLookupListener proxy) {
+            this.session = session;
+            this.proxy = proxy;
+        }
+
+        @Override
+        public void found(final Vault vault) throws BackgroundException {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Pooling vault %s", vault));
+            }
+            session.withVault(vault);
+            proxy.found(new PooledVault(vault));
+        }
     }
 }

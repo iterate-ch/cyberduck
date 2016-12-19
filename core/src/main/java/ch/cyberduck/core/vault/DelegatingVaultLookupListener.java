@@ -18,6 +18,20 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
-public interface VaultLookupListener {
-    void found(Vault vault) throws BackgroundException;
+import java.util.Set;
+
+public class DelegatingVaultLookupListener implements VaultLookupListener {
+
+    private final Set<VaultLookupListener> listeners;
+
+    public DelegatingVaultLookupListener(final Set<VaultLookupListener> listeners) {
+        this.listeners = listeners;
+    }
+
+    @Override
+    public void found(final Vault vault) throws BackgroundException {
+        for(VaultLookupListener l : listeners) {
+            l.found(vault);
+        }
+    }
 }

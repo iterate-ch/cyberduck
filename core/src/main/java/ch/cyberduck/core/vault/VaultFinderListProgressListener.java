@@ -17,7 +17,6 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -35,14 +34,12 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
 
     private final PasswordStore keychain;
-    private final PasswordCallback prompt;
     private final VaultLookupListener listener;
     private final Session<?> session;
 
-    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final PasswordCallback prompt, final VaultLookupListener listener) {
+    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final VaultLookupListener listener) {
         this.session = session;
         this.keychain = keychain;
-        this.prompt = prompt;
         this.listener = listener;
     }
 
@@ -57,7 +54,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             final Path f = list.get(i);
             final Path directory = f.getParent();
             if(f.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
-                final Vault vault = VaultFactory.get(directory, keychain, prompt, listener);
+                final Vault vault = VaultFactory.get(directory, keychain);
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }
@@ -66,7 +63,6 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
                     return;
                 }
                 try {
-                    session.withVault(vault.load(session));
                     listener.found(vault);
                 }
                 catch(BackgroundException e) {
