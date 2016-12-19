@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
