@@ -100,51 +100,51 @@ public class SheetInvoker extends ProxyController {
     }
 
     public int beginSheet() {
-        synchronized(parent) {
-            if(NSThread.isMainThread()) {
-                // No need to call invoke on main thread
-                if(controller != null) {
-                    controller.loadBundle();
-                    return this.beginSheet(controller.window());
-                }
-                else {
-                    return this.beginSheet(window);
-                }
+        if(NSThread.isMainThread()) {
+            // No need to call invoke on main thread
+            if(controller != null) {
+                controller.loadBundle();
+                return this.beginSheet(controller.window());
             }
             else {
-                final SheetInvoker invoker = this;
-                invoke(new ControllerMainAction(this) {
-                    @Override
-                    public void run() {
-                        //Invoke again on main thread
-                        if(controller != null) {
-                            controller.loadBundle();
-                            invoker.beginSheet(controller.window());
-                        }
-                        else {
-                            invoker.beginSheet(window);
-                        }
-                    }
-                }, true);
-                if(log.isDebugEnabled()) {
-                    log.debug("Await sheet dismiss");
-                }
-                // Synchronize on parent controller. Only display one sheet at once.
-                try {
-                    signal.await();
-                }
-                catch(InterruptedException e) {
-                    log.error("Error waiting for sheet dismiss", e);
-                    callback.callback(SheetCallback.CANCEL_OPTION);
-                }
-                return returncode;
+                return this.beginSheet(window);
             }
+        }
+        else {
+            final SheetInvoker invoker = this;
+            invoke(new ControllerMainAction(this) {
+                @Override
+                public void run() {
+                    //Invoke again on main thread
+                    if(controller != null) {
+                        controller.loadBundle();
+                        invoker.beginSheet(controller.window());
+                    }
+                    else {
+                        invoker.beginSheet(window);
+                    }
+                }
+            }, true);
+            if(log.isDebugEnabled()) {
+                log.debug("Await sheet dismiss");
+            }
+            // Synchronize on parent controller. Only display one sheet at once.
+            try {
+                signal.await();
+            }
+            catch(InterruptedException e) {
+                log.error("Error waiting for sheet dismiss", e);
+                callback.callback(SheetCallback.CANCEL_OPTION);
+            }
+            return returncode;
         }
     }
 
     protected int beginSheet(final NSWindow window) {
         if(!parent.isVisible()) {
             log.warn(String.format("Skip diplaying sheet %s for controller %s with no visible window", window, parent));
+            callback.callback(SheetCallback.CANCEL_OPTION);
+            signal.countDown();
             return SheetCallback.CANCEL_OPTION;
         }
         parent.makeKeyAndOrderFront(null);
