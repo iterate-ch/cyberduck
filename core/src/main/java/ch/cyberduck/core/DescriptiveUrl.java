@@ -47,7 +47,8 @@ public class DescriptiveUrl {
         signed,
         torrent,
         authenticated,
-        analytics
+        analytics,
+        encrypted
     }
 
     public DescriptiveUrl(final URI url) {
