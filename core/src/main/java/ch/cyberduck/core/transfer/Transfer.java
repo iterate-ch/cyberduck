@@ -249,7 +249,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public Host getDestination() {
-        return host;
+        return null;
     }
 
     public String getName() {
