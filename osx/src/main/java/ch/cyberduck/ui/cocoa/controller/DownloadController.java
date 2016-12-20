@@ -16,7 +16,6 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.AlertController;
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
@@ -45,11 +44,11 @@ public class DownloadController extends AlertController {
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
 
-    public DownloadController(final WindowController parent) {
-        this(parent, StringUtils.EMPTY);
+    public DownloadController() {
+        this(StringUtils.EMPTY);
     }
 
-    public DownloadController(final WindowController parent, final String url) {
+    public DownloadController(final String url) {
         super(NSAlert.alert(
                 LocaleFactory.localizedString("New Download", "Download"),
                 LocaleFactory.localizedString("URL", "Download"),

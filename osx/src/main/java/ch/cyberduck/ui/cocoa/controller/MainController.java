@@ -496,7 +496,7 @@ public class MainController extends BundleController implements NSApplication.De
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
         final TransferController parent = TransferControllerFactory.get();
-        DownloadController c = new DownloadController(parent);
+        DownloadController c = new DownloadController();
         c.beginSheet(parent);
     }
 
