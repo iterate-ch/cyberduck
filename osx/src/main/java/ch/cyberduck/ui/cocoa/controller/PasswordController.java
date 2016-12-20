@@ -53,11 +53,8 @@ public class PasswordController extends AlertController {
     private final Credentials credentials;
     private final LoginOptions options;
 
-    public PasswordController(final Credentials credentials,
-                              final String title, final String reason, final LoginOptions options) {
-        super(NSAlert.alert(
-                title,
-                reason,
+    public PasswordController(final Credentials credentials, final String title, final String reason, final LoginOptions options) {
+        super(NSAlert.alert(title, reason,
                 LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Alert")
