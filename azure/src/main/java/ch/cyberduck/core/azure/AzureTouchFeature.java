@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class AzureTouchFeature implements Touch {
@@ -43,6 +44,6 @@ public class AzureTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        write.write(file, status);
+        new DefaultStreamCloser().close(write.write(file, status));
     }
 }
