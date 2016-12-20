@@ -74,7 +74,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
     }
 
     @Override
-    public PooledObject<Session> wrap(Session session) {
+    public PooledObject<Session> wrap(final Session session) {
         return new DefaultPooledObject<Session>(session);
     }
 
