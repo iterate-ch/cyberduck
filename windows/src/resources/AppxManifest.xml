@@ -18,7 +18,7 @@
   </Capabilities>
   <Applications>
     <Application Id="Cyberduck" Executable="Cyberduck.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="Cyberduck" Description="Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows." BackgroundColor="#777777" Square150x150Logo="Assets\CyberduckAppx.150x150.png" Square44x44Logo="Assets\CyberduckAppx.44x44.png" />
+      <uap:VisualElements DisplayName="Cyberduck" Description="Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows." BackgroundColor="transparent" Square150x150Logo="Assets\CyberduckAppx.150x150.png" Square44x44Logo="Assets\CyberduckAppx.44x44.png" />
       <Extensions>
         <uap3:Extension Category="windows.fileTypeAssociation">
           <uap3:FileTypeAssociation Name="cyberducklicense" Parameters="&quot;%1&quot;">
