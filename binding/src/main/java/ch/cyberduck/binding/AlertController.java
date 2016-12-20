@@ -48,6 +48,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         this.alert.setAlertStyle(style);
         this.alert.setDelegate(this.id());
         this.setValidator(this);
+        this.setCallback(this);
         final NSWindow window = this.alert.window();
         this.setWindow(window);
     }
@@ -118,11 +119,6 @@ public abstract class AlertController extends SheetController implements SheetCa
      */
     protected void help() {
         new DefaultProviderHelpService().help();
-    }
-
-    @Override
-    public boolean validate() {
-        return true;
     }
 
     /**

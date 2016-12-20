@@ -24,25 +24,21 @@ import ch.cyberduck.ui.InputValidator;
 
 import org.apache.log4j.Logger;
 
-public abstract class SheetController extends WindowController {
+public abstract class SheetController extends WindowController implements SheetCallback, InputValidator {
     private static final Logger log = Logger.getLogger(SheetController.class);
 
     private final NSApplication application = NSApplication.sharedApplication();
 
+    private SheetCallback callback;
     private InputValidator validator;
 
-    private SheetCallback callback = new DisabledSheetCallback();
-
     public SheetController() {
-        this(new InputValidator() {
-            @Override
-            public boolean validate() {
-                return true;
-            }
-        });
+        this.callback = this;
+        this.validator = this;
     }
 
     public SheetController(final InputValidator callback) {
+        this.callback = this;
         this.validator = callback;
     }
 
@@ -52,6 +48,16 @@ public abstract class SheetController extends WindowController {
 
     public void setCallback(final SheetCallback callback) {
         this.callback = callback;
+    }
+
+    @Override
+    public void callback(final int returncode) {
+        //
+    }
+
+    @Override
+    public boolean validate() {
+        return true;
     }
 
     /**
