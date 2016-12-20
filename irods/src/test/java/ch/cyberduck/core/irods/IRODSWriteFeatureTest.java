@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -48,7 +49,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -237,8 +238,9 @@ public class IRODSWriteFeatureTest {
             assertEquals(false, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
             assertEquals(0L, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-            final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status);
             assertNotNull(out);
+            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             assertTrue(session.getFeature(Find.class).find(test));
@@ -262,8 +264,9 @@ public class IRODSWriteFeatureTest {
             assertEquals(true, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).append);
             assertEquals(content.length, new IRODSWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
 
-            final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status);
             assertNotNull(out);
+            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
@@ -278,7 +281,7 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(newcontent, buffer);
         }
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
@@ -352,7 +355,7 @@ public class IRODSWriteFeatureTest {
         System.arraycopy(content_append, 0, complete, content.length, content_append.length);
         assertArrayEquals(complete, buffer_complete);
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

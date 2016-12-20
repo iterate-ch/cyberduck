@@ -28,6 +28,9 @@ import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
+import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
+
+import java.io.OutputStream;
 
 public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
 
@@ -43,8 +46,9 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
         try {
             try {
                 final IRODSFileSystemAO fs = session.getClient();
-                return new FileDescriptorOutputStream(fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
-                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE));
+                final IRODSFileOutputStream out = fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
+                        file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
+                return new FileDescriptorOutputStream(new PackingIrodsOutputStream(out), out.getFileDescriptor());
             }
             catch(JargonRuntimeException e) {
                 if(e.getCause() instanceof JargonException) {
@@ -69,16 +73,16 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     }
 
     private final class FileDescriptorOutputStream extends StatusOutputStream<Integer> {
-        private final IRODSFileOutputStream proxy;
+        private final Integer handle;
 
-        public FileDescriptorOutputStream(final IRODSFileOutputStream proxy) {
+        public FileDescriptorOutputStream(final OutputStream proxy, final Integer handle) {
             super(proxy);
-            this.proxy = proxy;
+            this.handle = handle;
         }
 
         @Override
         public Integer getStatus() throws BackgroundException {
-            return proxy.getFileDescriptor();
+            return handle;
         }
     }
 }
