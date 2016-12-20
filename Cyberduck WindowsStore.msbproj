@@ -27,6 +27,62 @@
         <OutputFilename>$(OutputPath)release/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
     </PropertyGroup>
 
+    <ItemGroup>
+        <AppxManifest Include="windows\src\resources\AppxManifest.xml"/>
+
+        <AssetFiles Include="windows\src\resources\CyberduckAppx.44x44.png"/>
+        <AssetFiles Include="windows\src\resources\CyberduckAppx.50x50.png"/>
+        <AssetFiles Include="windows\src\resources\CyberduckAppx.150x150.png"/>
+
+        <AppFiles Include="$(OutputPath)Cyberduck.exe" />
+        <AppFiles Include="$(OutputPath)Cyberduck.exe.config" />
+        <AppFiles Include="$(OutputPath)ExceptionReporter.WinForms.dll" />
+        <AppFiles Include="$(OutputPath)ActiveButtons.dll" />
+        <AppFiles Include="$(OutputPath)CustomOpenFileFolderDialog.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Core.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Core.Native.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Protocols.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Bonjour.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Bonjour.Native.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Importer.dll" />
+        <AppFiles Include="$(OutputPath)Cyberduck.Cryptomator.dll" />
+        <AppFiles Include="$(OutputPath)WinSparkle.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Beans.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Core.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Charsets.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Localedata.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Security.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Text.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Util.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Management.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.API.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Bind.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Parse.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Transform.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.XPath.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.SwingAWT.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Naming.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Remoting.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.Runtime.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.Runtime.JNI.dll" />
+        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Jdbc.dll" />
+        <AppFiles Include="$(OutputPath)Interop.Bonjour.dll" />
+        <AppFiles Include="$(OutputPath)ObjectListView.dll" />
+        <AppFiles Include="$(OutputPath)StructureMap.dll" />
+        <AppFiles Include="$(OutputPath)VistaBridgeLibrary.dll" />
+        <AppFiles Include="$(OutputPath)Windows7.DesktopIntegration.dll" />
+        <AppFiles Include="$(OutputPath)ikvm-native-win32-x86.dll" />
+        <AppFiles Include="$(OutputPath)jnidispatch.dll" />
+        <AppFiles Include="$(OutputPath)sunmscapi.dll" />
+        <AppFiles Include="$(OutputPath)sunec.dll" />
+
+        <AdditionalFiles Include="$(OutputPath)Acknowledgments.rtf" />
+        <AdditionalFiles Include="$(OutputPath)License.txt" />
+
+        <Profiles Include="$(OutputPath)profiles/Rackspace US.cyberduckprofile" />
+        <Profiles Include="$(OutputPath)profiles/B2.cyberduckprofile" />
+    </ItemGroup>
+
     <Target Name="UsesFrameworkSdk">
         <GetFrameworkSdkPath>
             <Output TaskParameter="Path" PropertyName="FrameworkSdkPath"/>
@@ -44,44 +100,57 @@
     </Target>
 
     <Target Name="Build">
-        <CallTarget Targets="ConvertInstaller"/>
-        <CallTarget Targets="DeleteOldIcons"/>
-        <CallTarget Targets="CopyNewIcons"/>
-        <CallTarget Targets="UpdateManifest"/>
-        <CallTarget Targets="RemoveObsolete"/>
+        <CallTarget Targets="CopyFiles" />
         <CallTarget Targets="MakeAppx"/>
         <CallTarget Targets="SignAppx"/>
     </Target>
 
-    <Target Name="ConvertInstaller">
-        <Exec Command="DesktopAppConverter -Installer &quot;$(CyberduckInstallerPath)&quot; -InstallerArguments &quot;$(CyberduckInstallerArgs)&quot; -Destination &quot;$(IntermediateOutputPath)&quot; -PackageName &quot;$(PackageName)&quot; -Publisher &quot;$(Publisher)&quot; -Version &quot;$(Version)&quot; -AppId &quot;$(AppId)&quot; -AppDisplayName &quot;$(AppDisplayName)&quot; -AppDescription &quot;$(AppDescription)&quot; -PackageDisplayName &quot;$(PackageDisplayName)&quot; -PackagePublisherDisplayName &quot;$(PackagePublisherDisplayName)&quot; -PackageArch &quot;$(Platform)&quot; -Verbose" />
+    <Target Name="CopyFiles">
+        <CallTarget Targets="CopyAppxManifest" />
+        <CallTarget Targets="CopyAppFiles" />
+        <CallTarget Targets="CopyAdditionalFiles" />
+        <CallTarget Targets="CopyProfiles" />
+        <CallTarget Targets="CopyAssetFiles" />
     </Target>
-    <Target Name="DeleteOldIcons">
+
+    <Target Name="CopyAppxManifest">
+        <MakeDir Directories="$(PackageFiles)" />
+        <Copy SourceFiles="@(AppxManifest)" DestinationFolder="$(PackageFiles)" />
         <ItemGroup>
-            <ObsoleteAppxIcons Include="$(PackageFiles)Assets/Sample*.png"/>
+            <TargetAppxManifest Include="$(PackageFiles)AppxManifest.xml" />
         </ItemGroup>
-        <Attrib ReadOnly="False" Files="@(ObsoleteAppxIcons)"/>
-        <Delete Files="@(ObsoleteAppxIcons)"/>
+
+        <FileUpdate Files="@(TargetAppxManifest)"
+            Regex="\$\(Version\)"
+            ReplacementText="$(Version)">
+        </FileUpdate>
     </Target>
-    <Target Name="CopyNewIcons">
+
+    <Target Name="CopyAppFiles">
+        <MakeDir Directories="$(PackageFiles)" />
+        <Copy SourceFiles="@(AppFiles)" DestinationFolder="$(PackageFiles)" />
+    </Target>
+
+    <Target Name="CopyAdditionalFiles">
+        <MakeDir Directories="$(PackageFiles)" />
+        <Copy SourceFiles="@(AdditionalFiles)" DestinationFolder="$(PackageFiles)" />
+    </Target>
+
+    <Target Name="CopyProfiles">
+        <MakeDir Directories="$(PackageFiles)profiles" />
+        <Copy SourceFiles="@(Profiles)" DestinationFolder="$(PackageFiles)profiles" />
+    </Target>
+
+    <Target Name="CopyAssetFiles">
+        <MakeDir Directories="$(PackageFiles)Assets" />
+        <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(PackageFiles)Assets" />
+
         <ItemGroup>
-            <NewAppxIcons Include="windows/src/resources/CyberduckAppx*.png"/>
+            <AppxIcons Include="$(PackageFiles)Assets\Cyberduck*.png"/>
         </ItemGroup>
-        <Copy SourceFiles="@(NewAppxIcons)" DestinationFolder="$(PackageFiles)\Assets"/>
-        <ItemGroup>
-            <AppxIcons Include="$(PackageFiles)Assets/Cyberduck*.png"/>
-        </ItemGroup>
-        <Attrib ReadOnly="True" Archive="True" Files="@(AppxIcons)"/>
+        <Attrib ReadOnly="True" Archive="True" Files="@(AppxIcons)" />
     </Target>
-    <Target Name="UpdateManifest">
-        <FileUpdate
-                Files="$(PackageFiles)AppxManifest.xml"
-                Regex="Assets\\SampleAppx"
-                ReplacementText="Assets\CyberduckAppx"/>
-    </Target>
-    <Target Name="RemoveObsolete">
-        <RemoveDir Directories="$(VFS)/Common AppData;$(VFS)/Users"/>
-    </Target>
+
     <Target Name="MakeAppx">
         <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
     </Target>
