@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -75,7 +76,7 @@ public class B2DirectoryFeature implements Directory {
             else {
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(new NullInputStream(0L), status.length(0L)));
                 status.setMime(MIMETYPE);
-                write.write(file, status);
+                new DefaultStreamCloser().close(write.write(file, status));
             }
         }
         catch(B2ApiException e) {
