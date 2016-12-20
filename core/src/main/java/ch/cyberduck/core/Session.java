@@ -219,6 +219,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         state = State.closed;
         vault.close();
         transcriptListeners.clear();
+        vaultListeners.clear();
     }
 
     /**
