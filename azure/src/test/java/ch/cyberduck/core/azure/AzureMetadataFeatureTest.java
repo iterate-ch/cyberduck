@@ -60,15 +60,11 @@ public class AzureMetadataFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session).touch(test, new TransferStatus());
         final AzureMetadataFeature service = new AzureMetadataFeature(session, null);
-        service.setMetadata(test, Collections.<String, String>singletonMap("Cache-Control",
-                "public, max-age=0"));
+        service.setMetadata(test, Collections.singletonMap("Cache-Control", "public, max-age=0"));
         final Map<String, String> metadata = service.getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Cache-Control"));
         assertEquals("public, max-age=0", metadata.get("Cache-Control"));
-        // Make sure content type is not deleted
-        assertTrue(metadata.containsKey("Content-Type"));
-        assertEquals("application/octet-stream", metadata.get("Content-Type"));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
