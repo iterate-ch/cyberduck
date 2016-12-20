@@ -51,16 +51,20 @@ public class S3TouchFeature implements Touch {
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setMime(mapping.getMime(file.getName()));
-        final Encryption encryption = session.getFeature(Encryption.class);
-        if(encryption != null) {
-            status.setEncryption(encryption.getDefault(file));
+        if(Encryption.Algorithm.NONE == status.getEncryption()) {
+            final Encryption encryption = session.getFeature(Encryption.class);
+            if(encryption != null) {
+                status.setEncryption(encryption.getDefault(file));
+            }
         }
-        final Redundancy redundancy = session.getFeature(Redundancy.class);
-        if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault());
+        if(null == status.getStorageClass()) {
+            final Redundancy redundancy = session.getFeature(Redundancy.class);
+            if(redundancy != null) {
+                status.setStorageClass(redundancy.getDefault());
+            }
         }
-        final ChecksumCompute checksum = session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256));
-        if(checksum != null) {
+        if(null == status.getChecksum()) {
+            final ChecksumCompute checksum = session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256));
             status.setChecksum(checksum.compute(new NullInputStream(0L), status));
         }
         status.setLength(0L);
