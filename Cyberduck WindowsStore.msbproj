@@ -21,10 +21,14 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <OutputFilename>$(OutputPath)debug/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+        <AppxDirectory>$(OutputPath)debug\</AppxDirectory>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <OutputFilename>$(OutputPath)release/Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+        <AppxDirectory>$(OutputPath)release\</AppxDirectory>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputFilename>$(AppxDirectory)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
     </PropertyGroup>
 
     <ItemGroup>
@@ -152,6 +156,7 @@
     </Target>
 
     <Target Name="MakeAppx">
+        <MakeDir Directories="$(AppxDirectory)" />
         <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
     </Target>
     <Target Name="SignAppx" DependsOnTargets="UsesSignTool">
