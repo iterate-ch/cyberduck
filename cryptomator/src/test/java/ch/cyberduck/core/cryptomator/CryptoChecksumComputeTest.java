@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -64,14 +63,12 @@ public class CryptoChecksumComputeTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        }, new DisabledVaultLookupListener());
-        vault.create(session, null);
+        });
         final Cryptor cryptor = vault.getCryptor();
         final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024

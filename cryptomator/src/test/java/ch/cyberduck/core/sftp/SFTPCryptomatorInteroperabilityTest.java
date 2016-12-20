@@ -30,7 +30,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -63,17 +62,18 @@ public class SFTPCryptomatorInteroperabilityTest {
     private static SshServer server;
     private CryptoFileSystem cryptoFileSystem;
     private String passphrase;
-    private Path vault;
 
     @Before
-    public void start() throws Exception {
-        createCryptoFileSystem();
-
+    public void startSerer() throws Exception {
         server = SshServer.setUpDefaultServer();
         server.setPort(PORT_NUMBER);
         server.setPasswordAuthenticator((username, password, session) -> true);
         server.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
         server.setSubsystemFactories(Collections.singletonList(new SftpSubsystem.Factory()));
+        final java.nio.file.Path tempDir = Files.createTempDirectory(String.format("%s-", this.getClass().getName()));
+        final java.nio.file.Path vault = tempDir.resolve("vault");
+        passphrase = RandomStringUtils.randomAlphanumeric(25);
+        cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath().toString()));
         server.start();
     }
@@ -83,30 +83,6 @@ public class SFTPCryptomatorInteroperabilityTest {
         server.stop();
         cryptoFileSystem.close();
         FileUtils.deleteDirectory(cryptoFileSystem.getPathToVault().getParent().toFile());
-    }
-
-    private void createCryptoFileSystem() throws Exception {
-        final java.nio.file.Path tempDir = Files.createTempDirectory("RealFileSystemIntegrationTest");
-        final java.nio.file.Path vault = tempDir.resolve("vault");
-        passphrase = RandomStringUtils.randomAlphanumeric(25);
-        cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
-    }
-
-    private SFTPSession loadRemoteVault() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = session.getFeature(Home.class).find();
-        vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
-        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore(), new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword(passphrase);
-            }
-        }, new DisabledVaultLookupListener()).load(session);
-        session.withVault(cryptomator);
-        return session;
     }
 
     /**
@@ -123,7 +99,19 @@ public class SFTPCryptomatorInteroperabilityTest {
         Files.write(targetFile, content);
 
         // read with Cyberduck and compare
-        SFTPSession session = this.loadRemoteVault();
+        final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path home = session.getFeature(Home.class).find();
+        final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).load(session, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword(passphrase);
+            }
+        });
+        session.withVault(cryptomator);
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = session.getFeature(Read.class).read(p, new TransferStatus());
         final byte[] readContent = new byte[content.length];

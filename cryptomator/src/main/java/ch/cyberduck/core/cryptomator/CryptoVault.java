@@ -38,9 +38,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultException;
-import ch.cyberduck.core.vault.VaultFinderListProgressListener;
-import ch.cyberduck.core.vault.VaultFinderListService;
-import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -89,30 +86,26 @@ public class CryptoVault implements Vault {
      */
     private final Path home;
     private final PasswordStore keychain;
-    private final PasswordCallback callback;
-    private final VaultLookupListener listener;
 
     private Cryptor cryptor;
     private CryptoFilenameProvider filenameProvider;
     private CryptoDirectoryIdProvider directoryIdProvider;
     private CryptoDirectoryProvider directoryProvider;
 
-    public CryptoVault(final Path home, final PasswordStore keychain, final PasswordCallback callback, final VaultLookupListener listener) {
+    public CryptoVault(final Path home, final PasswordStore keychain) {
         this.home = home;
         this.keychain = keychain;
-        this.callback = callback;
-        this.listener = listener;
     }
 
     @Override
-    public CryptoVault create(final Session<?> session, final String region) throws BackgroundException {
+    public CryptoVault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
         final Credentials credentials = new Credentials();
-        callback.prompt(credentials,
+        prompt.prompt(credentials,
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
@@ -143,7 +136,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public CryptoVault load(final Session<?> session) throws BackgroundException {
+    public CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
         final Path key = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt to read master key from %s", key));
@@ -167,14 +160,14 @@ public class CryptoVault implements Vault {
                 return LocaleFactory.localizedString("Passphrase", "Cryptomator");
             }
         };
-        this.unlock(key, master, credentials,
+        this.unlock(key, master, credentials, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
 
-    private void unlock(final Path file, final KeyFile master, final Credentials credentials, final String message) throws LoginCanceledException, VaultException {
+    private void unlock(final Path file, final KeyFile master, final Credentials credentials, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
         if(null == credentials.getPassword()) {
-            callback.prompt(credentials,
+            prompt.prompt(credentials,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
@@ -188,7 +181,7 @@ public class CryptoVault implements Vault {
         catch(CryptoAuthenticationException e) {
             credentials.setPassword(null);
             this.unlock(file, master, credentials,
-                    String.format("%s %s.", e.getDetail(),
+                    prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
         finally {
@@ -376,9 +369,7 @@ public class CryptoVault implements Vault {
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
         if(cryptor != null) {
             if(type == ListService.class) {
-                return (T) new CryptoListService(session,
-                        new VaultFinderListService(this, session, (ListService) delegate,
-                                new VaultFinderListProgressListener(session, keychain, callback, listener)), this);
+                return (T) new CryptoListService(session, (ListService) delegate, this);
             }
             if(type == Touch.class) {
                 return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);

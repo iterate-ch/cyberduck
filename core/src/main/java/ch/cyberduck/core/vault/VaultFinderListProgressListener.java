@@ -17,10 +17,8 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.features.Vault;
@@ -28,6 +26,7 @@ import ch.cyberduck.core.features.Vault;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
@@ -35,14 +34,11 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
 
     private final PasswordStore keychain;
-    private final PasswordCallback prompt;
     private final VaultLookupListener listener;
-    private final Session<?> session;
+    private final AtomicBoolean found = new AtomicBoolean();
 
-    public VaultFinderListProgressListener(final Session<?> session, final PasswordStore keychain, final PasswordCallback prompt, final VaultLookupListener listener) {
-        this.session = session;
+    public VaultFinderListProgressListener(final PasswordStore keychain, final VaultLookupListener listener) {
         this.keychain = keychain;
-        this.prompt = prompt;
         this.listener = listener;
     }
 
@@ -52,28 +48,34 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     }
 
     @Override
+    public IndexedListProgressListener reset() {
+        found.set(false);
+        return super.reset();
+    }
+
+    @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
-        for(int i = index; i < list.size(); i++) {
-            final Path f = list.get(i);
-            final Path directory = f.getParent();
-            if(f.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
-                final Vault vault = VaultFactory.get(directory, keychain, prompt, listener);
-                if(vault.equals(Vault.DISABLED)) {
-                    return;
+        if(!found.get()) {
+            for(int i = index; i < list.size(); i++) {
+                final Path f = list.get(i);
+                final Path directory = f.getParent();
+                if(f.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
+                    final Vault vault = VaultFactory.get(directory, keychain);
+                    if(vault.equals(Vault.DISABLED)) {
+                        return;
+                    }
+                    try {
+                        listener.found(vault);
+                    }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+                        return;
+                    }
+                    finally {
+                        found.set(true);
+                    }
+                    throw new VaultFinderListCanceledException(vault, list);
                 }
-                if(session.getFeature(Vault.class).equals(vault)) {
-                    log.warn(String.format("Ignore vault %s found already loaded", vault));
-                    return;
-                }
-                try {
-                    session.withVault(vault.load(session));
-                    listener.found(vault);
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
-                    return;
-                }
-                throw new VaultFinderListCanceledException(vault, list);
             }
         }
     }

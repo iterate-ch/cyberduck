@@ -46,7 +46,7 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), keychain, password, cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), password, cache, controller, bookmark
         )
                 .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))

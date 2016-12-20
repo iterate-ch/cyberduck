@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -72,10 +71,10 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()), SessionPool.DISCONNECTED,
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DisabledPasswordCallback()), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()), SessionPool.DISCONNECTED,
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DisabledPasswordCallback()), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
@@ -118,9 +117,9 @@ public class TransferBackgroundActionTest {
         final Session destination = new NullSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new SingleSessionPool(
-                        new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
+                        new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordCallback()),
                 new SingleSessionPool(
-                        new TestLoginConnectionService(), destination, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
+                        new TestLoginConnectionService(), destination, PathCache.empty(), new DisabledPasswordCallback()),
                 new TransferListener() {
                     @Override
                     public void start(final Transfer transfer) {
@@ -177,9 +176,9 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean stop = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new SingleSessionPool(
-                        new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()),
+                        new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordCallback()),
                 new SingleSessionPool(
-                        new TestLoginConnectionService(), destination, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()), new TransferListener() {
+                        new TestLoginConnectionService(), destination, PathCache.empty(), new DisabledPasswordCallback()), new TransferListener() {
             @Override
             public void start(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -228,7 +227,7 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean retry = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host) {
+                new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host) {
             @Override
             public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());

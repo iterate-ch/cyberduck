@@ -18,18 +18,18 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.DisabledVaultLookupListener;
-import ch.cyberduck.core.vault.LookupVault;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.log4j.Logger;
 
-public class SingleSessionPool implements SessionPool {
+public class SingleSessionPool implements SessionPool, VaultLookupListener {
     private static final Logger log = Logger.getLogger(SingleSessionPool.class);
 
     private final ConnectionService connect;
@@ -37,12 +37,16 @@ public class SingleSessionPool implements SessionPool {
     private final PathCache cache;
 
     public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final PasswordStore keychain, final PasswordCallback prompt) {
+                             final PasswordCallback password) {
+        this(connect, session, cache, new DisabledVaultLookupListener());
+        session.addListener(new LoadingVaultLookupListener(session, this, password));
+    }
+
+    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
+                             final VaultLookupListener listener) {
         this.connect = connect;
         this.session = session;
-        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            session.withVault(new LookupVault(keychain, prompt, new DisabledVaultLookupListener()));
-        }
+        this.session.addListener(listener);
         this.cache = cache;
     }
 
@@ -99,5 +103,10 @@ public class SingleSessionPool implements SessionPool {
         sb.append("session=").append(session);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public void found(final Vault vault) throws BackgroundException {
+        session.withVault(vault);
     }
 }

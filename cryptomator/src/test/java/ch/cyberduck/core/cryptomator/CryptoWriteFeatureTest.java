@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
 import org.junit.Test;
 
@@ -61,14 +60,13 @@ public class CryptoWriteFeatureTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
+        vault.create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        }, new DisabledVaultLookupListener());
-        vault.create(session, null);
+        });
         int headerSize = vault.getCryptor().fileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0));

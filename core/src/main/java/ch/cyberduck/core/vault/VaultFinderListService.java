@@ -51,12 +51,8 @@ public class VaultFinderListService implements ListService {
                 return delegate.list(directory, new ProxyListProgressListener(finder, listener));
             }
             catch(VaultFinderListCanceledException finder) {
-                // Run again with decrypting list worker
-                final ListService service = proxy.getFeature(ListService.class);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Switch list service to %s", service));
-                }
-                return service.list(directory, listener);
+                final Vault cryptomator = finder.getVault();
+                return delegate.list(cryptomator.encrypt(proxy, directory), new DecryptingListProgressListener(proxy, cryptomator, directory, listener));
             }
             finally {
                 finder.reset();

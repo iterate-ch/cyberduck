@@ -5,7 +5,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
@@ -66,7 +65,7 @@ public class SessionListWorkerTest {
             }
         };
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()), worker));
+                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordCallback()), worker));
         assertTrue(task.get().isEmpty());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
@@ -91,7 +90,7 @@ public class SessionListWorkerTest {
             }
         };
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(
-                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordStore(), new DisabledPasswordCallback()), worker));
+                new TestLoginConnectionService(), session, PathCache.empty(), new DisabledPasswordCallback()), worker));
         assertNotNull(task.get());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }

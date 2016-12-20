@@ -132,7 +132,7 @@ public class ConcurrentTransferWorkerTest {
                 }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                         new DisabledProgressListener(), new DisabledTranscriptListener()),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordStore(), new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host);
+                new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {

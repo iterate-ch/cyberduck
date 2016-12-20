@@ -30,7 +30,6 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -76,15 +75,15 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        assertSame(f, vault.encrypt(session, f));
+        vault.load(session, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
-        }, new DisabledVaultLookupListener());
-        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
-        assertSame(f, vault.encrypt(session, f));
-        vault.load(session);
+        });
         assertNotSame(f, vault.encrypt(session, f));
     }
 
@@ -121,22 +120,22 @@ public class CryptoVaultTest {
         };
         final AtomicBoolean prompt = new AtomicBoolean();
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                if(!prompt.get()) {
-                    assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
-                    credentials.setPassword("null");
-                }
-                if(prompt.get()) {
-                    assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault “/“.", reason);
-                    throw new LoginCanceledException();
-                }
-                prompt.set(true);
-            }
-        }, new DisabledVaultLookupListener());
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         try {
-            vault.load(session);
+            vault.load(session, new DisabledPasswordCallback() {
+                @Override
+                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    if(!prompt.get()) {
+                        assertEquals("Provide your passphrase to unlock the Cryptomator Vault “/“", reason);
+                        credentials.setPassword("null");
+                    }
+                    if(prompt.get()) {
+                        assertEquals("Failure to decrypt master key file. Provide your passphrase to unlock the Cryptomator Vault “/“.", reason);
+                        throw new LoginCanceledException();
+                    }
+                    prompt.set(true);
+                }
+            });
             fail();
         }
         catch(LoginCanceledException e) {
@@ -177,14 +176,14 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore(), new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        }, new DisabledVaultLookupListener());
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         try {
-            vault.load(session);
+            vault.load(session, new DisabledPasswordCallback() {
+                @Override
+                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    throw new LoginCanceledException();
+                }
+            });
             fail();
         }
         catch(LoginCanceledException e) {
@@ -216,13 +215,13 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+                home, new DisabledPasswordStore());
+        vault.create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        }, new DisabledVaultLookupListener());
-        vault.create(session, null);
+        });
     }
 
     @Test
@@ -249,13 +248,13 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(
-                home, new DisabledPasswordStore(), new DisabledPasswordCallback() {
+                home, new DisabledPasswordStore());
+        vault.create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("pwd");
             }
-        }, new DisabledVaultLookupListener());
-        vault.create(session, null);
+        });
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);

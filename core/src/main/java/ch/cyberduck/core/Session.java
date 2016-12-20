@@ -49,6 +49,10 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.vault.DelegatingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultFinderListProgressListener;
+import ch.cyberduck.core.vault.VaultFinderListService;
+import ch.cyberduck.core.vault.VaultLookupListener;
 
 import org.apache.log4j.Logger;
 
@@ -73,6 +77,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected C client;
 
     private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
+    private final Set<VaultLookupListener> vaultListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -94,8 +99,18 @@ public abstract class Session<C> implements ListService, TranscriptListener {
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
-    public void addListener(final TranscriptListener transcript) {
-        transcriptListeners.add(transcript);
+    public void addListener(final TranscriptListener listener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Add listener %s", listener));
+        }
+        transcriptListeners.add(listener);
+    }
+
+    public void addListener(final VaultLookupListener listener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Add listener %s", listener));
+        }
+        vaultListeners.add(listener);
     }
 
     public enum State {
@@ -317,6 +332,10 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DisabledQuotaFeature();
         }
         if(type == ListService.class) {
+            if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+                return (T) new VaultFinderListService(vault, this, this,
+                        new VaultFinderListProgressListener(PasswordStoreFactory.get(), new DelegatingVaultLookupListener(vaultListeners)));
+            }
             return (T) this;
         }
         if(type == Headers.class) {
