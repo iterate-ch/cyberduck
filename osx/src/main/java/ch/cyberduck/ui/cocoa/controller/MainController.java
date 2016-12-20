@@ -988,19 +988,6 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Loading Transfers";
             }
         });
-        this.background(new AbstractBackgroundAction<Void>() {
-            @Override
-            public Void run() throws BackgroundException {
-                // Make sure we register to Growl first
-                NotificationServiceFactory.get().setup();
-                return null;
-            }
-
-            @Override
-            public String getActivity() {
-                return "Registering Growl";
-            }
-        });
         final Rendezvous bonjour = RendezvousFactory.instance();
 
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
