@@ -47,6 +47,11 @@ namespace Ch.Cyberduck.Core.AquaticPrime
 			return true;
 		}
 
+		public override string ToString()
+		{
+			return LocaleFactory.localizedString("Unknown");
+		}
+
 		public bool verify()
 		{
 			StoreContext storeContext = StoreContext.GetDefault();
