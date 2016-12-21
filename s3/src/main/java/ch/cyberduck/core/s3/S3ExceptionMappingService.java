@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.jets3t.service.ServiceException;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
@@ -90,6 +91,9 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         }
         if(e.getCause() instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
+        }
+        if(e.getCause() instanceof SAXException) {
+            return new InteroperabilityException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
