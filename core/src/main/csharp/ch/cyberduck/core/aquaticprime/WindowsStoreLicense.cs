@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Core.AquaticPrime
 
 		public override string ToString()
 		{
-			return LocaleFactory.localizedString("Unknown");
+			return string.Format(LocaleFactory.localizedString("Registered to {0}", "License"), getName());
 		}
 
 		public bool verify()
