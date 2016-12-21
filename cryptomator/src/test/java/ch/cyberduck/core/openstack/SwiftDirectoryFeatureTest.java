@@ -15,6 +15,7 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -31,7 +32,6 @@ import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,7 +41,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
@@ -56,9 +55,9 @@ public class SwiftDirectoryFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = session.getFeature(Home.class).find();
-        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path home = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -80,8 +79,8 @@ public class SwiftDirectoryFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = session.getFeature(Home.class).find();
-        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path home = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
             @Override
