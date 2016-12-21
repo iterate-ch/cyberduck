@@ -52,6 +52,9 @@ public class VaultFinderListService implements ListService {
             }
             catch(VaultFinderListCanceledException finder) {
                 final Vault cryptomator = finder.getVault();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Found vault %s", cryptomator));
+                }
                 return delegate.list(cryptomator.encrypt(proxy, directory), new DecryptingListProgressListener(proxy, cryptomator, directory, listener));
             }
             finally {
