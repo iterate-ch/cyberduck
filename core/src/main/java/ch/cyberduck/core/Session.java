@@ -50,6 +50,7 @@ import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.DelegatingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultFinderBulkService;
 import ch.cyberduck.core.vault.VaultFinderListProgressListener;
 import ch.cyberduck.core.vault.VaultFinderListService;
 import ch.cyberduck.core.vault.VaultLookupListener;
@@ -76,8 +77,8 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     protected C client;
 
-    private final Set<TranscriptListener> transcriptListeners = new HashSet<>();
-    private final Set<VaultLookupListener> vaultListeners = new HashSet<>();
+    protected final Set<TranscriptListener> transcriptListeners = new HashSet<>();
+    protected final Set<VaultLookupListener> vaultListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -286,12 +287,24 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
-        return vault.getFeature(this, type, this._getFeature(type));
+        return this.getFeature(type, this._getFeature(type));
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
-        return vault.getFeature(this, type, feature);
+        final T impl = vault.getFeature(this, type, feature);
+        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
+            if(type == ListService.class) {
+                return (T) new VaultFinderListService(vault, this, (ListService) impl,
+                        new VaultFinderListProgressListener(PasswordStoreFactory.get(),
+                                new DelegatingVaultLookupListener(vaultListeners)));
+            }
+            if(type == Bulk.class) {
+                return (T) new VaultFinderBulkService(PasswordStoreFactory.get(), vault, (Bulk) impl,
+                        new DelegatingVaultLookupListener(vaultListeners));
+            }
+        }
+        return impl;
     }
 
     @SuppressWarnings("unchecked")
@@ -333,10 +346,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DisabledQuotaFeature();
         }
         if(type == ListService.class) {
-            if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-                return (T) new VaultFinderListService(vault, this, this,
-                        new VaultFinderListProgressListener(PasswordStoreFactory.get(), new DelegatingVaultLookupListener(vaultListeners)));
-            }
             return (T) this;
         }
         if(type == Headers.class) {
