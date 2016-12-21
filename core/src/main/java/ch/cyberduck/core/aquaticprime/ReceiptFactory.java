@@ -84,8 +84,8 @@ public class ReceiptFactory extends LicenseFactory {
         else {
             log.error(String.format("Invalid receipt found in %s", file));
             System.exit(APPSTORE_VALIDATION_FAILURE);
+            return null;
         }
-        return null;
     }
 
     @Override
