@@ -165,7 +165,7 @@ public class CryptoVault implements Vault {
         return this;
     }
 
-    private void unlock(final Path file, final KeyFile master, final Credentials credentials, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
+    private void unlock(final Path key, final KeyFile master, final Credentials credentials, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
         if(null == credentials.getPassword()) {
             prompt.prompt(credentials,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
@@ -175,12 +175,12 @@ public class CryptoVault implements Vault {
         try {
             this.open(master, credentials.getPassword());
             if(credentials.isSaved()) {
-                keychain.addPassword(credentials.getUsername(), file.getAbsolute(), credentials.getPassword());
+                keychain.addPassword(credentials.getUsername(), key.getAbsolute(), credentials.getPassword());
             }
         }
         catch(CryptoAuthenticationException e) {
             credentials.setPassword(null);
-            this.unlock(file, master, credentials,
+            this.unlock(key, master, credentials,
                     prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
@@ -287,9 +287,8 @@ public class CryptoVault implements Vault {
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     final Path decrypted = new Path(directory, cleartextFilename,
-                            inflated.getName().startsWith(DIR_PREFIX) ?
-                                    EnumSet.of(Path.Type.directory, Path.Type.decrypted) :
-                                    EnumSet.of(Path.Type.file, Path.Type.decrypted), file.attributes());
+                            EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
+                            file.attributes());
                     if(decrypted.isDirectory()) {
                         final Permission permission = decrypted.attributes().getPermission();
                         permission.setUser(permission.getUser().or(Permission.Action.execute));

@@ -45,11 +45,6 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
     private final PathCache cache;
     private final Host bookmark;
 
-    /**
-     * Shared vault for pool of sessions
-     */
-    private Vault vault = Vault.DISABLED;
-
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                                 final PasswordCallback prompt, final PathCache cache, final Host bookmark) {
         this.connect = connect;
@@ -66,10 +61,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
             log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
         final Session<?> session = SessionFactory.create(bookmark, trust, key);
-        session.addListener(new SessionPoolVaultListener(new LoadingVaultLookupListener(session, this, prompt)));
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Inject vault %s for session %s", vault, session));
-        }
+        session.addListener(new LoadingVaultLookupListener(session, this, prompt));
         return session;
     }
 
@@ -85,8 +77,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
             log.debug(String.format("Activate session %s", session));
         }
         // Load vault to increment open count for pooled vault
-        connect.check(session.withVault(vault), cache);
-        vault.load(session, prompt);
+        connect.check(session, cache);
     }
 
     @Override
@@ -118,27 +109,6 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
     public void found(final Vault vault) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Assign vault %s for pool %s", vault, this));
-        }
-        // Count down open count for pooled vault
-        this.vault.close();
-        this.vault = vault;
-    }
-
-    private static final class SessionPoolVaultListener implements VaultLookupListener {
-        private static final Logger log = Logger.getLogger(SessionPoolVaultListener.class);
-
-        private final VaultLookupListener proxy;
-
-        public SessionPoolVaultListener(final VaultLookupListener proxy) {
-            this.proxy = proxy;
-        }
-
-        @Override
-        public void found(final Vault vault) throws BackgroundException {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Pooling vault %s", vault));
-            }
-            proxy.found(new PooledVault(vault));
         }
     }
 }
