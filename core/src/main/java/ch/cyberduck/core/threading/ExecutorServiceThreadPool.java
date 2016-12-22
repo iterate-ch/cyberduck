@@ -15,11 +15,15 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -66,6 +70,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
     @Override
     public void await() throws BackgroundException {
         while(size.get() > 0) {
+            final Set<BackgroundException> failures = new HashSet<>();
             try {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
@@ -76,17 +81,27 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
                 }
             }
             catch(InterruptedException e) {
-                throw new ConnectionCanceledException(e);
+                failures.add(new ConnectionCanceledException(e));
             }
             catch(ExecutionException e) {
                 log.warn(String.format("Task failed with execution failure %s", e.getMessage()));
                 if(e.getCause() instanceof BackgroundException) {
-                    throw (BackgroundException) e.getCause();
+                    failures.add((BackgroundException) e.getCause());
                 }
-                throw new BackgroundException(e);
+                else {
+                    failures.add(new BackgroundException(e));
+                }
             }
             finally {
                 size.decrementAndGet();
+            }
+            if(!failures.isEmpty()) {
+                final StringAppender appender = new StringAppender(System.getProperty("line.separator").charAt(0));
+                for(BackgroundException f : failures) {
+                    appender.append(StringUtils.capitalize(f.getDetail()));
+                }
+                throw new BackgroundException(failures.iterator().next().getMessage(),
+                        appender.toString(), failures.iterator().next());
             }
         }
     }
