@@ -31,7 +31,6 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -49,11 +48,8 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.vault.DelegatingVaultLookupListener;
-import ch.cyberduck.core.vault.VaultFinderBulkService;
-import ch.cyberduck.core.vault.VaultFinderListProgressListener;
-import ch.cyberduck.core.vault.VaultFinderListService;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.DisabledVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
@@ -71,14 +67,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected final Host host;
 
     /**
-     * Cryptomator
+     * Connection
      */
-    protected Vault vault = Vault.DISABLED;
-
     protected C client;
+    protected VaultRegistry registry = new DisabledVaultRegistry();
 
     protected final Set<TranscriptListener> transcriptListeners = new HashSet<>();
-    protected final Set<VaultLookupListener> vaultListeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -107,11 +101,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         transcriptListeners.add(listener);
     }
 
-    public void addListener(final VaultLookupListener listener) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Add listener %s", listener));
-        }
-        vaultListeners.add(listener);
+    public Session<?> withRegistry(final VaultRegistry registry) {
+        this.registry = registry;
+        return this;
     }
 
     public enum State {
@@ -130,12 +122,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     public C getClient() {
         return client;
-    }
-
-    public Session<C> withVault(final Vault vault) {
-        this.vault.close();
-        this.vault = vault;
-        return this;
     }
 
     /**
@@ -218,9 +204,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-        vault.close();
         transcriptListeners.clear();
-        vaultListeners.clear();
     }
 
     /**
@@ -292,19 +276,10 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
-        final T impl = vault.getFeature(this, type, feature);
         if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            if(type == ListService.class) {
-                return (T) new VaultFinderListService(vault, this, (ListService) impl,
-                        new VaultFinderListProgressListener(PasswordStoreFactory.get(),
-                                new DelegatingVaultLookupListener(vaultListeners)));
-            }
-            if(type == Bulk.class) {
-                return (T) new VaultFinderBulkService(PasswordStoreFactory.get(), vault, (Bulk) impl,
-                        new DelegatingVaultLookupListener(vaultListeners));
-            }
+            return registry.getFeature(this, type, feature);
         }
-        return impl;
+        return feature;
     }
 
     @SuppressWarnings("unchecked")
@@ -350,9 +325,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == Headers.class) {
             return (T) new DefaultHeadersFeature();
-        }
-        if(type == Vault.class) {
-            return (T) vault;
         }
         return null;
     }

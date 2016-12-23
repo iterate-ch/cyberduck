@@ -21,6 +21,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 public class SessionPoolFactory {
 
@@ -46,7 +47,7 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), password, cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), new DefaultVaultRegistry(keychain, password), cache, controller, bookmark
         )
                 .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
