@@ -65,7 +65,7 @@ public class SwiftAuthenticationService {
                     credentials.getUsername(), credentials.getPassword(), null)
             );
         }
-        final LoginOptions options = new LoginOptions().password(false);
+        final LoginOptions options = new LoginOptions().password(false).anonymous(false).publickey(false);
         if(context.contains("1.0")) {
             return Collections.singleton(new Authentication10UsernameKeyRequest(URI.create(url.toString()),
                     credentials.getUsername(), credentials.getPassword()));
