@@ -37,13 +37,15 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
 
     @Override
     public void found(final Vault vault) throws BackgroundException {
-        if(registry.contains(vault)) {
-            log.warn(String.format("Ignore vault %s found already loaded", vault));
-            return;
+        synchronized(registry) {
+            if(registry.contains(vault)) {
+                log.warn(String.format("Ignore vault %s found already loaded", vault));
+                return;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Loading vault %s for session %s", vault, session));
+            }
+            registry.found(vault.load(session, prompt));
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Loading vault %s for session %s", vault, session));
-        }
-        registry.found(vault.load(session, prompt));
     }
 }
