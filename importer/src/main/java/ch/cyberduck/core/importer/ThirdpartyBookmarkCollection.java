@@ -79,7 +79,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             }
             Checksum current = null;
             try {
-                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file, file.getInputStream(), new TransferStatus());
+                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(null, file.getInputStream(), new TransferStatus());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Current checksum for %s is %s", file, current));
                 }
