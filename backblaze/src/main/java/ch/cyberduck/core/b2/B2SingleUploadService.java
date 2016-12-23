@@ -59,7 +59,7 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
     public B2FileResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                  final StreamListener listener, final TransferStatus status,
                                  final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(local.getInputStream(), status));
+        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(file, local.getInputStream(), status));
         return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
 

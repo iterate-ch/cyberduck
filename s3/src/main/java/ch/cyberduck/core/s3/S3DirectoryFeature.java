@@ -74,7 +74,7 @@ public class S3DirectoryFeature implements Directory {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(file, new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
             status.setLength(0L);

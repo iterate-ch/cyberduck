@@ -74,7 +74,7 @@ public class B2DirectoryFeature implements Directory {
                 }
             }
             else {
-                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(new NullInputStream(0L), status.length(0L)));
+                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(file, new NullInputStream(0L), status.length(0L)));
                 status.setMime(MIMETYPE);
                 new DefaultStreamCloser().close(write.write(file, status));
             }

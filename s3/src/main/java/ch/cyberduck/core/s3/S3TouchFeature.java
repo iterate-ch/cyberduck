@@ -65,7 +65,7 @@ public class S3TouchFeature implements Touch {
         }
         if(null == status.getChecksum()) {
             final ChecksumCompute checksum = session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256));
-            status.setChecksum(checksum.compute(new NullInputStream(0L), status));
+            status.setChecksum(checksum.compute(file, new NullInputStream(0L), status));
         }
         status.setLength(0L);
         new DefaultStreamCloser().close(write.write(file, status));

@@ -72,17 +72,18 @@ public class CryptoChecksumComputeTest {
         final Cryptor cryptor = vault.getCryptor();
         final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
+        final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
-        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
-        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)),
-                compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)));
-        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
+        assertNotNull(compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
+        assertNotEquals(compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)),
+                compute.compute(file, new NullInputStream(1025L), new TransferStatus().withHeader(header)));
+        assertNotNull(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
         final NullInputStream input = new NullInputStream(0L);
-        assertEquals(compute.compute(input, new TransferStatus().withHeader(header)),
-                compute.compute(input, new TransferStatus().withHeader(header)));
-        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
-                sha.compute(new NullInputStream(0L), new TransferStatus()));
-        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(null)).hash);
+        assertEquals(compute.compute(file, input, new TransferStatus().withHeader(header)),
+                compute.compute(file, input, new TransferStatus().withHeader(header)));
+        assertNotEquals(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(header)),
+                sha.compute(file, new NullInputStream(0L), new TransferStatus()));
+        assertNotNull(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(null)).hash);
     }
 }

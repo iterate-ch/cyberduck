@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -50,15 +51,15 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
         if(null == status.getHeader()) {
             log.warn(String.format("Missing file header in status %s", status));
-            return delegate.compute(in, status);
+            return delegate.compute(file, in, status);
         }
-        return this.compute(in, status.getHeader());
+        return this.compute(file, in, status.getHeader());
     }
 
-    protected Checksum compute(final InputStream in, final ByteBuffer header) throws ChecksumException {
+    protected Checksum compute(final Path file, final InputStream in, final ByteBuffer header) throws ChecksumException {
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
@@ -76,7 +77,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
                     }
                 });
                 try {
-                    return delegate.compute(sink, status);
+                    return delegate.compute(file, sink, status);
                 }
                 finally {
                     try {

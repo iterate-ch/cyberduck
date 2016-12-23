@@ -16,6 +16,7 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,7 +29,7 @@ import java.util.zip.CRC32;
 public class CRC32ChecksumCompute implements ChecksumCompute {
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
         final CRC32 crc32 = new CRC32();
         try {
             byte[] buffer = new byte[16384];

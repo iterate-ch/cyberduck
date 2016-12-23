@@ -59,7 +59,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         switch(signatureVersion) {
             case AWS4HMACSHA256:
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
-                        .compute(local.getInputStream(), status)
+                        .compute(file, local.getInputStream(), status)
                 );
                 break;
         }

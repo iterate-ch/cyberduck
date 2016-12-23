@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -37,7 +38,7 @@ public class VaultRegistryChecksumCompute extends AbstractChecksumCompute implem
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        return proxy.compute(in, status);
+    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+        return registry.find(file).getFeature(session, ChecksumCompute.class, proxy).compute(file, in, status);
     }
 }

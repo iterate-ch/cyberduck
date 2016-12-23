@@ -136,7 +136,7 @@ public class IRODSUploadFeatureTest {
                 new DisabledConnectionCallback());
         assertTrue(status.isComplete());
         assertEquals(content.length, status.getOffset());
-        assertEquals(checksum, new MD5ChecksumCompute().compute(new FileInputStream(local.getAbsolute()), status));
+        assertEquals(checksum, new MD5ChecksumCompute().compute(test, new FileInputStream(local.getAbsolute()), status));
         final byte[] buffer = new byte[content.length];
         final InputStream in = new IRODSReadFeature(session).read(test, new TransferStatus().length(content.length));
         IOUtils.readFully(in, buffer);

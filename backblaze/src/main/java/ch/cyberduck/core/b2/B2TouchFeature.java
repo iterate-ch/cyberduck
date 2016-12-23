@@ -49,7 +49,7 @@ public class B2TouchFeature implements Touch {
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1))
-                .compute(new NullInputStream(0L), status)
+                .compute(file, new NullInputStream(0L), status)
         );
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
