@@ -1870,7 +1870,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewVault()
         {
-            return IsMounted() && vault != null && Workdir!= null;
+            return IsMounted() && Workdir!= null;
         }
 
         private void View_DuplicateFile()
