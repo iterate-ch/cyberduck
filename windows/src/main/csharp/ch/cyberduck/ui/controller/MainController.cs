@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using Windows.Services.Store;
 using Windows7.DesktopIntegration;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -47,22 +48,20 @@ using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Preferences;
+using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
+using StructureMap;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
-using Utils = Ch.Cyberduck.Ui.Core.Utils;
-using StructureMap;
-using ch.cyberduck.core.updater;
-using Windows.Services.Store;
-using Ch.Cyberduck.Ui.Core.UWP;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -71,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
     /// </summary>
     internal class MainController : WindowsFormsApplicationBase, CollectionListener
     {
-        private static readonly Logger Logger = Logger.getLogger(typeof (MainController).FullName);
+        private static readonly Logger Logger = Logger.getLogger(typeof(MainController).FullName);
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
         private static MainController _application;
@@ -363,16 +362,20 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
 
             /* UWP Registration, initialize as soon as possible */
-            if (Cyberduck.Core.Utils.IsUWPSupported)
+            if (Utils.IsUWPSupported)
             {
                 var storeContext = StoreContext.GetDefault();
-                var initWindow = (IInitializeWithWindow)(object)storeContext;
+                var initWindow = (IInitializeWithWindow) (object) storeContext;
                 initWindow.Initialize(MainForm.Handle);
             }
 
             _controller.Background(delegate
             {
-                TransferCollection.defaultCollection().load();
+                var transfers = TransferCollection.defaultCollection();
+                lock (transfers)
+                {
+                    transfers.load();
+                }
                 transfersSemaphore.Signal();
             }, delegate { });
             _controller.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
@@ -451,7 +454,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     !handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
                         new Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
-                    Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
+                    Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
                             "Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         LocaleFactory.localizedString(
@@ -508,7 +511,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (!c.isEmpty())
                     {
                         ThirdpartyBookmarkCollection c1 = c;
-                        Utils.CommandBox(LocaleFactory.localizedString("Import", "Configuration"),
+                        Core.Utils.CommandBox(LocaleFactory.localizedString("Import", "Configuration"),
                             String.Format(LocaleFactory.localizedString("Import {0} Bookmarks", "Configuration"),
                                 c.getName()),
                             String.Format(
@@ -608,7 +611,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // convert the Collection<string> to string[], so that it can be used
             // in the Run method.
             ArrayList list = new ArrayList(commandLineArgs);
-            string[] commandLine = (string[]) list.ToArray(typeof (string));
+            string[] commandLine = (string[]) list.ToArray(typeof(string));
             base.Run(commandLine);
         }
 
@@ -847,7 +850,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitJumpList()
         {
-            if (Cyberduck.Core.Utils.IsWin7OrLater)
+            if (Utils.IsWin7OrLater)
             {
                 try
                 {
@@ -869,7 +872,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RefreshJumpList()
         {
-            if (Cyberduck.Core.Utils.IsWin7OrLater)
+            if (Utils.IsWin7OrLater)
             {
                 try
                 {
