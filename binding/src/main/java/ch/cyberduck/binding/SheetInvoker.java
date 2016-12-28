@@ -19,7 +19,7 @@ import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
-import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -99,58 +99,50 @@ public class SheetInvoker extends ProxyController {
     }
 
     public int beginSheet() {
-        synchronized(parent) {
-            if(NSThread.isMainThread()) {
-                // No need to call invoke on main thread
-                if(controller != null) {
-                    controller.loadBundle();
-                    return this.beginSheet(controller.window());
-                }
-                else {
-                    return this.beginSheet(window);
-                }
+        if(NSThread.isMainThread()) {
+            // No need to call invoke on main thread
+            if(controller != null) {
+                controller.loadBundle();
+                return this.beginSheet(controller.window());
             }
             else {
-                final SheetInvoker invoker = this;
-                invoke(new ControllerMainAction(this) {
-                    @Override
-                    public void run() {
-                        //Invoke again on main thread
-                        if(controller != null) {
-                            controller.loadBundle();
-                            invoker.beginSheet(controller.window());
-                        }
-                        else {
-                            invoker.beginSheet(window);
-                        }
-                    }
-                }, true);
-                if(log.isDebugEnabled()) {
-                    log.debug("Await sheet dismiss");
-                }
-                // Synchronize on parent controller. Only display one sheet at once.
-                try {
-                    signal.await();
-                }
-                catch(InterruptedException e) {
-                    log.error("Error waiting for sheet dismiss", e);
-                    callback.callback(SheetCallback.CANCEL_OPTION);
-                }
-                return returncode;
+                return this.beginSheet(window);
             }
+        }
+        else {
+            final SheetInvoker invoker = this;
+            invoke(new DefaultMainAction() {
+                @Override
+                public void run() {
+                    //Invoke again on main thread
+                    if(controller != null) {
+                        controller.loadBundle();
+                        invoker.beginSheet(controller.window());
+                    }
+                    else {
+                        invoker.beginSheet(window);
+                    }
+                }
+            }, true);
+            if(log.isDebugEnabled()) {
+                log.debug("Await sheet dismiss");
+            }
+            // Synchronize on parent controller. Only display one sheet at once.
+            try {
+                signal.await();
+            }
+            catch(InterruptedException e) {
+                log.error("Error waiting for sheet dismiss", e);
+                callback.callback(SheetCallback.CANCEL_OPTION);
+            }
+            return returncode;
         }
     }
 
-    protected int beginSheet(final NSWindow window) {
-        if(!parent.isVisible()) {
-            log.warn(String.format("Skip diplaying sheet %s for controller %s with no visible window", window, parent));
-            callback.callback(SheetCallback.CANCEL_OPTION);
-            signal.countDown();
-            return SheetCallback.CANCEL_OPTION;
-        }
+    protected int beginSheet(final NSWindow sheet) {
         parent.makeKeyAndOrderFront(null);
-        application.beginSheet(window, //sheet
-                parent, // modalForWindow
+        application.beginSheet(sheet, //sheet
+                this.parentWindow(), // modalForWindow
                 this.id(), // modalDelegate
                 Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
                 null); //context
@@ -172,6 +164,15 @@ public class SheetInvoker extends ProxyController {
         this.returncode = returncode;
         callback.callback(returncode);
         signal.countDown();
+    }
+
+    private NSWindow parentWindow() {
+        NSWindow window = parent;
+        while(window.attachedSheet() != null) {
+            window = parent.attachedSheet();
+            log.warn(String.format("Window %s has already sheet %s attached", parent, window));
+        }
+        return window;
     }
 
     @Override
