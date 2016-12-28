@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
@@ -596,7 +595,7 @@ public final class TransferController extends WindowController implements NSTool
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-            this.alert(alert, new DisabledSheetCallback() {
+            this.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {

@@ -15,7 +15,6 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.core.Cache;
@@ -29,6 +28,8 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import static ch.cyberduck.binding.application.SheetCallback.DEFAULT_OPTION;
 
 public class DeleteController extends ProxyController {
 
@@ -59,20 +60,15 @@ public class DeleteController extends ProxyController {
         if(iter.hasNext()) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
-        NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
+        final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
                 alertText.toString(),
                 LocaleFactory.localizedString("Delete"), // defaultbutton
                 LocaleFactory.localizedString("Cancel"), //alternative button
                 null //other button
         );
-        parent.alert(alert, new DisabledSheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                if(returncode == DEFAULT_OPTION) {
-                    run(normalized);
-                }
-            }
-        });
+        if(DEFAULT_OPTION == parent.alert(alert)) {
+            run(normalized);
+        }
     }
 
 

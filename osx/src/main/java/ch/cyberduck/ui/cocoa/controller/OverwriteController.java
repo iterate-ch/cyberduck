@@ -15,7 +15,6 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.core.Cache;
@@ -25,6 +24,8 @@ import ch.cyberduck.core.threading.MainAction;
 
 import java.util.Iterator;
 import java.util.List;
+
+import static ch.cyberduck.binding.application.SheetCallback.DEFAULT_OPTION;
 
 public class OverwriteController extends ProxyController {
 
@@ -74,14 +75,9 @@ public class OverwriteController extends ProxyController {
                     LocaleFactory.localizedString("Cancel"), //alternative button
                     null //other button
             );
-            parent.alert(alert, new DisabledSheetCallback() {
-                @Override
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) {
-                        action.run();
-                    }
-                }
-            });
+            if(DEFAULT_OPTION == parent.alert(alert)) {
+                action.run();
+            }
         }
         else {
             action.run();

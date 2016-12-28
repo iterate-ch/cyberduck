@@ -140,6 +140,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import static ch.cyberduck.binding.application.SheetCallback.DEFAULT_OPTION;
+
 public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = Logger.getLogger(BrowserController.class);
@@ -1996,23 +1998,18 @@ public class BrowserController extends WindowController
                                 LocaleFactory.localizedString("Cancel"),
                                 null
                         );
-                        this.alert(alert, new DisabledSheetCallback() {
-                            @Override
-                            public void callback(int returncode) {
-                                if(returncode == DEFAULT_OPTION) {
-                                    // Delay render until path is cached in the background
-                                    background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
-                                            new SearchWorker(workdir, filenameFilter, cache, listener) {
-                                                @Override
-                                                public void cleanup(final AttributedList<Path> list) {
-                                                    // Reload browser
-                                                    reload();
-                                                }
-                                            })
-                                    );
-                                }
-                            }
-                        });
+                        if(DEFAULT_OPTION == this.alert(alert)) {
+                            // Delay render until path is cached in the background
+                            background(new WorkerBackgroundAction<AttributedList<Path>>(BrowserController.this, pool,
+                                    new SearchWorker(workdir, filenameFilter, cache, listener) {
+                                        @Override
+                                        public void cleanup(final AttributedList<Path> list) {
+                                            // Reload browser
+                                            reload();
+                                        }
+                                    })
+                            );
+                        }
                     }
                 }
         }
@@ -2157,15 +2154,10 @@ public class BrowserController extends WindowController
                 LocaleFactory.localizedString("Delete"),
                 LocaleFactory.localizedString("Cancel"),
                 null);
-        this.alert(alert, new DisabledSheetCallback() {
-            @Override
-            public void callback(int returncode) {
-                if(returncode == DEFAULT_OPTION) {
-                    bookmarkTable.deselectAll(null);
-                    bookmarkModel.getSource().removeAll(selected);
-                }
-            }
-        });
+        if(DEFAULT_OPTION == this.alert(alert)) {
+            bookmarkTable.deselectAll(null);
+            bookmarkModel.getSource().removeAll(selected);
+        }
     }
 
     // ----------------------------------------------------------
@@ -2745,7 +2737,7 @@ public class BrowserController extends WindowController
     @Action
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.close();
-        if(returncode == SheetCallback.DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
                 new DownloadDirectoryFinder().save(pool.getHost(), target);
@@ -2777,7 +2769,7 @@ public class BrowserController extends WindowController
     @Action
     public void downloadAsPanelDidEnd_returnCode_contextInfo(final NSSavePanel sheet, final int returncode, final ID contextInfo) {
         sheet.close();
-        if(returncode == SheetCallback.DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
                 new DownloadDirectoryFinder().save(pool.getHost(), target.getParent());
@@ -2819,7 +2811,7 @@ public class BrowserController extends WindowController
     @Action
     public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.close();
-        if(returncode == SheetCallback.DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             if(sheet.filename() != null) {
                 final Local target = LocalFactory.get(sheet.filename());
                 new UploadDirectoryFinder().save(pool.getHost(), target.getParent());
@@ -2886,7 +2878,7 @@ public class BrowserController extends WindowController
     @Action
     public void uploadPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.close();
-        if(returncode == SheetCallback.DEFAULT_OPTION) {
+        if(returncode == DEFAULT_OPTION) {
             final Path destination = new UploadTargetFinder(workdir).find(this.getSelectedPath());
             // Selected files on the local filesystem
             final NSArray selected = sheet.filenames();
@@ -2974,7 +2966,7 @@ public class BrowserController extends WindowController
         final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                if(returncode == SheetCallback.DEFAULT_OPTION) {
+                if(returncode == DEFAULT_OPTION) {
                     mount(controller.getBookmark());
                 }
             }
@@ -3416,7 +3408,7 @@ public class BrowserController extends WindowController
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new DisabledSheetCallback() {
+                this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {

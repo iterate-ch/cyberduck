@@ -15,10 +15,10 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -117,7 +117,7 @@ public class MoveController extends ProxyController {
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-            parent.alert(alert, new DisabledSheetCallback() {
+            parent.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(final int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {

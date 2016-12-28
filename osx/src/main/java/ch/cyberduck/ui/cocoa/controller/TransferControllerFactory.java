@@ -15,9 +15,9 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -47,7 +47,7 @@ public final class TransferControllerFactory {
     /**
      * @param app Singleton
      * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
-     *         running transfers to be checked first
+     * running transfers to be checked first
      */
     public static NSUInteger applicationShouldTerminate(final NSApplication app) {
         if(null == shared) {
@@ -62,7 +62,7 @@ public final class TransferControllerFactory {
                     LocaleFactory.localizedString("Cancel"), //alternative button
                     null //other button
             );
-            shared.alert(alert, new DisabledSheetCallback() {
+            shared.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Quit

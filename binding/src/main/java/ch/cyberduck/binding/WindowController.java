@@ -47,6 +47,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = Logger.getLogger(WindowController.class);
@@ -205,11 +206,10 @@ public abstract class WindowController extends BundleController implements NSWin
 
     /**
      * @param alert Sheet
-     * @return Return code from the dialog if called from background thread.
+     * @return Button selection
      */
-    @Override
     public int alert(final NSAlert alert) {
-        return this.alert(alert, (String) null);
+        return this.alert(alert, StringUtils.EMPTY);
     }
 
     /**
@@ -218,14 +218,14 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return Button selection
      */
     public int alert(final NSAlert alert, final String help) {
-        final int[] response = new int[1];
+        final AtomicInteger response = new AtomicInteger();
         this.alert(alert, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                response[0] = returncode;
+                response.set(returncode);
             }
         }, help);
-        return response[0];
+        return response.get();
     }
 
     /**
@@ -235,7 +235,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback Dismissed notification
      */
     public void alert(final NSAlert alert, final SheetCallback callback) {
-        this.alert(alert, callback, null);
+        this.alert(alert, callback, StringUtils.EMPTY);
     }
 
     /**
@@ -261,28 +261,6 @@ public abstract class WindowController extends BundleController implements NSWin
             }
         };
         c.beginSheet(this);
-    }
-
-    /**
-     * Attach a sheet to this window
-     *
-     * @param sheet The sheet to be attached to this window
-     * @see SheetInvoker#beginSheet()
-     */
-    protected void alert(final NSWindow sheet) {
-        this.alert(sheet, new DisabledSheetCallback());
-    }
-
-    /**
-     * Attach a sheet to this window
-     *
-     * @param sheet    The sheet to be attached to this window
-     * @param callback The callback to call after the sheet is dismissed
-     * @see SheetInvoker#beginSheet()
-     */
-    protected void alert(final NSWindow sheet, final SheetCallback callback) {
-        final SheetInvoker c = new SheetInvoker(callback, this, sheet);
-        c.beginSheet();
     }
 
     @Action

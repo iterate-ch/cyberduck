@@ -15,7 +15,6 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSMutableParagraphStyle;
@@ -131,10 +130,6 @@ public abstract class BundleController extends ProxyController {
     }
 
     protected abstract String getBundleName();
-
-    public int alert(final NSAlert alert) {
-        return alert.runModal();
-    }
 
     protected void updateField(final NSTextView f, final String value) {
         if(null == f) {
