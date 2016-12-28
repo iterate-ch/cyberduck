@@ -754,7 +754,7 @@ public class MainController extends BundleController implements NSApplication.De
                 LocaleFactory.localizedString("Upload", "Transfer"),
                 LocaleFactory.localizedString("Cancel"),
                 null
-        )) {
+        ), NSAlert.NSInformationalAlertStyle) {
             @Override
             public NSView getAccessoryView() {
                 return bookmarksPopup;

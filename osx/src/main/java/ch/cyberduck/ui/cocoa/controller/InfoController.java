@@ -64,11 +64,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.threading.AlertRecursiveCallback;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.*;
+import ch.cyberduck.ui.cocoa.AlertRecursiveCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

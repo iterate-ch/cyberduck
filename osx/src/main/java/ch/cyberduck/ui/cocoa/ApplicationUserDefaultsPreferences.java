@@ -25,7 +25,6 @@ import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
-import ch.cyberduck.core.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.controller.AlertHostKeyController;
 import ch.cyberduck.ui.cocoa.controller.CopyPromptController;

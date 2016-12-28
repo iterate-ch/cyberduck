@@ -1,4 +1,4 @@
-package ch.cyberduck.core.threading;
+package ch.cyberduck.ui.cocoa;
 
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.

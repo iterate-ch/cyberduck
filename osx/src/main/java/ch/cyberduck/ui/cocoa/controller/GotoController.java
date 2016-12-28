@@ -58,7 +58,7 @@ public class GotoController extends AlertController {
                 LocaleFactory.localizedString("Go", "Goto"),
                 null,
                 LocaleFactory.localizedString("Cancel", "Goto")
-        ));
+        ), NSAlert.NSInformationalAlertStyle);
         this.parent = parent;
         this.cache = cache;
         alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));

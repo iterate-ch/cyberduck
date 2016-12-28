@@ -43,7 +43,8 @@ public class RegionController extends AlertController {
                 null,
                 LocaleFactory.localizedString("Choose"),
                 null,
-                LocaleFactory.localizedString("Cancel", "Folder")));
+                LocaleFactory.localizedString("Cancel", "Folder")
+        ), NSAlert.NSInformationalAlertStyle);
         this.callback = callback;
         this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
         this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));

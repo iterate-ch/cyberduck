@@ -40,7 +40,7 @@ public abstract class FileController extends AlertController {
     protected final NSTextField inputField;
 
     public FileController(final Path workdir, final Path selected, final Cache<Path> cache, final NSAlert alert) {
-        super(alert);
+        super(alert, NSAlert.NSInformationalAlertStyle);
         this.workdir = workdir;
         this.selected = selected;
         this.cache = cache;
