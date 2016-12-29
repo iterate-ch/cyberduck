@@ -1,8 +1,8 @@
 package ch.cyberduck.ui.cocoa;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,66 +13,51 @@ package ch.cyberduck.ui.cocoa;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.LimitedListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ListCanceledException;
-
-import org.apache.commons.lang3.StringUtils;
+import ch.cyberduck.core.worker.Worker;
 
 import java.text.MessageFormat;
 
-public class PromptLimitedListProgressListener extends LimitedListProgressListener {
+public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
 
     private final WindowController controller;
 
     private boolean suppressed;
 
-    public PromptLimitedListProgressListener(final WindowController controller) {
-        super(controller);
+    private boolean option;
+
+    public PromptRecursiveCallback(final WindowController controller) {
         this.controller = controller;
     }
 
     @Override
-    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+    public boolean recurse(final Path directory, final T value) {
         if(suppressed) {
-            return;
+            return option;
         }
-        try {
-            super.chunk(parent, list);
-        }
-        catch(ListCanceledException e) {
+        if(controller.isVisible()) {
             final NSAlert alert = NSAlert.alert();
-            alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"), StringUtils.EMPTY));
-            alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()));
+            alert.setMessageText(LocaleFactory.localizedString("Apply changes recursively"));
+            alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
+                    value, directory.getName()));
             alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
             alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final int returncode = controller.alert(alert);
-            switch(returncode) {
-                case SheetCallback.CANCEL_OPTION:
-                    throw e;
-            }
+            option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
             if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                this.disable();
+                suppressed = true;
             }
+            return option;
         }
-    }
-
-    @Override
-    protected void disable() {
-        super.disable();
-        suppressed = true;
+        // Abort
+        return false;
     }
 }

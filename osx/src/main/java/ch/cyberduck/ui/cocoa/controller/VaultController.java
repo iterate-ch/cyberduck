@@ -30,7 +30,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
@@ -133,10 +132,10 @@ public class VaultController extends FolderController {
     }
 
     @Override
-    protected void help() {
+    protected String help() {
         final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/cryptomator");
-        BrowserLauncherFactory.get().open(site.toString());
+        return site.toString();
     }
 
     public interface Callback {

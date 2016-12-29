@@ -27,7 +27,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -91,9 +90,9 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    protected void help() {
+    protected String help() {
         StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/download");
-        BrowserLauncherFactory.get().open(site.toString());
+        return site.toString();
     }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.ui.cocoa;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
@@ -24,7 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 
-public class AlertTransferErrorCallback implements TransferErrorCallback {
+public class PromptTransferErrorCallback implements TransferErrorCallback {
 
     private final WindowController controller;
 
@@ -32,7 +31,7 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
 
     private boolean option;
 
-    public AlertTransferErrorCallback(final WindowController controller) {
+    public PromptTransferErrorCallback(final WindowController controller) {
         this.controller = controller;
     }
 
@@ -42,33 +41,17 @@ public class AlertTransferErrorCallback implements TransferErrorCallback {
             return !option;
         }
         if(controller.isVisible()) {
-            final NSAlert alert = NSAlert.alert(
-                    null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
-                    null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
-                    LocaleFactory.localizedString("Cancel"), // default button
-                    null, //other button
-                    LocaleFactory.localizedString("Continue", "Credentials") // alternate button
-            );
+            final NSAlert alert = NSAlert.alert();
+            alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+            alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final AlertController sheet = new AlertController(alert) {
-                @Override
-                public int beginSheet(final WindowController parent) {
-                    if(!suppressed) {
-                        return super.beginSheet(parent);
-                    }
-                    return option ? SheetCallback.DEFAULT_OPTION : SheetCallback.ALTERNATE_OPTION;
-                }
-
-                @Override
-                public void callback(final int returncode) {
-                    option = returncode == SheetCallback.DEFAULT_OPTION;
-                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                        suppressed = true;
-                    }
-                }
-            };
-            sheet.beginSheet(controller);
+            option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
+            if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                suppressed = true;
+            }
             return !option;
         }
         // Abort

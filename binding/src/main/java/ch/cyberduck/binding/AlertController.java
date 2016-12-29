@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.DefaultProviderHelpService;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.InputValidator;
 
 import org.rococoa.Foundation;
@@ -117,19 +118,17 @@ public abstract class AlertController extends SheetController implements SheetCa
     /**
      * Open help page.
      */
-    protected void help() {
-        new DefaultProviderHelpService().help();
+    protected String help() {
+        return new DefaultProviderHelpService().help();
     }
 
     /**
      * When the help button is pressed, the alert delegate (delegate) is first sent a alertShowHelp: message.
      *
      * @param alert Alert window
-     * @return True if help request was handled.
      */
     @Action
-    public boolean alertShowHelp(final NSAlert alert) {
-        this.help();
-        return true;
+    public void alertShowHelp(final NSAlert alert) {
+        BrowserLauncherFactory.get().open(this.help());
     }
 }

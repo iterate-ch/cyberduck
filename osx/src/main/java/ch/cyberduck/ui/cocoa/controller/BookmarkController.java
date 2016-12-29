@@ -48,6 +48,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -491,7 +492,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     @Action
     public void helpButtonClicked(final ID sender) {
-        new DefaultProviderHelpService().help(bookmark.getProtocol());
+        BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(bookmark.getProtocol()));
     }
 
     /**

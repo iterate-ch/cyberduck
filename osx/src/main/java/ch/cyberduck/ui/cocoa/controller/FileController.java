@@ -22,7 +22,6 @@ import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,9 +89,9 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    protected void help() {
+    protected String help() {
         final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/browser");
-        BrowserLauncherFactory.get().open(site.toString());
+        return site.toString();
     }
 }

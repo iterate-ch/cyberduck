@@ -66,11 +66,11 @@ public final class PromptLoginCallback implements LoginCallback {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", protocol));
         }
-        final NSAlert alert = NSAlert.alert(title, message,
-                continueButton, // Default Button
-                null, // Alternate button
-                disconnectButton // Other
-        );
+        final NSAlert alert = NSAlert.alert();
+        alert.setMessageText(title);
+        alert.setInformativeText(message);
+        alert.addButtonWithTitle(continueButton);
+        alert.addButtonWithTitle(disconnectButton);
         alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
@@ -86,7 +86,7 @@ public final class PromptLoginCallback implements LoginCallback {
             case SheetCallback.CANCEL_OPTION:
                 throw new LoginCanceledException();
         }
-        //Proceed nevertheless.
+        // Proceed nevertheless.
     }
 
     @Override

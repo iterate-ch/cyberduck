@@ -55,6 +55,7 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
@@ -68,7 +69,7 @@ import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.*;
-import ch.cyberduck.ui.cocoa.AlertRecursiveCallback;
+import ch.cyberduck.ui.cocoa.PromptRecursiveCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -687,7 +688,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             final String redundancy = sender.selectedItem().representedObject();
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteRedundancyWorker(files, redundancy, new AlertRecursiveCallback<String>(this), controller) {
+                    new WriteRedundancyWorker(files, redundancy, new PromptRecursiveCallback<String>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -712,7 +713,7 @@ public class InfoController extends ToolbarWindowController {
         if(null != algorithm && this.toggleS3Settings(false)) {
             final Encryption.Algorithm encryption = Encryption.Algorithm.fromString(algorithm);
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteEncryptionWorker(files, encryption, new AlertRecursiveCallback<Encryption.Algorithm>(this), controller) {
+                    new WriteEncryptionWorker(files, encryption, new PromptRecursiveCallback<Encryption.Algorithm>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleS3Settings(true);
@@ -1123,7 +1124,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), new AlertRecursiveCallback<Acl>(this), controller) {
+                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), new PromptRecursiveCallback<Acl>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleAclSettings(true);
@@ -1384,7 +1385,7 @@ public class InfoController extends ToolbarWindowController {
                 update.put(header.getName(), header.getValue());
             }
             controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                    new WriteMetadataWorker(files, update, new AlertRecursiveCallback<String>(this), controller) {
+                    new WriteMetadataWorker(files, update, new PromptRecursiveCallback<String>(this), controller) {
                                 @Override
                                 public void cleanup(final Boolean v) {
                                     toggleMetadataSettings(true);
@@ -2118,7 +2119,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             if(this.togglePermissionSettings(false)) {
                 controller.background(new WorkerBackgroundAction<Boolean>(controller, session,
-                        new WritePermissionWorker(files, permission, new AlertRecursiveCallback<Permission>(this), controller) {
+                        new WritePermissionWorker(files, permission, new PromptRecursiveCallback<Permission>(this), controller) {
                                     @Override
                                     public void cleanup(final Boolean done) {
                                         togglePermissionSettings(true);
@@ -2486,25 +2487,26 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void helpButtonClicked(final ID sender) {
         final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
+        final BrowserLauncher browser = BrowserLauncherFactory.get();
         switch(InfoToolbarItem.valueOf(this.getSelectedTab())) {
             case info:
                 site.append("/howto/info");
-                BrowserLauncherFactory.get().open(site.toString());
+                browser.open(site.toString());
                 break;
             case permissions:
                 site.append("/howto/permissions");
-                BrowserLauncherFactory.get().open(site.toString());
+                browser.open(site.toString());
                 break;
             case acl:
                 site.append("/howto/acl");
-                BrowserLauncherFactory.get().open(site.toString());
+                browser.open(site.toString());
                 break;
             case distribution:
                 site.append("/howto/cdn");
-                BrowserLauncherFactory.get().open(site.toString());
+                browser.open(site.toString());
                 break;
             default:
-                new DefaultProviderHelpService().help(session.getHost().getProtocol());
+                browser.open(new DefaultProviderHelpService().help(session.getHost().getProtocol()));
         }
     }
 

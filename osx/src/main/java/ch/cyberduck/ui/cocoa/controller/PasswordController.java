@@ -30,7 +30,6 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
@@ -118,9 +117,9 @@ public class PasswordController extends AlertController {
     }
 
     @Override
-    protected void help() {
+    protected String help() {
         final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
         site.append("/howto/cryptomator");
-        BrowserLauncherFactory.get().open(site.toString());
+        return site.toString();
     }
 }

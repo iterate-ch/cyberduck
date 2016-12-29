@@ -26,7 +26,6 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
@@ -34,7 +33,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
@@ -201,7 +199,25 @@ public abstract class WindowController extends BundleController implements NSWin
     @Override
     public boolean alert(final Host host, final BackgroundException failure,
                          final StringBuilder transcript) {
-        return new PanelAlertCallback(this).alert(host, failure, transcript);
+        new NotificationAlertCallback().alert(host, failure, transcript);
+        final NSAlert alert = NSAlert.alert();
+        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+        alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+        }
+//                new DefaultProviderHelpService().help(host.getProtocol());
+        alert.setShowsHelp(true);
+        switch(this.alert(alert)) {
+            case SheetCallback.ALTERNATE_OPTION:
+                ReachabilityFactory.get().diagnose(host);
+                break;
+            case SheetCallback.DEFAULT_OPTION:
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -251,13 +267,11 @@ public abstract class WindowController extends BundleController implements NSWin
             }
 
             @Override
-            protected void help() {
+            protected String help() {
                 if(StringUtils.isBlank(help)) {
-                    super.help();
+                    return super.help();
                 }
-                else {
-                    BrowserLauncherFactory.get().open(help);
-                }
+                return help;
             }
         };
         c.beginSheet(this);
@@ -283,54 +297,6 @@ public abstract class WindowController extends BundleController implements NSWin
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
             log.warn(String.format("Printing failed for context %s", contextInfo));
-        }
-    }
-
-    private static final class PanelAlertCallback implements AlertCallback {
-
-        private final WindowController controller;
-
-        private final FailureDiagnostics<Exception> diagnostics
-                = new DefaultFailureDiagnostics();
-
-        private final NotificationAlertCallback notification
-                = new NotificationAlertCallback();
-
-        public PanelAlertCallback(final WindowController controller) {
-            this.controller = controller;
-        }
-
-        @Override
-        public boolean alert(final Host host, final BackgroundException failure, final StringBuilder log) {
-            notification.alert(host, failure, log);
-            if(controller.isVisible()) {
-                final NSAlert alert = NSAlert.alert(
-                        null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
-                        null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
-                        LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                        diagnostics.determine(failure) == FailureDiagnostics.Type.network
-                                ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
-                        LocaleFactory.localizedString("Cancel", "Alert") // alternate button
-                );
-                alert.setShowsHelp(true);
-                final AlertController c = new AlertController(alert) {
-                    @Override
-                    public void callback(final int returncode) {
-                        if(returncode == ALTERNATE_OPTION) {
-                            ReachabilityFactory.get().diagnose(host);
-                        }
-                    }
-
-                    @Override
-                    protected void help() {
-                        new DefaultProviderHelpService().help(host.getProtocol());
-                    }
-                };
-                if(c.beginSheet(controller) == SheetCallback.DEFAULT_OPTION) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }
