@@ -54,8 +54,10 @@ public class DuplicateFileController extends FileController {
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            this.duplicate(this.getSelected(), inputField.stringValue());
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                this.duplicate(this.getSelected(), inputField.stringValue());
+                break;
         }
     }
 

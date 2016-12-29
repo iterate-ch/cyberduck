@@ -85,11 +85,13 @@ public class FolderController extends FileController {
 
     @Override
     public void callback(int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final String filename = inputField.stringValue();
-            final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
-                    filename, EnumSet.of(Path.Type.directory));
-            callback.callback(folder, this.getLocation());
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                final String filename = inputField.stringValue();
+                final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
+                        filename, EnumSet.of(Path.Type.directory));
+                callback.callback(folder, this.getLocation());
+                break;
         }
     }
 

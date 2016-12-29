@@ -105,12 +105,14 @@ public class VaultController extends FolderController {
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final String filename = inputField.stringValue();
-            final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
-                    filename, EnumSet.of(Path.Type.directory));
-            final String passphrase = passwordField.stringValue();
-            callback.callback(folder, this.getLocation(), passphrase);
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                final String filename = inputField.stringValue();
+                final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
+                        filename, EnumSet.of(Path.Type.directory));
+                final String passphrase = passwordField.stringValue();
+                callback.callback(folder, this.getLocation(), passphrase);
+                break;
         }
     }
 

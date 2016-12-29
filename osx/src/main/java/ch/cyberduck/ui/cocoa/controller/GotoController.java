@@ -90,17 +90,19 @@ public class GotoController extends AlertController {
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final String filename = folderCombobox.stringValue();
-            final BrowserController controller = parent;
-            final Path workdir = controller.workdir();
-            final Path directory = controller.getSession().getFeature(Home.class).find(workdir, filename);
-            if(workdir.getParent().equals(directory)) {
-                controller.setWorkdir(directory, workdir);
-            }
-            else {
-                controller.setWorkdir(directory);
-            }
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                final String filename = folderCombobox.stringValue();
+                final BrowserController controller = parent;
+                final Path workdir = controller.workdir();
+                final Path directory = controller.getSession().getFeature(Home.class).find(workdir, filename);
+                if(workdir.getParent().equals(directory)) {
+                    controller.setWorkdir(directory, workdir);
+                }
+                else {
+                    controller.setWorkdir(directory);
+                }
+                break;
         }
     }
 

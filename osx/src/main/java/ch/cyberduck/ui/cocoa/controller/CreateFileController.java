@@ -46,11 +46,13 @@ public class CreateFileController extends FileController {
     @Override
     public void callback(final int returncode) {
         final Path parent = new UploadTargetFinder(this.getWorkdir()).find(this.getSelected());
-        if(returncode == DEFAULT_OPTION) {
-            this.run(parent, inputField.stringValue(), false);
-        }
-        else if(returncode == ALTERNATE_OPTION) {
-            this.run(parent, inputField.stringValue(), true);
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                this.run(parent, inputField.stringValue(), false);
+                break;
+            case ALTERNATE_OPTION:
+                this.run(parent, inputField.stringValue(), true);
+                break;
         }
     }
 

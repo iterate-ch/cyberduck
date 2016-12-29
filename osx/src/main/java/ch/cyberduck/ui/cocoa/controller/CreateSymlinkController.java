@@ -49,9 +49,11 @@ public class CreateSymlinkController extends FileController {
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final Path selected = this.getSelected();
-            callback.callback(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                final Path selected = this.getSelected();
+                callback.callback(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
+                break;
         }
     }
 
