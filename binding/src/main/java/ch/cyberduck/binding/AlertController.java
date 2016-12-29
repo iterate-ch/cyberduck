@@ -38,19 +38,31 @@ public abstract class AlertController extends SheetController implements SheetCa
     /**
      * If using alert and no custom window
      */
-    protected final NSAlert alert;
+    protected NSAlert alert;
+    private final int style;
 
     public AlertController(final NSAlert alert) {
         this(alert, NSAlert.NSWarningAlertStyle);
     }
 
+    public AlertController(final int style) {
+        this(null, style);
+    }
+
     public AlertController(final NSAlert alert, final int style) {
         this.alert = alert;
-        this.alert.setAlertStyle(style);
-        this.alert.setDelegate(this.id());
+        this.style = style;
         this.setValidator(this);
         this.setCallback(this);
-        final NSWindow window = this.alert.window();
+    }
+
+    @Override
+    public void loadBundle() {
+        // Init NSAlert on main thread
+        alert = this.getAlertView();
+        alert.setAlertStyle(style);
+        alert.setDelegate(this.id());
+        final NSWindow window = alert.window();
         this.setWindow(window);
     }
 
@@ -60,6 +72,10 @@ public abstract class AlertController extends SheetController implements SheetCa
     @Override
     protected String getBundleName() {
         return null;
+    }
+
+    protected NSAlert getAlertView() {
+        return alert;
     }
 
     public NSView getAccessoryView() {

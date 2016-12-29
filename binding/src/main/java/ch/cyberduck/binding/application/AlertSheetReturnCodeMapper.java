@@ -19,8 +19,8 @@ package ch.cyberduck.binding.application;
 
 import org.apache.log4j.Logger;
 
-public final class PanelReturnCodeMapper {
-    private static final Logger log = Logger.getLogger(PanelReturnCodeMapper.class);
+public final class AlertSheetReturnCodeMapper {
+    private static final Logger log = Logger.getLogger(AlertSheetReturnCodeMapper.class);
 
     /**
      * Translate return codes from sheet selection
