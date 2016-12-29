@@ -23,6 +23,7 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.StringAppender;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSError;
@@ -61,9 +62,21 @@ public abstract class NSAlert extends NSObject {
 
     public static NSAlert alert(
             String title, String message, String defaultButton, String alternateButton, String otherButton) {
-        return CLASS.alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
-                title, defaultButton, alternateButton, otherButton,
-                new StringAppender().append(message).toString());
+        NSAlert alert = NSAlert.alert();
+        alert.setMessageText(title);
+        alert.setInformativeText(new StringAppender().append(message).toString());
+        if(StringUtils.isNotBlank(defaultButton)) {
+            // OK
+            alert.addButtonWithTitle(defaultButton);
+        }
+        if(StringUtils.isNotBlank(otherButton)) {
+            // Cancel
+            alert.addButtonWithTitle(otherButton);
+        }
+        if(StringUtils.isNotBlank(alternateButton)) {
+            alert.addButtonWithTitle(alternateButton);
+        }
+        return alert;
     }
 
     public interface _Class extends ObjCClass {
