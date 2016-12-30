@@ -26,24 +26,26 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
     private final Session<?> session;
-    private final VaultLookupListener listener;
+    private final DefaultVaultRegistry registry;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final Session<?> session, final VaultLookupListener listener, final PasswordCallback prompt) {
+    public LoadingVaultLookupListener(final Session<?> session, final DefaultVaultRegistry registry, final PasswordCallback prompt) {
         this.session = session;
-        this.listener = listener;
+        this.registry = registry;
         this.prompt = prompt;
     }
 
     @Override
     public void found(final Vault vault) throws BackgroundException {
-        if(session.getFeature(Vault.class).equals(vault)) {
-            log.warn(String.format("Ignore vault %s found already loaded", vault));
-            return;
+        synchronized(registry) {
+            if(registry.contains(vault)) {
+                log.warn(String.format("Ignore vault %s found already loaded", vault));
+                return;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Loading vault %s for session %s", vault, session));
+            }
+            registry.found(vault.load(session, prompt));
         }
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Loading vault %s for session %s", vault, session));
-        }
-        listener.found(vault.load(session, prompt));
     }
 }

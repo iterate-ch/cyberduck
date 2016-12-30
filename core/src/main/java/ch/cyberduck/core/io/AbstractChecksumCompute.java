@@ -36,7 +36,7 @@ public abstract class AbstractChecksumCompute implements ChecksumCompute {
 
     public Checksum compute(final String data, final TransferStatus status) throws ChecksumException {
         try {
-            return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())), status);
+            return this.compute(null, new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())), status);
         }
         catch(DecoderException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);

@@ -19,40 +19,37 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.vault.LoadingVaultLookupListener;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.log4j.Logger;
 
-public class PooledSessionFactory extends BasePooledObjectFactory<Session> implements VaultLookupListener {
+public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private static final Logger log = Logger.getLogger(PooledSessionFactory.class);
 
     private final ConnectionService connect;
     private final X509TrustManager trust;
     private final X509KeyManager key;
-    private final PasswordCallback prompt;
     private final PathCache cache;
     private final Host bookmark;
+    private final VaultRegistry registry;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final PasswordCallback prompt, final PathCache cache, final Host bookmark) {
+                                final PathCache cache, final Host bookmark, final VaultRegistry registry) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;
-        this.prompt = prompt;
         this.cache = cache;
         this.bookmark = bookmark;
+        this.registry = registry;
     }
 
     @Override
@@ -60,9 +57,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new session for host %s in pool", bookmark));
         }
-        final Session<?> session = SessionFactory.create(bookmark, trust, key);
-        session.addListener(new LoadingVaultLookupListener(session, this, prompt));
-        return session;
+        return SessionFactory.create(bookmark, trust, key).withRegistry(registry);
     }
 
     @Override
@@ -103,12 +98,5 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> imple
         sb.append("bookmark=").append(bookmark);
         sb.append('}');
         return sb.toString();
-    }
-
-    @Override
-    public void found(final Vault vault) throws BackgroundException {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Assign vault %s for pool %s", vault, this));
-        }
     }
 }

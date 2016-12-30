@@ -43,7 +43,7 @@ public class ContentWriter {
         final TransferStatus status = new TransferStatus().length(content.length);
         final ChecksumCompute checksum = session._getFeature(ChecksumCompute.class);
         if(null != checksum) {
-            status.setChecksum(checksum.compute(new ByteArrayInputStream(content), new TransferStatus()));
+            status.setChecksum(checksum.compute(file, new ByteArrayInputStream(content), new TransferStatus()));
         }
         final StatusOutputStream<?> out = write.write(file, status);
         try {

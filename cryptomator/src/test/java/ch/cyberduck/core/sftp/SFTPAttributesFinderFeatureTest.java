@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class SFTPAttributesFinderFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
         final PathAttributes attributes = session.getFeature(AttributesFinder.class).find(test);
         assertNotNull(attributes);

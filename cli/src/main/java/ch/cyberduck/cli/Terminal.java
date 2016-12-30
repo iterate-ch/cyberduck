@@ -64,6 +64,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
@@ -227,7 +228,7 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
             );
-            source = new SingleSessionPool(connect, session, cache, new TerminalPasswordCallback());
+            source = new SingleSessionPool(connect, session, cache, new DefaultVaultRegistry(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -264,7 +265,7 @@ public class Terminal {
                                             new TerminalCertificateStore(reader)
                                     ),
                                     new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))
-                            ), cache, new TerminalPasswordCallback())
+                            ), cache, new DefaultVaultRegistry(new TerminalPasswordCallback()))
                     );
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),

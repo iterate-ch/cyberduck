@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -111,7 +112,7 @@ public class SFTPCryptomatorInteroperabilityTest {
                 credentials.setPassword(passphrase);
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
         final InputStream read = session.getFeature(Read.class).read(p, new TransferStatus());
         final byte[] readContent = new byte[content.length];

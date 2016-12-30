@@ -147,7 +147,7 @@ public class S3WriteFeatureTest {
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(new SHA256ChecksumCompute().compute(file, new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status);
         }
@@ -176,7 +176,7 @@ public class S3WriteFeatureTest {
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(new SHA256ChecksumCompute().compute(file, new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status);
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

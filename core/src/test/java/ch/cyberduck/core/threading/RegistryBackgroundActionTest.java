@@ -10,6 +10,7 @@ import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
 
@@ -25,7 +26,7 @@ public class RegistryBackgroundActionTest {
                 throw new UnsupportedOperationException();
             }
         }, new SingleSessionPool(
-                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledPasswordCallback())) {
+                new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()))) {
             @Override
             public Boolean run(final Session<?> session) throws BackgroundException {
                 return false;

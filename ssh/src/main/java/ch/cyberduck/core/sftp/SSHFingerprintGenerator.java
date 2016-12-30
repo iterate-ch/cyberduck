@@ -52,7 +52,7 @@ public class SSHFingerprintGenerator {
      * @return The fingerprint is the MD5 of the Base64-encoded public key
      */
     public String fingerprint(final InputStream in) throws ChecksumException {
-        final String undelimited = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in, new TransferStatus()).hash;
+        final String undelimited = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(null, in, new TransferStatus()).hash;
         final StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
         for(int i = 2; i <= undelimited.length() - 2; i += 2) {
             fp.append(":").append(undelimited.substring(i, i + 2));

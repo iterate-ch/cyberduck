@@ -18,7 +18,6 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -33,7 +32,7 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -57,9 +56,10 @@ public class DefaultSessionPool implements SessionPool {
 
     private final ConnectionService connect;
     private final ProgressListener progress;
-    private final PasswordCallback password;
     private final PathCache cache;
     private final Host bookmark;
+
+    private final VaultRegistry registry;
 
     private final GenericObjectPool<Session> pool;
 
@@ -68,9 +68,9 @@ public class DefaultSessionPool implements SessionPool {
     private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final PasswordCallback password, final PathCache cache, final ProgressListener progress, final Host bookmark) {
+                              final VaultRegistry registry, final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
-        this.password = password;
+        this.registry = registry;
         this.cache = cache;
         this.bookmark = bookmark;
         this.progress = progress;
@@ -79,7 +79,7 @@ public class DefaultSessionPool implements SessionPool {
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
         configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, password, cache, bookmark), configuration);
+        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, cache, bookmark, registry), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -147,7 +147,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, pool));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache, new DisabledVaultLookupListener());
+                        features = new SingleSessionPool(connect, session, cache, registry);
                     }
                     return session;
                 }
@@ -277,6 +277,9 @@ public class DefaultSessionPool implements SessionPool {
         }
         catch(Exception e) {
             log.warn(String.format("Failure closing connection pool %s", e.getMessage()));
+        }
+        finally {
+            registry.clear();
         }
     }
 

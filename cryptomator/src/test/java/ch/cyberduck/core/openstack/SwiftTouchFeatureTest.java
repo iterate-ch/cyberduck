@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -67,7 +68,7 @@ public class SwiftTouchFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new CryptoTouchFeature(session, new SwiftTouchFeature(session.getFeature(Write.class, new SwiftWriteFeature(session, regionService))), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
@@ -92,7 +93,7 @@ public class SwiftTouchFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

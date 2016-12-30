@@ -60,12 +60,12 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // transmitting data to the client.
         if(preferences.getBoolean("spectra.upload.crc32")) {
             status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
-                    .compute(local.getInputStream(), status)
+                    .compute(file, local.getInputStream(), status)
             );
         }
         if(preferences.getBoolean("spectra.upload.md5")) {
             status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
-                    .compute(local.getInputStream(), status)
+                    .compute(file, local.getInputStream(), status)
             );
         }
         // Make sure file is available in cache

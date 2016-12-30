@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
 
@@ -38,7 +39,7 @@ public class DefaultSessionPoolTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testShutdown() throws Exception {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
         pool.shutdown();
         pool.borrow(BackgroundActionState.running);
     }
@@ -51,7 +52,7 @@ public class DefaultSessionPoolTest {
                 throw new ConnectionRefusedException("t", new RuntimeException());
             }
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
         pool.borrow(BackgroundActionState.running);
     }
 }
