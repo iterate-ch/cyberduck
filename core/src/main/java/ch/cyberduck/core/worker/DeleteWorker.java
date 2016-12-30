@@ -40,16 +40,12 @@ import java.util.Objects;
 public class DeleteWorker extends Worker<List<Path>> {
 
     private final Cache<Path> cache;
-
     /**
      * Selected files.
      */
     private final List<Path> files;
-
     private final LoginCallback prompt;
-
     private final ProgressListener listener;
-
     private final Filter<Path> filter;
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {

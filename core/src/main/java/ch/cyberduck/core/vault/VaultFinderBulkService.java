@@ -31,16 +31,11 @@ public class VaultFinderBulkService<R> implements Bulk<R> {
     private static final Logger log = Logger.getLogger(VaultFinderBulkService.class);
 
     private final PasswordStore keychain;
-    /**
-     * Current open vault
-     */
-    private final Vault vault;
     private final Bulk<R> delegate;
     private final VaultLookupListener listener;
 
-    public VaultFinderBulkService(final PasswordStore keychain, final Vault vault, final Bulk<R> delegate, final VaultLookupListener listener) {
+    public VaultFinderBulkService(final Bulk<R> delegate, final PasswordStore keychain, final VaultLookupListener listener) {
         this.keychain = keychain;
-        this.vault = vault;
         this.delegate = delegate;
         this.listener = listener;
     }
@@ -49,9 +44,6 @@ public class VaultFinderBulkService<R> implements Bulk<R> {
     public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
         for(Path f : files.keySet()) {
             if(f.getType().contains(Path.Type.decrypted)) {
-                if(vault.contains(f)) {
-                    break;
-                }
                 Path directory = f.getParent();
                 do {
                     final Vault vault = VaultFactory.get(directory, keychain);

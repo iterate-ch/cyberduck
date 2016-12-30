@@ -29,40 +29,30 @@ import org.apache.log4j.Logger;
 public class VaultFinderListService implements ListService {
     private static final Logger log = Logger.getLogger(VaultFinderListService.class);
 
-    /**
-     * Current open vault
-     */
-    private final Vault vault;
-    private final Session<?> proxy;
+    private final Session<?> session;
     private final ListService delegate;
     private final VaultFinderListProgressListener finder;
 
-    public VaultFinderListService(final Vault vault, final Session<?> proxy, final ListService delegate, final VaultFinderListProgressListener finder) {
-        this.vault = vault;
-        this.proxy = proxy;
+    public VaultFinderListService(final Session<?> session, final ListService delegate, final VaultFinderListProgressListener finder) {
+        this.session = session;
         this.delegate = delegate;
         this.finder = finder;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(!vault.contains(directory)) {
-            try {
-                return delegate.list(directory, new ProxyListProgressListener(finder, listener));
-            }
-            catch(VaultFinderListCanceledException finder) {
-                final Vault cryptomator = finder.getVault();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Found vault %s", cryptomator));
-                }
-                return delegate.list(cryptomator.encrypt(proxy, directory), new DecryptingListProgressListener(proxy, cryptomator, directory, listener));
-            }
-            finally {
-                finder.reset();
-            }
+        try {
+            return delegate.list(directory, new ProxyListProgressListener(finder, listener));
         }
-        else {
-            return delegate.list(directory, listener);
+        catch(VaultFinderListCanceledException finder) {
+            final Vault cryptomator = finder.getVault();
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Found vault %s", cryptomator));
+            }
+            return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, directory, listener));
+        }
+        finally {
+            finder.reset();
         }
     }
 }

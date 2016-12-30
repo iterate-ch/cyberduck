@@ -37,6 +37,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -71,7 +72,7 @@ public class SFTPMoveFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         session.getFeature(Move.class).move(source, target, false, new Delete.Callback() {
@@ -105,7 +106,7 @@ public class SFTPMoveFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         session.getFeature(Directory.class).mkdir(targetFolder);
@@ -141,7 +142,7 @@ public class SFTPMoveFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         session.getFeature(Directory.class).mkdir(targetFolder);

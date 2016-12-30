@@ -17,36 +17,27 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.vault.DisabledVaultLookupListener;
-import ch.cyberduck.core.vault.LoadingVaultLookupListener;
-import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
-public class SingleSessionPool implements SessionPool, VaultLookupListener {
+public class SingleSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(SingleSessionPool.class);
 
     private final ConnectionService connect;
     private final Session<?> session;
     private final PathCache cache;
+    private final VaultRegistry registry;
 
     public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final PasswordCallback password) {
-        this(connect, session, cache, new DisabledVaultLookupListener());
-        session.addListener(new LoadingVaultLookupListener(session, this, password));
-    }
-
-    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final VaultLookupListener listener) {
+                             final VaultRegistry registry) {
         this.connect = connect;
         this.session = session;
-        this.session.addListener(listener);
+        this.registry = registry;
         this.cache = cache;
     }
 
@@ -70,6 +61,9 @@ public class SingleSessionPool implements SessionPool, VaultLookupListener {
         catch(BackgroundException e) {
             log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
         }
+        finally {
+            registry.clear();
+        }
     }
 
     @Override
@@ -79,6 +73,9 @@ public class SingleSessionPool implements SessionPool, VaultLookupListener {
         }
         catch(BackgroundException e) {
             log.warn(String.format("Failure closing session. %s", e.getMessage()));
+        }
+        finally {
+            registry.clear();
         }
     }
 
@@ -103,10 +100,5 @@ public class SingleSessionPool implements SessionPool, VaultLookupListener {
         sb.append("session=").append(session);
         sb.append('}');
         return sb.toString();
-    }
-
-    @Override
-    public void found(final Vault vault) throws BackgroundException {
-        session.withVault(vault);
     }
 }

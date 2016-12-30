@@ -70,14 +70,15 @@ public class SwiftSegmentServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, "a", EnumSet.of(Path.Type.file));
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");
         a.setSize(1L);
         final StorageObject b = new StorageObject("b");
         b.setMd5sum("m2");
         b.setSize(1L);
-        final Checksum checksum = service.checksum(new MD5ChecksumCompute(), Arrays.asList(a, b));
-        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2", Charset.defaultCharset()), new TransferStatus()), checksum);
+        final Checksum checksum = service.checksum(new MD5ChecksumCompute(), file, Arrays.asList(a, b));
+        assertEquals(new MD5ChecksumCompute().compute(file, IOUtils.toInputStream("m1m2", Charset.defaultCharset()), new TransferStatus()), checksum);
     }
 
     @Test

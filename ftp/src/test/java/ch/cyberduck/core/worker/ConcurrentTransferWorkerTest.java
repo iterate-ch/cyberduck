@@ -31,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
@@ -132,7 +133,7 @@ public class ConcurrentTransferWorkerTest {
                 }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                         new DisabledProgressListener(), new DisabledTranscriptListener()),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DisabledPasswordCallback(), PathCache.empty(), new DisabledProgressListener(), host);
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {

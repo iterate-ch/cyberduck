@@ -34,6 +34,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -66,7 +67,7 @@ public class B2DirectoryFeatureTest {
                 credentials.setPassword("vault");
             }
         });
-        session.withVault(cryptomator);
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature(session, new B2DirectoryFeature(session, new CryptoWriteFeature(session, new B2WriteFeature(session), cryptomator)), cryptomator).mkdir(test);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

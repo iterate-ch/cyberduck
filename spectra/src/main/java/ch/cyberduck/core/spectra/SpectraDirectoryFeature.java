@@ -53,11 +53,11 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
         else {
             if(preferences.getBoolean("spectra.upload.crc32")) {
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
-                        .compute(new NullInputStream(0L), status));
+                        .compute(file, new NullInputStream(0L), status));
             }
             if(preferences.getBoolean("spectra.upload.md5")) {
                 status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
-                        .compute(new NullInputStream(0L), status));
+                        .compute(file, new NullInputStream(0L), status));
             }
             super.mkdir(file, region, status);
         }
