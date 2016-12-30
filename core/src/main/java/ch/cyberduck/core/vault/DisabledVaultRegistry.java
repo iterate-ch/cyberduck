@@ -22,4 +22,9 @@ public class DisabledVaultRegistry implements VaultRegistry {
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         return proxy;
     }
+
+    @Override
+    public void clear() {
+        //
+    }
 }

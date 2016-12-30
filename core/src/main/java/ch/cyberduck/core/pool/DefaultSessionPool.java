@@ -32,7 +32,7 @@ import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -59,7 +59,7 @@ public class DefaultSessionPool implements SessionPool {
     private final PathCache cache;
     private final Host bookmark;
 
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
     private final GenericObjectPool<Session> pool;
 
@@ -68,7 +68,7 @@ public class DefaultSessionPool implements SessionPool {
     private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final DefaultVaultRegistry registry, final PathCache cache, final ProgressListener progress, final Host bookmark) {
+                              final VaultRegistry registry, final PathCache cache, final ProgressListener progress, final Host bookmark) {
         this.connect = connect;
         this.registry = registry;
         this.cache = cache;

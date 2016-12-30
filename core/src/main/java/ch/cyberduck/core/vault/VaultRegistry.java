@@ -20,4 +20,6 @@ import ch.cyberduck.core.Session;
 public interface VaultRegistry {
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
+
+    void clear();
 }

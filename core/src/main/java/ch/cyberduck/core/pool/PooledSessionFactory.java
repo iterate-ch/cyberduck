@@ -25,7 +25,7 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -40,10 +40,10 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     private final X509KeyManager key;
     private final PathCache cache;
     private final Host bookmark;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
     public PooledSessionFactory(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                                final PathCache cache, final Host bookmark, final DefaultVaultRegistry registry) {
+                                final PathCache cache, final Host bookmark, final VaultRegistry registry) {
         this.connect = connect;
         this.trust = trust;
         this.key = key;

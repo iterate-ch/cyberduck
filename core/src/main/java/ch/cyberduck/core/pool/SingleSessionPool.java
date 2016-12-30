@@ -21,7 +21,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
@@ -31,10 +31,10 @@ public class SingleSessionPool implements SessionPool {
     private final ConnectionService connect;
     private final Session<?> session;
     private final PathCache cache;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
     public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final DefaultVaultRegistry registry) {
+                             final VaultRegistry registry) {
         this.connect = connect;
         this.session = session;
         this.registry = registry;
