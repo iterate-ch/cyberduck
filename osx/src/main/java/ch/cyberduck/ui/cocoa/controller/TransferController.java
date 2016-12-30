@@ -653,8 +653,8 @@ public final class TransferController extends WindowController implements NSTool
         final Host source = transfer.getSource();
         final Host destination = transfer.getDestination();
         final BackgroundAction action = new TransferCollectionBackgroundAction(this,
-                null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, source),
-                null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, cache, destination),
+                null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, source),
+                null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, destination),
                 new TransferAdapter() {
                     @Override
                     public void start(final Transfer transfer) {
