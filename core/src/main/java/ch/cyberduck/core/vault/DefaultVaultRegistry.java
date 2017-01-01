@@ -83,6 +83,10 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
+        if(null == proxy) {
+            // No proxying for disabled features
+            return null;
+        }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
                     new LoadingVaultLookupListener(session, this, prompt), keychain);
