@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
@@ -28,8 +29,6 @@ import ch.cyberduck.core.worker.DeleteWorker;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static ch.cyberduck.binding.application.SheetCallback.DEFAULT_OPTION;
 
 public class DeleteController extends ProxyController {
 
@@ -66,9 +65,14 @@ public class DeleteController extends ProxyController {
                 LocaleFactory.localizedString("Cancel"), //alternative button
                 null //other button
         );
-        if(DEFAULT_OPTION == parent.alert(alert)) {
-            run(normalized);
-        }
+        parent.alert(alert, new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                if(returncode == DEFAULT_OPTION) {
+                    run(normalized);
+                }
+            }
+        });
     }
 
 
