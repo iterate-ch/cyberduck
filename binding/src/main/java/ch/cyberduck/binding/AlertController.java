@@ -18,7 +18,6 @@ package ch.cyberduck.binding;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -50,8 +49,6 @@ public abstract class AlertController extends SheetController implements SheetCa
         this.alert.setDelegate(this.id());
         this.setValidator(this);
         this.setCallback(this);
-        final NSWindow window = this.alert.window();
-        this.setWindow(window);
     }
 
     /**
@@ -71,9 +68,10 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     @Override
-    public NSWindow window() {
+    public void loadBundle() {
+        // Layout alert view on main thread
         this.focus();
-        return alert.window();
+        this.setWindow(alert.window());
     }
 
     protected void focus() {
@@ -97,7 +95,7 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     protected NSRect getFrame(final NSView accessory) {
-        final NSRect frame = new NSRect(window.frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
+        final NSRect frame = new NSRect(alert.window().frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
         final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
         NSObject next;
         while(null != (next = enumerator.nextObject())) {
