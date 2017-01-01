@@ -40,8 +40,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 
 public class PasswordController extends AlertController {
 
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-
     @Outlet
     private final NSView view;
     @Outlet
@@ -71,7 +69,7 @@ public class PasswordController extends AlertController {
         this.keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
         this.keychainCheckbox.setState(NSCell.NSOffState);
         this.keychainCheckbox.sizeToFit();
-        this.notificationCenter.addObserver(this.id(),
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 this.inputField);
