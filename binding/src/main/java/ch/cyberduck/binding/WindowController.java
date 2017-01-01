@@ -113,11 +113,10 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return True if the controller window is on screen.
      */
     public boolean isVisible() {
-        final NSWindow w = this.window();
-        if(null == w) {
+        if(null == window) {
             return false;
         }
-        return w.isVisible();
+        return window.isVisible();
     }
 
     @Override
@@ -290,7 +289,7 @@ public abstract class WindowController extends BundleController implements NSWin
         final NSPrintPanel panel = op.printPanel();
         panel.setOptions(panel.options() | NSPrintPanel.NSPrintPanelShowsOrientation
                 | NSPrintPanel.NSPrintPanelShowsPaperSize | NSPrintPanel.NSPrintPanelShowsScaling);
-        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(this.window(), this.id(),
+        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(window, this.id(),
                 Foundation.selector("printOperationDidRun:success:contextInfo:"), null);
     }
 
