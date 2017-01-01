@@ -40,21 +40,17 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
         if(suppressed) {
             return !option;
         }
-        if(controller.isVisible()) {
-            final NSAlert alert = NSAlert.alert();
-            alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-            alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
-            alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
-            if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                suppressed = true;
-            }
-            return !option;
+        final NSAlert alert = NSAlert.alert();
+        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+        alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
+        alert.setShowsSuppressionButton(true);
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+        option = controller.alert(alert) == SheetCallback.DEFAULT_OPTION;
+        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+            suppressed = true;
         }
-        // Abort
-        return false;
+        return !option;
     }
 }
