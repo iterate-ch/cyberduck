@@ -21,8 +21,9 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
@@ -36,39 +37,31 @@ public abstract class FileController extends AlertController {
     private final Cache<Path> cache;
 
     @Outlet
-    protected final NSTextField inputField;
+    protected NSTextField inputField;
 
-    public FileController(final Path workdir, final Path selected, final Cache<Path> cache, final NSAlert alert) {
-        super(alert, NSAlert.NSInformationalAlertStyle);
+    public FileController(final Path workdir, final Path selected, final Cache<Path> cache) {
         this.workdir = workdir;
         this.selected = selected;
         this.cache = cache;
-        this.inputField = NSTextField.textfieldWithFrame(new NSRect(window.frame().size.width.doubleValue(), 22));
-        this.inputField.cell().setPlaceholderString(alert.informativeText());
-        alert.setShowsHelp(true);
     }
 
     @Override
-    public NSView getAccessoryView() {
+    public void loadBundle(final NSAlert alert) {
+        this.inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        this.inputField.cell().setPlaceholderString(alert.informativeText());
+        super.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
         return inputField;
     }
 
     @Override
-    protected void focus() {
-        super.focus();
-        window.makeFirstResponder(inputField);
+    protected void focus(final NSAlert alert) {
+        super.focus(alert);
+        alert.window().makeFirstResponder(inputField);
         inputField.selectText(null);
-    }
-
-    /**
-     * @return The current working directory or selected folder
-     */
-    protected Path getWorkdir() {
-        return workdir;
-    }
-
-    protected Path getSelected() {
-        return selected;
     }
 
     @Override
@@ -77,10 +70,10 @@ public abstract class FileController extends AlertController {
             return false;
         }
         if(StringUtils.isNotBlank(inputField.stringValue())) {
-            if(cache.get(this.getWorkdir()).contains(new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)))) {
+            if(cache.get(workdir).contains(new Path(workdir, inputField.stringValue(), EnumSet.of(Path.Type.file)))) {
                 return false;
             }
-            if(cache.get(this.getWorkdir()).contains(new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.directory)))) {
+            if(cache.get(workdir).contains(new Path(workdir, inputField.stringValue(), EnumSet.of(Path.Type.directory)))) {
                 return false;
             }
             return true;
@@ -89,9 +82,20 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
+    public void callback(final int returncode) {
+        final Path directory = new UploadTargetFinder(workdir).find(selected);
+        switch(returncode) {
+            case DEFAULT_OPTION:
+            case ALTERNATE_OPTION:
+                this.callback(returncode, new Path(directory, inputField.stringValue(), EnumSet.of(Path.Type.file)));
+                break;
+        }
+    }
+
+    public abstract void callback(final int returncode, final Path file);
+
+    @Override
     protected String help() {
-        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-        site.append("/howto/browser");
-        return site.toString();
+        return new DefaultProviderHelpService().help("/howto/browser");
     }
 }

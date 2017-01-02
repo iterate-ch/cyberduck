@@ -43,25 +43,15 @@ public class GotoController extends AlertController {
 
     @Outlet
     private final NSComboBox folderCombobox;
-
     @Delegate
     private final ProxyController folderComboboxModel;
 
     private final BrowserController parent;
-
     private final Cache<Path> cache;
 
     public GotoController(final BrowserController parent, final Cache<Path> cache) {
-        super(NSAlert.alert(
-                LocaleFactory.localizedString("Go to folder", "Goto"),
-                LocaleFactory.localizedString("Enter the pathname to list:", "Goto"),
-                LocaleFactory.localizedString("Go", "Goto"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Goto")
-        ), NSAlert.NSInformationalAlertStyle);
         this.parent = parent;
         this.cache = cache;
-        alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
         folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
         folderCombobox.setCompletes(true);
         folderCombobox.setUsesDataSource(true);
@@ -71,13 +61,25 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    public NSView getAccessoryView() {
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Go to folder", "Goto"));
+        alert.setInformativeText(LocaleFactory.localizedString("Enter the pathname to list:", "Goto"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Go", "Goto"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Goto"));
+        alert.setIcon(IconCacheFactory.<NSImage>get().folderIcon(64));
+        super.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
         return folderCombobox;
     }
 
     @Override
-    protected void focus() {
-        super.focus();
+    protected void focus(final NSAlert alert) {
+        super.focus(alert);
         folderCombobox.selectText(null);
     }
 
@@ -93,14 +95,13 @@ public class GotoController extends AlertController {
         switch(returncode) {
             case DEFAULT_OPTION:
                 final String filename = folderCombobox.stringValue();
-                final BrowserController controller = parent;
-                final Path workdir = controller.workdir();
-                final Path directory = controller.getSession().getFeature(Home.class).find(workdir, filename);
+                final Path workdir = parent.workdir();
+                final Path directory = parent.getSession().getFeature(Home.class).find(workdir, filename);
                 if(workdir.getParent().equals(directory)) {
-                    controller.setWorkdir(directory, workdir);
+                    parent.setWorkdir(directory, workdir);
                 }
                 else {
-                    controller.setWorkdir(directory);
+                    parent.setWorkdir(directory);
                 }
                 break;
         }

@@ -20,6 +20,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.DefaultPathKindDetector;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LocalFactory;
@@ -42,31 +43,36 @@ public class DownloadController extends AlertController {
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
+    private final String url;
 
     public DownloadController() {
         this(StringUtils.EMPTY);
     }
 
     public DownloadController(final String url) {
-        super(NSAlert.alert(
-                LocaleFactory.localizedString("New Download", "Download"),
-                LocaleFactory.localizedString("URL", "Download"),
-                LocaleFactory.localizedString("Download", "Download"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Download")
-        ), NSAlert.NSInformationalAlertStyle);
-        this.updateField(urlField, url);
-        this.alert.setShowsHelp(true);
+        this.url = url;
     }
 
     @Override
-    public NSView getAccessoryView() {
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("New Download", "Download"));
+        alert.setInformativeText(LocaleFactory.localizedString("URL", "Download"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Download", "Download"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Download"));
+        this.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
         return urlField;
     }
 
     @Override
-    protected void focus() {
-        super.focus();
+    protected void focus(final NSAlert alert) {
+        super.focus(alert);
+        this.updateField(urlField, url);
         urlField.selectText(null);
     }
 
@@ -93,8 +99,6 @@ public class DownloadController extends AlertController {
 
     @Override
     protected String help() {
-        StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-        site.append("/howto/download");
-        return site.toString();
+        return new DefaultProviderHelpService().help("/howto/download");
     }
 }

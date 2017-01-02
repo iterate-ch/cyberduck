@@ -15,9 +15,9 @@ package ch.cyberduck.ui.cocoa;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Local;
@@ -43,7 +43,7 @@ import net.schmizz.sshj.common.KeyType;
 public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     private static final Logger log = Logger.getLogger(PromptHostKeyCallback.class);
 
-    private final WindowController parent;
+    private final WindowController controller;
 
     public PromptHostKeyCallback(final WindowController c) {
         this(c, LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
@@ -51,30 +51,38 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
         ));
     }
 
-    public PromptHostKeyCallback(final WindowController parent, final Local file) {
+    public PromptHostKeyCallback(final WindowController controller, final Local file) {
         super(file);
-        this.parent = parent;
+        this.controller = controller;
     }
 
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname));
-        alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                new SSHFingerprintGenerator().fingerprint(key),
-                KeyType.fromKey(key).name()));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
-        alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        alert.setShowsHelp(true);
-        switch(parent.alert(alert, new DefaultProviderHelpService().help(Scheme.sftp))) {
+        final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
+        final AlertController alert = new AlertController() {
+            @Override
+            public void loadBundle() {
+                final NSAlert alert = NSAlert.alert();
+                alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname));
+                alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        fingerprint, KeyType.fromKey(key).name()));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+                super.loadBundle(alert);
+            }
+
+            @Override
+            protected String help() {
+                return new DefaultProviderHelpService().help(Scheme.sftp);
+            }
+        };
+        switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
-                this.allow(hostname, key,
-                        alert.suppressionButton().state() == NSCell.NSOnState);
+                this.allow(hostname, key, alert.isSuppressed());
                 return true;
-            case SheetCallback.ALTERNATE_OPTION:
         }
         log.warn("Cannot continue without a valid host key");
         throw new ConnectionCanceledException();
@@ -83,20 +91,29 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
-        final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname));
-        alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                new SSHFingerprintGenerator().fingerprint(key),
-                KeyType.fromKey(key).name()));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
-        alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-//        new DefaultProviderHelpService().help(Scheme.sftp);
-        alert.setShowsHelp(true);
-        switch(parent.alert(alert)) {
+        final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
+        final AlertController alert = new AlertController() {
+            @Override
+            public void loadBundle() {
+                final NSAlert alert = NSAlert.alert();
+                alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname));
+                alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        fingerprint, KeyType.fromKey(key).name()));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+                super.loadBundle(alert);
+            }
+
+            @Override
+            protected String help() {
+                return new DefaultProviderHelpService().help(Scheme.sftp);
+            }
+        };
+        switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
-                allow(hostname, key, alert.suppressionButton().state() == NSCell.NSOnState);
+                allow(hostname, key, alert.isSuppressed());
                 return true;
         }
         log.warn("Cannot continue without a valid host key");

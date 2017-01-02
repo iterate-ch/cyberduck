@@ -17,6 +17,7 @@ package ch.cyberduck.binding;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSEnumerator;
@@ -34,19 +35,13 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     protected static final int SUBVIEWS_VERTICAL_SPACE = 4;
 
-    /**
-     * If using alert and no custom window
-     */
-    protected final NSAlert alert;
+    private boolean suppressed = false;
 
     public AlertController(final NSAlert alert) {
-        this(alert, NSAlert.NSWarningAlertStyle);
+        this.loadBundle(alert);
     }
 
-    public AlertController(final NSAlert alert, final int style) {
-        this.alert = alert;
-        this.alert.setAlertStyle(style);
-        this.alert.setDelegate(this.id());
+    public AlertController() {
         this.setValidator(this);
         this.setCallback(this);
     }
@@ -59,7 +54,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         return null;
     }
 
-    public NSView getAccessoryView() {
+    public NSView getAccessoryView(final NSAlert alert) {
         return null;
     }
 
@@ -69,12 +64,22 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     @Override
     public void loadBundle() {
+        //
+    }
+
+    protected void loadBundle(final NSAlert alert) {
+        alert.setShowsHelp(true);
+        alert.setDelegate(this.id());
+        if(alert.showsSuppressionButton()) {
+            alert.suppressionButton().setTarget(this.id());
+            alert.suppressionButton().setAction(Foundation.selector("suppressionButtonClicked:"));
+        }
         // Layout alert view on main thread
-        this.focus();
+        this.focus(alert);
         this.setWindow(alert.window());
     }
 
-    protected void focus() {
+    protected void focus(final NSAlert alert) {
         NSEnumerator buttons = alert.buttons().objectEnumerator();
         NSObject button;
         while(((button = buttons.nextObject()) != null)) {
@@ -82,9 +87,9 @@ public abstract class AlertController extends SheetController implements SheetCa
             b.setTarget(this.id());
             b.setAction(Foundation.selector("closeSheet:"));
         }
-        final NSView accessory = this.getAccessoryView();
+        final NSView accessory = this.getAccessoryView(alert);
         if(accessory != null) {
-            final NSRect frame = this.getFrame(accessory);
+            final NSRect frame = this.getFrame(alert, accessory);
             accessory.setFrameSize(frame.size);
             alert.setAccessoryView(accessory);
             alert.window().makeFirstResponder(accessory);
@@ -94,7 +99,7 @@ public abstract class AlertController extends SheetController implements SheetCa
         alert.window().recalculateKeyViewLoop();
     }
 
-    protected NSRect getFrame(final NSView accessory) {
+    protected NSRect getFrame(final NSAlert alert, final NSView accessory) {
         final NSRect frame = new NSRect(alert.window().frame().size.width.doubleValue(), accessory.frame().size.height.doubleValue());
         final NSEnumerator enumerator = accessory.subviews().objectEnumerator();
         NSObject next;
@@ -103,14 +108,6 @@ public abstract class AlertController extends SheetController implements SheetCa
             frame.size.height = new CGFloat(frame.size.height.doubleValue() + subview.frame().size.height.doubleValue() + SUBVIEWS_VERTICAL_SPACE * 2);
         }
         return frame;
-    }
-
-    protected void setTitle(final String title) {
-        alert.setMessageText(title);
-    }
-
-    protected void setMessage(final String message) {
-        alert.setInformativeText(message);
     }
 
     /**
@@ -128,5 +125,14 @@ public abstract class AlertController extends SheetController implements SheetCa
     @Action
     public void alertShowHelp(final NSAlert alert) {
         BrowserLauncherFactory.get().open(this.help());
+    }
+
+    @Action
+    public void suppressionButtonClicked(final NSButton sender) {
+        suppressed = sender.state() == NSCell.NSOnState;
+    }
+
+    public boolean isSuppressed() {
+        return suppressed;
     }
 }

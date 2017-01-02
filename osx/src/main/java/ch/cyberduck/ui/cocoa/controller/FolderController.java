@@ -36,72 +36,67 @@ import java.util.Set;
 
 public class FolderController extends FileController {
 
+    private final Path workdir;
+    private final Path selected;
     private final Set<Location.Name> regions;
-
-    @Outlet
-    private final NSPopUpButton regionPopup;
-    @Outlet
-    private final NSView view;
     private final Callback callback;
 
+    @Outlet
+    private NSPopUpButton regionPopup;
+
     public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions, final Callback callback) {
-        this(workdir, selected, cache, regions, NSAlert.alert(
-                LocaleFactory.localizedString("Create new folder", "Folder"),
-                LocaleFactory.localizedString("Enter the name for the new folder", "Folder"),
-                LocaleFactory.localizedString("Create", "Folder"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Folder")),
-                callback);
-    }
-
-    public FolderController(final Path workdir, final Path selected, final Cache<Path> cache, final Set<Location.Name> regions,
-                            final NSAlert alert, final Callback callback) {
-        super(workdir, selected, cache, alert);
-        this.callback = callback;
-        this.alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        super(workdir, selected, cache);
+        this.workdir = workdir;
+        this.selected = selected;
         this.regions = regions;
-        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
-        this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));
-        for(Location.Name region : regions) {
-            regionPopup.addItemWithTitle(region.toString());
-            regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
-            if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
-                regionPopup.selectItem(regionPopup.lastItem());
-            }
-        }
-    }
-
-    public NSView getAccessoryView() {
-        if(this.hasLocation()) {
-            // Override accessory view with location menu added
-            regionPopup.setFrameOrigin(new NSPoint(0, 0));
-            view.addSubview(regionPopup);
-            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-            view.addSubview(inputField);
-            return view;
-        }
-        return super.getAccessoryView();
+        this.callback = callback;
     }
 
     @Override
-    public void callback(int returncode) {
-        switch(returncode) {
-            case DEFAULT_OPTION:
-                final String filename = inputField.stringValue();
-                final Path folder = new Path(new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()),
-                        filename, EnumSet.of(Path.Type.directory));
-                callback.callback(folder, this.getLocation());
-                break;
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Create new folder", "Folder"));
+        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Folder"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
+        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        super.loadBundle(alert);
+    }
+
+    public NSView getAccessoryView(final NSAlert alert) {
+        if(this.hasLocation()) {
+            final NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+            this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
+            for(Location.Name region : regions) {
+                regionPopup.addItemWithTitle(region.toString());
+                regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
+                if(region.getIdentifier().equals(PreferencesFactory.get().getProperty("s3.location"))) {
+                    regionPopup.selectItem(regionPopup.lastItem());
+                }
+            }
+            // Override accessory view with location menu added
+            regionPopup.setFrameOrigin(new NSPoint(0, 0));
+            view.addSubview(regionPopup);
+            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+            view.addSubview(inputField);
+            return view;
         }
+        return super.getAccessoryView(alert);
     }
 
     protected boolean hasLocation() {
-        return !regions.isEmpty()
-                && new UploadTargetFinder(this.getWorkdir()).find(this.getSelected()).isRoot();
+        return !regions.isEmpty() && new UploadTargetFinder(workdir).find(selected).isRoot();
     }
 
     protected String getLocation() {
         return this.hasLocation() ? regionPopup.selectedItem().representedObject() : null;
+    }
+
+    @Override
+    public void callback(final int returncode, final Path file) {
+        file.setType(EnumSet.of(Path.Type.directory));
+        callback.callback(file, this.getLocation());
     }
 
     public interface Callback {

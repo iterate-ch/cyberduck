@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -33,53 +34,41 @@ import java.util.Map;
 
 public class DuplicateFileController extends FileController {
 
+    private final Path selected;
     private final Callback callback;
 
     public DuplicateFileController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
-        super(workdir, selected, cache, NSAlert.alert(
-                LocaleFactory.localizedString("Duplicate File", "Duplicate"),
-                LocaleFactory.localizedString("Enter the name for the new file", "Duplicate"),
-                LocaleFactory.localizedString("Duplicate", "Duplicate"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Duplicate")
-        ));
+        super(workdir, selected, cache);
+        this.selected = selected;
         this.callback = callback;
+    }
+
+    @Override
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Duplicate File", "Duplicate"));
+        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new file", "Duplicate"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Duplicate", "Duplicate"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Duplicate"));
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));
+        super.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
+        final NSView view = super.getAccessoryView(alert);
         String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                 StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
         inputField.setStringValue(proposal);
+        return view;
     }
 
     @Override
-    public void callback(final int returncode) {
-        switch(returncode) {
-            case DEFAULT_OPTION:
-                this.duplicate(this.getSelected(), inputField.stringValue());
-                break;
-        }
-    }
-
-    public void duplicate(final Path selected, final String filename) {
-        final Path duplicate = new Path(selected.getParent(), filename, selected.getType());
-        this.duplicate(selected, duplicate);
-    }
-
-    /**
-     * @param source      The original file to duplicate
-     * @param destination The destination of the duplicated file
-     */
-    public void duplicate(final Path source, final Path destination) {
-        this.duplicate(Collections.singletonMap(source, destination));
-    }
-
-    /**
-     * @param selected A map with the original files as the key and the destination
-     *                 files as the value
-     */
-    public void duplicate(final Map<Path, Path> selected) {
-        callback.callback(selected);
+    public void callback(final int returncode, final Path file) {
+        callback.callback(Collections.singletonMap(selected, file));
     }
 
     public interface Callback {

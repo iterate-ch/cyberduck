@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.LimitedListProgressListener;
@@ -52,20 +52,26 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
             super.chunk(parent, list);
         }
         catch(ListCanceledException e) {
-            final NSAlert alert = NSAlert.alert();
-            alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"), StringUtils.EMPTY));
-            alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()));
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
-            alert.setShowsSuppressionButton(true);
-            alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-            final int returncode = controller.alert(alert);
+            final AlertController alert = new AlertController() {
+                @Override
+                public void loadBundle() {
+                    final NSAlert alert = NSAlert.alert();
+                    alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"), StringUtils.EMPTY));
+                    alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()));
+                    alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
+                    alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
+                    alert.setShowsSuppressionButton(true);
+                    alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+                    super.loadBundle(alert);
+                }
+            };
+            final int returncode = alert.beginSheet(controller);
+            if(alert.isSuppressed()) {
+                this.disable();
+            }
             switch(returncode) {
                 case SheetCallback.CANCEL_OPTION:
                     throw e;
-            }
-            if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                this.disable();
             }
         }
     }

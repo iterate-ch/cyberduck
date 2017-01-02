@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -33,10 +34,10 @@ public class PromptRedirectCallback implements RedirectCallback {
     private final RedirectCallback preferences
             = new PreferencesRedirectCallback();
 
-    private final WindowController parent;
+    private final WindowController controller;
 
-    public PromptRedirectCallback(final WindowController parent) {
-        this.parent = parent;
+    public PromptRedirectCallback(final WindowController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -45,13 +46,19 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(LocaleFactory.localizedString("Redirect"));
-        alert.setInformativeText(LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-        alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-        return parent.alert(alert) == SheetCallback.DEFAULT_OPTION;
+        final AlertController alert = new AlertController() {
+            @Override
+            public void loadBundle() {
+                final NSAlert alert = NSAlert.alert();
+                alert.setMessageText(LocaleFactory.localizedString("Redirect"));
+                alert.setInformativeText(LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+                super.loadBundle(alert);
+            }
+        };
+        return alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
     }
 }
