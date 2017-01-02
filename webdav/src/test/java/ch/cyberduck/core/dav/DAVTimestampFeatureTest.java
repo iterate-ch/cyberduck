@@ -29,6 +29,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,6 +62,7 @@ public class DAVTimestampFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testSetTimestampOwncloud() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "demo.nextcloud.com", new Credentials(
                 "test", "test"
