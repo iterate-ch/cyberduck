@@ -56,6 +56,7 @@ public class PromptLimitedListProgressListener extends LimitedListProgressListen
                 @Override
                 public void loadBundle() {
                     final NSAlert alert = NSAlert.alert();
+                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                     alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Listing directory {0}", "Status"), StringUtils.EMPTY));
                     alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Continue listing directory with more than {0} files.", "Alert"), e.getChunk().size()));
                     alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
