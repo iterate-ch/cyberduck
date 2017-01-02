@@ -46,6 +46,7 @@ public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
             @Override
             public void loadBundle() {
                 final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 alert.setMessageText(LocaleFactory.localizedString("Apply changes recursively"));
                 alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
                         value, directory.getName()));

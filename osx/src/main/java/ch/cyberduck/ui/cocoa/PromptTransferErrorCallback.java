@@ -28,7 +28,6 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
     private final WindowController controller;
 
     private boolean suppressed;
-
     private boolean option;
 
     public PromptTransferErrorCallback(final WindowController controller) {
@@ -44,6 +43,7 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
             @Override
             public void loadBundle() {
                 final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
                 alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
                 alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));

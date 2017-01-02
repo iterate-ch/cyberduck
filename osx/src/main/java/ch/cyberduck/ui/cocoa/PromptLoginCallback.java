@@ -71,6 +71,7 @@ public final class PromptLoginCallback implements LoginCallback {
             @Override
             public void loadBundle() {
                 final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 alert.setMessageText(title);
                 alert.setInformativeText(message);
                 alert.addButtonWithTitle(continueButton);
@@ -78,7 +79,6 @@ public final class PromptLoginCallback implements LoginCallback {
                 alert.setShowsHelp(true);
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
-                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 super.loadBundle(alert);
             }
 
