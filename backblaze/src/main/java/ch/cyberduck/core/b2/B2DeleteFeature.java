@@ -76,7 +76,12 @@ public class B2DeleteFeature extends ThreadedDeleteFeature implements Delete {
                                     new B2FileidProvider(session).getFileid(file));
                         }
                         catch(B2ApiException e) {
-                            throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                            if(containerService.getKey(file).endsWith(B2DirectoryFeature.PLACEHOLDER)) {
+                                log.warn(String.format("Ignore failure %s deleting placeholder file %s", e.getMessage(), file));
+                            }
+                            else {
+                                throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                            }
                         }
                         catch(IOException e) {
                             throw new DefaultIOExceptionMappingService().map(e);
