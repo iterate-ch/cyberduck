@@ -52,14 +52,6 @@ public abstract class NSPanel extends NSWindow {
      */
     public abstract void setWorksWhenModal(boolean flag);
 
-    /// <i>native declaration : :54</i>
-    public static final int NSAlertDefaultReturn = 1;
-    /// <i>native declaration : :55</i>
-    public static final int NSAlertAlternateReturn = 0;
-    /// <i>native declaration : :56</i>
-    public static final int NSAlertOtherReturn = -1;
-    /// <i>native declaration : :57</i>
-    public static final int NSAlertErrorReturn = -2;
     /// <i>native declaration : :61</i>
     public static final int NSOKButton = 1;
     /// <i>native declaration : :62</i>

@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.HyperlinkAttributedStringFactory;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.WindowController;
@@ -585,7 +584,7 @@ public final class TransferController extends WindowController implements NSTool
      *
      * @param transfer Transfer
      */
-    public void add(final Transfer transfer, final BackgroundAction action) {
+    public void add(final Transfer transfer, final TransferBackgroundAction action) {
         if(collection.size() > preferences.getInteger("queue.size.warn")) {
             final NSAlert alert = NSAlert.alert(
                     TransferToolbarFactory.TransferToolbarItem.cleanup.label(), //title
@@ -596,7 +595,7 @@ public final class TransferController extends WindowController implements NSTool
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-            this.alert(alert, new DisabledSheetCallback() {
+            this.alert(alert, new SheetCallback() {
                 @Override
                 public void callback(int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -652,7 +651,7 @@ public final class TransferController extends WindowController implements NSTool
         final PathCache cache = new PathCache(preferences.getInteger("transfer.cache.size"));
         final Host source = transfer.getSource();
         final Host destination = transfer.getDestination();
-        final BackgroundAction action = new TransferCollectionBackgroundAction(this,
+        final TransferBackgroundAction action = new TransferCollectionBackgroundAction(this,
                 null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, source),
                 null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, destination),
                 new TransferAdapter() {

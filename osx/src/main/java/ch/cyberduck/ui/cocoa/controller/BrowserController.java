@@ -1996,7 +1996,7 @@ public class BrowserController extends WindowController
                                 LocaleFactory.localizedString("Cancel"),
                                 null
                         );
-                        this.alert(alert, new DisabledSheetCallback() {
+                        this.alert(alert, new SheetCallback() {
                             @Override
                             public void callback(int returncode) {
                                 if(returncode == DEFAULT_OPTION) {
@@ -2157,7 +2157,7 @@ public class BrowserController extends WindowController
                 LocaleFactory.localizedString("Delete"),
                 LocaleFactory.localizedString("Cancel"),
                 null);
-        this.alert(alert, new DisabledSheetCallback() {
+        this.alert(alert, new SheetCallback() {
             @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
@@ -3416,7 +3416,7 @@ public class BrowserController extends WindowController
                 );
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                this.alert(alert, new DisabledSheetCallback() {
+                this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {

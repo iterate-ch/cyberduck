@@ -15,10 +15,10 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
 import ch.cyberduck.binding.application.AppKitFunctionsLibrary;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSButton;
-import ch.cyberduck.binding.application.PanelReturnCodeMapper;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.ui.InputValidator;
 
@@ -71,7 +71,7 @@ public abstract class SheetController extends WindowController implements SheetC
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
-        final int option = new PanelReturnCodeMapper().getOption(sender);
+        final int option = new AlertSheetReturnCodeMapper().getOption(sender);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
             window.endEditingFor(null);
             if(!validator.validate()) {

@@ -23,6 +23,7 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.StringAppender;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSError;
@@ -31,6 +32,19 @@ import org.rococoa.cocoa.foundation.NSError;
 public abstract class NSAlert extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
+    public static final int NSAlertFirstButtonReturn = 1000;
+    public static final int NSAlertSecondButtonReturn = 1001;
+    public static final int NSAlertThirdButtonReturn = 1002;
+
+    /// <i>native declaration : :54</i>
+    public static final int NSAlertDefaultReturn = 1;
+    /// <i>native declaration : :55</i>
+    public static final int NSAlertAlternateReturn = 0;
+    /// <i>native declaration : :56</i>
+    public static final int NSAlertOtherReturn = -1;
+    /// <i>native declaration : :57</i>
+    public static final int NSAlertErrorReturn = -2;
+
     /// <i>native declaration : line 12</i>
     public static final int NSWarningAlertStyle = 0;
     /// <i>native declaration : line 13</i>
@@ -38,26 +52,36 @@ public abstract class NSAlert extends NSObject {
     /// <i>native declaration : line 14</i>
     public static final int NSCriticalAlertStyle = 2;
 
+    public static NSAlert alert() {
+        return CLASS.alloc().init();
+    }
+
     public static NSAlert alertWithError(NSError error) {
         return CLASS.alertWithError(error);
     }
 
-    /**
-     * @param title           Alert title
-     * @param message         Informative text
-     * @param defaultButton
-     * @param alternateButton
-     * @param otherButton
-     * @return
-     */
     public static NSAlert alert(
             String title, String message, String defaultButton, String alternateButton, String otherButton) {
-        return CLASS.alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
-                title, defaultButton, alternateButton, otherButton,
-                new StringAppender().append(message).toString());
+        NSAlert alert = NSAlert.alert();
+        alert.setMessageText(title);
+        alert.setInformativeText(new StringAppender().append(message).toString());
+        if(StringUtils.isNotBlank(defaultButton)) {
+            // OK
+            alert.addButtonWithTitle(defaultButton);
+        }
+        if(StringUtils.isNotBlank(otherButton)) {
+            // Cancel
+            alert.addButtonWithTitle(otherButton);
+        }
+        if(StringUtils.isNotBlank(alternateButton)) {
+            alert.addButtonWithTitle(alternateButton);
+        }
+        return alert;
     }
 
     public interface _Class extends ObjCClass {
+        NSAlert alloc();
+
         /**
          * Given an NSError, create an NSAlert that can be used to present the error to the user. The error's localized description, recovery suggestion, and recovery options will be used to set the alert's message text, informative text, and button titles, respectively.<br>
          * Original signature : <code>NSAlert* alertWithError(NSError*)</code><br>
@@ -73,6 +97,8 @@ public abstract class NSAlert extends NSObject {
         NSAlert alertWithMessageText_defaultButton_alternateButton_otherButton_informativeTextWithFormat(
                 String message, String defaultButton, String alternateButton, String otherButton, String format);
     }
+
+    public abstract NSAlert init();
 
     /**
      * Original signature : <code>void setMessageText(NSString*)</code><br>

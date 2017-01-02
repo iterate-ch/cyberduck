@@ -18,35 +18,41 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.BrowserLauncher;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class DefaultProviderHelpService implements ProviderHelpService {
 
-    private final BrowserLauncher launcher = BrowserLauncherFactory.get();
+    public final String base;
 
-    public void help() {
-        this.help(StringUtils.EMPTY);
+    public DefaultProviderHelpService() {
+        this(PreferencesFactory.get().getProperty("website.help"));
+    }
+
+    public DefaultProviderHelpService(final String base) {
+        this.base = base;
+    }
+
+    public String help() {
+        return this.help(StringUtils.EMPTY);
     }
 
     @Override
-    public void help(final Protocol provider) {
-        this.help(provider.getProvider());
+    public String help(final Protocol provider) {
+        return this.help(provider.getProvider());
     }
 
     @Override
-    public void help(final Scheme scheme) {
-        this.help(scheme.name());
+    public String help(final Scheme scheme) {
+        return this.help(scheme.name());
     }
 
-    private void help(final String page) {
-        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
+    public String help(final String page) {
+        final StringBuilder site = new StringBuilder(base);
         if(StringUtils.isNotBlank(page)) {
             site.append("/").append(page);
         }
-        launcher.open(site.toString());
+        return site.toString();
     }
 }

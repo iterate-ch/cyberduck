@@ -32,21 +32,31 @@ import java.util.Set;
 public class RegionController extends AlertController {
 
     @Outlet
-    private final NSPopUpButton regionPopup;
-    @Outlet
-    private final NSView view;
+    private NSPopUpButton regionPopup;
+
+    private final Set<Location.Name> regions;
     private final RegionController.Callback callback;
 
     public RegionController(final Set<Location.Name> regions, final RegionController.Callback callback) {
-        super(NSAlert.alert(
-                LocaleFactory.localizedString("Choose Region", "Folder"),
-                null,
-                LocaleFactory.localizedString("Choose"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Folder")));
+        this.regions = regions;
         this.callback = callback;
-        this.view = NSView.create(new NSRect(window.frame().size.width.doubleValue(), 0));
-        this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(window.frame().size.width.doubleValue(), 26));
+    }
+
+    @Override
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Choose Region", "Folder"));
+        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
+        super.loadBundle(alert);
+    }
+
+    public NSView getAccessoryView(final NSAlert alert) {
+        final NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        this.regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
+        this.regionPopup.setFrameOrigin(new NSPoint(0, 0));
         for(Location.Name region : regions) {
             regionPopup.addItemWithTitle(region.toString());
             regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
@@ -54,19 +64,17 @@ public class RegionController extends AlertController {
                 regionPopup.selectItem(regionPopup.lastItem());
             }
         }
-    }
-
-    public NSView getAccessoryView() {
         // Override accessory view with location menu added
-        regionPopup.setFrameOrigin(new NSPoint(0, 0));
         view.addSubview(regionPopup);
         return view;
     }
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            callback.callback(new Location.Name(regionPopup.selectedItem().representedObject()));
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                callback.callback(new Location.Name(regionPopup.selectedItem().representedObject()));
+                break;
         }
     }
 

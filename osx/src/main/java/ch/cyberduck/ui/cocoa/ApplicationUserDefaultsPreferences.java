@@ -25,9 +25,7 @@ import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.sparkle.Updater;
-import ch.cyberduck.core.threading.AlertTransferErrorCallback;
 import ch.cyberduck.ui.browser.Column;
-import ch.cyberduck.ui.cocoa.controller.AlertHostKeyController;
 import ch.cyberduck.ui.cocoa.controller.CopyPromptController;
 import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
@@ -47,10 +45,10 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
             defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
         }
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
-        defaults.put("factory.hostkeycallback.class", AlertHostKeyController.class.getName());
+        defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
         defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
         defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
-        defaults.put("factory.transfererrorcallback.class", AlertTransferErrorCallback.class.getName());
+        defaults.put("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
         defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());

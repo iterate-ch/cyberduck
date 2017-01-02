@@ -15,9 +15,9 @@ package ch.cyberduck.ui.cocoa.controller;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
@@ -59,13 +59,13 @@ public class DeleteController extends ProxyController {
         if(iter.hasNext()) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
-        NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
+        final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
                 alertText.toString(),
                 LocaleFactory.localizedString("Delete"), // defaultbutton
                 LocaleFactory.localizedString("Cancel"), //alternative button
                 null //other button
         );
-        parent.alert(alert, new DisabledSheetCallback() {
+        parent.alert(alert, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {

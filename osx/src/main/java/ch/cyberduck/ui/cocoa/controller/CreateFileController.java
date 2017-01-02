@@ -23,43 +23,44 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.ui.browser.UploadTargetFinder;
-
-import java.util.EnumSet;
 
 public class CreateFileController extends FileController {
 
     private final Callback callback;
 
     public CreateFileController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
-        super(workdir, selected, cache, NSAlert.alert(
-                LocaleFactory.localizedString("Create new file", "File"),
-                LocaleFactory.localizedString("Enter the name for the new file", "File"),
-                LocaleFactory.localizedString("Create", "File"),
-                EditorFactory.instance().getDefaultEditor() != Application.notfound ? LocaleFactory.localizedString("Edit", "File") : null,
-                LocaleFactory.localizedString("Cancel", "File")
-        ));
+        super(workdir, selected, cache);
         this.callback = callback;
-        alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
     }
 
     @Override
-    public void callback(final int returncode) {
-        final Path parent = new UploadTargetFinder(this.getWorkdir()).find(this.getSelected());
-        if(returncode == DEFAULT_OPTION) {
-            this.run(parent, inputField.stringValue(), false);
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Create new file", "File"));
+        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new file", "File"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
+        if(EditorFactory.instance().getDefaultEditor() != Application.notfound) {
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Edit", "File"));
         }
-        else if(returncode == ALTERNATE_OPTION) {
-            this.run(parent, inputField.stringValue(), true);
-        }
+        alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));
+        super.loadBundle(alert);
     }
 
-    private void run(final Path directory, final String filename, final boolean edit) {
-        final Path file = new Path(directory, filename, EnumSet.of(Path.Type.file));
-        callback.callback(edit, file);
+    @Override
+    public void callback(final int returncode, final Path file) {
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                callback.callback(false, file);
+                break;
+            case ALTERNATE_OPTION:
+                callback.callback(true, file);
+                break;
+        }
     }
 
     public interface Callback {
-        public void callback(final boolean edit, final Path file);
+        void callback(final boolean edit, final Path file);
     }
 }

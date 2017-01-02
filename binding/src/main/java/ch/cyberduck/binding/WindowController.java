@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
@@ -47,6 +46,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = Logger.getLogger(WindowController.class);
@@ -114,11 +114,10 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return True if the controller window is on screen.
      */
     public boolean isVisible() {
-        final NSWindow w = this.window();
-        if(null == w) {
+        if(null == window) {
             return false;
         }
-        return w.isVisible();
+        return window.isVisible();
     }
 
     @Override
@@ -200,16 +199,31 @@ public abstract class WindowController extends BundleController implements NSWin
     @Override
     public boolean alert(final Host host, final BackgroundException failure,
                          final StringBuilder transcript) {
-        return new PanelAlertCallback(this).alert(host, failure, transcript);
+        new NotificationAlertCallback().alert(host, failure, transcript);
+        final NSAlert alert = NSAlert.alert();
+        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+        alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
+            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+        }
+        switch(this.alert(alert, new DefaultProviderHelpService().help(host.getProtocol()))) {
+            case SheetCallback.ALTERNATE_OPTION:
+                ReachabilityFactory.get().diagnose(host);
+                break;
+            case SheetCallback.DEFAULT_OPTION:
+                return true;
+        }
+        return false;
     }
 
     /**
      * @param alert Sheet
-     * @return Return code from the dialog if called from background thread.
+     * @return Button selection
      */
-    @Override
     public int alert(final NSAlert alert) {
-        return this.alert(alert, (String) null);
+        return this.alert(alert, StringUtils.EMPTY);
     }
 
     /**
@@ -218,14 +232,14 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return Button selection
      */
     public int alert(final NSAlert alert, final String help) {
-        final int[] response = new int[1];
+        final AtomicInteger response = new AtomicInteger();
         this.alert(alert, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
-                response[0] = returncode;
+                response.set(returncode);
             }
         }, help);
-        return response[0];
+        return response.get();
     }
 
     /**
@@ -235,7 +249,7 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback Dismissed notification
      */
     public void alert(final NSAlert alert, final SheetCallback callback) {
-        this.alert(alert, callback, null);
+        this.alert(alert, callback, StringUtils.EMPTY);
     }
 
     /**
@@ -251,38 +265,14 @@ public abstract class WindowController extends BundleController implements NSWin
             }
 
             @Override
-            protected void help() {
+            protected String help() {
                 if(StringUtils.isBlank(help)) {
-                    super.help();
+                    return super.help();
                 }
-                else {
-                    BrowserLauncherFactory.get().open(help);
-                }
+                return help;
             }
         };
         c.beginSheet(this);
-    }
-
-    /**
-     * Attach a sheet to this window
-     *
-     * @param sheet The sheet to be attached to this window
-     * @see SheetInvoker#beginSheet()
-     */
-    protected void alert(final NSWindow sheet) {
-        this.alert(sheet, new DisabledSheetCallback());
-    }
-
-    /**
-     * Attach a sheet to this window
-     *
-     * @param sheet    The sheet to be attached to this window
-     * @param callback The callback to call after the sheet is dismissed
-     * @see SheetInvoker#beginSheet()
-     */
-    protected void alert(final NSWindow sheet, final SheetCallback callback) {
-        final SheetInvoker c = new SheetInvoker(callback, this, sheet);
-        c.beginSheet();
     }
 
     @Action
@@ -298,61 +288,13 @@ public abstract class WindowController extends BundleController implements NSWin
         final NSPrintPanel panel = op.printPanel();
         panel.setOptions(panel.options() | NSPrintPanel.NSPrintPanelShowsOrientation
                 | NSPrintPanel.NSPrintPanelShowsPaperSize | NSPrintPanel.NSPrintPanelShowsScaling);
-        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(this.window(), this.id(),
+        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(window, this.id(),
                 Foundation.selector("printOperationDidRun:success:contextInfo:"), null);
     }
 
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
             log.warn(String.format("Printing failed for context %s", contextInfo));
-        }
-    }
-
-    private static final class PanelAlertCallback implements AlertCallback {
-
-        private final WindowController controller;
-
-        private final FailureDiagnostics<Exception> diagnostics
-                = new DefaultFailureDiagnostics();
-
-        private final NotificationAlertCallback notification
-                = new NotificationAlertCallback();
-
-        public PanelAlertCallback(final WindowController controller) {
-            this.controller = controller;
-        }
-
-        @Override
-        public boolean alert(final Host host, final BackgroundException failure, final StringBuilder log) {
-            notification.alert(host, failure, log);
-            if(controller.isVisible()) {
-                final NSAlert alert = NSAlert.alert(
-                        null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
-                        null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail(),
-                        LocaleFactory.localizedString("Try Again", "Alert"), // default button
-                        diagnostics.determine(failure) == FailureDiagnostics.Type.network
-                                ? LocaleFactory.localizedString("Network Diagnostics", "Alert") : null, //other button
-                        LocaleFactory.localizedString("Cancel", "Alert") // alternate button
-                );
-                alert.setShowsHelp(true);
-                final AlertController c = new AlertController(alert) {
-                    @Override
-                    public void callback(final int returncode) {
-                        if(returncode == ALTERNATE_OPTION) {
-                            ReachabilityFactory.get().diagnose(host);
-                        }
-                    }
-
-                    @Override
-                    protected void help() {
-                        new DefaultProviderHelpService().help(host.getProtocol());
-                    }
-                };
-                if(c.beginSheet(controller) == SheetCallback.DEFAULT_OPTION) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

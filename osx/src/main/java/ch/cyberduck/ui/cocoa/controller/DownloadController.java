@@ -20,6 +20,7 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.DefaultPathKindDetector;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LocalFactory;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,44 +43,51 @@ public class DownloadController extends AlertController {
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
+    private final String url;
 
     public DownloadController() {
         this(StringUtils.EMPTY);
     }
 
     public DownloadController(final String url) {
-        super(NSAlert.alert(
-                LocaleFactory.localizedString("New Download", "Download"),
-                LocaleFactory.localizedString("URL", "Download"),
-                LocaleFactory.localizedString("Download", "Download"),
-                null,
-                LocaleFactory.localizedString("Cancel", "Download")
-        ), NSAlert.NSInformationalAlertStyle);
-        this.updateField(urlField, url);
-        this.alert.setShowsHelp(true);
+        this.url = url;
     }
 
     @Override
-    public NSView getAccessoryView() {
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("New Download", "Download"));
+        alert.setInformativeText(LocaleFactory.localizedString("URL", "Download"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Download", "Download"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Download"));
+        this.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
         return urlField;
     }
 
     @Override
-    protected void focus() {
-        super.focus();
+    protected void focus(final NSAlert alert) {
+        super.focus(alert);
+        this.updateField(urlField, url);
         urlField.selectText(null);
     }
 
     @Override
     public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final Host host = HostParser.parse(urlField.stringValue());
-            final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
-                    EnumSet.of(detector.detect(host.getDefaultPath())));
-            host.setDefaultPath(file.getParent().getAbsolute());
-            final Transfer transfer = new DownloadTransfer(host, file,
-                    LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
-            TransferControllerFactory.get().start(transfer);
+        switch(returncode) {
+            case DEFAULT_OPTION:
+                final Host host = HostParser.parse(urlField.stringValue());
+                final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
+                        EnumSet.of(detector.detect(host.getDefaultPath())));
+                host.setDefaultPath(file.getParent().getAbsolute());
+                final Transfer transfer = new DownloadTransfer(host, file,
+                        LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
+                TransferControllerFactory.get().start(transfer);
+                break;
         }
     }
 
@@ -91,9 +98,7 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    protected void help() {
-        StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
-        site.append("/howto/download");
-        BrowserLauncherFactory.get().open(site.toString());
+    protected String help() {
+        return new DefaultProviderHelpService().help("/howto/download");
     }
 }

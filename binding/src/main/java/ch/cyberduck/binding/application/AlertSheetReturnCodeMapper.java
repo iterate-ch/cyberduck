@@ -19,8 +19,8 @@ package ch.cyberduck.binding.application;
 
 import org.apache.log4j.Logger;
 
-public final class PanelReturnCodeMapper {
-    private static final Logger log = Logger.getLogger(PanelReturnCodeMapper.class);
+public final class AlertSheetReturnCodeMapper {
+    private static final Logger log = Logger.getLogger(AlertSheetReturnCodeMapper.class);
 
     /**
      * Translate return codes from sheet selection
@@ -31,22 +31,20 @@ public final class PanelReturnCodeMapper {
      * @see SheetCallback#CANCEL_OPTION
      */
     public int getOption(final NSButton sender) {
-        if(sender.tag() == NSPanel.NSOKButton) {
-            return SheetCallback.DEFAULT_OPTION;
+        final int option = sender.tag();
+        switch(option) {
+            case NSAlert.NSAlertFirstButtonReturn:
+                return SheetCallback.DEFAULT_OPTION;
+            case NSAlert.NSAlertSecondButtonReturn:
+                return SheetCallback.CANCEL_OPTION;
+            case NSAlert.NSAlertThirdButtonReturn:
+                return SheetCallback.ALTERNATE_OPTION;
+            case NSPanel.NSOKButton:
+                return SheetCallback.DEFAULT_OPTION;
+            case NSPanel.NSCancelButton:
+                return SheetCallback.CANCEL_OPTION;
         }
-        if(sender.tag() == NSPanel.NSCancelButton) {
-            return SheetCallback.CANCEL_OPTION;
-        }
-        if(sender.tag() == NSPanel.NSAlertDefaultReturn) {
-            return SheetCallback.DEFAULT_OPTION;
-        }
-        else if(sender.tag() == NSPanel.NSAlertAlternateReturn) {
-            return SheetCallback.ALTERNATE_OPTION;
-        }
-        else if(sender.tag() == NSPanel.NSAlertOtherReturn) {
-            return SheetCallback.CANCEL_OPTION;
-        }
-        log.warn(String.format("Unknown return code %d", sender.tag()));
+        log.warn(String.format("Unknown return code %d", option));
         return SheetCallback.DEFAULT_OPTION;
     }
 

@@ -495,9 +495,8 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void newDownloadMenuClicked(final ID sender) {
         this.showTransferQueueClicked(sender);
-        final TransferController parent = TransferControllerFactory.get();
-        DownloadController c = new DownloadController();
-        c.beginSheet(parent);
+        final DownloadController c = new DownloadController();
+        c.beginSheet(TransferControllerFactory.get());
     }
 
     @Action
@@ -743,10 +742,9 @@ public class MainController extends BundleController implements NSApplication.De
             // No bookmark for current browser found
             bookmarksPopup.selectItemAtIndex(new NSInteger(0));
         }
-        final TransferController t = TransferControllerFactory.get();
         final Host mount = open;
         final Path destination = workdir;
-        final AlertController alert = new AlertController(NSAlert.alert("Select Bookmark",
+        final NSAlert alert = NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
                         files.size() == 1 ? files.iterator().next().getName()
                                 : MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(files.size()))
@@ -754,9 +752,16 @@ public class MainController extends BundleController implements NSApplication.De
                 LocaleFactory.localizedString("Upload", "Transfer"),
                 LocaleFactory.localizedString("Cancel"),
                 null
-        )) {
+        );
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        final AlertController controller = new AlertController() {
             @Override
-            public NSView getAccessoryView() {
+            public void loadBundle() {
+                this.loadBundle(alert);
+            }
+
+            @Override
+            public NSView getAccessoryView(final NSAlert alert) {
                 return bookmarksPopup;
             }
 
@@ -791,7 +796,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
-        alert.beginSheet(t);
+        controller.beginSheet(TransferControllerFactory.get());
         return true;
     }
 

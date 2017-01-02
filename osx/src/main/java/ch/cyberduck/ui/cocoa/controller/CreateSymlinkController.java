@@ -17,42 +17,49 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
-import java.util.EnumSet;
 
 public class CreateSymlinkController extends FileController {
 
+    private final Path selected;
     private final Callback callback;
 
     public CreateSymlinkController(final Path workdir, final Path selected, final Cache<Path> cache, final Callback callback) {
-        super(workdir, selected, cache, NSAlert.alert(
-                LocaleFactory.localizedString("Create new symbolic link", "File"),
-                StringUtils.EMPTY,
-                LocaleFactory.localizedString("Create", "File"),
-                null,
-                LocaleFactory.localizedString("Cancel", "File")
-        ));
+        super(workdir, selected, cache);
+        this.selected = selected;
         this.callback = callback;
-        alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
-        inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
-        this.setMessage(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"),
-                selected.getName()));
     }
 
     @Override
-    public void callback(final int returncode) {
-        if(returncode == DEFAULT_OPTION) {
-            final Path selected = this.getSelected();
-            callback.callback(selected, new Path(this.getWorkdir(), inputField.stringValue(), EnumSet.of(Path.Type.file)));
-        }
+    public void loadBundle() {
+        final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+        alert.setMessageText(LocaleFactory.localizedString("Create new symbolic link", "File"));
+        alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"), selected.getName()));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
+        alert.setIcon(IconCacheFactory.<NSImage>get().aliasIcon(null, 64));
+        super.loadBundle(alert);
+    }
+
+    @Override
+    public NSView getAccessoryView(final NSAlert alert) {
+        final NSView view = super.getAccessoryView(alert);
+        inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
+        return view;
+    }
+
+    @Override
+    public void callback(final int returncode, final Path file) {
+        callback.callback(selected, file);
     }
 
     public interface Callback {

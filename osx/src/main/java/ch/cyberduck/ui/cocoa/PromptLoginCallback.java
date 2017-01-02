@@ -18,17 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -66,19 +67,28 @@ public final class PromptLoginCallback implements LoginCallback {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", protocol));
         }
-        final NSAlert alert = NSAlert.alert(title, message,
-                continueButton, // Default Button
-                null, // Alternate button
-                disconnectButton // Other
-        );
-        alert.setShowsHelp(true);
-        alert.setShowsSuppressionButton(true);
-        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
-        alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-        final StringBuilder site = new StringBuilder(preferences.getProperty("website.help"));
-        site.append("/").append(protocol.getScheme().name());
-        int option = parent.alert(alert, site.toString());
-        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+        final AlertController alert = new AlertController() {
+            @Override
+            public void loadBundle() {
+                final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                alert.setMessageText(title);
+                alert.setInformativeText(message);
+                alert.addButtonWithTitle(continueButton);
+                alert.addButtonWithTitle(disconnectButton);
+                alert.setShowsHelp(true);
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
+                super.loadBundle(alert);
+            }
+
+            @Override
+            protected String help() {
+                return new DefaultProviderHelpService().help(protocol);
+            }
+        };
+        int option = alert.beginSheet(parent);
+        if(alert.isSuppressed()) {
             // Never show again.
             preferences.setProperty(preference, true);
         }
@@ -86,7 +96,7 @@ public final class PromptLoginCallback implements LoginCallback {
             case SheetCallback.CANCEL_OPTION:
                 throw new LoginCanceledException();
         }
-        //Proceed nevertheless.
+        // Proceed nevertheless.
     }
 
     @Override
