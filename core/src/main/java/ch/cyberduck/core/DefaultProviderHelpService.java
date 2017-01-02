@@ -24,6 +24,16 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DefaultProviderHelpService implements ProviderHelpService {
 
+    public final String base;
+
+    public DefaultProviderHelpService() {
+        this(PreferencesFactory.get().getProperty("website.help"));
+    }
+
+    public DefaultProviderHelpService(final String base) {
+        this.base = base;
+    }
+
     public String help() {
         return this.help(StringUtils.EMPTY);
     }
@@ -38,8 +48,8 @@ public class DefaultProviderHelpService implements ProviderHelpService {
         return this.help(scheme.name());
     }
 
-    private String help(final String page) {
-        final StringBuilder site = new StringBuilder(PreferencesFactory.get().getProperty("website.help"));
+    public String help(final String page) {
+        final StringBuilder site = new StringBuilder(base);
         if(StringUtils.isNotBlank(page)) {
             site.append("/").append(page);
         }
