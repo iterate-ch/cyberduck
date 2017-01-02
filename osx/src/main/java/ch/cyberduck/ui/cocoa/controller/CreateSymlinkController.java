@@ -41,6 +41,7 @@ public class CreateSymlinkController extends FileController {
     @Override
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new symbolic link", "File"));
         alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Enter the name for the new symbolic link for {0}", "File"), selected.getName()));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));

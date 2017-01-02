@@ -36,6 +36,7 @@ public class CreateFileController extends FileController {
     @Override
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new file", "File"));
         alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new file", "File"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
