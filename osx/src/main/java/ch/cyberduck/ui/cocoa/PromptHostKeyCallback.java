@@ -64,6 +64,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
             @Override
             public void loadBundle() {
                 final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname));
                 alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
                         fingerprint, KeyType.fromKey(key).name()));
@@ -96,6 +97,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
             @Override
             public void loadBundle() {
                 final NSAlert alert = NSAlert.alert();
+                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                 alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname));
                 alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
                         fingerprint, KeyType.fromKey(key).name()));
