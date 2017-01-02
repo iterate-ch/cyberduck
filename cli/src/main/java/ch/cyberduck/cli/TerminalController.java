@@ -19,10 +19,8 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.MainAction;
 
 public class TerminalController extends AbstractController {
@@ -40,11 +38,6 @@ public class TerminalController extends AbstractController {
     @Override
     public void invoke(final MainAction runnable, final boolean wait) {
         runnable.run();
-    }
-
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        return new TerminalAlertCallback().alert(host, failure, transcript);
     }
 
     @Override
