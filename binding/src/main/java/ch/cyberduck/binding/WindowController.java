@@ -30,7 +30,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -195,27 +194,10 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback Dismissed notification
      */
     public void alert(final NSAlert alert, final SheetCallback callback) {
-        this.alert(alert, callback, StringUtils.EMPTY);
-    }
-
-    /**
-     * @param alert    Sheet
-     * @param callback Dismissed notification
-     * @param help     Help URL
-     */
-    public void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         final AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
-            }
-
-            @Override
-            protected String help() {
-                if(StringUtils.isBlank(help)) {
-                    return super.help();
-                }
-                return help;
             }
         };
         c.beginSheet(this);
