@@ -192,6 +192,53 @@ public class CryptoVaultTest {
     }
 
     @Test
+    public void testLoadEmptyPassword() throws Exception {
+        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Read.class) {
+                    return (T) new Read() {
+                        @Override
+                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                            final String masterKey = "{\n" +
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 5\n" +
+                                    "}";
+                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                        }
+
+                        @Override
+                        public boolean offset(final Path file) throws BackgroundException {
+                            return false;
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        final CryptoVault vault = new CryptoVault(
+                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
+        try {
+            vault.load(session, new DisabledPasswordCallback() {
+                @Override
+                public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    credentials.setPassword(null);
+                }
+            });
+            fail();
+        }
+        catch(LoginCanceledException e) {
+            //
+        }
+    }
+
+    @Test
     public void testCreate() throws Exception {
         final Path home = new Path("/vault", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {

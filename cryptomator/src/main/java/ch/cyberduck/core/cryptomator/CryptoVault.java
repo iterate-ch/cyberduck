@@ -171,6 +171,9 @@ public class CryptoVault implements Vault {
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
+            if(null == credentials.getPassword()) {
+                throw new LoginCanceledException();
+            }
         }
         try {
             this.open(master, credentials.getPassword());
