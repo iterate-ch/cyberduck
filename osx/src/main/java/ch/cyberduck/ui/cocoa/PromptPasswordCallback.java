@@ -27,14 +27,22 @@ public class PromptPasswordCallback implements PasswordCallback {
 
     private final WindowController parent;
 
+    private boolean suppressed;
+
     public PromptPasswordCallback(final WindowController parent) {
         this.parent = parent;
     }
 
     @Override
     public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+        if(suppressed) {
+            return;
+        }
         final PasswordController controller = new PasswordController(credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
+        if(controller.isSuppressed()) {
+            suppressed = true;
+        }
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }

@@ -36,12 +36,18 @@ public class PromptRedirectCallback implements RedirectCallback {
 
     private final WindowController controller;
 
+    private boolean suppressed;
+    private boolean option;
+
     public PromptRedirectCallback(final WindowController controller) {
         this.controller = controller;
     }
 
     @Override
     public boolean redirect(final String method) {
+        if(suppressed) {
+            return option;
+        }
         if(preferences.redirect(method)) {
             // Allow if set defaults
             return true;
@@ -59,6 +65,10 @@ public class PromptRedirectCallback implements RedirectCallback {
                 super.loadBundle(alert);
             }
         };
-        return alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
+        option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
+        if(alert.isSuppressed()) {
+            suppressed = true;
+        }
+        return option;
     }
 }
