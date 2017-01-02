@@ -213,11 +213,12 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             }
             else {
                 log.warn(String.format("Cannot determine installation path for %s", search));
+                applicationNameCache.put(search, Application.notfound);
                 return Application.notfound;
             }
         }
         final Application application = new Application(identifier, name);
-        applicationNameCache.put(identifier, application);
+        applicationNameCache.put(search, application);
         return application;
     }
 
