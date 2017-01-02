@@ -44,6 +44,8 @@ public class PasswordController extends AlertController {
     private NSSecureTextField inputField;
     @Outlet
     private NSButton keychainCheckbox;
+    @Outlet
+    private NSButton suppressionCheckbox;
 
     private final Credentials credentials;
     private final String title;
@@ -69,6 +71,11 @@ public class PasswordController extends AlertController {
         this.loadBundle(alert);
     }
 
+    @Override
+    public boolean isSuppressed() {
+        return super.isSuppressed();
+    }
+
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         credentials.setSaved(sender.state() == NSCell.NSOnState);
@@ -82,23 +89,31 @@ public class PasswordController extends AlertController {
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
         NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        this.inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        this.inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+        suppressionCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+        suppressionCheckbox.setTitle(LocaleFactory.localizedString("Always"));
+        suppressionCheckbox.setAction(Foundation.selector("suppressionButtonClicked:"));
+        suppressionCheckbox.setButtonType(NSButton.NSSwitchButton);
+        suppressionCheckbox.setState(NSCell.NSOffState);
+        suppressionCheckbox.sizeToFit();
+        // Override accessory view with location menu added
+        suppressionCheckbox.setFrameOrigin(new NSPoint(0, 0));
+        view.addSubview(suppressionCheckbox);
         if(options.keychain) {
-            this.keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-            this.keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
-            this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-            this.keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
-            this.keychainCheckbox.setState(NSCell.NSOffState);
-            this.keychainCheckbox.sizeToFit();
+            keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+            keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
+            keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
+            keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
+            keychainCheckbox.setState(NSCell.NSOffState);
+            keychainCheckbox.sizeToFit();
             // Override accessory view with location menu added
             keychainCheckbox.setFrameOrigin(new NSPoint(0, 0));
             view.addSubview(keychainCheckbox);
-            inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
-            view.addSubview(inputField);
-            return view;
         }
-        return inputField;
+        inputField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        inputField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
+        inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
+        view.addSubview(inputField);
+        return view;
     }
 
     @Override
@@ -108,7 +123,7 @@ public class PasswordController extends AlertController {
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                this.inputField);
+                inputField);
     }
 
     @Override
