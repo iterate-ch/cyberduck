@@ -73,13 +73,16 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
             if(accelerateTransferOption.getStatus(file) ||
                     (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-                new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle,
-                        listener, status, prompt);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Tunnel download for file %s through accelerated endpoint %s", file, tunneled));
+                }
+                new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle, listener, status, prompt);
                 return;
             }
+            log.warn(String.format("Transfer acceleration disabled for %s", file));
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Ignore failure reading S3 Accelerate Configuration. %s", e.getMessage()));
+            log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
         }
         super.download(file, local, throttle, listener, status, prompt);
     }
