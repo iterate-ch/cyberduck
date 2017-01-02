@@ -18,7 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundCallable;
@@ -169,11 +168,5 @@ public abstract class AbstractController implements Controller {
     @Override
     public void log(final Type request, final String message) {
         log.trace(message);
-    }
-
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        log.warn(failure.getMessage(), failure);
-        return false;
     }
 }

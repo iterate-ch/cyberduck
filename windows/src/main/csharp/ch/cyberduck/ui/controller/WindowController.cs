@@ -115,11 +115,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public override bool alert(Host host, BackgroundException failure, StringBuilder transcript)
-        {
-            return new DialogAlertCallback(this).alert(host, failure, transcript);
-        }
-
         protected virtual void Invalidate()
         {
             invalidate();

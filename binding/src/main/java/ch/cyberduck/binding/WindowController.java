@@ -26,16 +26,9 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.diagnostics.ReachabilityFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -193,38 +186,6 @@ public abstract class WindowController extends BundleController implements NSWin
             toggle.performClick(null);
         }
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        new NotificationAlertCallback().alert(host, failure, transcript);
-        final AlertController c = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-                alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-                if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-                    alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-                }
-                this.loadBundle(alert);
-            }
-
-            @Override
-            protected String help() {
-                return new DefaultProviderHelpService().help(host.getProtocol());
-            }
-        };
-        switch(c.beginSheet(this)) {
-            case SheetCallback.ALTERNATE_OPTION:
-                ReachabilityFactory.get().diagnose(host);
-                break;
-            case SheetCallback.DEFAULT_OPTION:
-                return true;
-        }
-        return false;
     }
 
     /**

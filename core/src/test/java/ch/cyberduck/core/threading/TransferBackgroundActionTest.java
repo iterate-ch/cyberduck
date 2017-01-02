@@ -215,17 +215,9 @@ public class TransferBackgroundActionTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 runnable.run();
             }
-
-            @Override
-            public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-                final boolean alerted = alert.get();
-                alert.set(true);
-                return !alerted;
-            }
         };
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final TransferOptions options = new TransferOptions();
-        final AtomicBoolean retry = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), host) {
@@ -234,7 +226,14 @@ public class TransferBackgroundActionTest {
                 throw new ConnectionRefusedException("d", new SocketException());
             }
         }, SessionPool.DISCONNECTED, new TransferAdapter(),
-                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options);
+                new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options) {
+            @Override
+            public boolean alert(final BackgroundException e) {
+                final boolean alerted = alert.get();
+                alert.set(true);
+                return !alerted;
+            }
+        };
         assertFalse(alert.get());
         // Connect, prepare and run
         new BackgroundCallable<Boolean>(action, controller, BackgroundActionRegistry.global()).call();
