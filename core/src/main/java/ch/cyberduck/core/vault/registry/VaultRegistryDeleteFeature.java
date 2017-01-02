@@ -20,10 +20,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VaultRegistryDeleteFeature implements Delete {
     private final DefaultVaultRegistry registry;
@@ -38,8 +41,23 @@ public class VaultRegistryDeleteFeature implements Delete {
 
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
+        final Map<Vault, List<Path>> vaults = new HashMap<>();
         for(Path file : files) {
-            registry.find(file).getFeature(session, Delete.class, proxy).delete(Collections.singletonList(file), prompt, callback);
+            final Vault vault = registry.find(file);
+            final List<Path> sorted;
+            if(vaults.containsKey(vault)) {
+                sorted = vaults.get(vault);
+            }
+            else {
+                sorted = new ArrayList<>();
+            }
+            sorted.add(file);
+            vaults.put(vault, sorted);
+        }
+        for(Map.Entry<Vault, List<Path>> entry : vaults.entrySet()) {
+            final Vault vault = entry.getKey();
+            final Delete feature = vault.getFeature(session, Delete.class, proxy);
+            feature.delete(entry.getValue(), prompt, callback);
         }
     }
 }
