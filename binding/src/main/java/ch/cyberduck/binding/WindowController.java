@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
@@ -207,9 +208,7 @@ public abstract class WindowController extends BundleController implements NSWin
         if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
         }
-//                new DefaultProviderHelpService().help(host.getProtocol());
-        alert.setShowsHelp(true);
-        switch(this.alert(alert)) {
+        switch(this.alert(alert, new DefaultProviderHelpService().help(host.getProtocol()))) {
             case SheetCallback.ALTERNATE_OPTION:
                 ReachabilityFactory.get().diagnose(host);
                 break;
