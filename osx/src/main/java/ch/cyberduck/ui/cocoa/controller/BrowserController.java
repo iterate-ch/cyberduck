@@ -91,6 +91,7 @@ import ch.cyberduck.ui.browser.RegexFilter;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 import ch.cyberduck.ui.browser.UploadDirectoryFinder;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
+import ch.cyberduck.ui.cocoa.PromptAlertCallback;
 import ch.cyberduck.ui.cocoa.PromptLimitedListProgressListener;
 import ch.cyberduck.ui.cocoa.datasource.BookmarkTableDataSource;
 import ch.cyberduck.ui.cocoa.datasource.BrowserListViewDataSource;
@@ -3216,7 +3217,7 @@ public class BrowserController extends WindowController
             terminal.open(pool.getHost(), workdir);
         }
         catch(AccessDeniedException e) {
-            this.alert(pool.getHost(), e, new StringBuilder());
+            new PromptAlertCallback(this).alert(pool.getHost(), e, new StringBuilder());
         }
     }
 

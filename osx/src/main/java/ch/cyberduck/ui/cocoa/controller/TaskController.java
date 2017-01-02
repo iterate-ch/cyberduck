@@ -21,8 +21,6 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -78,12 +76,6 @@ public class TaskController extends BundleController {
                     }
                 });
                 action.removeListener(this);
-            }
-
-            @Override
-            public boolean alert(final Host host, final BackgroundException failure,
-                                 final StringBuilder transcript) {
-                return false;
             }
         });
     }
