@@ -96,12 +96,16 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
                 size.decrementAndGet();
             }
             if(!failures.isEmpty()) {
+                final BackgroundException failure = failures.iterator().next();
+                if(failures.size() == 1) {
+                    throw failure;
+                }
                 final StringAppender appender = new StringAppender(System.getProperty("line.separator").charAt(0));
                 for(BackgroundException f : failures) {
                     appender.append(StringUtils.capitalize(f.getDetail()));
                 }
-                throw new BackgroundException(failures.iterator().next().getMessage(),
-                        appender.toString(), failures.iterator().next());
+                failure.setDetail(appender.toString());
+                throw failure;
             }
         }
     }

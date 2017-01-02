@@ -61,6 +61,10 @@ public class BackgroundException extends Exception {
         this.message = title;
     }
 
+    public void setDetail(final String detail) {
+        this.detail = detail;
+    }
+
     @Override
     public String getMessage() {
         return null == message ? LocaleFactory.localizedString("Unknown") : message;
