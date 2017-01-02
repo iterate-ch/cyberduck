@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -88,7 +89,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     }
 
     public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
-        super(new S3WriteFeature(session));
+        super(session.getFeature(Write.class, new S3WriteFeature(session, new S3DisabledMultipartService())));
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
         this.partsize = partsize;
@@ -113,14 +114,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session)
-                        .getDetails(containerService.getKey(file), status);
+                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
-                multipart = session.getClient().multipartStartUpload(
-                        containerService.getContainer(file).getName(), object);
+                multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Multipart upload started for %s with ID %s",
-                            multipart.getObjectKey(), multipart.getUploadId()));
+                    log.debug(String.format("Multipart upload started for %s with ID %s", multipart.getObjectKey(), multipart.getUploadId()));
                 }
             }
             else {
