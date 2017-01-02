@@ -99,26 +99,38 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
             if(accelerateTransferOption.getStatus(file) ||
                     (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
-                if(!preferences.getBoolean("s3.upload.multipart")) {
-                    // Disabled by user
-                    if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                        final S3SingleUploadService single = new S3SingleUploadService(tunneled, new S3WriteFeature(session, new S3DisabledMultipartService()));
-                        return single.upload(file, local, throttle, listener, status, prompt);
-                    }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, tunneled));
                 }
-                final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
+                if(status.getLength() > multipartThreshold) {
+                    if(!preferences.getBoolean("s3.upload.multipart")) {
+                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                        // Disabled by user
+                        if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
+                            // Use single upload service with accelerate proxy
+                            final S3SingleUploadService single = new S3SingleUploadService(tunneled, tunneled.getFeature(Write.class, new S3WriteFeature(tunneled, new S3DisabledMultipartService())));
+                            return single.upload(file, local, throttle, listener, status, prompt);
+                        }
+                    }
+                    // Use multipart upload service with accelerate proxy
+                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
+                    return service.upload(file, local, throttle, listener, status, prompt);
+                }
+                // Use single upload service with accelerate proxy
+                final S3SingleUploadService service = new S3SingleUploadService(tunneled, tunneled.getFeature(Write.class, new S3WriteFeature(tunneled, new S3DisabledMultipartService())));
                 return service.upload(file, local, throttle, listener, status, prompt);
             }
+            log.warn(String.format("Transfer acceleration disabled for %s", file));
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Ignore failure reading S3 Accelerate Configuration. %s", e.getMessage()));
+            log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
         }
         if(status.getLength() > multipartThreshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
+                log.warn("Multipart upload is disabled with property s3.upload.multipart");
                 // Disabled by user
                 if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                    log.warn("Multipart upload is disabled with property s3.upload.multipart");
+                    // Use single upload service
                     return singleUploadService.upload(file, local, throttle, listener, status, prompt);
                 }
             }
@@ -129,6 +141,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
             }
         }
+        // Use single upload service
         return singleUploadService.upload(file, local, throttle, listener, status, prompt);
     }
 
