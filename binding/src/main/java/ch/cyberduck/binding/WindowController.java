@@ -46,7 +46,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = Logger.getLogger(WindowController.class);
@@ -197,18 +196,28 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     @Override
-    public boolean alert(final Host host, final BackgroundException failure,
-                         final StringBuilder transcript) {
+    public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
         new NotificationAlertCallback().alert(host, failure, transcript);
-        final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-        alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-        }
-        switch(this.alert(alert, new DefaultProviderHelpService().help(host.getProtocol()))) {
+        final AlertController c = new AlertController() {
+            @Override
+            public void loadBundle() {
+                final NSAlert alert = NSAlert.alert();
+                alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+                alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
+                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+                if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
+                    alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                }
+                this.loadBundle(alert);
+            }
+
+            @Override
+            protected String help() {
+                return new DefaultProviderHelpService().help(host.getProtocol());
+            }
+        };
+        switch(c.beginSheet(this)) {
             case SheetCallback.ALTERNATE_OPTION:
                 ReachabilityFactory.get().diagnose(host);
                 break;
@@ -216,30 +225,6 @@ public abstract class WindowController extends BundleController implements NSWin
                 return true;
         }
         return false;
-    }
-
-    /**
-     * @param alert Sheet
-     * @return Button selection
-     */
-    public int alert(final NSAlert alert) {
-        return this.alert(alert, StringUtils.EMPTY);
-    }
-
-    /**
-     * @param alert Sheet
-     * @param help  Help URL
-     * @return Button selection
-     */
-    public int alert(final NSAlert alert, final String help) {
-        final AtomicInteger response = new AtomicInteger();
-        this.alert(alert, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                response.set(returncode);
-            }
-        }, help);
-        return response.get();
     }
 
     /**
