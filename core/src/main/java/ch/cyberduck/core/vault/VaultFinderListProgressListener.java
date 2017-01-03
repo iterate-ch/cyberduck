@@ -25,8 +25,6 @@ import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
 
-import java.util.EnumSet;
-
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
@@ -48,7 +46,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
         final Path directory = file.getParent();
-        if(file.equals(new Path(directory, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault)))) {
+        if(MASTERKEY_FILE_NAME.equals(file.getName())) {
             final Vault vault = VaultFactory.get(directory, keychain);
             if(vault.equals(Vault.DISABLED)) {
                 return;
