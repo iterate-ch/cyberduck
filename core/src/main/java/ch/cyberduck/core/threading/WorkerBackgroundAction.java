@@ -53,10 +53,10 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
 
     public WorkerBackgroundAction(final Controller controller,
                                   final SessionPool session,
+                                  final Worker<T> worker,
                                   final ProgressListener progress,
                                   final TranscriptListener transcript,
-                                  final AlertCallback alert,
-                                  final Worker<T> worker) {
+                                  final AlertCallback alert) {
         super(controller, session, progress, transcript, alert);
         this.worker = worker;
     }
