@@ -15,15 +15,15 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
-import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryUnixPermission extends DefaultUnixPermissionFeature {
+public class VaultRegistryUnixPermission implements UnixPermission {
 
     private final Session<?> session;
     private final DefaultVaultRegistry registry;
@@ -53,5 +53,10 @@ public class VaultRegistryUnixPermission extends DefaultUnixPermissionFeature {
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
         registry.find(file).getFeature(session, UnixPermission.class, proxy).setUnixPermission(file, permission);
+    }
+
+    @Override
+    public Permission getDefault(final Local file) {
+        return proxy.getDefault(file);
     }
 }

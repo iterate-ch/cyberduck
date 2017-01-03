@@ -15,15 +15,15 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
-public class CryptoUnixPermission extends DefaultUnixPermissionFeature {
+public class CryptoUnixPermission implements UnixPermission {
 
     private final Session<?> session;
     private final UnixPermission delegate;
@@ -38,6 +38,11 @@ public class CryptoUnixPermission extends DefaultUnixPermissionFeature {
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
         delegate.setUnixOwner(cryptomator.encrypt(session, file), owner);
+    }
+
+    @Override
+    public Permission getDefault(final Local file) {
+        return delegate.getDefault(file);
     }
 
     @Override
