@@ -51,6 +51,16 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
         this.worker = worker;
     }
 
+    public WorkerBackgroundAction(final Controller controller,
+                                  final SessionPool session,
+                                  final ProgressListener progress,
+                                  final TranscriptListener transcript,
+                                  final AlertCallback alert,
+                                  final Worker<T> worker) {
+        super(controller, session, progress, transcript, alert);
+        this.worker = worker;
+    }
+
     @Override
     protected void reset() throws BackgroundException {
         worker.reset();
