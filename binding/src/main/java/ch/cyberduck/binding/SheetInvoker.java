@@ -169,7 +169,7 @@ public class SheetInvoker extends ProxyController {
     private NSWindow parentWindow() {
         NSWindow window = parent;
         while(window.attachedSheet() != null) {
-            window = parent.attachedSheet();
+            window = window.attachedSheet();
             log.warn(String.format("Window %s has already sheet %s attached", parent, window));
         }
         return window;
