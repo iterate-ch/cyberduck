@@ -722,7 +722,7 @@ public abstract class Preferences {
 
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
         defaults.put("azure.listing.chunksize", String.valueOf(1000));
-        defaults.put("azure.upload.md5", String.valueOf(true));
+        defaults.put("azure.upload.md5", String.valueOf(false));
 
         // Legacy authentication
 //        defaults.put("openstack.authentication.context", "/v1.0");
