@@ -12,6 +12,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -98,6 +99,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
     }
 
     @Test
+    @Ignore
     public void testWriteReadUpdate() throws Exception {
         final Host origin = new Host(new TestProtocol(), String.format("%s.localdomain", UUID.randomUUID().toString()));
         origin.setWebURL("http://example.net");
@@ -112,20 +114,23 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
             }
         }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Path file = new Path("/public_html", EnumSet.of(Path.Type.directory));
-        final Distribution d = new Distribution(Distribution.CUSTOM, false);
+        final Distribution writeDistributionConfiguration = new Distribution(Distribution.CUSTOM, false);
         // Create
-        configuration.write(file, d, new DisabledLoginCallback());
+        configuration.write(file, writeDistributionConfiguration, new DisabledLoginCallback());
         // Read
-        final Distribution distribution = configuration.read(file, Distribution.CUSTOM, new DisabledLoginCallback());
-        assertFalse(distribution.isEnabled());
-        assertEquals("http://example.net/public_html", distribution.getOrigin().toString());
+        final Distribution readDistributionConfiguration = configuration.read(file, Distribution.CUSTOM, new DisabledLoginCallback());
+        assertNotNull(readDistributionConfiguration.getId());
+        assertFalse(readDistributionConfiguration.isEnabled());
+        assertEquals("http://example.net/public_html", readDistributionConfiguration.getOrigin().toString());
         assertEquals("http://example.net/f", configuration.toUrl(new Path("/public_html/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.origin).getUrl());
-        assertEquals(Distribution.CUSTOM, distribution.getMethod());
-        assertNull(distribution.getIndexDocument());
-        assertNull(distribution.getErrorDocument());
-        assertNull(distribution.getLoggingContainer());
+        assertEquals(Distribution.CUSTOM, readDistributionConfiguration.getMethod());
+        assertNull(readDistributionConfiguration.getIndexDocument());
+        assertNull(readDistributionConfiguration.getErrorDocument());
+        assertNull(readDistributionConfiguration.getLoggingContainer());
+        readDistributionConfiguration.setEnabled(false);
         // Update
-        configuration.write(file, d, new DisabledLoginCallback());
+        configuration.write(file, readDistributionConfiguration, new DisabledLoginCallback());
+        configuration.deleteDownloadDistribution(file, readDistributionConfiguration);
     }
 
     @Test(expected = LoginCanceledException.class)
