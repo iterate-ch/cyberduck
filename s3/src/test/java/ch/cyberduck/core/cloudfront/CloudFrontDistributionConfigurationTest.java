@@ -37,6 +37,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.amazonaws.services.cloudfront.model.StreamingDistribution;
+import com.amazonaws.services.cloudfront.model.UpdateDistributionResult;
+import com.amazonaws.services.cloudfront.model.UpdateStreamingDistributionResult;
 
 import static org.junit.Assert.*;
 
@@ -154,20 +156,22 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
-            protected void updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+            protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
+                return null;
             }
 
             @Override
             protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
                 set.set(true);
-                return null;
+                return new StreamingDistribution().withId("");
             }
         };
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.write(container, new Distribution(Distribution.STREAMING, true), new DisabledLoginCallback());
+        final Distribution distribution = new Distribution(Distribution.STREAMING, true);
+        configuration.write(container, distribution, new DisabledLoginCallback());
         assertTrue(set.get());
     }
 
@@ -179,20 +183,22 @@ public class CloudFrontDistributionConfigurationTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
+        final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session) {
             @Override
-            protected void updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+            protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
                 fail();
+                return null;
             }
 
             @Override
             protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
                 set.set(true);
-                return null;
+                return new com.amazonaws.services.cloudfront.model.Distribution().withId("");
             }
         };
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
+        final Distribution distribution = new Distribution(Distribution.DOWNLOAD, true);
+        configuration.write(container, distribution, new DisabledLoginCallback());
         assertTrue(set.get());
     }
 

@@ -259,26 +259,26 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             log.debug(String.format("No existing distribution found for method %s", distribution.getMethod()));
                         }
                         if(distribution.getMethod().equals(Distribution.STREAMING)) {
-                            createStreamingDistribution(container, distribution);
+                            distribution.setId(createStreamingDistribution(container, distribution).getId());
                         }
                         else if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-                            createDownloadDistribution(container, distribution);
+                            distribution.setId(createDownloadDistribution(container, distribution).getId());
                         }
                         else if(distribution.getMethod().equals(Distribution.CUSTOM)
                                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-                            createCustomDistribution(container, distribution);
+                            distribution.setId(createCustomDistribution(container, distribution).getId());
                         }
                     }
                     else {
                         if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {
-                            updateDownloadDistribution(container, distribution);
+                            distribution.setEtag(updateDownloadDistribution(container, distribution).getETag());
                         }
                         else if(distribution.getMethod().equals(Distribution.STREAMING)) {
-                            updateStreamingDistribution(container, distribution);
+                            distribution.setEtag(updateStreamingDistribution(container, distribution).getETag());
                         }
                         else if(distribution.getMethod().equals(Distribution.CUSTOM)
                                 || distribution.getMethod().equals(Distribution.WEBSITE_CDN)) {
-                            updateCustomDistribution(container, distribution);
+                            distribution.setEtag(updateCustomDistribution(container, distribution).getETag());
                         }
                     }
                 }
@@ -586,7 +586,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @throws AmazonClientException CloudFront failure details
      * @throws IOException           I/O error
      */
-    protected void updateDownloadDistribution(final Path container, final Distribution distribution)
+    protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution)
             throws IOException, ConnectionCanceledException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
@@ -605,18 +605,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }, configuration
         );
-        final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
-        final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
-                .withComment(originId)
-                .withPriceClass(PriceClass.PriceClass_All)
-                .withDefaultCacheBehavior(new DefaultCacheBehavior()
-                        .withTargetOriginId(originId)
-                        .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
-                        .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
-                        .withMinTTL(0L)
-                        .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
-                .withHttpVersion(HttpVersion.Http11)
-                .withWebACLId(originId)
+        final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
+        final DistributionConfig config = response.getDistributionConfig()
+                .withEnabled(distribution.isEnabled())
                 .withDefaultRootObject(distribution.getIndexDocument())
                 .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         if(distribution.isLogging()) {
@@ -633,10 +624,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
             );
         }
-        client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), distribution.getEtag()));
+        return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
     }
 
-    protected void updateStreamingDistribution(final Path container, final Distribution distribution)
+    protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution)
             throws IOException, ConnectionCanceledException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
@@ -655,12 +646,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }, configuration
         );
-        final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
-        final StreamingDistributionConfig config = new StreamingDistributionConfig(new AlphanumericRandomStringService().random(),
-                new S3Origin(origin.getHost(), StringUtils.EMPTY), distribution.isEnabled())
-                .withComment(originId)
-                .withPriceClass(PriceClass.PriceClass_All)
-                .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0))
+        final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
+        final StreamingDistributionConfig config = response.getStreamingDistributionConfig()
+                .withEnabled(distribution.isEnabled())
+                .withS3Origin(new S3Origin(origin.getHost(), StringUtils.EMPTY))
                 .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         if(distribution.isLogging()) {
             // Make bucket name fully qualified
@@ -675,10 +664,10 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
             );
         }
-        client.updateStreamingDistribution(new UpdateStreamingDistributionRequest(config, distribution.getId(), distribution.getEtag()));
+        return client.updateStreamingDistribution(new UpdateStreamingDistributionRequest(config, distribution.getId(), response.getETag()));
     }
 
-    protected void updateCustomDistribution(final Path container, final Distribution distribution)
+    protected UpdateDistributionResult updateCustomDistribution(final Path container, final Distribution distribution)
             throws IOException, ConnectionCanceledException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
@@ -697,43 +686,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     }
                 }, configuration
         );
-        int httpPort = 80;
-        int httpsPort = 443;
-        if(origin.getPort() != -1) {
-            if(origin.getScheme().equals(Scheme.http.name())) {
-                httpPort = origin.getPort();
-            }
-            if(origin.getScheme().equals(Scheme.https.name())) {
-                httpsPort = origin.getPort();
-            }
-        }
-        final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
-        final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
-                .withComment(originId)
-                .withOrigins(new Origins()
-                        .withQuantity(1)
-                        .withItems(new Origin()
-                                .withId(originId)
-                                .withCustomHeaders(new CustomHeaders().withQuantity(0))
-                                .withOriginPath(StringUtils.EMPTY)
-                                .withDomainName(origin.getHost())
-                                .withCustomOriginConfig(new CustomOriginConfig()
-                                        .withHTTPPort(httpPort)
-                                        .withHTTPSPort(httpsPort)
-                                        .withOriginSslProtocols(new OriginSslProtocols().withQuantity(2).withItems("TLSv1.1", "TLSv1.2"))
-                                        .withOriginProtocolPolicy(this.getPolicy(distribution.getMethod())))))
-                .withDefaultCacheBehavior(new DefaultCacheBehavior()
-                        .withTargetOriginId(originId)
-                        .withForwardedValues(new ForwardedValues().withQueryString(true).withCookies(new CookiePreference().withForward(ItemSelection.All)))
-                        .withViewerProtocolPolicy(ViewerProtocolPolicy.AllowAll)
-                        .withSmoothStreaming(false)
-                        .withDefaultTTL(0L)
-                        .withMinTTL(0L)
-                        .withTrustedSigners(new TrustedSigners().withEnabled(false).withQuantity(0)))
-                .withPriceClass(PriceClass.PriceClass_All)
-                .withHttpVersion(HttpVersion.Http11)
-                .withWebACLId(StringUtils.EMPTY)
-                .withIsIPV6Enabled(true)
+        final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
+        final DistributionConfig config = response.getDistributionConfig()
+                .withEnabled(distribution.isEnabled())
                 .withDefaultRootObject(distribution.getIndexDocument() != null ? distribution.getIndexDocument() : StringUtils.EMPTY)
                 .withAliases(new Aliases().withItems(distribution.getCNAMEs()).withQuantity(distribution.getCNAMEs().length));
         // Make bucket name fully qualified
@@ -748,7 +703,51 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 .withBucket(loggingTarget)
                 .withPrefix(preferences.getProperty("cloudfront.logging.prefix"))
         );
-        client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), distribution.getEtag()));
+        return client.updateDistribution(new UpdateDistributionRequest(config, distribution.getId(), response.getETag()));
+    }
+
+    protected void deleteDownloadDistribution(final Path container, final Distribution distribution)
+            throws IOException, ConnectionCanceledException {
+        final URI origin = this.getOrigin(container, distribution.getMethod());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+        }
+        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+                new com.amazonaws.auth.AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return session.getHost().getCredentials().getUsername();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return session.getHost().getCredentials().getPassword();
+                    }
+                }, configuration
+        );
+        client.deleteDistribution(new DeleteDistributionRequest(distribution.getId(), distribution.getEtag()));
+    }
+
+    protected void deleteStreamingDistribution(final Path container, final Distribution distribution)
+            throws IOException, ConnectionCanceledException {
+        final URI origin = this.getOrigin(container, distribution.getMethod());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
+        }
+        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+                new com.amazonaws.auth.AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return session.getHost().getCredentials().getUsername();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return session.getHost().getCredentials().getPassword();
+                    }
+                }, configuration
+        );
+        client.deleteStreamingDistribution(new DeleteStreamingDistributionRequest(distribution.getId(), distribution.getEtag()));
     }
 
     /**
