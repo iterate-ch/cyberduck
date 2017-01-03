@@ -47,17 +47,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class S3MultipartWriteFeature implements Write {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private final PathContainerService containerService
             = new S3PathContainerService();
 
     private final S3Session session;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     public S3MultipartWriteFeature(final S3Session session) {
         this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
@@ -72,8 +70,7 @@ public class S3MultipartWriteFeature implements Write {
 
     @Override
     public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session)
-                .getDetails(containerService.getKey(file), status);
+        final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
@@ -162,7 +159,7 @@ public class S3MultipartWriteFeature implements Write {
                                     );
                                     break;
                             }
-                            final S3Object part = new S3WriteFeature(session).getDetails(containerService.getKey(file), status);
+                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
                             try {
                                 session.getClient().putObjectWithRequestEntityImpl(
                                         containerService.getContainer(file).getName(), part,

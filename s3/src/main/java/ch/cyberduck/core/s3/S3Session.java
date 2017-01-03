@@ -295,7 +295,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             );
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
+            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this);
@@ -319,7 +319,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this)));
+            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));
         }
         if(type == Location.class) {
             if(this.isConnected()) {
