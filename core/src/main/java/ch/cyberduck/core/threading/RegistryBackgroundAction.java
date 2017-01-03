@@ -39,6 +39,14 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
         super(controller, session, progress, transcript);
     }
 
+    public RegistryBackgroundAction(final Controller controller,
+                                    final SessionPool session,
+                                    final ProgressListener progress,
+                                    final TranscriptListener transcript,
+                                    final AlertCallback alert) {
+        super(controller, session, progress, transcript, alert);
+    }
+
     @Override
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
