@@ -143,6 +143,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == ChecksumCompute.class) {
             return (T) new VaultRegistryChecksumCompute(session, (ChecksumCompute) proxy, this);
         }
+        if(type == UnixPermission.class) {
+            return (T) new VaultRegistryUnixPermission(session, (UnixPermission) proxy, this);
+        }
         if(type == AclPermission.class) {
             return (T) new VaultRegistryAclPermission(session, (AclPermission) proxy, this);
         }

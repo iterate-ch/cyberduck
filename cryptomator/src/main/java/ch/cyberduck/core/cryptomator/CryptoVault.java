@@ -434,6 +434,9 @@ public class CryptoVault implements Vault {
             if(type == ChecksumCompute.class) {
                 return (T) new CryptoChecksumCompute((ChecksumCompute) delegate, this);
             }
+            if(type == UnixPermission.class) {
+                return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);
+            }
             if(type == AclPermission.class) {
                 return (T) new CryptoAclPermission(session, (AclPermission) delegate, this);
             }
