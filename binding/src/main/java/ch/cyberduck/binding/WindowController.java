@@ -26,18 +26,10 @@ import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSNotification;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.diagnostics.ReachabilityFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -46,7 +38,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
     private static final Logger log = Logger.getLogger(WindowController.class);
@@ -196,52 +187,6 @@ public abstract class WindowController extends BundleController implements NSWin
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
-    @Override
-    public boolean alert(final Host host, final BackgroundException failure,
-                         final StringBuilder transcript) {
-        new NotificationAlertCallback().alert(host, failure, transcript);
-        final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-        alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-        }
-        switch(this.alert(alert, new DefaultProviderHelpService().help(host.getProtocol()))) {
-            case SheetCallback.ALTERNATE_OPTION:
-                ReachabilityFactory.get().diagnose(host);
-                break;
-            case SheetCallback.DEFAULT_OPTION:
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param alert Sheet
-     * @return Button selection
-     */
-    public int alert(final NSAlert alert) {
-        return this.alert(alert, StringUtils.EMPTY);
-    }
-
-    /**
-     * @param alert Sheet
-     * @param help  Help URL
-     * @return Button selection
-     */
-    public int alert(final NSAlert alert, final String help) {
-        final AtomicInteger response = new AtomicInteger();
-        this.alert(alert, new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                response.set(returncode);
-            }
-        }, help);
-        return response.get();
-    }
-
     /**
      * Display alert as sheet to the window of this controller
      *
@@ -249,27 +194,10 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback Dismissed notification
      */
     public void alert(final NSAlert alert, final SheetCallback callback) {
-        this.alert(alert, callback, StringUtils.EMPTY);
-    }
-
-    /**
-     * @param alert    Sheet
-     * @param callback Dismissed notification
-     * @param help     Help URL
-     */
-    public void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         final AlertController c = new AlertController(alert) {
             @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
-            }
-
-            @Override
-            protected String help() {
-                if(StringUtils.isBlank(help)) {
-                    return super.help();
-                }
-                return help;
             }
         };
         c.beginSheet(this);

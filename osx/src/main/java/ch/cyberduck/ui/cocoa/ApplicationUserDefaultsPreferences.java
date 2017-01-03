@@ -48,6 +48,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
         defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
         defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
+        defaults.put("factory.alertcallback.class", PromptAlertCallback.class.getName());
         defaults.put("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
         defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
         defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());

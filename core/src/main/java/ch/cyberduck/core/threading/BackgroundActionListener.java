@@ -17,7 +17,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-public interface BackgroundActionListener extends AlertCallback {
+public interface BackgroundActionListener {
     void start(BackgroundAction action);
 
     void cancel(BackgroundAction action);

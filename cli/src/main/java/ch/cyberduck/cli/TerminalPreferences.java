@@ -47,6 +47,7 @@ public class TerminalPreferences extends MemoryPreferences {
         defaults.put("factory.certificatestore.class", TerminalCertificateStore.class.getName());
         defaults.put("factory.logincallback.class", TerminalLoginCallback.class.getName());
         defaults.put("factory.passwordcallback.class", TerminalPasswordCallback.class.getName());
+        defaults.put("factory.alertcallback.class", TerminalAlertCallback.class.getName());
         defaults.put("factory.hostkeycallback.class", TerminalHostKeyVerifier.class.getName());
         defaults.put("factory.transfererrorcallback.class", TerminalTransferErrorCallback.class.getName());
         defaults.put("factory.notification.class", TerminalNotification.class.getName());
