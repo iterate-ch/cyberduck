@@ -23,11 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class VaultRegistryAclPermission implements AclPermission {
 
@@ -58,11 +54,7 @@ public class VaultRegistryAclPermission implements AclPermission {
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        final Set<Acl.Role> roles = new HashSet<>();
-        for(Path file : files) {
-            roles.addAll(registry.find(file).getFeature(session, AclPermission.class, proxy).getAvailableAclRoles(Collections.singletonList(file)));
-        }
-        return new ArrayList<>(roles);
+        return proxy.getAvailableAclRoles(files);
     }
 
     @Override
