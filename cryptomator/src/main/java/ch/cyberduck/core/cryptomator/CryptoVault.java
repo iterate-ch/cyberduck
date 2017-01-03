@@ -98,7 +98,7 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public CryptoVault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
+    public synchronized CryptoVault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
@@ -136,7 +136,11 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
+        if(this.isUnlocked()) {
+            log.warn(String.format("Skip unlock of open vault %s", this));
+            return this;
+        }
         final Path key = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt to read master key from %s", key));
@@ -193,18 +197,20 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public void close() {
-        if(cryptor != null) {
-            cryptor.destroy();
-        }
-        if(filenameProvider != null) {
-            filenameProvider.close();
-        }
-        if(directoryIdProvider != null) {
-            directoryIdProvider.close();
-        }
-        if(directoryProvider != null) {
-            directoryProvider.close();
+    public synchronized void close() {
+        if(this.isUnlocked()) {
+            if(cryptor != null) {
+                cryptor.destroy();
+            }
+            if(filenameProvider != null) {
+                filenameProvider.close();
+            }
+            if(directoryIdProvider != null) {
+                directoryIdProvider.close();
+            }
+            if(directoryProvider != null) {
+                directoryProvider.close();
+            }
         }
     }
 
@@ -229,12 +235,16 @@ public class CryptoVault implements Vault {
         this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
+    public synchronized boolean isUnlocked() {
+        return cryptor != null;
+    }
+
     @Override
     public boolean contains(final Path file) {
         if(file.getType().contains(Path.Type.vault)) {
             return false;
         }
-        if(cryptor != null) {
+        if(this.isUnlocked()) {
             return file.equals(home) || file.isChild(home);
         }
         return false;
@@ -369,7 +379,7 @@ public class CryptoVault implements Vault {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {
-        if(cryptor != null) {
+        if(this.isUnlocked()) {
             if(type == ListService.class) {
                 return (T) new CryptoListService(session, (ListService) delegate, this);
             }
