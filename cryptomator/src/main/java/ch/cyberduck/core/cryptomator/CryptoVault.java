@@ -437,6 +437,9 @@ public class CryptoVault implements Vault {
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);
             }
+            if(type == AclPermission.class) {
+                return (T) new CryptoAclPermission(session, (AclPermission) delegate, this);
+            }
         }
         return delegate;
     }
