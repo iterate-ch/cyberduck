@@ -232,7 +232,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 if(null == selected) {
                     return false;
                 }
-                return controller.getSession().getFeature(Move.class).isSupported(selected);
+                return controller.getSession().getFeature(Move.class).isSupported(selected, selected);
             }
             return false;
         }

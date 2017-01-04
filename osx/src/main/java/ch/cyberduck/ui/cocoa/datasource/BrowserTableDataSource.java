@@ -483,7 +483,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                     for(Path file : pasteboard) {
-                        if(!controller.getSession().getFeature(Move.class).isSupported(file)) {
+                        if(!controller.getSession().getFeature(Move.class).isSupported(file, destination)) {
                             return NSDraggingInfo.NSDragOperationNone;
                         }
                     }

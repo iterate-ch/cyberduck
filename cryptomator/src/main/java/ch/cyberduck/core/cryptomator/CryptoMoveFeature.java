@@ -36,12 +36,14 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        //todo
         delegate.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return delegate.isSupported(file);
+    public boolean isSupported(final Path source, final Path target) {
+        if(vault.contains(source) && vault.contains(target)) {
+            return delegate.isSupported(source, target);
+        }
+        return false;
     }
 }

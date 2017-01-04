@@ -31,7 +31,7 @@ public class DisabledMoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
+    public boolean isSupported(final Path source, final Path target) {
         return false;
     }
 }

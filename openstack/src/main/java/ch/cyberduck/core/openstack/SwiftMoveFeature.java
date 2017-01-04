@@ -84,7 +84,7 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        return !containerService.isContainer(file);
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source);
     }
 }
