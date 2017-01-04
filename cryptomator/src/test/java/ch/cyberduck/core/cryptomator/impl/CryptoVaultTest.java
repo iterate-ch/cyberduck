@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -85,6 +86,9 @@ public class CryptoVaultTest {
             }
         });
         assertNotSame(f, vault.encrypt(session, f));
+        assertEquals(Vault.State.open, vault.getState());
+        vault.close();
+        assertEquals(Vault.State.closed, vault.getState());
     }
 
     @Test
