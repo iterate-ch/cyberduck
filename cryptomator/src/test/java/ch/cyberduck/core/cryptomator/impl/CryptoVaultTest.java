@@ -78,7 +78,6 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(
                 new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
         final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
-        assertSame(f, vault.encrypt(session, f));
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
