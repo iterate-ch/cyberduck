@@ -26,16 +26,15 @@ public class VaultCredentials extends Credentials {
         this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
     }
 
-    public VaultCredentials(final String user) {
-        super(user);
+    public VaultCredentials(final String password) {
+        super(null, password);
         // Disable save in keychain by default
         this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
     }
 
-    public VaultCredentials(final String user, final String password) {
-        super(user, password);
-        // Disable save in keychain by default
-        this.setSaved(PreferencesFactory.get().getBoolean("vault.keychain"));
+    @Override
+    public String getUsername() {
+        return null;
     }
 
     @Override
