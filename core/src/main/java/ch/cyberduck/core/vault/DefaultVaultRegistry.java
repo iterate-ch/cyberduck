@@ -112,8 +112,8 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                     new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
         if(type == Bulk.class) {
-            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this,
-                    new LoadingVaultLookupListener(session, this, prompt), keychain);
+            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this
+            );
         }
         if(type == Touch.class) {
             return (T) new VaultRegistryTouchFeature(session, ((Touch) proxy), this);
