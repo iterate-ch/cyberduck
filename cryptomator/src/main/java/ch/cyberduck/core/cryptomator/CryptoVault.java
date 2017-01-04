@@ -109,27 +109,28 @@ public class CryptoVault implements Vault {
         final CryptorProvider provider = new Version1CryptorModule().provideCryptorProvider(
                 FastSecureRandomProvider.get().provide()
         );
-        final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+        final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
-        final Credentials credentials = new VaultCredentials();
-        prompt.prompt(credentials,
+        final Credentials keyfilePassphrase = new VaultCredentials();
+        prompt.prompt(keyfilePassphrase,
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-        if(credentials.isSaved()) {
-            keychain.addPassword(bookmark.getHostname(), file.getAbsolute(), credentials.getPassword());
+        if(keyfilePassphrase.isSaved()) {
+            keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(), keyfilePassphrase.getPassword());
         }
-        final String passphrase = credentials.getPassword();
-        final KeyFile master = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
+        final String passphrase = keyfilePassphrase.getPassword();
+        final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write master key to %s", file));
+            log.debug(String.format("Write master key to %s", masterKeyFile));
         }
         final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
         feature.mkdir(home, region, new TransferStatus());
-        writer.write(file, master.serialize());
-        this.open(KeyFile.parse(master.serialize()), passphrase);
+        writer.write(masterKeyFile, masterKeyFileContent.serialize());
+        this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
@@ -164,12 +165,13 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterKeyFile.getName()), e);
         }
         final Host bookmark = session.getHost();
-        final Credentials credentials = new VaultCredentials(
-                keychain.getPassword(bookmark.getHostname(), masterKeyFile.getAbsolute())) {
+        final Credentials keyfilePassphrase = new VaultCredentials(
+                keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString())) {
         };
         // Disable save in keychain by default
-        credentials.setSaved(false);
-        this.unlock(masterKeyFile, masterKeyFileContent, bookmark, credentials, prompt,
+        keyfilePassphrase.setSaved(false);
+        this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
@@ -192,10 +194,11 @@ public class CryptoVault implements Vault {
                     log.info(String.format("Save passphrase for %s", masterKeyFile));
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
-                final String url = new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString();
-                keychain.addPassword(url, masterKeyFile.getName(), keyfilePassphrase.getPassword());
+                keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(), keyfilePassphrase.getPassword());
                 // Save masterkey.cryptomator content in preferences
-                PreferencesFactory.get().setProperty(url, new String(masterKeyFileContent.serialize()));
+                PreferencesFactory.get().setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(),
+                        new String(masterKeyFileContent.serialize()));
             }
         }
         catch(CryptoAuthenticationException e) {
