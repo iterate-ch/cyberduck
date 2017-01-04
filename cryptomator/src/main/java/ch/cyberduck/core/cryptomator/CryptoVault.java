@@ -293,10 +293,10 @@ public class CryptoVault implements Vault {
             }
             final Path inflated = this.inflate(session, file);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
             if(m.find()) {
                 final String ciphertext = m.group(1);
                 try {
+                    final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     final Path decrypted = new Path(directory, cleartextFilename,
