@@ -15,7 +15,6 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -46,7 +45,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class SFTPListServiceTest {
@@ -72,10 +72,6 @@ public class SFTPListServiceTest {
         assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        // Test list of parent unencrypted
-        final AttributedList<Path> parent = new CryptoListService(session, new SFTPListService(session), cryptomator).list(home, new DisabledListProgressListener());
-        assertFalse(parent.isEmpty());
-        assertTrue(parent.contains(vault));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
