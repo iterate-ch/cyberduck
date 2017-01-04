@@ -15,11 +15,24 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.features.Vault;
 
 public interface VaultRegistry {
+    /**
+     * @param file File
+     * @return Vault for file or disabled vault if file is not inside a vault
+     * @see Vault#DISABLED
+     */
+    Vault find(Path file);
+
+    /**
+     * Close and remove all vaults in registry
+     */
+    void clear();
+
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
 
-    void clear();
 }

@@ -88,13 +88,17 @@ public class CryptoVault implements Vault {
     private final PasswordStore keychain;
 
     private Cryptor cryptor;
-    private CryptoFilenameProvider filenameProvider;
-    private CryptoDirectoryIdProvider directoryIdProvider;
-    private CryptoDirectoryProvider directoryProvider;
+
+    private final CryptoFilenameProvider filenameProvider;
+    private final CryptoDirectoryIdProvider directoryIdProvider;
+    private final CryptoDirectoryProvider directoryProvider;
 
     public CryptoVault(final Path home, final PasswordStore keychain) {
         this.home = home;
         this.keychain = keychain;
+        this.filenameProvider = new CryptoFilenameProvider(home);
+        this.directoryIdProvider = new CryptoDirectoryIdProvider();
+        this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
     @Override
@@ -202,16 +206,11 @@ public class CryptoVault implements Vault {
             if(cryptor != null) {
                 cryptor.destroy();
             }
-            if(filenameProvider != null) {
-                filenameProvider.close();
-            }
-            if(directoryIdProvider != null) {
-                directoryIdProvider.close();
-            }
-            if(directoryProvider != null) {
-                directoryProvider.close();
-            }
+            filenameProvider.close();
+            directoryIdProvider.close();
+            directoryProvider.close();
         }
+        cryptor = null;
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
@@ -230,13 +229,15 @@ public class CryptoVault implements Vault {
         catch(InvalidPassphraseException e) {
             throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
         }
-        this.filenameProvider = new CryptoFilenameProvider(home);
-        this.directoryIdProvider = new CryptoDirectoryIdProvider();
-        this.directoryProvider = new CryptoDirectoryProvider(home, this);
     }
 
     public synchronized boolean isUnlocked() {
         return cryptor != null;
+    }
+
+    @Override
+    public State getState() {
+        return this.isUnlocked() ? State.open : State.closed;
     }
 
     @Override
