@@ -16,21 +16,27 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import java.util.UUID;
+import org.apache.log4j.Logger;
 
 public class CryptoDirectoryIdProvider {
+    private static final Logger log = Logger.getLogger(CryptoDirectoryIdProvider.class);
+
+    private final RandomStringService random = new UUIDRandomStringService();
 
     public String load(final Session<?> session, final Path directoryMetafile) throws BackgroundException {
         try {
             return new ContentReader(session).readToString(directoryMetafile);
         }
         catch(NotfoundException e) {
-            return UUID.randomUUID().toString();
+            log.warn(String.format("Return new random string for metadata file %s", directoryMetafile));
+            return random.random();
         }
     }
 

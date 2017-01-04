@@ -293,10 +293,10 @@ public class CryptoVault implements Vault {
             }
             final Path inflated = this.inflate(session, file);
             final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
             if(m.find()) {
                 final String ciphertext = m.group(1);
                 try {
+                    final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                             ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
                     final Path decrypted = new Path(directory, cleartextFilename,
@@ -328,6 +328,9 @@ public class CryptoVault implements Vault {
 
     @Override
     public long toCiphertextSize(final long cleartextFileSize) {
+        if(-1L == cleartextFileSize) {
+            return -1L;
+        }
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int cleartextChunkSize = cryptor.fileContentCryptor().cleartextChunkSize();
         final int chunkHeaderSize = cryptor.fileContentCryptor().ciphertextChunkSize() - cleartextChunkSize;
@@ -336,6 +339,9 @@ public class CryptoVault implements Vault {
 
     @Override
     public long toCleartextSize(final long ciphertextFileSize) throws CryptoInvalidFilesizeException {
+        if(-1L == ciphertextFileSize) {
+            return -1L;
+        }
         final int headerSize = cryptor.fileHeaderCryptor().headerSize();
         final int ciphertextChunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
         final int chunkHeaderSize = ciphertextChunkSize - cryptor.fileContentCryptor().cleartextChunkSize();
