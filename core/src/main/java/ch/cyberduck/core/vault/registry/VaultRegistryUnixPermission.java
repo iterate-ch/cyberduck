@@ -37,22 +37,22 @@ public class VaultRegistryUnixPermission implements UnixPermission {
 
     @Override
     public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
-        registry.find(file).getFeature(session, UnixPermission.class, proxy).setUnixOwner(file, owner);
+        registry.find(session, file).getFeature(session, UnixPermission.class, proxy).setUnixOwner(file, owner);
     }
 
     @Override
     public void setUnixGroup(final Path file, final String group) throws BackgroundException {
-        registry.find(file).getFeature(session, UnixPermission.class, proxy).setUnixGroup(file, group);
+        registry.find(session, file).getFeature(session, UnixPermission.class, proxy).setUnixGroup(file, group);
     }
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, UnixPermission.class, proxy).getUnixPermission(file);
+        return registry.find(session, file).getFeature(session, UnixPermission.class, proxy).getUnixPermission(file);
     }
 
     @Override
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-        registry.find(file).getFeature(session, UnixPermission.class, proxy).setUnixPermission(file, permission);
+        registry.find(session, file).getFeature(session, UnixPermission.class, proxy).setUnixPermission(file, permission);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class VaultRegistryDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final Map<Vault, List<Path>> vaults = new HashMap<>();
         for(Path file : files) {
-            final Vault vault = registry.find(file);
+            final Vault vault = registry.find(session, file);
             final List<Path> sorted;
             if(vaults.containsKey(vault)) {
                 sorted = vaults.get(vault);

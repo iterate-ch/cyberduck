@@ -37,12 +37,12 @@ public class VaultRegistryWriteFeature implements Write {
 
     @Override
     public StatusOutputStream<?> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(file).getFeature(session, Write.class, proxy).write(file, status);
+        return registry.find(session, file).getFeature(session, Write.class, proxy).write(file, status);
     }
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return registry.find(file).getFeature(session, Write.class, proxy).append(file, length, cache);
+        return registry.find(session, file).getFeature(session, Write.class, proxy).append(file, length, cache);
     }
 
     @Override

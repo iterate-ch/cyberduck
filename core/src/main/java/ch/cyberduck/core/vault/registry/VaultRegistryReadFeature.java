@@ -37,11 +37,11 @@ public class VaultRegistryReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(file).getFeature(session, Read.class, proxy).read(file, status);
+        return registry.find(session, file).getFeature(session, Read.class, proxy).read(file, status);
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, Read.class, proxy).offset(file);
+        return registry.find(session, file).getFeature(session, Read.class, proxy).offset(file);
     }
 }

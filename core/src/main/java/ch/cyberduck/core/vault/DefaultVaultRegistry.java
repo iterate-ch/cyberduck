@@ -69,7 +69,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Path file) {
+    public Vault find(final Session session, final Path file) {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
@@ -77,6 +77,25 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                 }
                 return vault;
             }
+        }
+        if(file.getType().contains(Path.Type.decrypted)) {
+            Path directory = file;
+            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
+            do {
+                directory = directory.getParent();
+                final Vault vault = VaultFactory.get(directory, keychain);
+                if(vault.equals(Vault.DISABLED)) {
+                    continue;
+                }
+                try {
+                    listener.found(vault);
+                    return vault;
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+                }
+            }
+            while(!directory.isRoot());
         }
         return Vault.DISABLED;
     }

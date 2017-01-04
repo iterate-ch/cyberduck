@@ -34,6 +34,6 @@ public class VaultRegistryIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, IdProvider.class, proxy).getFileid(file);
+        return registry.find(session, file).getFeature(session, IdProvider.class, proxy).getFileid(file);
     }
 }

@@ -80,6 +80,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         super.finish();
         queue.remove(transfer);
         pool.shutdown();
+        destination.shutdown();
     }
 
     @Override

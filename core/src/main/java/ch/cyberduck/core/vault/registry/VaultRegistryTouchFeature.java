@@ -35,7 +35,7 @@ public class VaultRegistryTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        registry.find(file).getFeature(session, Touch.class, proxy).touch(file, status);
+        registry.find(session, file).getFeature(session, Touch.class, proxy).touch(file, status);
     }
 
     @Override

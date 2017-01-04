@@ -39,11 +39,11 @@ public class VaultRegistryCompressFeature implements Compress {
 
     @Override
     public void archive(final Archive archive, final Path workdir, final List<Path> files, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
-        registry.find(workdir).getFeature(session, Compress.class, proxy).archive(archive, workdir, files, listener, transcript);
+        registry.find(session, workdir).getFeature(session, Compress.class, proxy).archive(archive, workdir, files, listener, transcript);
     }
 
     @Override
     public void unarchive(final Archive archive, final Path file, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
-        registry.find(file).getFeature(session, Compress.class, proxy).unarchive(archive, file, listener, transcript);
+        registry.find(session, file).getFeature(session, Compress.class, proxy).unarchive(archive, file, listener, transcript);
     }
 }

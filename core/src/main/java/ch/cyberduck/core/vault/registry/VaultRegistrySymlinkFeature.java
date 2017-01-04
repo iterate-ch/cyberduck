@@ -34,6 +34,6 @@ public class VaultRegistrySymlinkFeature implements Symlink {
 
     @Override
     public void symlink(final Path file, final String target) throws BackgroundException {
-        registry.find(file).getFeature(session, Symlink.class, proxy).symlink(file, target);
+        registry.find(session, file).getFeature(session, Symlink.class, proxy).symlink(file, target);
     }
 }

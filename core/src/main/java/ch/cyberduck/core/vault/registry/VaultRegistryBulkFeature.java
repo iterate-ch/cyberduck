@@ -49,11 +49,11 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     @SuppressWarnings("unchecked")
     public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
         for(Path file : files.keySet()) {
-            final Vault vault = registry.find(file);
+            final Vault vault = registry.find(session, file);
             if(vault.contains(file)) {
                 return (R) vault.getFeature(session, Bulk.class, proxy).pre(type, files);
             }
         }
-        return (R) new VaultFinderBulkService(proxy, keychain, lookup).pre(type, files);
+        return (R) new VaultFinderBulkService(proxy).pre(type, files);
     }
 }

@@ -39,11 +39,11 @@ public class VaultRegistryDownloadFeature implements Download {
 
     @Override
     public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        registry.find(file).getFeature(session, Download.class, proxy).download(file, local, throttle, listener, status, callback);
+        registry.find(session, file).getFeature(session, Download.class, proxy).download(file, local, throttle, listener, status, callback);
     }
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, Download.class, proxy).offset(file);
+        return registry.find(session, file).getFeature(session, Download.class, proxy).offset(file);
     }
 }

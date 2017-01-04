@@ -34,6 +34,6 @@ public class VaultRegistryUrlProvider implements UrlProvider {
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        return registry.find(file).getFeature(session, UrlProvider.class, proxy).toUrl(file);
+        return registry.find(session, file).getFeature(session, UrlProvider.class, proxy).toUrl(file);
     }
 }
