@@ -194,6 +194,8 @@ public class CryptoVault implements Vault {
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 final String url = new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString();
                 keychain.addPassword(url, masterKeyFile.getName(), keyfilePassphrase.getPassword());
+                // Save masterkey.cryptomator content in preferences
+                PreferencesFactory.get().setProperty(url, new String(masterKeyFileContent.serialize()));
             }
         }
         catch(CryptoAuthenticationException e) {
