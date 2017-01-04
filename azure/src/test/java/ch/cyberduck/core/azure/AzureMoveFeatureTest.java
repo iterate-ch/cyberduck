@@ -48,7 +48,9 @@ public class AzureMoveFeatureTest {
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new AzureMoveFeature(null, null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
-        assertTrue(new AzureMoveFeature(null, null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
+        final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
+        assertFalse(new AzureMoveFeature(null, null).isSupported(c, c));
+        final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
+        assertTrue(new AzureMoveFeature(null, null).isSupported(cf, cf));
     }
 }

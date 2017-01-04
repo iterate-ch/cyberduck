@@ -28,5 +28,5 @@ public interface Move {
      */
     void move(Path file, Path renamed, boolean exists, Delete.Callback callback) throws BackgroundException;
 
-    boolean isSupported(Path file);
+    boolean isSupported(Path source, final Path target);
 }

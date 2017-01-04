@@ -106,7 +106,9 @@ public class SwiftMoveFeatureTest {
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new SwiftMoveFeature(null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
-        assertTrue(new SwiftMoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
+        final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
+        assertFalse(new SwiftMoveFeature(null).isSupported(c, c));
+        final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
+        assertTrue(new SwiftMoveFeature(null).isSupported(cf, cf));
     }
 }

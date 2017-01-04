@@ -1349,7 +1349,7 @@ public class BrowserController extends WindowController
                     return;
                 }
                 if(tableColumn.identifier().equals(Column.filename.name())) {
-                    cell.setEditable(pool.getFeature(Move.class).isSupported(path));
+                    cell.setEditable(pool.getFeature(Move.class).isSupported(path, path));
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(browserOutlineModel.iconForPath(path));
                 }
                 if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
@@ -1501,7 +1501,7 @@ public class BrowserController extends WindowController
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
                 if(identifier.equals(Column.filename.name())) {
-                    cell.setEditable(pool.getFeature(Move.class).isSupported(path));
+                    cell.setEditable(pool.getFeature(Move.class).isSupported(path, path));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(path)) {
