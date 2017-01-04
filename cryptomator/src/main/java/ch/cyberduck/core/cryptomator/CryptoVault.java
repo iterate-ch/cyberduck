@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
@@ -76,8 +77,9 @@ public class CryptoVault implements Vault {
         Security.insertProviderAt(provider, position);
     }
 
-    public static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
-    public static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+    private static final String MASTERKEY_FILE_NAME = "masterkey.cryptomator";
+    private static final String BACKUPKEY_FILE_NAME = "masterkey.cryptomator.bkup";
+
     private static final Integer VAULT_VERSION = 5;
 
     private static final Pattern BASE32_PATTERN = Pattern.compile("^0?(([A-Z2-7]{8})*[A-Z2-7=]{8})");
@@ -146,62 +148,71 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip unlock of open vault %s", this));
             return this;
         }
-        final Path key = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+        final Path masterKeyFile = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Attempt to read master key from %s", key));
+            log.debug(String.format("Attempt to read master key from %s", masterKeyFile));
         }
-        final String json = new ContentReader(session).readToString(key);
+        final String json = new ContentReader(session).readToString(masterKeyFile);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read master key %s", json));
         }
-        final KeyFile master;
+        final KeyFile masterKeyFileContent;
         try {
-            master = KeyFile.parse(json.getBytes());
+            masterKeyFileContent = KeyFile.parse(json.getBytes());
         }
         catch(JsonParseException | IllegalArgumentException | IllegalStateException e) {
-            throw new VaultException(String.format("Failure reading vault master key file %s", key.getName()), e);
+            throw new VaultException(String.format("Failure reading vault master key file %s", masterKeyFile.getName()), e);
         }
         final Host bookmark = session.getHost();
-        final Credentials credentials = new VaultCredentials(bookmark.getHostname(),
-                keychain.getPassword(bookmark.getHostname(), key.getAbsolute())) {
+        final Credentials credentials = new VaultCredentials(
+                keychain.getPassword(bookmark.getHostname(), masterKeyFile.getAbsolute())) {
         };
         // Disable save in keychain by default
         credentials.setSaved(false);
-        this.unlock(key, master, credentials, prompt,
+        this.unlock(masterKeyFile, masterKeyFileContent, bookmark, credentials, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
     }
 
-    private void unlock(final Path key, final KeyFile master, final Credentials credentials, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
-        if(null == credentials.getPassword()) {
-            prompt.prompt(credentials,
+    private void unlock(final Path masterKeyFile, final KeyFile masterKeyFileContent,
+                        final Host bookmark, final Credentials keyfilePassphrase, final PasswordCallback prompt, final String message) throws LoginCanceledException, VaultException {
+        if(null == keyfilePassphrase.getPassword()) {
+            prompt.prompt(keyfilePassphrase,
                     LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                     message,
                     new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
-            if(null == credentials.getPassword()) {
+            if(null == keyfilePassphrase.getPassword()) {
                 throw new LoginCanceledException();
             }
         }
         try {
-            this.open(master, credentials.getPassword());
-            if(credentials.isSaved()) {
-                keychain.addPassword(credentials.getUsername(), key.getAbsolute(), credentials.getPassword());
+            this.open(masterKeyFileContent, keyfilePassphrase.getPassword());
+            if(keyfilePassphrase.isSaved()) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Save passphrase for %s", masterKeyFile));
+                }
+                // Save password with hostname and path to masterkey.cryptomator in keychain
+                final String url = new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString();
+                keychain.addPassword(url, masterKeyFile.getName(), keyfilePassphrase.getPassword());
             }
         }
         catch(CryptoAuthenticationException e) {
-            credentials.setPassword(null);
-            this.unlock(key, master, credentials,
+            keyfilePassphrase.setPassword(null);
+            this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase,
                     prompt, String.format("%s %s.", e.getDetail(),
                             MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName())));
         }
         finally {
-            credentials.setPassword(null);
+            keyfilePassphrase.setPassword(null);
         }
     }
 
     @Override
     public synchronized void close() {
         if(this.isUnlocked()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Close vault with cryptor %s", cryptor));
+            }
             if(cryptor != null) {
                 cryptor.destroy();
             }
