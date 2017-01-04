@@ -862,7 +862,7 @@ public abstract class Preferences {
         /*
           Search for passphrases in Keychain
          */
-        defaults.put("connection.login.useKeychain", String.valueOf(true));
+        defaults.put("connection.login.keychain", String.valueOf(true));
 
         defaults.put("connection.port.default", String.valueOf(21));
         defaults.put("connection.protocol.default", Scheme.ftp.name());

@@ -114,5 +114,4 @@ public class LoginController extends ConnectionController {
             this.updateField(this.textField, new StringAppender().append(reason).toString());
         }
     }
-
 }

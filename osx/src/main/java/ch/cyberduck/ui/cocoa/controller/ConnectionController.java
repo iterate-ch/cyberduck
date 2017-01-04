@@ -93,7 +93,7 @@ public class ConnectionController extends BookmarkController {
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
                 passwordField.setEnabled(!credentials.isAnonymousLogin());
-                if(preferences.getBoolean("connection.login.useKeychain")) {
+                if(preferences.getBoolean("connection.login.keychain")) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
                     }
@@ -135,7 +135,7 @@ public class ConnectionController extends BookmarkController {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.keychainCheckbox.setState(PreferencesFactory.get().getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
