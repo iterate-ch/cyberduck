@@ -132,7 +132,7 @@ public class CryptoVault implements Vault {
         feature.mkdir(home, region, new TransferStatus());
         writer.write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
+        final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         if(log.isDebugEnabled()) {
@@ -273,74 +273,68 @@ public class CryptoVault implements Vault {
     }
 
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
-        if(this.contains(file)) {
-            if(file.getType().contains(Path.Type.encrypted)) {
-                log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
-                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
-                return file;
-            }
-            if(file.isFile() || metadata) {
-                final CryptoDirectory parent = directoryProvider.toEncrypted(session, file.getParent());
-                final String filename = directoryProvider.toEncrypted(session, parent.id, file.getName(), file.getType());
-                return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
-            }
-            else {
-                final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, file);
-                // Set internal id
-                cryptoDirectory.path.attributes().setDirectoryId(cryptoDirectory.id);
-                return cryptoDirectory.path;
-            }
+        if(file.getType().contains(Path.Type.encrypted)) {
+            log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+            return file;
         }
-        return file;
+        if(file.getType().contains(Path.Type.vault)) {
+            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+            return file;
+        }
+        if(file.isFile() || metadata) {
+            final Path parent = directoryProvider.toEncrypted(session, file.getParent());
+            final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+            final Path encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
+            encrypted.attributes().setDecryptedPath(file);
+            return encrypted;
+        }
+        else {
+            final Path encrypted = directoryProvider.toEncrypted(session, file);
+            encrypted.attributes().setDecryptedPath(file);
+            return encrypted;
+        }
     }
 
     @Override
-    public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
-        if(this.contains(directory)) {
-            if(file.getType().contains(Path.Type.decrypted)) {
-                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
-                return file;
-            }
-            if(file.getType().contains(Path.Type.vault)) {
-                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
-                return file;
-            }
-            final Path inflated = this.inflate(session, file);
-            final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
-            if(m.find()) {
-                final String ciphertext = m.group(1);
-                try {
-                    final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
-                    final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                            ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
-                    final Path decrypted = new Path(directory, cleartextFilename,
-                            EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
-                            file.attributes());
-                    if(decrypted.isDirectory()) {
-                        final Permission permission = decrypted.attributes().getPermission();
-                        permission.setUser(permission.getUser().or(Permission.Action.execute));
-                        permission.setGroup(permission.getGroup().or(Permission.Action.execute));
-                        permission.setOther(permission.getOther().or(Permission.Action.execute));
-                    }
-                    else {
-                        decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
-                    }
-                    return decrypted;
+    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
+        if(file.getType().contains(Path.Type.decrypted)) {
+            log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+            return file;
+        }
+        if(file.getType().contains(Path.Type.vault)) {
+            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+            return file;
+        }
+        final Path inflated = this.inflate(session, file);
+        final Matcher m = BASE32_PATTERN.matcher(inflated.getName());
+        if(m.find()) {
+            final String ciphertext = m.group(1);
+            try {
+                final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
+                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                final Path decrypted = new Path(file.getParent().attributes().getDecryptedPath(), cleartextFilename,
+                        EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
+                        file.attributes());
+                if(decrypted.isDirectory()) {
+                    final Permission permission = decrypted.attributes().getPermission();
+                    permission.setUser(permission.getUser().or(Permission.Action.execute));
+                    permission.setGroup(permission.getGroup().or(Permission.Action.execute));
+                    permission.setOther(permission.getOther().or(Permission.Action.execute));
                 }
-                catch(AuthenticationFailedException e) {
-                    throw new CryptoAuthenticationException(
-                            "Failure to decrypt due to an unauthentic ciphertext", e);
+                else {
+                    decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                 }
+                return decrypted;
             }
-            else {
-                throw new CryptoFilenameMismatchException(
-                        String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+            catch(AuthenticationFailedException e) {
+                throw new CryptoAuthenticationException(
+                        "Failure to decrypt due to an unauthentic ciphertext", e);
             }
         }
-        return file;
+        else {
+            throw new CryptoFilenameMismatchException(
+                    String.format("Failure to decrypt due to missing pattern match for %s", BASE32_PATTERN));
+        }
     }
 
     @Override

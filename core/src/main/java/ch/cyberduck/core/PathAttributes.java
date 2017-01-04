@@ -90,6 +90,8 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String directoryId;
 
+    private Path decryptedPath;
+
     /**
      * Should be hidden in the browser by default
      */
@@ -303,6 +305,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setRevision(final long revision) {
         this.revision = revision;
+    }
+
+    public Path getDecryptedPath() {
+        return decryptedPath;
+    }
+
+    public void setDecryptedPath(final Path decryptedPath) {
+        this.decryptedPath = decryptedPath;
     }
 
     /**

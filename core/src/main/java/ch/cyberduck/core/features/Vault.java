@@ -70,11 +70,10 @@ public interface Vault {
     Path encrypt(Session<?> session, Path file, boolean metadata) throws BackgroundException;
 
     /**
-     * @param directory Encrypted parent path
      * @param file      Encrypted path
      * @return Decrypted human readable path
      */
-    Path decrypt(Session<?> session, Path directory, Path file) throws BackgroundException;
+    Path decrypt(Session<?> session, Path file) throws BackgroundException;
 
     long toCiphertextSize(long cleartextFileSize);
 

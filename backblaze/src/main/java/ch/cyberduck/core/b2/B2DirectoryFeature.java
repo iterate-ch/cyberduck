@@ -63,11 +63,11 @@ public class B2DirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file, final String type, final TransferStatus status) throws BackgroundException {
+    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(file).getName(),
-                        null == type ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(type));
+                        null == region ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(region));
                 switch(response.getBucketType()) {
                     case allPublic:
                         file.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
