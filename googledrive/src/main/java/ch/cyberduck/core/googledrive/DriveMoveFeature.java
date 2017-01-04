@@ -34,7 +34,7 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public boolean isSupported(Path file) {
+    public boolean isSupported(Path source, final Path target) {
         return true;
     }
 

@@ -1012,7 +1012,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Filename = Name;
 
                 View.FilenameEnabled = (1 == count &&
-                                        ((Move) _controller.Session.getFeature(typeof(Move))).isSupported(file));
+                                        ((Move) _controller.Session.getFeature(typeof(Move))).isSupported(file, file));
                 string path;
                 if (file.isSymbolicLink())
                 {

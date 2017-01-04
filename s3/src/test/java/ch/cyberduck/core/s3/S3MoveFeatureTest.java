@@ -83,8 +83,10 @@ public class S3MoveFeatureTest {
 
     @Test
     public void testSupport() throws Exception {
-        assertFalse(new S3MoveFeature(null).isSupported(new Path("/c", EnumSet.of(Path.Type.directory))));
-        assertTrue(new S3MoveFeature(null).isSupported(new Path("/c/f", EnumSet.of(Path.Type.directory))));
+        final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
+        assertFalse(new S3MoveFeature(null).isSupported(c, c));
+        final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
+        assertTrue(new S3MoveFeature(null).isSupported(cf, cf));
     }
 
     @Test

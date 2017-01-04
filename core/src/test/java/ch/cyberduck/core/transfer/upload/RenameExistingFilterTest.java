@@ -61,7 +61,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path file) {
+                        public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
                     };
@@ -141,7 +141,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path file) {
+                        public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
                     };
@@ -237,7 +237,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path file) {
+                        public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
                     };

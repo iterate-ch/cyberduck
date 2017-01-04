@@ -20,6 +20,26 @@ package ch.cyberduck.core;
 public interface PasswordStore {
 
     /**
+     * Find generic password for application
+     *
+     * @param serviceName Hostname
+     * @param accountName        Credentials
+     * @return Password if found or null otherwise
+     */
+    String getPassword(String serviceName, String accountName);
+
+    /**
+     * Add generic password for application
+     *
+     * @param serviceName Hostname
+     * @param accountName Credentials
+     * @param password    Password to save for service
+     */
+    void addPassword(String serviceName, String accountName, String password);
+
+    /**
+     * Find internet password
+     *
      * @param scheme   Protocol scheme
      * @param port     Port
      * @param hostname Hostname
@@ -28,20 +48,8 @@ public interface PasswordStore {
     String getPassword(Scheme scheme, int port, String hostname, String user);
 
     /**
-     * @param serviceName Hostname
-     * @param user     Credentials
-     * @return Password if found or null otherwise
-     */
-    String getPassword(String serviceName, String user);
-
-    /**
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @param password    Password to save for service
-     */
-    void addPassword(String serviceName, String user, String password);
-
-    /**
+     * Save internet password
+     *
      * @param scheme   Protocol scheme
      * @param port     Port
      * @param hostname Servie name

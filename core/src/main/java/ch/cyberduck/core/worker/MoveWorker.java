@@ -54,7 +54,7 @@ public class MoveWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!feature.isSupported(entry.getKey())) {
+            if(!feature.isSupported(entry.getKey(), entry.getValue())) {
                 continue;
             }
             final boolean exists;

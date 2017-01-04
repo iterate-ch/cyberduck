@@ -20,17 +20,17 @@ package ch.cyberduck.core;
 public class DisabledPasswordStore extends HostPasswordStore {
 
     @Override
-    public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+    public String getPassword(final String serviceName, final String accountName) {
         return null;
     }
 
     @Override
-    public void addPassword(final String serviceName, final String user, final String password) {
+    public void addPassword(final String serviceName, final String accountName, final String password) {
         //
     }
 
     @Override
-    public String getPassword(final String hostname, final String user) {
+    public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
         return null;
     }
 
