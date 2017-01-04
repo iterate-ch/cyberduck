@@ -37,6 +37,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 
 import org.apache.log4j.Logger;
@@ -108,7 +109,7 @@ public class CryptoVault implements Vault {
         );
         final Path file = new Path(home, MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
         final Host bookmark = session.getHost();
-        final Credentials credentials = new Credentials();
+        final Credentials credentials = new VaultCredentials();
         prompt.prompt(credentials,
                 LocaleFactory.localizedString("Create Vault", "Cryptomator"),
                 MessageFormat.format(LocaleFactory.localizedString("Provide a passphrase for the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()),
@@ -161,13 +162,11 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", key.getName()), e);
         }
         final Host bookmark = session.getHost();
-        final Credentials credentials = new Credentials(bookmark.getHostname(),
+        final Credentials credentials = new VaultCredentials(bookmark.getHostname(),
                 keychain.getPassword(bookmark.getHostname(), key.getAbsolute())) {
-            @Override
-            public String getPasswordPlaceholder() {
-                return LocaleFactory.localizedString("Passphrase", "Cryptomator");
-            }
         };
+        // Disable save in keychain by default
+        credentials.setSaved(false);
         this.unlock(key, master, credentials, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         return this;
