@@ -95,18 +95,18 @@ public final class Keychain extends HostPasswordStore implements PasswordStore, 
     }
 
     @Override
-    public String getPassword(final String hostname, final String user) {
-        return this.getPasswordFromKeychain(hostname, user);
-    }
-
-    @Override
-    public void addPassword(final String serviceName, final String user, final String password) {
-        this.addPasswordToKeychain(serviceName, user, password);
-    }
-
-    @Override
     public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
         this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password);
+    }
+
+    @Override
+    public String getPassword(final String serviceName, final String accountName) {
+        return this.getPasswordFromKeychain(serviceName, accountName);
+    }
+
+    @Override
+    public void addPassword(final String serviceName, final String accountName, final String password) {
+        this.addPasswordToKeychain(serviceName, accountName, password);
     }
 
     /**
