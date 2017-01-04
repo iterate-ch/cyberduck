@@ -49,7 +49,7 @@ public class VaultFinderListService implements ListService {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found vault %s", cryptomator));
             }
-            return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, directory, listener));
+            return delegate.list(cryptomator.encrypt(session, directory), new DecryptingListProgressListener(session, cryptomator, listener));
         }
         finally {
             finder.reset();

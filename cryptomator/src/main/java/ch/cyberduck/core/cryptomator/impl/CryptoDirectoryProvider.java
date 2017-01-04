@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.impl;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -70,16 +71,16 @@ public class CryptoDirectoryProvider {
     /**
      * @param directory Clear text
      */
-    public CryptoVault.CryptoDirectory toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
+    public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
         try {
             if(dataRoot.getParent().equals(directory)) {
-                return new CryptoVault.CryptoDirectory(ROOT_DIR_ID, cache.get(ROOT_DIR_ID));
+                return cache.get(ROOT_DIR_ID);
             }
-            final CryptoVault.CryptoDirectory parent = this.toEncrypted(session, directory.getParent());
+            final Path parent = this.toEncrypted(session, directory.getParent());
             final String cleartextName = directory.getName();
-            final String ciphertextName = this.toEncrypted(session, parent.id, cleartextName, EnumSet.of(Path.Type.directory));
-            final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent.path, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
-            return new CryptoVault.CryptoDirectory(dirId, cache.get(dirId));
+            final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+            final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+            return cache.get(dirId);
         }
         catch(ExecutionException | UncheckedExecutionException e) {
             if(e.getCause() instanceof IOException) {
@@ -96,7 +97,9 @@ public class CryptoDirectoryProvider {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
         // Intermediate directory
         final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
-        return new Path(intermediate, dirHash.substring(2), EnumSet.of(Path.Type.directory, Path.Type.encrypted));
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setDirectoryId(directoryId);
+        return new Path(intermediate, dirHash.substring(2), EnumSet.of(Path.Type.directory, Path.Type.encrypted), attributes);
     }
 
     public void close() {

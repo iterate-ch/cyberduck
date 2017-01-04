@@ -96,7 +96,7 @@ public class SFTPFindFeatureTest {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

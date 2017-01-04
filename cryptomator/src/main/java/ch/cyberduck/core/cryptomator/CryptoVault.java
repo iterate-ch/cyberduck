@@ -123,7 +123,7 @@ public class CryptoVault implements Vault {
         feature.mkdir(home, region, new TransferStatus());
         writer.write(file, master.serialize());
         this.open(KeyFile.parse(master.serialize()), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(session, home).path;
+        final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         if(log.isDebugEnabled()) {
@@ -241,11 +241,13 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        if(file.getType().contains(Path.Type.vault)) {
-            return false;
-        }
-        if(this.isUnlocked()) {
-            return file.equals(home) || file.isChild(home);
+        if(file != null) {
+            if(file.getType().contains(Path.Type.vault)) {
+                return false;
+            }
+            if(this.isUnlocked()) {
+                return file.equals(home) || file.isChild(home);
+            }
         }
         return false;
     }
@@ -266,23 +268,24 @@ public class CryptoVault implements Vault {
                 return file;
             }
             if(file.isFile() || metadata) {
-                final CryptoDirectory parent = directoryProvider.toEncrypted(session, file.getParent());
-                final String filename = directoryProvider.toEncrypted(session, parent.id, file.getName(), file.getType());
-                return new Path(parent.path, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
+                final Path parent = directoryProvider.toEncrypted(session, file.getParent());
+                final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
+                final Path encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
+                encrypted.attributes().setDecryptedPath(file);
+                return encrypted;
             }
             else {
-                final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, file);
-                // Set internal id
-                cryptoDirectory.path.attributes().setDirectoryId(cryptoDirectory.id);
-                return cryptoDirectory.path;
+                final Path encrypted = directoryProvider.toEncrypted(session, file);
+                encrypted.attributes().setDecryptedPath(file);
+                return encrypted;
             }
         }
         return file;
     }
 
     @Override
-    public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
-        if(this.contains(directory)) {
+    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
+        if(this.contains(file.getParent().attributes().getDecryptedPath())) {
             if(file.getType().contains(Path.Type.decrypted)) {
                 log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
                 return file;
@@ -296,10 +299,9 @@ public class CryptoVault implements Vault {
             if(m.find()) {
                 final String ciphertext = m.group(1);
                 try {
-                    final CryptoDirectory cryptoDirectory = directoryProvider.toEncrypted(session, directory);
                     final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                            ciphertext, cryptoDirectory.id.getBytes(StandardCharsets.UTF_8));
-                    final Path decrypted = new Path(directory, cleartextFilename,
+                            ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                    final Path decrypted = new Path(file.getParent().attributes().getDecryptedPath(), cleartextFilename,
                             EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
                             file.attributes());
                     if(decrypted.isDirectory()) {

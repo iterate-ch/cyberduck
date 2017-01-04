@@ -32,14 +32,12 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
 
     private final Session<?> session;
     private final Vault vault;
-    private final Path directory;
     private final ListProgressListener delegate;
 
-    public DecryptingListProgressListener(final Session<?> session, final Vault vault, final Path directory,
+    public DecryptingListProgressListener(final Session<?> session, final Vault vault,
                                           final ListProgressListener delegate) {
         this.session = session;
         this.vault = vault;
-        this.directory = directory;
         this.delegate = delegate;
     }
 
@@ -48,7 +46,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
         for(int i = index; i < list.size(); i++) {
             final Path f = list.get(i);
             try {
-                list.set(i, vault.decrypt(session, directory, f));
+                list.set(i, vault.decrypt(session, f));
             }
             catch(BackgroundException e) {
                 log.error(String.format("Failure decrypting %s. %s", f, e.getMessage()));

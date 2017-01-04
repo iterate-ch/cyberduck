@@ -55,7 +55,7 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path decrypt(final Session<?> session, final Path directory, final Path file) throws BackgroundException {
+    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         return file;
     }
 
