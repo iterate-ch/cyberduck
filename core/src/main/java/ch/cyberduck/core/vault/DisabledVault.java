@@ -76,6 +76,11 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
+    public State getState() {
+        return State.closed;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

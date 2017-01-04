@@ -1386,13 +1386,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.keychainCheckbox = b;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.useKeychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.keychainCheckbox.setState(preferences.getBoolean("connection.login.keychain") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
-        preferences.setProperty("connection.login.useKeychain", enabled);
+        preferences.setProperty("connection.login.keychain", enabled);
     }
 
     @Outlet

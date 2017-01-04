@@ -15,16 +15,23 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.features.Vault;
 
 public class DisabledVaultRegistry implements VaultRegistry {
     @Override
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
-        return proxy;
+    public Vault find(final Path file) {
+        return Vault.DISABLED;
     }
 
     @Override
     public void clear() {
         //
+    }
+
+    @Override
+    public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
+        return proxy;
     }
 }

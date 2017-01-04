@@ -19,10 +19,10 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.io.IOException;
 
@@ -40,7 +40,7 @@ public class DAVCopyFeature implements Copy {
     public void copy(final Path source, final Path copy) throws BackgroundException {
         try {
             if(source.isFile()) {
-                final String target = session.getFeature(UrlProvider.class).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
+                final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
                 session.getClient().copy(new DAVPathEncoder().encode(source), target);
             }
         }

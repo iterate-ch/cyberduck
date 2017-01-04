@@ -37,6 +37,7 @@ using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.core.vault;
 using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
@@ -2484,6 +2485,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     // Invalidate cache
                     _cache.invalidate(folder);
+                    VaultRegistry vault = Session.getVault();
+                    vault.clear();
                 }
                 else
                 {

@@ -84,4 +84,10 @@ public interface Vault {
 
     Vault DISABLED = new DisabledVault();
 
+    State getState();
+
+    enum State {
+        open,
+        closed
+    }
 }

@@ -54,7 +54,8 @@ public class AzureMoveFeature implements Move {
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             new AzureCopyFeature(session, context).copy(file, renamed);
-            new AzureDeleteFeature(session, context).delete(Collections.singletonList(file),
+            final Delete delete = session.getFeature(Delete.class);
+            delete.delete(Collections.singletonList(file),
                     new DisabledLoginCallback(), callback);
         }
         else if(file.isDirectory()) {

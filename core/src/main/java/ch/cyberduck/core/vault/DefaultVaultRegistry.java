@@ -64,10 +64,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(log.isInfoEnabled()) {
             log.info("Close vaults");
         }
-        this.stream().close();
+        this.forEach(Vault::close);
         super.clear();
     }
 
+    @Override
     public Vault find(final Path file) {
         for(Vault vault : this) {
             if(vault.contains(file)) {

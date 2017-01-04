@@ -95,6 +95,11 @@ public class SingleSessionPool implements SessionPool {
     }
 
     @Override
+    public VaultRegistry getVault() {
+        return registry;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SingleSessionPool{");
         sb.append("session=").append(session);
