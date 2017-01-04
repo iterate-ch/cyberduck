@@ -77,6 +77,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
@@ -411,6 +412,8 @@ public class BrowserController extends WindowController
                 if(invalidate) {
                     // Invalidate cache
                     cache.invalidate(folder);
+                    final VaultRegistry vault = pool.getVault();
+                    vault.clear();
                 }
                 else {
                     if(cache.isCached(folder)) {
