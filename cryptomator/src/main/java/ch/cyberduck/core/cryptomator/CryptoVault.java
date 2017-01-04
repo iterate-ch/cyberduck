@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -118,7 +119,7 @@ public class CryptoVault implements Vault {
                 new LoginOptions().user(false).anonymous(false).icon("cryptomator.tiff"));
         if(keyfilePassphrase.isSaved()) {
             keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(), keyfilePassphrase.getPassword());
+                    new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), keyfilePassphrase.getPassword());
         }
         final String passphrase = keyfilePassphrase.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, VAULT_VERSION);
@@ -167,7 +168,7 @@ public class CryptoVault implements Vault {
         final Host bookmark = session.getHost();
         final Credentials keyfilePassphrase = new VaultCredentials(
                 keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString())) {
+                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl())) {
         };
         // Disable save in keychain by default
         keyfilePassphrase.setSaved(false);
@@ -195,9 +196,9 @@ public class CryptoVault implements Vault {
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(), keyfilePassphrase.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(), keyfilePassphrase.getPassword());
                 // Save masterkey.cryptomator content in preferences
-                PreferencesFactory.get().setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).toString(),
+                PreferencesFactory.get().setProperty(new DefaultUrlProvider(bookmark).toUrl(masterKeyFile).find(DescriptiveUrl.Type.provider).getUrl(),
                         new String(masterKeyFileContent.serialize()));
             }
         }
