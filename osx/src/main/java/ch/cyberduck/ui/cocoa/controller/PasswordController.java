@@ -84,16 +84,6 @@ public class PasswordController extends AlertController {
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
         NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        suppressionCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-        suppressionCheckbox.setTitle(LocaleFactory.localizedString("Always"));
-        suppressionCheckbox.setAction(Foundation.selector("suppressionButtonClicked:"));
-        suppressionCheckbox.setTarget(this.id());
-        suppressionCheckbox.setButtonType(NSButton.NSSwitchButton);
-        suppressionCheckbox.setState(NSCell.NSOffState);
-        suppressionCheckbox.sizeToFit();
-        // Override accessory view with location menu added
-        suppressionCheckbox.setFrameOrigin(new NSPoint(0, 0));
-        view.addSubview(suppressionCheckbox);
         if(options.keychain) {
             keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
             keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
