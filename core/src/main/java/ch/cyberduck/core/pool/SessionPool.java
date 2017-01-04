@@ -21,6 +21,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.vault.DisabledVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public interface SessionPool {
     SessionPool DISCONNECTED = new DisconnectedSessionPool();
@@ -48,6 +50,11 @@ public interface SessionPool {
      * @return Connection configuration
      */
     Host getHost();
+
+    /**
+     * @return Shared vaults for sessions
+     */
+    VaultRegistry getVault();
 
     /**
      * @return Current pool connection state
@@ -87,6 +94,11 @@ public interface SessionPool {
         @Override
         public Host getHost() {
             return null;
+        }
+
+        @Override
+        public VaultRegistry getVault() {
+            return new DisabledVaultRegistry();
         }
 
         @Override

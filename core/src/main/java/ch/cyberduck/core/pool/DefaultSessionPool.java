@@ -288,6 +288,11 @@ public class DefaultSessionPool implements SessionPool {
         return bookmark;
     }
 
+    @Override
+    public VaultRegistry getVault() {
+        return registry;
+    }
+
     public int getNumActive() {
         return pool.getNumActive();
     }
