@@ -87,25 +87,27 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                 return vault;
             }
         }
-        Path directory = file;
-        final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
-        do {
-            directory = directory.getParent();
-            if(directory.getType().contains(Path.Type.vault)) {
-                final Vault vault = VaultFactory.get(directory, keychain);
-                if(vault.equals(Vault.DISABLED)) {
-                    continue;
-                }
-                try {
-                    listener.found(vault);
-                    return vault;
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+        if(lookup) {
+            Path directory = file;
+            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
+            do {
+                directory = directory.getParent();
+                if(directory.getType().contains(Path.Type.vault)) {
+                    final Vault vault = VaultFactory.get(directory, keychain);
+                    if(vault.equals(Vault.DISABLED)) {
+                        continue;
+                    }
+                    try {
+                        listener.found(vault);
+                        return vault;
+                    }
+                    catch(BackgroundException e) {
+                        log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+                    }
                 }
             }
+            while(!directory.isRoot());
         }
-        while(!directory.isRoot());
         return Vault.DISABLED;
     }
 
