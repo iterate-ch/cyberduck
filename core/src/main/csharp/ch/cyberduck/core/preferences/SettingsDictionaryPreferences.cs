@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,25 +18,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Windows.Storage;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
 using org.apache.log4j;
 using sun.security.mscapi;
-using Windows.Storage;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
     public class SettingsDictionaryPreferences : ch.cyberduck.core.preferences.Preferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SettingsDictionaryPreferences).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
         private SettingsDictionary _settings;
 
         /// <summary>
@@ -87,6 +88,21 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 Match match = Regex.Match(Application.ProductVersion, @"((\d+)\.(\d+)(\.(\d+))?).*");
                 return match.Groups[1].Value;
+            }
+        }
+
+        private void ValidatePreferences()
+        {
+            try
+            {
+                ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoaming);
+            }
+            catch (ConfigurationErrorsException ex)
+            {
+                if (!string.IsNullOrEmpty(ex.Filename))
+                {
+                    File.Move(ex.Filename, $"{ex.Filename}_{DateTime.Now:yyyyMMddHHmmssffff}");
+                }
             }
         }
 
@@ -196,8 +212,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         public override void load()
         {
-            Log.debug("Loading preferences");
-            // upgrade settings for a new version
+            ValidatePreferences();
             if (Settings.Default.UpgradeSettings)
             {
                 Settings.Default.Upgrade();
