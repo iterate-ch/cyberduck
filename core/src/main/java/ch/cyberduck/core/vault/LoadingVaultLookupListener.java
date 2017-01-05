@@ -40,7 +40,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
         synchronized(registry) {
             if(registry.contains(vault)) {
                 log.warn(String.format("Ignore vault %s found already loaded", vault));
-                return;
+                throw new VaultAlreadyLoadedException("Ignore vault already loaded");
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
