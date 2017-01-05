@@ -40,6 +40,6 @@ public class VaultRegistryTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return proxy.isSupported(workdir);
+        return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
     }
 }

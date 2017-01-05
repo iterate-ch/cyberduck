@@ -41,6 +41,6 @@ public class VaultRegistryMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return registry.find(session, source).getFeature(session, Move.class, proxy).isSupported(source, target);
+        return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
     }
 }
