@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultLookupListener, VaultRegistry {
+public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
     private final PasswordStore keychain;
@@ -57,6 +57,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     public void found(final Vault vault) throws BackgroundException {
         // Add if absent
         this.add(vault);
+    }
+
+    @Override
+    public boolean contains(final Vault vault) {
+        return super.contains(vault);
     }
 
     @Override
@@ -112,8 +117,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                     new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
         if(type == Bulk.class) {
-            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this
-            );
+            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
         }
         if(type == Touch.class) {
             return (T) new VaultRegistryTouchFeature(session, ((Touch) proxy), this);

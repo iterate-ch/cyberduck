@@ -17,6 +17,7 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
 public class DisabledVaultRegistry implements VaultRegistry {
@@ -33,5 +34,15 @@ public class DisabledVaultRegistry implements VaultRegistry {
     @Override
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         return proxy;
+    }
+
+    @Override
+    public boolean contains(final Vault vault) {
+        return false;
+    }
+
+    @Override
+    public void found(final Vault vault) throws BackgroundException {
+        //
     }
 }
