@@ -461,16 +461,6 @@ public class CryptoVault implements Vault {
         return delegate;
     }
 
-    public static final class CryptoDirectory {
-        public final String id;
-        public final Path path;
-
-        public CryptoDirectory(final String id, final Path path) {
-            this.id = id;
-            this.path = path;
-        }
-    }
-
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
