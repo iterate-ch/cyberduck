@@ -40,6 +40,7 @@ public class VaultRegistryTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
+        // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
         return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
     }
 }

@@ -41,6 +41,7 @@ public class VaultRegistryMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
         return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
     }
 }

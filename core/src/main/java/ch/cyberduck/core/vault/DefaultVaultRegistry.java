@@ -78,6 +78,12 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return this.find(session, file, true);
     }
 
+    /**
+     * @param session Connection
+     * @param file    File
+     * @param lookup  Find and load any vault
+     * @return Open or disabled vault
+     */
     public Vault find(final Session session, final Path file, final boolean lookup) {
         for(Vault vault : this) {
             if(vault.contains(file)) {
