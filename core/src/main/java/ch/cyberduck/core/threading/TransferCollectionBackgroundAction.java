@@ -36,23 +36,23 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
 
     private final TransferQueue queue = TransferQueueFactory.get();
 
-    private final SessionPool pool;
-
+    private final SessionPool source;
+    private final SessionPool destination;
     private final Transfer transfer;
-
-    private final ProgressListener progressListener;
+    private final ProgressListener listener;
 
     public TransferCollectionBackgroundAction(final Controller controller,
                                               final SessionPool source,
                                               final SessionPool destination,
                                               final TransferListener transferListener,
-                                              final ProgressListener progressListener,
+                                              final ProgressListener listener,
                                               final Transfer transfer,
                                               final TransferOptions options) {
-        super(controller, source, destination, transferListener, progressListener, transfer, options);
-        this.pool = source;
+        super(controller, source, destination, transferListener, listener, transfer, options);
+        this.source = source;
+        this.destination = destination;
         this.transfer = transfer;
-        this.progressListener = progressListener;
+        this.listener = listener;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         // Update status to running
         super.prepare();
         // Wait for slot in queue
-        queue.add(transfer, progressListener);
+        queue.add(transfer, listener);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
         }
         super.finish();
         queue.remove(transfer);
-        pool.shutdown();
+        source.shutdown();
         destination.shutdown();
     }
 
