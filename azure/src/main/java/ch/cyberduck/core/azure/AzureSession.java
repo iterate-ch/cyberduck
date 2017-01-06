@@ -32,6 +32,8 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -160,7 +162,17 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
             ((StorageCredentialsAccountAndKey) credentials).updateKey(host.getCredentials().getPassword());
         }
         final Path home = new AzureHomeFinderService(this).find();
-        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
+        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                try {
+                    cancel.verify();
+                }
+                catch(ConnectionCanceledException e) {
+                    throw new ListCanceledException(list, e);
+                }
+            }
+        }));
     }
 
     @Override

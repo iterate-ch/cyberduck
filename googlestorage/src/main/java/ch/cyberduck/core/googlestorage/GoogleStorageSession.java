@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
@@ -27,7 +28,9 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
@@ -151,7 +154,17 @@ public class GoogleStorageSession extends S3Session {
         // List all buckets and cache
         try {
             final Path root = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume));
-            cache.put(root, this.getFeature(ListService.class).list(root, new DisabledListProgressListener()));
+            cache.put(root, this.getFeature(ListService.class).list(root, new DisabledListProgressListener() {
+                @Override
+                public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                    try {
+                        cancel.verify();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        throw new ListCanceledException(list, e);
+                    }
+                }
+            }));
         }
         catch(LoginFailureException | InteroperabilityException e) {
             this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);

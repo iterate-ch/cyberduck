@@ -34,6 +34,8 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
@@ -206,7 +208,17 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 host, e.getResponsePhrase()));
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
-                        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener()));
+                        cache.put(home, this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
+                            @Override
+                            public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                                try {
+                                    cancel.verify();
+                                }
+                                catch(ConnectionCanceledException e) {
+                                    throw new ListCanceledException(list, e);
+                                }
+                            }
+                        }));
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {
