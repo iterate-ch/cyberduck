@@ -15,9 +15,9 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultLookupListener {
-    void found(Vault vault) throws BackgroundException;
+    void found(Vault vault) throws ConnectionCanceledException;
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -39,6 +40,11 @@ public class VaultRegistryChecksumCompute extends AbstractChecksumCompute implem
 
     @Override
     public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
-        return registry.find(session, file).getFeature(session, ChecksumCompute.class, proxy).compute(file, in, status);
+        try {
+            return registry.find(session, file).getFeature(session, ChecksumCompute.class, proxy).compute(file, in, status);
+        }
+        catch(ConnectionCanceledException e) {
+            throw new ChecksumException(e.getDetail(), e);
+        }
     }
 }

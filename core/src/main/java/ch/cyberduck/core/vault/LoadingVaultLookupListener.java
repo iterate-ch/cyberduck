@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
@@ -36,7 +37,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public void found(final Vault vault) throws BackgroundException {
+    public void found(final Vault vault) throws ConnectionCanceledException {
         synchronized(registry) {
             if(registry.contains(vault)) {
                 log.warn(String.format("Ignore vault %s found already loaded", vault));
@@ -45,7 +46,13 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
-            registry.found(vault.load(session, prompt));
+            try {
+                registry.found(vault.load(session, prompt));
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure loading vault %s. %s", vault, e.getDetail()));
+                throw new VaultUnlockCancelException(vault);
+            }
         }
     }
 }

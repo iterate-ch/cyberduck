@@ -19,6 +19,7 @@ import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 public class VaultRegistryUrlProvider implements UrlProvider {
@@ -34,6 +35,11 @@ public class VaultRegistryUrlProvider implements UrlProvider {
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        return registry.find(session, file).getFeature(session, UrlProvider.class, proxy).toUrl(file);
+        try {
+            return registry.find(session, file).getFeature(session, UrlProvider.class, proxy).toUrl(file);
+        }
+        catch(BackgroundException e) {
+            return DescriptiveUrlBag.empty();
+        }
     }
 }

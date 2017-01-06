@@ -81,8 +81,10 @@ public class SessionListWorkerTest {
             }
         };
         final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/home/notfound", EnumSet.of(Path.Type.directory));
+        cache.put(directory, new AttributedList<>(Collections.singletonList(new Path(directory, "f", EnumSet.of(Path.Type.file)))));
         final SessionListWorker worker = new SessionListWorker(cache,
-                new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
+                directory,
                 new DisabledListProgressListener());
         final Controller c = new AbstractController() {
             @Override
@@ -93,7 +95,8 @@ public class SessionListWorkerTest {
         final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(
                 new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertNotNull(task.get());
-        assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
+        assertTrue(cache.containsKey(directory));
+        assertEquals(1, cache.get(directory).size());
     }
 
     @Test

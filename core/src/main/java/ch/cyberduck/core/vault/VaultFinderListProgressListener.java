@@ -19,8 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.log4j.Logger;
@@ -44,7 +43,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     }
 
     @Override
-    public void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException {
+    public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
         if(MASTERKEY_FILE_NAME.equals(file.getName())) {
             final Vault vault = VaultFactory.get(directory, keychain);
@@ -54,11 +53,11 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             try {
                 listener.found(vault);
             }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+            catch(VaultUnlockCancelException e) {
+                // Continue
                 return;
             }
-            throw new VaultFinderListCanceledException(vault, list);
+            throw new VaultFoundListCanceledException(vault, list);
         }
     }
 }

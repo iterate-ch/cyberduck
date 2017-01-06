@@ -1,7 +1,7 @@
 package ch.cyberduck.core.vault;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,20 +15,25 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ListCanceledException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
-public class VaultFinderListCanceledException extends ListCanceledException {
+public class VaultUnlockCancelException extends ConnectionCanceledException {
     private final Vault vault;
 
-    public VaultFinderListCanceledException(final Vault vault, final AttributedList<Path> chunk) {
-        super(chunk);
+    public VaultUnlockCancelException(final Vault vault) {
         this.vault = vault;
     }
 
     public Vault getVault() {
         return vault;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultUnlockCancelException{");
+        sb.append("vault=").append(vault);
+        sb.append('}');
+        return sb.toString();
     }
 }

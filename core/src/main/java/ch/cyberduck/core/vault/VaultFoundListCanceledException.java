@@ -15,33 +15,28 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.features.Vault;
 
-public class DisabledVaultRegistry implements VaultRegistry {
-    @Override
-    public Vault find(final Session session, final Path file) {
-        return Vault.DISABLED;
+public class VaultFoundListCanceledException extends ListCanceledException {
+    private final Vault vault;
+
+    public VaultFoundListCanceledException(final Vault vault, final AttributedList<Path> chunk) {
+        super(chunk);
+        this.vault = vault;
+    }
+
+    public Vault getVault() {
+        return vault;
     }
 
     @Override
-    public void clear() {
-        //
-    }
-
-    @Override
-    public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
-        return proxy;
-    }
-
-    @Override
-    public boolean contains(final Vault vault) {
-        return false;
-    }
-
-    @Override
-    public void found(final Vault vault) throws VaultUnlockCancelException {
-        //
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultFoundListCanceledException{");
+        sb.append("vault=").append(vault);
+        sb.append('}');
+        return sb.toString();
     }
 }

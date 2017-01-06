@@ -22,7 +22,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.vault.registry.*;
@@ -54,7 +54,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public void found(final Vault vault) throws BackgroundException {
+    public void found(final Vault vault) throws VaultUnlockCancelException {
         // Add if absent
         this.add(vault);
     }
@@ -74,7 +74,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Session session, final Path file) {
+    public Vault find(final Session session, final Path file) throws ConnectionCanceledException {
         return this.find(session, file, true);
     }
 
@@ -84,7 +84,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
      * @param lookup  Find and load any vault
      * @return Open or disabled vault
      */
-    public Vault find(final Session session, final Path file, final boolean lookup) {
+    public Vault find(final Session session, final Path file, final boolean lookup) throws ConnectionCanceledException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
@@ -95,26 +95,21 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(lookup) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
-            Path directory = file;
-            do {
-                if(directory.attributes().getVault() != null) {
-                    final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
-                    try {
-                        listener.found(vault);
-                        return vault;
-                    }
-                    catch(BackgroundException e) {
-                        log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
-                    }
-                }
-                if(directory.isRoot()) {
-                    break;
-                }
-                directory = directory.getParent();
+            if(file.attributes().getVault() != null) {
+                return this.find(file, listener);
             }
-            while(true);
+            final Path directory = file.getParent();
+            if(directory.attributes().getVault() != null) {
+                return this.find(directory, listener);
+            }
         }
         return Vault.DISABLED;
+    }
+
+    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws ConnectionCanceledException {
+        final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
+        listener.found(vault);
+        return vault;
     }
 
     @Override
