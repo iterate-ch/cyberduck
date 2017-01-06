@@ -176,6 +176,8 @@ public class CryptoVault implements Vault {
         keyfilePassphrase.setSaved(false);
         this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
+        // Nullify to avoid recursion
+        home.attributes().setVault(null);
         // Mark vault as volume for lookup in registry
         home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault),
                 new PathAttributesDictionary().deserialize(home.attributes().serialize(SerializerFactory.get()))));
