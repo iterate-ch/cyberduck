@@ -175,7 +175,8 @@ public class CryptoVault implements Vault {
         this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
         final EnumSet<Path.Type> type = home.getType();
-        type.add(Path.Type.vault);
+        // Mark vault as volume for lookup in registry
+        type.add(Path.Type.volume);
         home.setType(type);
         return this;
     }

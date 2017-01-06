@@ -98,7 +98,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
             do {
                 directory = directory.getParent();
-                if(directory.getType().contains(Path.Type.vault)) {
+                if(directory.getType().contains(Path.Type.volume)) {
                     final Vault vault = VaultFactory.get(directory, keychain);
                     if(vault.equals(Vault.DISABLED)) {
                         continue;
