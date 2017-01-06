@@ -15,7 +15,7 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
 import java.util.Set;
@@ -29,7 +29,7 @@ public class DelegatingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public void found(final Vault vault) throws BackgroundException {
+    public void found(final Vault vault) throws ConnectionCanceledException {
         for(VaultLookupListener l : listeners) {
             l.found(vault);
         }

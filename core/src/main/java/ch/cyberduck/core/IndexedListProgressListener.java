@@ -41,6 +41,6 @@ public abstract class IndexedListProgressListener implements ListProgressListene
      * @param file  New file in chunk
      * @throws ListCanceledException Interrupt list
      */
-    public abstract void visit(final AttributedList<Path> list, final int index, final Path file) throws ListCanceledException;
+    public abstract void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException;
 }
 
