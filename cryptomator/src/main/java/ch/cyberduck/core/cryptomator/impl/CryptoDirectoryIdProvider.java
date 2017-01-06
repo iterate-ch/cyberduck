@@ -39,7 +39,4 @@ public class CryptoDirectoryIdProvider {
             return random.random();
         }
     }
-
-    public void close() {
-    }
 }
