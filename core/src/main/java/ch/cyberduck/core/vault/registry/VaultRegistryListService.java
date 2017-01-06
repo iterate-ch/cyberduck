@@ -45,7 +45,7 @@ public class VaultRegistryListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final Vault vault = registry.find(session, directory);
+        final Vault vault = registry.find(session, directory, false);
         if(vault.contains(directory)) {
             return vault.getFeature(session, ListService.class, proxy).list(directory, listener);
         }
