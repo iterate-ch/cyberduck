@@ -412,8 +412,6 @@ public class BrowserController extends WindowController
                 if(invalidate) {
                     // Invalidate cache
                     cache.invalidate(folder);
-                    final VaultRegistry vault = pool.getVault();
-                    vault.clear();
                 }
                 else {
                     if(cache.isCached(folder)) {
@@ -2500,6 +2498,10 @@ public class BrowserController extends WindowController
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
+            // Clear open vaults
+            final VaultRegistry vault = pool.getVault();
+            vault.clear();
+            // Find folders to reload
             final Set<Path> folders = new HashSet<Path>();
             switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
                 case outline: {
