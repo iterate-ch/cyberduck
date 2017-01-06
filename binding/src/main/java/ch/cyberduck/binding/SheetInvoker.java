@@ -110,32 +110,34 @@ public class SheetInvoker extends ProxyController {
             }
         }
         else {
-            final SheetInvoker invoker = this;
-            invoke(new DefaultMainAction() {
-                @Override
-                public void run() {
-                    //Invoke again on main thread
-                    if(controller != null) {
-                        controller.loadBundle();
-                        invoker.beginSheet(controller.window());
+            synchronized(parent) {
+                final SheetInvoker invoker = this;
+                invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        //Invoke again on main thread
+                        if(controller != null) {
+                            controller.loadBundle();
+                            invoker.beginSheet(controller.window());
+                        }
+                        else {
+                            invoker.beginSheet(window);
+                        }
                     }
-                    else {
-                        invoker.beginSheet(window);
-                    }
+                }, true);
+                if(log.isDebugEnabled()) {
+                    log.debug("Await sheet dismiss");
                 }
-            }, true);
-            if(log.isDebugEnabled()) {
-                log.debug("Await sheet dismiss");
+                // Synchronize on parent controller. Only display one sheet at once.
+                try {
+                    signal.await();
+                }
+                catch(InterruptedException e) {
+                    log.error("Error waiting for sheet dismiss", e);
+                    callback.callback(SheetCallback.CANCEL_OPTION);
+                }
+                return returncode;
             }
-            // Synchronize on parent controller. Only display one sheet at once.
-            try {
-                signal.await();
-            }
-            catch(InterruptedException e) {
-                log.error("Error waiting for sheet dismiss", e);
-                callback.callback(SheetCallback.CANCEL_OPTION);
-            }
-            return returncode;
         }
     }
 
