@@ -37,7 +37,7 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, AttributesFinder.class, proxy).find(file);
+        return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy).find(file);
     }
 
     @Override

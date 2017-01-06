@@ -39,12 +39,12 @@ public class VaultRegistryAclPermission implements AclPermission {
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, AclPermission.class, proxy).getPermission(file);
+        return registry.find(session, file).getFeature(session, AclPermission.class, proxy).getPermission(file);
     }
 
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
-        registry.find(file).getFeature(session, AclPermission.class, proxy).setPermission(file, acl);
+        registry.find(session, file).getFeature(session, AclPermission.class, proxy).setPermission(file, acl);
     }
 
     @Override

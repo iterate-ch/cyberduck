@@ -25,6 +25,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryIdProvider;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -174,6 +176,9 @@ public class CryptoVault implements Vault {
         keyfilePassphrase.setSaved(false);
         this.unlock(masterKeyFile, masterKeyFileContent, bookmark, keyfilePassphrase, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault “{0}“", "Cryptomator"), home.getName()));
+        // Mark vault as volume for lookup in registry
+        home.attributes().setVault(new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault),
+                new PathAttributesDictionary().deserialize(home.attributes().serialize(SerializerFactory.get()))));
         return this;
     }
 
@@ -281,18 +286,18 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
             return file;
         }
+        final Path encrypted;
         if(file.isFile() || metadata) {
             final Path parent = directoryProvider.toEncrypted(session, file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            final Path encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
-            encrypted.attributes().setDecryptedPath(file);
-            return encrypted;
+            encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
         }
         else {
-            final Path encrypted = directoryProvider.toEncrypted(session, file);
-            encrypted.attributes().setDecryptedPath(file);
-            return encrypted;
+            encrypted = directoryProvider.toEncrypted(session, file);
         }
+        encrypted.attributes().setDecrypted(file);
+        encrypted.attributes().setVault(home);
+        return encrypted;
     }
 
     @Override
@@ -312,7 +317,7 @@ public class CryptoVault implements Vault {
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final Path decrypted = new Path(file.getParent().attributes().getDecryptedPath(), cleartextFilename,
+                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename,
                         EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
                         file.attributes());
                 if(decrypted.isDirectory()) {
@@ -324,6 +329,7 @@ public class CryptoVault implements Vault {
                 else {
                     decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
                 }
+                decrypted.attributes().setVault(home);
                 return decrypted;
             }
             catch(AuthenticationFailedException e) {
@@ -459,16 +465,6 @@ public class CryptoVault implements Vault {
             }
         }
         return delegate;
-    }
-
-    public static final class CryptoDirectory {
-        public final String id;
-        public final Path path;
-
-        public CryptoDirectory(final String id, final Path path) {
-            this.id = id;
-            this.path = path;
-        }
     }
 
     @Override

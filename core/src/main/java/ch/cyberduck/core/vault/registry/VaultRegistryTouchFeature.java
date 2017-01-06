@@ -35,11 +35,12 @@ public class VaultRegistryTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        registry.find(file).getFeature(session, Touch.class, proxy).touch(file, status);
+        registry.find(session, file).getFeature(session, Touch.class, proxy).touch(file, status);
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return proxy.isSupported(workdir);
+        // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
+        return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
     }
 }

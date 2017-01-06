@@ -39,6 +39,6 @@ public class VaultRegistryChecksumCompute extends AbstractChecksumCompute implem
 
     @Override
     public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
-        return registry.find(file).getFeature(session, ChecksumCompute.class, proxy).compute(file, in, status);
+        return registry.find(session, file).getFeature(session, ChecksumCompute.class, proxy).compute(file, in, status);
     }
 }

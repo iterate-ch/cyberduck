@@ -19,13 +19,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
-public interface VaultRegistry {
+public interface VaultRegistry extends VaultLookupListener {
     /**
-     * @param file File
+     * @param session Connection
+     * @param file    File
      * @return Vault for file or disabled vault if file is not inside a vault
      * @see Vault#DISABLED
      */
-    Vault find(Path file);
+    Vault find(final Session session, Path file);
 
     /**
      * Close and remove all vaults in registry
@@ -35,4 +36,5 @@ public interface VaultRegistry {
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
 
+    boolean contains(Vault vault);
 }

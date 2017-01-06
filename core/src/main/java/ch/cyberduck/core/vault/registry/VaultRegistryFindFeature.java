@@ -35,7 +35,7 @@ public class VaultRegistryFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, Find.class, proxy).find(file);
+        return registry.find(session, file).getFeature(session, Find.class, proxy).find(file);
     }
 
     @Override

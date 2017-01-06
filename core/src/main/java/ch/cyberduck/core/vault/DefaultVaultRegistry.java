@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultLookupListener, VaultRegistry {
+public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
     private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
 
     private final PasswordStore keychain;
@@ -60,6 +60,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
+    public boolean contains(final Vault vault) {
+        return super.contains(vault);
+    }
+
+    @Override
     public void clear() {
         if(log.isInfoEnabled()) {
             log.info("Close vaults");
@@ -69,13 +74,37 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Path file) {
+    public Vault find(final Session session, final Path file) {
+        return this.find(session, file, true);
+    }
+
+    /**
+     * @param session Connection
+     * @param file    File
+     * @param lookup  Find and load any vault
+     * @return Open or disabled vault
+     */
+    public Vault find(final Session session, final Path file, final boolean lookup) {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found vault %s for file %s", vault, file));
                 }
                 return vault;
+            }
+        }
+        if(lookup) {
+            final Path directory = file.getParent();
+            if(directory.attributes().getVault() != null) {
+                final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
+                final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
+                try {
+                    listener.found(vault);
+                    return vault;
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure loading vault in %s. %s", directory, e.getDetail()));
+                }
             }
         }
         return Vault.DISABLED;
@@ -93,8 +122,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                     new LoadingVaultLookupListener(session, this, prompt), keychain);
         }
         if(type == Bulk.class) {
-            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this,
-                    new LoadingVaultLookupListener(session, this, prompt), keychain);
+            return (T) new VaultRegistryBulkFeature(session, (Bulk) proxy, this);
         }
         if(type == Touch.class) {
             return (T) new VaultRegistryTouchFeature(session, ((Touch) proxy), this);
@@ -152,6 +180,4 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         return proxy;
     }
-
-
 }

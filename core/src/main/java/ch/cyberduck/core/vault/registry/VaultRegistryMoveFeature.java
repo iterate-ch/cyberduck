@@ -36,11 +36,12 @@ public class VaultRegistryMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        registry.find(file).getFeature(session, Move.class, proxy).move(file, renamed, exists, callback);
+        registry.find(session, file).getFeature(session, Move.class, proxy).move(file, renamed, exists, callback);
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return registry.find(source).getFeature(session, Move.class, proxy).isSupported(source, target);
+        // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
+        return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
     }
 }

@@ -42,11 +42,11 @@ public class VaultRegistryHeadersFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return registry.find(file).getFeature(session, Headers.class, proxy).getMetadata(file);
+        return registry.find(session, file).getFeature(session, Headers.class, proxy).getMetadata(file);
     }
 
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        registry.find(file).getFeature(session, Headers.class, proxy).setMetadata(file, metadata);
+        registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, metadata);
     }
 }

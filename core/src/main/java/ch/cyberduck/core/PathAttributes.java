@@ -29,7 +29,6 @@ import java.util.Map;
 
 /**
  * Attributes of a remote directory or file.
-
  */
 public class PathAttributes extends Attributes implements Serializable {
 
@@ -86,13 +85,6 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
-     * Unique identifier for cryptomator
-     */
-    private String directoryId;
-
-    private Path decryptedPath;
-
-    /**
      * Should be hidden in the browser by default
      */
     private boolean duplicate;
@@ -119,6 +111,19 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private Map<String, String> metadata;
 
+    /**
+     * Cryptomator vault
+     */
+    private Path vault;
+    /**
+     * Cryptomator decrypted path
+     */
+    private Path decrypted;
+    /**
+     * Unique identifier for cryptomator
+     */
+    private String directoryId;
+
     public PathAttributes() {
         metadata = Collections.emptyMap();
     }
@@ -143,6 +148,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(StringUtils.isNotBlank(storageClass)) {
             dict.setStringForKey(storageClass, "Storage Class");
+        }
+        if(vault != null) {
+            dict.setObjectForKey(vault, "Vault");
         }
         return dict.getSerialized();
     }
@@ -307,12 +315,20 @@ public class PathAttributes extends Attributes implements Serializable {
         this.revision = revision;
     }
 
-    public Path getDecryptedPath() {
-        return decryptedPath;
+    public Path getDecrypted() {
+        return decrypted;
     }
 
-    public void setDecryptedPath(final Path decryptedPath) {
-        this.decryptedPath = decryptedPath;
+    public void setDecrypted(final Path decrypted) {
+        this.decrypted = decrypted;
+    }
+
+    public void setVault(final Path vault) {
+        this.vault = vault;
+    }
+
+    public Path getVault() {
+        return vault;
     }
 
     /**
