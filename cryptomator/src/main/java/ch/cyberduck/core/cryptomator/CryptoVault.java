@@ -280,6 +280,10 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
             return file;
         }
+        if(file.getType().contains(Path.Type.vault)) {
+            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+            return file;
+        }
         if(file.isFile() || metadata) {
             final Path parent = directoryProvider.toEncrypted(session, file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
@@ -298,6 +302,10 @@ public class CryptoVault implements Vault {
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
             log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+            return file;
+        }
+        if(file.getType().contains(Path.Type.vault)) {
+            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
             return file;
         }
         final Path inflated = this.inflate(session, file);
