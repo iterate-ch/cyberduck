@@ -29,30 +29,18 @@ public abstract class SheetController extends WindowController implements SheetC
 
     private final NSApplication application = NSApplication.sharedApplication();
 
-    private SheetCallback callback;
     private InputValidator validator;
 
     public SheetController() {
-        this.callback = this;
         this.validator = this;
     }
 
     public SheetController(final InputValidator callback) {
-        this.callback = this;
         this.validator = callback;
     }
 
     public void setValidator(final InputValidator validator) {
         this.validator = validator;
-    }
-
-    public void setCallback(final SheetCallback callback) {
-        this.callback = callback;
-    }
-
-    @Override
-    public void callback(final int returncode) {
-        //
     }
 
     @Override
@@ -79,7 +67,6 @@ public abstract class SheetController extends WindowController implements SheetC
                 return;
             }
         }
-        callback.callback(option);
         application.endSheet(window, option);
     }
 }

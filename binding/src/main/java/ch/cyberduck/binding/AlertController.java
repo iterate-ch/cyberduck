@@ -26,12 +26,14 @@ import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.InputValidator;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
+    private static final Logger log = Logger.getLogger(AlertController.class);
 
     protected static final int SUBVIEWS_VERTICAL_SPACE = 4;
 
@@ -43,7 +45,6 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     public AlertController() {
         this.setValidator(this);
-        this.setCallback(this);
     }
 
     /**
@@ -60,6 +61,11 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     public int beginSheet(final WindowController parent) {
         return new SheetInvoker(this, parent, this).beginSheet();
+    }
+
+    @Override
+    public void callback(final int returncode) {
+        log.warn(String.format("Ignore return code %d", returncode));
     }
 
     @Override
