@@ -16,36 +16,22 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.concurrent.ExecutionException;
-
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class CryptoDirectoryProvider {
 
     private static final String DATA_DIR_NAME = "d";
 
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
-
-    private final LoadingCache<String, Path> cache
-            = CacheBuilder.newBuilder().maximumSize(
-            PreferencesFactory.get().getInteger("browser.cache.size")
-    ).build(CacheLoader.from(this::resolve));
 
     private final Path dataRoot;
     private final CryptoVault cryptomator;
@@ -72,37 +58,22 @@ public class CryptoDirectoryProvider {
      * @param directory Clear text
      */
     public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
-        try {
-            if(dataRoot.getParent().equals(directory)) {
-                return cache.get(ROOT_DIR_ID);
-            }
-            final Path parent = this.toEncrypted(session, directory.getParent());
-            final String cleartextName = directory.getName();
-            final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-            final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
-            return cache.get(dirId);
+        if(dataRoot.getParent().equals(directory)) {
+            return this.resolve(ROOT_DIR_ID);
         }
-        catch(ExecutionException | UncheckedExecutionException e) {
-            if(e.getCause() instanceof IOException) {
-                throw new DefaultIOExceptionMappingService().map((IOException) e.getCause());
-            }
-            if(e.getCause() instanceof BackgroundException) {
-                throw (BackgroundException) e.getCause();
-            }
-            throw new BackgroundException(e.getCause());
-        }
+        final Path parent = this.toEncrypted(session, directory.getParent());
+        final String cleartextName = directory.getName();
+        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+        final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+        return this.resolve(dirId);
     }
 
     private Path resolve(final String directoryId) {
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
         // Intermediate directory
-        final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.encrypted, Path.Type.vault));
+        final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.vault));
         final PathAttributes attributes = new PathAttributes();
         attributes.setDirectoryId(directoryId);
         return new Path(intermediate, dirHash.substring(2), EnumSet.of(Path.Type.directory, Path.Type.encrypted), attributes);
-    }
-
-    public void close() {
-        cache.invalidateAll();
     }
 }
