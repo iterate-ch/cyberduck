@@ -1479,6 +1479,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
+                // Clear open vaults
+                VaultRegistry vault = Session.getVault();
+                vault.clear();
+                // Find folders to reload
                 ISet<Path> folders = new HashSet<Path>();
                 foreach (Path path in View.VisiblePaths)
                 {
@@ -2485,8 +2489,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     // Invalidate cache
                     _cache.invalidate(folder);
-                    VaultRegistry vault = Session.getVault();
-                    vault.clear();
                 }
                 else
                 {
