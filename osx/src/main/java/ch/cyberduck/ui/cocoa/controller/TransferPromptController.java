@@ -185,19 +185,19 @@ public abstract class TransferPromptController extends SheetController implement
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for transfer action of %s", transfer));
         }
-        new SheetInvoker(new SheetCallback() {
-            @Override
-            public void callback(final int returncode) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Callback with return code %d", returncode));
-                }
-                if(returncode == CANCEL_OPTION) { // Abort
-                    action = TransferAction.cancel;
-                }
-                preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
-            }
-        }, parent, this).beginSheet();
+        new SheetInvoker(this, parent, this).beginSheet();
         return action;
+    }
+
+    @Override
+    public void callback(final int returncode) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Callback with return code %d", returncode));
+        }
+        if(returncode == CANCEL_OPTION) { // Abort
+            action = TransferAction.cancel;
+        }
+        preferences.setProperty("transfer.toggle.details", toggleDetailsButton.state());
     }
 
     @Override
