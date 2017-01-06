@@ -106,7 +106,7 @@ public final class PromptLoginCallback implements LoginCallback {
             log.debug(String.format("Prompt for credentials for %s", bookmark));
         }
         final LoginController controller = new LoginController(title, reason, bookmark, credentials, options);
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, controller);
+        final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
