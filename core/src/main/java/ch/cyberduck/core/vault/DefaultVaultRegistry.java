@@ -95,21 +95,21 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(lookup) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, prompt);
-            Path directory = file;
-            do {
-                if(directory.attributes().getVault() != null) {
-                    final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
-                    listener.found(vault);
-                    return vault;
-                }
-                if(directory.isRoot()) {
-                    break;
-                }
-                directory = directory.getParent();
+            if(file.attributes().getVault() != null) {
+                return this.find(file, listener);
             }
-            while(true);
+            final Path directory = file.getParent();
+            if(directory.attributes().getVault() != null) {
+                return this.find(directory, listener);
+            }
         }
         return Vault.DISABLED;
+    }
+
+    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws ConnectionCanceledException {
+        final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
+        listener.found(vault);
+        return vault;
     }
 
     @Override
