@@ -58,6 +58,10 @@ public class PathAttributesDictionary {
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
+        final Object vaultObj = dict.objectForKey("Vault");
+        if(vaultObj != null) {
+            attributes.setVault(new PathDictionary().deserialize(vaultObj));
+        }
         return attributes;
     }
 }
