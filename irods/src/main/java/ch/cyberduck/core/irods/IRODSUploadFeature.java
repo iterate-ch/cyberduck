@@ -25,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -107,9 +106,14 @@ public class IRODSUploadFeature implements Upload<Checksum> {
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(file)) {
+        if(new DefaultFindFeature(session).withCache(cache).find(file)) {
             return Write.override;
         }
         return Write.notfound;
+    }
+
+    @Override
+    public Upload<Checksum> withWriter(final Write<Checksum> writer) {
+        return this;
     }
 }

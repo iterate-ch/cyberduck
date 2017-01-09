@@ -22,10 +22,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -36,8 +33,9 @@ import java.io.IOException;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.BaseB2Response;
 
-public class B2DirectoryFeature implements Directory {
+public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
     protected static final String MIMETYPE = "application/octet-stream";
     protected static final String PLACEHOLDER = "/.bzEmpty";
@@ -46,15 +44,15 @@ public class B2DirectoryFeature implements Directory {
             = new B2PathContainerService();
 
     private final B2Session session;
-    private final Write write;
+    private Write<BaseB2Response> writer;
 
     public B2DirectoryFeature(final B2Session session) {
-        this(session, session.getFeature(Write.class, new B2WriteFeature(session)));
+        this(session, new B2WriteFeature(session));
     }
 
-    public B2DirectoryFeature(final B2Session session, final Write write) {
+    public B2DirectoryFeature(final B2Session session, final B2WriteFeature writer) {
         this.session = session;
-        this.write = write;
+        this.writer = writer;
     }
 
     @Override
@@ -74,9 +72,9 @@ public class B2DirectoryFeature implements Directory {
                 }
             }
             else {
-                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(file, new NullInputStream(0L), status.length(0L)));
+                status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
                 status.setMime(MIMETYPE);
-                new DefaultStreamCloser().close(write.write(file, status));
+                new DefaultStreamCloser().close(writer.write(file, status));
             }
         }
         catch(B2ApiException e) {
@@ -85,6 +83,12 @@ public class B2DirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public B2DirectoryFeature withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return this;
     }
 }
 

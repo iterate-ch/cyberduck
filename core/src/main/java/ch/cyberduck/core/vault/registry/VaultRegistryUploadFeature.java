@@ -49,4 +49,10 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length, cache);
     }
+
+    @Override
+    public Upload<Output> withWriter(final Write<Output> writer) {
+        proxy.withWriter(writer);
+        return this;
+    }
 }

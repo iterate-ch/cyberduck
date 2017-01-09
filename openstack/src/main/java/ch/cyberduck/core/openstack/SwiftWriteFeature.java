@@ -31,6 +31,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -168,5 +170,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 }

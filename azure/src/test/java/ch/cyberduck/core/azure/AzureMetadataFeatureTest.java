@@ -37,7 +37,7 @@ public class AzureMetadataFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new AzureMetadataFeature(session, null).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new AzureMetadataFeature(session, null).getMetadata(test);
@@ -58,7 +58,7 @@ public class AzureMetadataFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final AzureMetadataFeature service = new AzureMetadataFeature(session, null);
         service.setMetadata(test, Collections.singletonMap("Cache-Control", "public, max-age=0"));
         final Map<String, String> metadata = service.getMetadata(test);

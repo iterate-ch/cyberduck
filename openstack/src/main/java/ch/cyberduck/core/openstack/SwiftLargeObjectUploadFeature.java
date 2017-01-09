@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -68,13 +69,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private final SwiftRegionService regionService;
 
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final Long segmentSize, final Integer concurrency) {
-        this(session, new SwiftRegionService(session), segmentSize, concurrency);
-    }
-
-    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService,
+    public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
-        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), new SwiftWriteFeature(session, regionService),
+        this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), writer,
                 segmentSize, concurrency);
     }
 
@@ -82,7 +79,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                          final SwiftRegionService regionService,
                                          final SwiftObjectListService listService,
                                          final SwiftSegmentService segmentService,
-                                         final SwiftWriteFeature writer,
+                                         final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         super(writer);
         this.session = session;

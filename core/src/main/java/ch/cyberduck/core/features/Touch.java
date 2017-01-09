@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface Touch {
+public interface Touch<Reply> {
 
     void touch(Path file, TransferStatus status) throws BackgroundException;
 
@@ -28,4 +28,6 @@ public interface Touch {
      * @return True if creating an empty file is possible.
      */
     boolean isSupported(Path workdir);
+
+    Touch<Reply> withWriter(Write<Reply> writer);
 }

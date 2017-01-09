@@ -1,7 +1,7 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.io;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,19 +16,14 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface Directory<Reply> {
+import java.io.InputStream;
 
-    void mkdir(Path file) throws BackgroundException;
-
-    /**
-     * @param file   File
-     * @param region Location
-     * @param status Transfer status
-     */
-    void mkdir(Path file, String region, TransferStatus status) throws BackgroundException;
-
-    Directory<Reply> withWriter(Write<Reply> writer);
+public class DisabledChecksumCompute implements ChecksumCompute {
+    @Override
+    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+        return Checksum.NONE;
+    }
 }

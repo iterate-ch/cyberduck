@@ -30,31 +30,36 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-public class CryptoUploadFeature<Output> implements Upload<Output> {
+public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     private final Session<?> session;
-    private final Upload<Output> delegate;
+    private final Upload<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoUploadFeature(final Session<?> session, final Upload<Output> delegate, final CryptoVault vault) {
+    public CryptoUploadFeature(final Session<?> session, final Upload<Reply> delegate, final Write<Reply> writer, final CryptoVault vault) {
         this.session = session;
-        this.delegate = delegate;
+        this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, vault));
         this.vault = vault;
     }
 
     @Override
-    public Output upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(vault.contains(file)) {
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
-        return delegate.upload(vault.encrypt(session, file), local, throttle, listener, status, callback);
+        return proxy.upload(vault.encrypt(session, file), local, throttle, listener, status, callback);
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return delegate.append(vault.encrypt(session, file), length, cache);
+        return proxy.append(vault.encrypt(session, file), length, cache);
+    }
+
+    @Override
+    public Upload<Reply> withWriter(final Write<Reply> writer) {
+        return this;
     }
 }

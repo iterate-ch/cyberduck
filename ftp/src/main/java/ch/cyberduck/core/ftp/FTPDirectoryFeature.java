@@ -20,11 +20,12 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-public class FTPDirectoryFeature implements Directory {
+public class FTPDirectoryFeature implements Directory<Void> {
 
     private final FTPSession session;
 
@@ -47,5 +48,10 @@ public class FTPDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public FTPDirectoryFeature withWriter(final Write writer) {
+        return this;
     }
 }

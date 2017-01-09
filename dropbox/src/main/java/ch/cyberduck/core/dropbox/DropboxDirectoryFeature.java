@@ -18,12 +18,13 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
-public class DropboxDirectoryFeature implements Directory {
+public class DropboxDirectoryFeature implements Directory<Void> {
 
     private final DropboxSession session;
 
@@ -44,5 +45,10 @@ public class DropboxDirectoryFeature implements Directory {
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
         }
+    }
+
+    @Override
+    public DropboxDirectoryFeature withWriter(final Write<Void> writer) {
+        return this;
     }
 }

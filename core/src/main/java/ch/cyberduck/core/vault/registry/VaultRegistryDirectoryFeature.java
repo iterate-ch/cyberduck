@@ -19,15 +19,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryDirectoryFeature implements Directory {
+public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     private final DefaultVaultRegistry registry;
     private final Session<?> session;
-    private final Directory proxy;
+    private final Directory<Reply> proxy;
 
-    public VaultRegistryDirectoryFeature(final Session<?> session, final Directory proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryDirectoryFeature(final Session<?> session, final Directory<Reply> proxy, final DefaultVaultRegistry registry) {
 
         this.session = session;
         this.proxy = proxy;
@@ -42,5 +43,10 @@ public class VaultRegistryDirectoryFeature implements Directory {
     @Override
     public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
         registry.find(session, file).getFeature(session, Directory.class, proxy).mkdir(file, region, status);
+    }
+
+    @Override
+    public Directory<Reply> withWriter(final Write<Reply> writer) {
+        return proxy.withWriter(writer);
     }
 }

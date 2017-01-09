@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveDirectoryFeature implements Directory {
+public class DriveDirectoryFeature implements Directory<Void> {
 
     private final DriveSession session;
 
@@ -52,5 +53,10 @@ public class DriveDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public DriveDirectoryFeature withWriter(final Write<Void> writer) {
+        return this;
     }
 }

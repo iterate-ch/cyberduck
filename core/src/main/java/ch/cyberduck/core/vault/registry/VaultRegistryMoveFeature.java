@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -28,7 +29,6 @@ public class VaultRegistryMoveFeature implements Move {
     private final Move proxy;
 
     public VaultRegistryMoveFeature(final Session<?> session, final Move proxy, final DefaultVaultRegistry registry) {
-
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -48,5 +48,17 @@ public class VaultRegistryMoveFeature implements Move {
         catch(BackgroundException e) {
             return false;
         }
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        proxy.withDelete(delete);
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        proxy.withList(list);
+        return this;
     }
 }

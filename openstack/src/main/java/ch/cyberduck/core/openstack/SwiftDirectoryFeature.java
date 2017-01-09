@@ -30,30 +30,30 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
+import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftDirectoryFeature implements Directory {
-
-    private final SwiftSession session;
+public class SwiftDirectoryFeature implements Directory<StorageObject> {
 
     private final PathContainerService containerService
             = new SwiftPathContainerService();
 
+    private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    private final Write write;
+    private Write<StorageObject> writer;
 
     public SwiftDirectoryFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
     public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, session.getFeature(Write.class, new SwiftWriteFeature(session, regionService)));
+        this(session, regionService, new SwiftWriteFeature(session, regionService));
     }
 
-    public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService, final Write write) {
+    public SwiftDirectoryFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer) {
         this.session = session;
         this.regionService = regionService;
-        this.write = write;
+        this.writer = writer;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SwiftDirectoryFeature implements Directory {
             else {
                 status.setMime("application/directory");
                 status.setLength(0L);
-                new DefaultStreamCloser().close(write.write(file, status));
+                new DefaultStreamCloser().close(writer.write(file, status));
             }
         }
         catch(GenericException e) {
@@ -81,5 +81,11 @@ public class SwiftDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public SwiftDirectoryFeature withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return this;
     }
 }

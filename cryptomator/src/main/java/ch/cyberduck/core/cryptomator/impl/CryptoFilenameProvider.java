@@ -52,7 +52,7 @@ public class CryptoFilenameProvider {
     }
 
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
-        return new ContentReader(session).readToString(resolve(shortName));
+        return new ContentReader(session).read(resolve(shortName));
     }
 
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
@@ -76,8 +76,7 @@ public class CryptoFilenameProvider {
         if(!find.find(secondLevel)) {
             mkdir.mkdir(secondLevel);
         }
-        final ContentWriter writer = new ContentWriter(session);
-        writer.write(metadataFile, longFileNameBytes);
+        new ContentWriter(session).write(metadataFile, longFileNameBytes);
         return shortName;
     }
 

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,7 +29,7 @@ import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-public class SFTPDirectoryFeature implements Directory {
+public class SFTPDirectoryFeature implements Directory<Void> {
 
     private final SFTPSession session;
 
@@ -52,5 +53,10 @@ public class SFTPDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public SFTPDirectoryFeature withWriter(final Write<Void> writer) {
+        return this;
     }
 }

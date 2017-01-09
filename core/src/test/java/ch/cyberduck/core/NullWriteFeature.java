@@ -16,6 +16,8 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -41,5 +43,10 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 }

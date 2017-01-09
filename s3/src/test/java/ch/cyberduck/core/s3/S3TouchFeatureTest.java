@@ -32,8 +32,8 @@ public class S3TouchFeatureTest {
     @Test
     public void testFile() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "h"));
-        assertFalse(new S3TouchFeature(session, new S3WriteFeature(session)).isSupported(new Path("/", EnumSet.of(Path.Type.volume))));
-        assertTrue(new S3TouchFeature(session, new S3WriteFeature(session)).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume))));
+        assertFalse(new S3TouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume))));
+        assertTrue(new S3TouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume))));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -66,7 +66,7 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session, new S3WriteFeature(session));
+        final S3TouchFeature touch = new S3TouchFeature(session);
         final TransferStatus status = new TransferStatus();
         status.setEncryption(Encryption.Algorithm.NONE);
         touch.touch(test, status);
@@ -96,7 +96,7 @@ public class S3TouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("sse-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final S3TouchFeature touch = new S3TouchFeature(session, new S3WriteFeature(session));
+        final S3TouchFeature touch = new S3TouchFeature(session);
         final TransferStatus status = new TransferStatus();
         touch.touch(test, status);
     }
@@ -110,7 +110,7 @@ public class S3TouchFeatureTest {
                         )));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final S3TouchFeature service = new S3TouchFeature(session, new S3WriteFeature(session));
+        final S3TouchFeature service = new S3TouchFeature(session);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final List<Path> list = new ArrayList<Path>();
         for(int i = 0; i < 200; i++) {

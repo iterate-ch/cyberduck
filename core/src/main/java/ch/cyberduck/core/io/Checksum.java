@@ -84,4 +84,6 @@ public final class Checksum {
         result = 31 * result + (hash != null ? hash.hashCode() : 0);
         return result;
     }
+
+    public static final Checksum NONE = new Checksum(null, null);
 }

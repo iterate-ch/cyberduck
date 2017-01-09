@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -278,7 +279,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
             return (T) new DefaultUploadFeature(this.getFeature(Write.class));
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(this);
+            return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
         }
         if(type == Bulk.class) {
             return (T) new DisabledBulkFeature();

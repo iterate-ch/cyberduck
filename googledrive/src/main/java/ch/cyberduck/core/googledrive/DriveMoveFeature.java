@@ -29,8 +29,13 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
+    private Delete delete;
+    private ListService list;
+
     public DriveMoveFeature(DriveSession session) {
         this.session = session;
+        this.delete = new DriveDeleteFeature(session);
+        this.list = new DriveListService(session);
     }
 
     @Override
@@ -39,11 +44,22 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        this.list = list;
+        return this;
+    }
+
+    @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        final Delete delete = session.getFeature(Delete.class);
         if(file.isDirectory()) {
             new DriveDirectoryFeature(session).mkdir(renamed);
-            for(Path i : session.getFeature(ListService.class).list(file, new DisabledListProgressListener())) {
+            for(Path i : list.list(file, new DisabledListProgressListener())) {
                 this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
             }
             delete.delete(Collections.singletonList(file),

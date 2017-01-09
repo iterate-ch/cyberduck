@@ -284,7 +284,7 @@ public class GoogleStorageSession extends S3Session {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
-            return (T) new S3SingleUploadService(this, this.getFeature(Write.class));
+            return (T) new S3SingleUploadService(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Write.class) {
             return (T) new S3WriteFeature(this, new S3DisabledMultipartService());
@@ -293,7 +293,7 @@ public class GoogleStorageSession extends S3Session {
             return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new GoogleStorageDirectoryFeature(this, this.getFeature(Write.class));
+            return (T) new GoogleStorageDirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));

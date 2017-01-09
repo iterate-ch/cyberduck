@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -29,9 +30,11 @@ import java.util.Collections;
 public class SFTPMoveFeature implements Move {
 
     private final SFTPSession session;
+    private Delete delete;
 
     public SFTPMoveFeature(final SFTPSession session) {
         this.session = session;
+        this.delete = new SFTPDeleteFeature(session);
     }
 
     @Override
@@ -40,10 +43,20 @@ public class SFTPMoveFeature implements Move {
     }
 
     @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
+    }
+
+    @Override
     public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(exists) {
-                final Delete delete = session.getFeature(Delete.class);
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());

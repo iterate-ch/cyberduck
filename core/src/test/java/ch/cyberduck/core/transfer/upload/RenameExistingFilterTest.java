@@ -4,6 +4,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -16,6 +17,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -63,6 +66,16 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
+                        }
+
+                        @Override
+                        public Move withDelete(final Delete delete) {
+                            return this;
+                        }
+
+                        @Override
+                        public Move withList(final ListService list) {
+                            return this;
                         }
                     };
                 }
@@ -144,6 +157,16 @@ public class RenameExistingFilterTest {
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
+
+                        @Override
+                        public Move withDelete(final Delete delete) {
+                            return this;
+                        }
+
+                        @Override
+                        public Move withList(final ListService list) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Write.class)) {
@@ -168,6 +191,11 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean random() {
                             return false;
+                        }
+
+                        @Override
+                        public ChecksumCompute checksum() {
+                            return new DisabledChecksumCompute();
                         }
                     };
                 }
@@ -240,6 +268,16 @@ public class RenameExistingFilterTest {
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
+
+                        @Override
+                        public Move withDelete(final Delete delete) {
+                            return this;
+                        }
+
+                        @Override
+                        public Move withList(final ListService list) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(Write.class)) {
@@ -264,6 +302,11 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean random() {
                             return false;
+                        }
+
+                        @Override
+                        public ChecksumCompute checksum() {
+                            return new DisabledChecksumCompute();
                         }
                     };
                 }

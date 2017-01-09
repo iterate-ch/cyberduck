@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.ByteArrayInputStream;
@@ -37,7 +38,7 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
-public class AzureDirectoryFeature implements Directory {
+public class AzureDirectoryFeature implements Directory<Void> {
 
     private final AzureSession session;
 
@@ -81,5 +82,10 @@ public class AzureDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
+    }
+
+    @Override
+    public Directory<Void> withWriter(final Write<Void> writer) {
+        return this;
     }
 }

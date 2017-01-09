@@ -772,9 +772,6 @@ public abstract class Preferences {
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("spectra.upload.md5", String.valueOf(false));
-        defaults.put("spectra.upload.crc32", String.valueOf(true));
-
         /*
           NTLM Windows Domain
          */
@@ -1030,7 +1027,7 @@ public abstract class Preferences {
         defaults.put("dropbox.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
-        defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.enable", String.valueOf(false));
     }
 
     protected void setLogging() {

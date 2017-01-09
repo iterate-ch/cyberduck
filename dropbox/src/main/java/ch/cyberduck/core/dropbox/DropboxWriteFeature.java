@@ -24,7 +24,9 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -194,5 +196,10 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private void close(final UploadSessionAppendV2Uploader uploader) throws DbxException, IOException {
         uploader.getOutputStream().close();
         uploader.finish();
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 }

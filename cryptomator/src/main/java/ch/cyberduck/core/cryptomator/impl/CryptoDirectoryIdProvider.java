@@ -32,7 +32,7 @@ public class CryptoDirectoryIdProvider {
 
     public String load(final Session<?> session, final Path directoryMetafile) throws BackgroundException {
         try {
-            return new ContentReader(session).readToString(directoryMetafile);
+            return new ContentReader(session).read(directoryMetafile);
         }
         catch(NotfoundException e) {
             log.warn(String.format("Return new random string for metadata file %s", directoryMetafile));

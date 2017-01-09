@@ -30,6 +30,9 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -64,19 +67,14 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final AttributesFinder attributes;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session),
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new S3DefaultMultipartService(session), new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService,
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
-                          final Find finder, final AttributesFinder attributes) {
+    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;
@@ -186,5 +184,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

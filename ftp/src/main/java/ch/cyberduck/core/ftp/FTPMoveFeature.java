@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -34,20 +35,17 @@ public class FTPMoveFeature implements Move {
 
     private final FTPSession session;
 
+    private Delete delete;
+
     public FTPMoveFeature(final FTPSession session) {
         this.session = session;
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return true;
+        this.delete = new FTPDeleteFeature(session);
     }
 
     @Override
     public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(exists) {
-                final Delete delete = session.getFeature(Delete.class);
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
             if(!session.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
@@ -57,5 +55,21 @@ public class FTPMoveFeature implements Move {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
     }
 }

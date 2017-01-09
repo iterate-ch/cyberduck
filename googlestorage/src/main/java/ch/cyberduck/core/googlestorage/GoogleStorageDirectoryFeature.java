@@ -25,6 +25,8 @@ import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.jets3t.service.model.StorageObject;
+
 public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
 
     private final GoogleStorageSession session;
@@ -32,7 +34,7 @@ public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final Write write) {
+    public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final Write<StorageObject> write) {
         super(session, write);
         this.session = session;
     }

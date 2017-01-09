@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,6 +50,8 @@ public interface Write<Reply> {
      * @return True if supporting random writes with arbitrary offset and length
      */
     boolean random();
+
+    ChecksumCompute checksum();
 
     final class Append {
         /**

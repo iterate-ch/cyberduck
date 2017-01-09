@@ -27,69 +27,43 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import synapticloop.b2.response.BaseB2Response;
 
-public class B2ThresholdUploadService implements Upload {
-    private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
+public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     private final B2Session session;
-    private final B2LargeUploadService largeUploadService;
-    private final B2SingleUploadService singleUploadService;
-
+    private Write<BaseB2Response> writer;
     private final Long threshold;
 
-    public B2ThresholdUploadService(final B2Session session,
-                                    final B2LargeUploadService largeUploadService,
-                                    final B2SingleUploadService singleUploadService) {
-        this(session, largeUploadService, singleUploadService, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+    public B2ThresholdUploadService(final B2Session session) {
+        this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
     }
 
-
-    public B2ThresholdUploadService(final B2Session session,
-                                    final B2LargeUploadService largeUploadService,
-                                    final B2SingleUploadService singleUploadService,
-                                    final Long threshold) {
+    public B2ThresholdUploadService(final B2Session session, final Long threshold) {
         this.session = session;
-        this.largeUploadService = largeUploadService;
-        this.singleUploadService = singleUploadService;
+        this.writer = new B2WriteFeature(session, threshold);
         this.threshold = threshold;
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(this.threshold(file, length)) {
-            return new B2PartWriteFeature(session).append(file, length, cache);
-        }
-        // No append
-        return new B2WriteFeature(session).append(file, length, cache);
+        return new B2WriteFeature(session, threshold).append(file, length, cache);
     }
 
     @Override
-    public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final Upload feature;
-        if(this.threshold(file, status.getLength())) {
-            return largeUploadService.upload(file, local, throttle, listener, status, callback);
+    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        if(new B2WriteFeature(session, threshold).threshold(status.getLength())) {
+            return new B2LargeUploadService(session).upload(file, local, throttle, listener, status, callback);
         }
         else {
-            return singleUploadService.upload(file, local, throttle, listener, status, callback);
+            return new B2SingleUploadService(writer).upload(file, local, throttle, listener, status, callback);
         }
     }
 
-    private boolean threshold(final Path file, final Long length) {
-        if(length > threshold) {
-            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
-                // Disabled by user
-                if(length < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    return false;
-                }
-            }
-            return true;
-        }
-        else {
-            // Below threshold
-            return false;
-        }
+    @Override
+    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return this;
     }
 }

@@ -19,30 +19,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.jets3t.service.model.StorageObject;
 
 public class SpectraDirectoryFeature extends S3DirectoryFeature {
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final SpectraSession session;
+    private final Write<StorageObject> writer;
 
-    public SpectraDirectoryFeature(final SpectraSession session, final Write write) {
-        super(session, write);
-        this.session = session;
+    public SpectraDirectoryFeature(final SpectraSession session, final Write<StorageObject> writer) {
+        super(session, writer);
+        this.writer = writer;
     }
 
     @Override
@@ -51,14 +44,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
             super.mkdir(file, region, status);
         }
         else {
-            if(preferences.getBoolean("spectra.upload.crc32")) {
-                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
-                        .compute(file, new NullInputStream(0L), status));
-            }
-            if(preferences.getBoolean("spectra.upload.md5")) {
-                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
-                        .compute(file, new NullInputStream(0L), status));
-            }
+            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
             super.mkdir(file, region, status);
         }
     }

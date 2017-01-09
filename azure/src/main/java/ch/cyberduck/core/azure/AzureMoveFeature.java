@@ -40,8 +40,13 @@ public class AzureMoveFeature implements Move {
     private final PathContainerService containerService
             = new AzurePathContainerService();
 
+    private Delete delete;
+    private ListService list;
+
     public AzureMoveFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
+        this.delete = new AzureDeleteFeature(session, context);
+        this.list = new AzureObjectListService(session, context);
         this.context = context;
     }
 
@@ -51,15 +56,26 @@ public class AzureMoveFeature implements Move {
     }
 
     @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        this.list = list;
+        return this;
+    }
+
+    @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             new AzureCopyFeature(session, context).copy(file, renamed);
-            final Delete delete = session.getFeature(Delete.class);
             delete.delete(Collections.singletonList(file),
                     new DisabledLoginCallback(), callback);
         }
         else if(file.isDirectory()) {
-            for(Path i : session.getFeature(ListService.class).list(file, new DisabledListProgressListener())) {
+            for(Path i : list.list(file, new DisabledListProgressListener())) {
                 this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
             }
         }

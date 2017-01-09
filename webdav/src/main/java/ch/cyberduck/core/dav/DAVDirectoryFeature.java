@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -27,7 +28,7 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVDirectoryFeature implements Directory {
+public class DAVDirectoryFeature implements Directory<Void> {
 
     private final DAVSession session;
 
@@ -51,5 +52,10 @@ public class DAVDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, file);
         }
+    }
+
+    @Override
+    public DAVDirectoryFeature withWriter(final Write<Void> writer) {
+        return this;
     }
 }

@@ -20,47 +20,44 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
 import java.util.Collections;
 
+import synapticloop.b2.response.BaseB2Response;
+
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2TouchFeature implements Touch {
+public class B2TouchFeature implements Touch<BaseB2Response> {
 
-    private final B2Session session;
-    private final Write write;
+    private Write<BaseB2Response> writer;
 
     public B2TouchFeature(final B2Session session) {
-        this(session, session.getFeature(Write.class));
-    }
-
-    public B2TouchFeature(final B2Session session, final Write write) {
-        this.session = session;
-        this.write = write;
+        this.writer = new B2WriteFeature(session);
     }
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1))
-                .compute(file, new NullInputStream(0L), status)
-        );
+        status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
-        new DefaultStreamCloser().close(write.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status));
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
+    }
+
+    @Override
+    public B2TouchFeature withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return this;
     }
 }

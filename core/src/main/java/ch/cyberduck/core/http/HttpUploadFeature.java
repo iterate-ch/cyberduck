@@ -49,7 +49,7 @@ import java.text.MessageFormat;
 public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
 
-    private final Write<Reply> writer;
+    private Write<Reply> writer;
 
     public HttpUploadFeature(final Write<Reply> writer) {
         this.writer = writer;
@@ -133,4 +133,9 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         }
     }
 
+    @Override
+    public Upload<Reply> withWriter(final Write<Reply> writer) {
+        this.writer = writer;
+        return this;
+    }
 }

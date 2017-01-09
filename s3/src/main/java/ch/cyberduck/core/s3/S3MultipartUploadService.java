@@ -29,14 +29,10 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.RetryCallable;
@@ -73,6 +69,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private final S3DefaultMultipartService multipartService;
 
+    private final Write<StorageObject> writer;
     /**
      * A split smaller than 5M is not allowed
      */
@@ -80,18 +77,16 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private final Integer concurrency;
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    public S3MultipartUploadService(final S3Session session) {
-        this(session, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
+    public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer) {
+        this(session, writer, PreferencesFactory.get().getLong("s3.upload.multipart.size"),
                 PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
     }
 
-    public S3MultipartUploadService(final S3Session session, final Long partsize, final Integer concurrency) {
-        super(session.getFeature(Write.class, new S3WriteFeature(session, new S3DisabledMultipartService())));
+    public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer, final Long partsize, final Integer concurrency) {
+        super(writer);
         this.session = session;
         this.multipartService = new S3DefaultMultipartService(session);
+        this.writer = writer;
         this.partsize = partsize;
         this.concurrency = concurrency;
     }
@@ -240,11 +235,12 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
-                            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
+                            status.setChecksum(writer.checksum()
                                     .compute(file, StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
                             );
                             break;
                     }
+                    status.setSegment(true);
                     final StorageObject part = S3MultipartUploadService.super.upload(
                             file, local, throttle, listener, status, overall, new StreamProgress() {
                                 @Override

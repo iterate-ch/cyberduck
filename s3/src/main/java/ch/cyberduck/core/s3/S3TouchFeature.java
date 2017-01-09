@@ -26,26 +26,24 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.jets3t.service.model.StorageObject;
 
-public class S3TouchFeature implements Touch {
+public class S3TouchFeature implements Touch<StorageObject> {
 
     private final S3Session session;
 
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final Write write;
+    private Write writer;
 
-    public S3TouchFeature(final S3Session session, final Write write) {
+    public S3TouchFeature(final S3Session session) {
         this.session = session;
-        this.write = write;
+        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
     }
 
     @Override
@@ -64,16 +62,21 @@ public class S3TouchFeature implements Touch {
             }
         }
         if(null == status.getChecksum()) {
-            final ChecksumCompute checksum = session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256));
-            status.setChecksum(checksum.compute(file, new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);
-        new DefaultStreamCloser().close(write.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status));
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
+    }
+
+    @Override
+    public Touch<StorageObject> withWriter(final Write writer) {
+        this.writer = writer;
+        return this;
     }
 }

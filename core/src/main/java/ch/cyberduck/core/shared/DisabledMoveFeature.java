@@ -17,6 +17,7 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -33,5 +34,15 @@ public class DisabledMoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return false;
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
     }
 }

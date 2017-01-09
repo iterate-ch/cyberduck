@@ -27,18 +27,19 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DefaultTouchFeature implements Touch {
+public class DefaultTouchFeature<T> implements Touch<T> {
 
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final Upload feature;
+    private final Upload<T> feature;
 
     public DefaultTouchFeature(final Session<?> session) {
         this.feature = session.getFeature(Upload.class);
@@ -65,4 +66,9 @@ public class DefaultTouchFeature implements Touch {
         return true;
     }
 
+    @Override
+    public DefaultTouchFeature<T> withWriter(final Write<T> writer) {
+        feature.withWriter(writer);
+        return this;
+    }
 }

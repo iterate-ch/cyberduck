@@ -19,21 +19,22 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-public class CryptoTouchFeature implements Touch {
+public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
     private final Session<?> session;
-    private final Touch delegate;
+    private final Touch<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoTouchFeature(final Session<?> session, final Touch delegate, final CryptoVault vault) {
+    public CryptoTouchFeature(final Session<?> session, final Touch<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate;
-        this.vault = vault;
+        this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, cryptomator));
+        this.vault = cryptomator;
     }
 
     @Override
@@ -44,11 +45,16 @@ public class CryptoTouchFeature implements Touch {
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
-        delegate.touch(vault.encrypt(session, file), status);
+        proxy.touch(vault.encrypt(session, file), status);
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return delegate.isSupported(workdir);
+        return proxy.isSupported(workdir);
+    }
+
+    @Override
+    public CryptoTouchFeature<Reply> withWriter(final Write<Reply> writer) {
+        return this;
     }
 }

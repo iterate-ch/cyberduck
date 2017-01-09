@@ -24,9 +24,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
@@ -44,22 +41,23 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
-public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, MessageDigest> {
+public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
     private static final Logger log = Logger.getLogger(B2SingleUploadService.class);
 
-    private final B2Session session;
+    private final Write<BaseB2Response> writer;
 
-    public B2SingleUploadService(final B2Session session, final Write<B2FileResponse> writer) {
+    public B2SingleUploadService(final Write<BaseB2Response> writer) {
         super(writer);
-        this.session = session;
+        this.writer = writer;
     }
 
     @Override
-    public B2FileResponse upload(final Path file, final Local local, final BandwidthThrottle throttle,
+    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                  final StreamListener listener, final TransferStatus status,
                                  final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha1)).compute(file, local.getInputStream(), status));
+        status.setChecksum(writer.checksum().compute(file, local.getInputStream(), status));
         return super.upload(file, local, throttle, listener, status, cancel, progress);
     }
 
@@ -88,8 +86,8 @@ public class B2SingleUploadService extends HttpUploadFeature<B2FileResponse, Mes
     }
 
     @Override
-    protected void post(final Path file, final MessageDigest digest, final B2FileResponse response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(response.getContentSha1()));
+    protected void post(final Path file, final MessageDigest digest, final BaseB2Response response) throws BackgroundException {
+        this.verify(file, digest, Checksum.parse(((B2FileResponse) response).getContentSha1()));
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {

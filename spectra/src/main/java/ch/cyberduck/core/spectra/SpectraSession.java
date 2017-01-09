@@ -32,9 +32,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -72,7 +69,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraTouchFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new SpectraDirectoryFeature(this, this.getFeature(Write.class));
+            return (T) new SpectraDirectoryFeature(this, new SpectraWriteFeature(this));
         }
         if(type == Move.class) {
             // Disable operation not supported
@@ -106,19 +103,16 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraReadFeature(this, new SpectraBulkService(this));
         }
         if(type == Upload.class) {
-            return (T) new SpectraUploadFeature(this, this.getFeature(Write.class), new SpectraBulkService(this));
+            return (T) new SpectraUploadFeature(this, new SpectraWriteFeature(this), new SpectraBulkService(this));
         }
         if(type == Download.class) {
-            return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
+            return (T) new DefaultDownloadFeature(new SpectraReadFeature(this, new SpectraBulkService(this)));
         }
         if(type == Headers.class) {
             return null;
         }
         if(type == DistributionConfiguration.class) {
             return null;
-        }
-        if(type == ChecksumCompute.class) {
-            return (T) ChecksumComputeFactory.get(HashAlgorithm.crc32);
         }
         return super._getFeature(type);
     }

@@ -24,17 +24,15 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.jets3t.service.model.StorageObject;
 
-public class S3DirectoryFeature implements Directory {
+public class S3DirectoryFeature implements Directory<StorageObject> {
 
     protected static final String MIMETYPE = "application/x-directory";
 
@@ -43,11 +41,11 @@ public class S3DirectoryFeature implements Directory {
     private final PathContainerService containerService
             = new S3PathContainerService();
 
-    private final Write write;
+    private Write<StorageObject> writer;
 
-    public S3DirectoryFeature(final S3Session session, final Write write) {
+    public S3DirectoryFeature(final S3Session session, final Write<StorageObject> writer) {
         this.session = session;
-        this.write = write;
+        this.writer = writer;
     }
 
     @Override
@@ -74,10 +72,16 @@ public class S3DirectoryFeature implements Directory {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256)).compute(file, new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
-            new DefaultStreamCloser().close(write.write(file, status));
+            new DefaultStreamCloser().close(writer.write(file, status));
         }
+    }
+
+    @Override
+    public S3DirectoryFeature withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return this;
     }
 }

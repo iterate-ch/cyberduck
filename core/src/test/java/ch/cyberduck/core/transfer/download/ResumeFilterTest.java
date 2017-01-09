@@ -7,6 +7,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
@@ -53,7 +54,7 @@ public class ResumeFilterTest {
     public void testPrepareFile() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;
@@ -92,7 +93,7 @@ public class ResumeFilterTest {
     public void testPrepareDirectoryExists() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;
@@ -123,7 +124,7 @@ public class ResumeFilterTest {
     public void testPrepareDirectoryExistsFalse() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
-                new DownloadFilterOptions(), new DefaultDownloadFeature(session) {
+                new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
             public boolean offset(final Path file) throws BackgroundException {
                 return true;
