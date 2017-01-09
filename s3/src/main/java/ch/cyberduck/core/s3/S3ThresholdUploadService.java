@@ -84,7 +84,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         try {
-            if(accelerateTransferOption.getStatus(file) ||
+            if(status.getLength() > 0 && accelerateTransferOption.getStatus(file) ||
                     (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
