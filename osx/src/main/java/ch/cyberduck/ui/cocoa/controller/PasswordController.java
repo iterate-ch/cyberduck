@@ -41,11 +41,11 @@ import org.rococoa.cocoa.foundation.NSRect;
 public class PasswordController extends AlertController {
 
     @Outlet
+    private NSView view;
+    @Outlet
     private NSSecureTextField inputField;
     @Outlet
     private NSButton keychainCheckbox;
-    @Outlet
-    private NSButton suppressionCheckbox;
 
     private final Credentials credentials;
     private final String title;
@@ -83,7 +83,7 @@ public class PasswordController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
-        NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         if(options.keychain) {
             keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
             keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));

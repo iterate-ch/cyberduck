@@ -43,6 +43,9 @@ import java.util.Set;
 public class VaultController extends FolderController {
 
     private final Callback callback;
+
+    @Outlet
+    private NSView view;
     @Outlet
     private NSSecureTextField passwordField;
     @Outlet
@@ -80,17 +83,17 @@ public class VaultController extends FolderController {
     }
 
     public NSView getAccessoryView(final NSAlert alert) {
-        final NSView view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
-        this.passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        this.passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
-        this.confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
-        this.confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
-        this.strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-        this.strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
+        view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
+        passwordField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        passwordField.cell().setPlaceholderString(LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+        confirmField = NSSecureTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        confirmField.cell().setPlaceholderString(LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
+        strengthIndicator = NSLevelIndicator.levelIndicatorWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
+        strengthIndicator.setLevelIndicatorStyle(NSLevelIndicator.NSDiscreteCapacityLevelIndicatorStyle);
         NSNotificationCenter.defaultCenter().addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
-                this.passwordField);
+                passwordField);
         confirmField.setFrameOrigin(new NSPoint(0, 0));
         view.addSubview(confirmField);
         strengthIndicator.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
