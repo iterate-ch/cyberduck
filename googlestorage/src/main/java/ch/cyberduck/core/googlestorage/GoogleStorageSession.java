@@ -33,11 +33,14 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
@@ -50,8 +53,11 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
+import ch.cyberduck.core.s3.S3CopyFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
+import ch.cyberduck.core.s3.S3MetadataFeature;
+import ch.cyberduck.core.s3.S3MoveFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3SingleUploadService;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -288,6 +294,15 @@ public class GoogleStorageSession extends S3Session {
         }
         if(type == Directory.class) {
             return (T) new GoogleStorageDirectoryFeature(this, this.getFeature(Write.class));
+        }
+        if(type == Move.class) {
+            return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));
+        }
+        if(type == Headers.class) {
+            return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));
+        }
+        if(type == Copy.class) {
+            return (T) new S3CopyFeature(this, new GoogleStorageAccessControlListFeature(this));
         }
         if(type == AclPermission.class) {
             return (T) new GoogleStorageAccessControlListFeature(this);

@@ -69,7 +69,7 @@ public class S3MoveFeatureTest {
         new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, false, new Delete.DisabledCallback());
+        new S3MoveFeature(session, new GoogleStorageAccessControlListFeature(session)).move(test, renamed, false, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());

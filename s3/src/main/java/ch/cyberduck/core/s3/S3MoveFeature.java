@@ -23,7 +23,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Move;
@@ -42,9 +41,11 @@ public class S3MoveFeature implements Move {
             = new S3PathContainerService();
 
     private final S3Session session;
+    private final S3AccessControlListFeature accessControlListFeature;
 
-    public S3MoveFeature(final S3Session session) {
+    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
+        this.accessControlListFeature = accessControlListFeature;
     }
 
     @Override
@@ -66,7 +67,6 @@ public class S3MoveFeature implements Move {
                     destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 }
                 // Apply non standard ACL
-                final S3AccessControlListFeature accessControlListFeature = (S3AccessControlListFeature) session.getFeature(AclPermission.class);
                 if(accessControlListFeature != null) {
                     destination.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(source)));
                 }

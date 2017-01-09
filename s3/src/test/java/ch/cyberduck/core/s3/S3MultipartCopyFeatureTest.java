@@ -67,7 +67,7 @@ public class S3MultipartCopyFeatureTest {
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
-        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session);
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
         feature.copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
@@ -99,7 +99,7 @@ public class S3MultipartCopyFeatureTest {
         test.attributes().setSize(content.length);
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
 
-        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session);
+        final S3MultipartCopyFeature feature = new S3MultipartCopyFeature(session, new S3AccessControlListFeature(session));
         feature.copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());

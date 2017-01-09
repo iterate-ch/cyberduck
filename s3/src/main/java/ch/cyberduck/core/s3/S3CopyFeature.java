@@ -21,7 +21,6 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 
@@ -36,10 +35,6 @@ public class S3CopyFeature implements Copy {
             = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
-
-    public S3CopyFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
-    }
 
     public S3CopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;

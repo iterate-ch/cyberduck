@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -55,10 +54,6 @@ public class S3VersioningFeature implements Versioning {
     @SuppressWarnings("unchecked")
     private Map<Path, VersioningConfiguration> cache
             = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
-
-    public S3VersioningFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
-    }
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;

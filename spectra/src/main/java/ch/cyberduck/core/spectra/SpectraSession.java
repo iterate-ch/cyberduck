@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
@@ -74,12 +75,18 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraDirectoryFeature(this, this.getFeature(Write.class));
         }
         if(type == Move.class) {
+            // Disable operation not supported
             return (T) new DisabledMoveFeature();
         }
         if(type == AclPermission.class) {
+            // Disable operation not supported
             return null;
         }
         if(type == Versioning.class) {
+            // Disable operation not supported
+            return null;
+        }
+        if(type == Redundancy.class) {
             return null;
         }
         if(type == UrlProvider.class) {
@@ -89,7 +96,7 @@ public class SpectraSession extends S3Session {
             return (T) new SpectraDeleteFeature(this);
         }
         if(type == Copy.class) {
-            // Disable copy operation not supported
+            // Disable operation not supported
             return null;
         }
         if(type == Write.class) {
