@@ -48,7 +48,7 @@ public class DefaultSessionPoolTest {
     public void testConnectRefuse() throws Exception {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
                 throw new ConnectionRefusedException("t", new RuntimeException());
             }
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),

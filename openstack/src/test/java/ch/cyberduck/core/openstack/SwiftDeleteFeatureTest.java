@@ -119,7 +119,7 @@ public class SwiftDeleteFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final AtomicBoolean delete = new AtomicBoolean();
         final String name = "placeholder-" + UUID.randomUUID().toString();
-        session.addListener(new TranscriptListener() {
+        session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {

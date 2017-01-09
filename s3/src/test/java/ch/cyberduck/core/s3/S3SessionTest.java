@@ -174,7 +174,7 @@ public class S3SessionTest {
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final S3Session session = new S3Session(host);
-        session.addListener(new TranscriptListener() {
+        session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {

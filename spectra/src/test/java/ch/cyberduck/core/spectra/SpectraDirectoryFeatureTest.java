@@ -81,7 +81,7 @@ public class SpectraDirectoryFeatureTest {
                 new DefaultX509KeyManager());
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.addListener(new TranscriptListener() {
+        session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {

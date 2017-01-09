@@ -76,7 +76,7 @@ public class S3DirectoryFeatureTest {
         final S3Session session = new S3Session(host);
         final AtomicBoolean b = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.addListener(new TranscriptListener() {
+        session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {

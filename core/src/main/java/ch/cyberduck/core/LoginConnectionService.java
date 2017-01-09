@@ -119,7 +119,7 @@ public class LoginConnectionService implements ConnectionService {
      * @throws BackgroundException If opening connection fails
      */
     @Override
-    public boolean check(final Session session, final Cache<Path> cache) throws BackgroundException {
+    public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(StringUtils.isBlank(bookmark.getHostname())) {
             throw new ConnectionCanceledException();
@@ -141,7 +141,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public boolean check(final Session session, final Cache<Path> cache, final BackgroundException failure) throws BackgroundException {
+    public boolean check(final Session<?> session, final Cache<Path> cache, final BackgroundException failure) throws BackgroundException {
         if(null == failure) {
             return this.check(session, cache);
         }
@@ -151,7 +151,7 @@ public class LoginConnectionService implements ConnectionService {
         return this.check(session, cache);
     }
 
-    private void close(final Session session) {
+    private void close(final Session<?> session) {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                 session.getHost().getHostname()));
         try {
@@ -164,7 +164,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     @Override
-    public void connect(final Session session, final Cache<Path> cache) throws BackgroundException {
+    public void connect(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
         if(session.isConnected()) {
             this.close(session);
         }
@@ -188,9 +188,8 @@ public class LoginConnectionService implements ConnectionService {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
                 bookmark.getProtocol().getName(), hostname));
 
-        session.addListener(transcript);
         // The IP address could successfully be determined
-        session.open(key);
+        session.withListener(transcript).open(key);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));

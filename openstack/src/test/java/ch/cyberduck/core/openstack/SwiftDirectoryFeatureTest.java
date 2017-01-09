@@ -76,7 +76,7 @@ public class SwiftDirectoryFeatureTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final AtomicBoolean put = new AtomicBoolean();
         final String name = UUID.randomUUID().toString();
-        session.addListener(new TranscriptListener() {
+        session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 switch(request) {

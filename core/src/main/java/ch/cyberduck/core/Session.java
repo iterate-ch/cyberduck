@@ -53,9 +53,6 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
@@ -72,7 +69,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected C client;
     protected VaultRegistry registry = new DisabledVaultRegistry();
 
-    protected final Set<TranscriptListener> transcriptListeners = new HashSet<>();
+    private TranscriptListener listener = new DisabledTranscriptListener();
 
     /**
      * Connection attempt being made.
@@ -94,11 +91,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
                 String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
-    public void addListener(final TranscriptListener listener) {
+    public Session<?> withListener(final TranscriptListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add listener %s", listener));
         }
-        transcriptListeners.add(listener);
+        this.listener = listener;
+        return this;
     }
 
     public Session<?> withRegistry(final VaultRegistry registry) {
@@ -204,7 +202,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-        transcriptListeners.clear();
+        listener = null;
     }
 
     /**
@@ -251,15 +249,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     @Override
     public void log(final Type request, final String message) {
         transcript.log(request, message);
-        switch(state) {
-            case opening:
-            case open:
-            case closing:
-                for(TranscriptListener listener : transcriptListeners) {
-                    listener.log(request, message);
-                }
-                break;
-        }
+        listener.log(request, message);
     }
 
     /**
