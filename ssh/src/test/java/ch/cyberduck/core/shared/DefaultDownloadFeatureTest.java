@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.sftp.SFTPReadFeature;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -79,14 +80,14 @@ public class DefaultDownloadFeatureTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
-            new DefaultDownloadFeature(session).download(
+            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
-            new DefaultDownloadFeature(session).download(
+            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
@@ -124,7 +125,7 @@ public class DefaultDownloadFeatureTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         {
             final TransferStatus status = new TransferStatus().length(-1L);
-            new DefaultDownloadFeature(session).download(
+            new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                     test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                     status,
                     new DisabledConnectionCallback());
