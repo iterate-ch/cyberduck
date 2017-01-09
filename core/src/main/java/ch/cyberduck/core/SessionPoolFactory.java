@@ -23,6 +23,7 @@ import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.DisabledVaultRegistry;
 
 public class SessionPoolFactory {
 
@@ -55,7 +56,8 @@ public class SessionPoolFactory {
                         controller,
                         controller),
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark), new DefaultVaultRegistry(keychain, password), cache, controller, bookmark
+                new KeychainX509KeyManager(bookmark), PreferencesFactory.get().getBoolean("cryptomator.enable")
+                ? new DefaultVaultRegistry(keychain, password) : new DisabledVaultRegistry(), cache, controller, bookmark
         )
                 .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                 .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
@@ -85,7 +87,8 @@ public class SessionPoolFactory {
                         keychain,
                         controller,
                         controller),
-                session, cache, new DefaultVaultRegistry(keychain, password)
+                session, cache, PreferencesFactory.get().getBoolean("cryptomator.enable")
+                ? new DefaultVaultRegistry(keychain, password) : new DisabledVaultRegistry()
         );
     }
 }

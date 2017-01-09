@@ -265,10 +265,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
-        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            return registry.getFeature(this, type, feature);
-        }
-        return feature;
+        return registry.getFeature(this, type, feature);
     }
 
     @SuppressWarnings("unchecked")
