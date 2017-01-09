@@ -58,11 +58,10 @@ public class S3MultipartWriteFeature implements Write {
     private final AttributesFinder attributes;
 
     public S3MultipartWriteFeature(final S3Session session) {
-        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public S3MultipartWriteFeature(final S3Session session,
-                                   final Find finder, final AttributesFinder attributes) {
+    public S3MultipartWriteFeature(final S3Session session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
