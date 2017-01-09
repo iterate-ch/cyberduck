@@ -77,7 +77,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
                 // Disabled by user
                 if(status.getLength() < PreferencesFactory.get().getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    return new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(session, regionService)).upload(file, local, throttle, listener, status, callback);
+                    return new SwiftSmallObjectUploadFeature(writer).upload(file, local, throttle, listener, status, callback);
                 }
             }
             feature = new SwiftLargeObjectUploadFeature(session, regionService, writer,
@@ -85,7 +85,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
                     PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
         }
         else {
-            feature = new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(session, regionService));
+            feature = new SwiftSmallObjectUploadFeature(writer);
         }
         // Previous segments to delete
         final List<Path> segments = new ArrayList<Path>();
