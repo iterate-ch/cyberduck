@@ -33,9 +33,11 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MultipartUploadService;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,7 +87,7 @@ public class SingleTransferWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new S3MultipartUploadService(this, 5L * 1024L * 1024L, 1) {
+                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this, new S3DisabledMultipartService()), 5L * 1024L * 1024L, 1) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {
