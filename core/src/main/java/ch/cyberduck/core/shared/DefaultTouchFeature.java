@@ -46,10 +46,9 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
-        final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
         try {
             feature.upload(file, temp,
