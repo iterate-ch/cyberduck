@@ -119,4 +119,39 @@ public class SFTPCryptomatorInteroperabilityTest {
         assertArrayEquals(content, readContent);
         session.close();
     }
+
+    /**
+     * Create long file/folder with Cryptomator, read with Cyberduck
+     */
+    @Test
+    public void testCryptomatorInteroperability_longNames_Tests() throws Exception {
+        // create folder
+        final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/" + RandomStringUtils.random(180));
+        Files.createDirectory(targetFolder);
+        // create file and write some random content
+        java.nio.file.Path targetFile = targetFolder.resolve(RandomStringUtils.random(180));
+        final byte[] content = RandomUtils.nextBytes(20);
+        Files.write(targetFile, content);
+
+        // read with Cyberduck and compare
+        final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).load(session, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword(passphrase);
+            }
+        });
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        Path p = new Path(new Path(vault, targetFolder.getFileName().toString(), EnumSet.of(Path.Type.directory)), targetFile.getFileName().toString(), EnumSet.of(Path.Type.file));
+        final InputStream read = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(p, new TransferStatus());
+        final byte[] readContent = new byte[content.length];
+        IOUtils.readFully(read, readContent);
+        assertArrayEquals(content, readContent);
+        session.close();
+    }
 }
