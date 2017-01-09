@@ -298,13 +298,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this);
+            return (T) new S3MoveFeature(this, new S3AccessControlListFeature(this));
         }
         if(type == Copy.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdCopyFeature(this);
+                return (T) new S3ThresholdCopyFeature(this, new S3AccessControlListFeature(this));
             }
-            return (T) new S3CopyFeature(this);
+            return (T) new S3CopyFeature(this, new S3AccessControlListFeature(this));
         }
         if(type == Delete.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
@@ -316,7 +316,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3AccessControlListFeature(this);
         }
         if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this);
+            return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
         }
         if(type == Touch.class) {
             return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));

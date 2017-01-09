@@ -54,7 +54,7 @@ public class S3MetadataFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(container);
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(container);
         assertTrue(metadata.isEmpty());
         session.close();
     }
@@ -71,7 +71,7 @@ public class S3MetadataFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
         assertTrue(metadata.containsKey("Content-Type"));
@@ -103,7 +103,7 @@ public class S3MetadataFeatureTest {
         encryption.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
-        final S3MetadataFeature feature = new S3MetadataFeature(session);
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         feature.setMetadata(test, Collections.singletonMap("Test", v));
         final Map<String, String> metadata = feature.getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -129,7 +129,7 @@ public class S3MetadataFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
-        final S3MetadataFeature feature = new S3MetadataFeature(session);
+        final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
         feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));
         final Map<String, String> metadata = feature.getMetadata(test);

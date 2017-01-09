@@ -53,7 +53,7 @@ public class S3VersioningFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final VersioningConfiguration configuration
-                = new S3VersioningFeature(session).getConfiguration(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+                = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());
@@ -70,7 +70,7 @@ public class S3VersioningFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final VersioningConfiguration configuration
-                = new S3VersioningFeature(session).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+                = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertTrue(configuration.isEnabled());
         session.close();
@@ -87,7 +87,7 @@ public class S3VersioningFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container);
-        final Versioning feature = new S3VersioningFeature(session);
+        final Versioning feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -102,7 +102,7 @@ public class S3VersioningFeatureTest {
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         assertEquals(VersioningConfiguration.empty(),
-                new S3VersioningFeature(session).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
+                new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }

@@ -86,7 +86,7 @@ public class S3StorageClassFeature implements Redundancy {
             preferences.setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session, new S3AccessControlListFeature(session));
             final AclPermission feature = session.getFeature(AclPermission.class);
             if(null == feature) {
                 copy.copy(file, file, redundancy, new S3EncryptionFeature(session).getEncryption(file),

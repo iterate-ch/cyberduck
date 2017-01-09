@@ -79,7 +79,7 @@ public class SpectraTouchFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session, null).getMetadata(test);
         assertFalse(metadata.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));

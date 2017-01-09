@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -63,10 +62,6 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             = PreferencesFactory.get().getLong("s3.upload.multipart.size");
 
     private final S3AccessControlListFeature accessControlListFeature;
-
-    public S3MultipartCopyFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
-    }
 
     public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         super(session, accessControlListFeature);

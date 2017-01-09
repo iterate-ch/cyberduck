@@ -53,7 +53,7 @@ public class S3MoveFeatureTest {
         new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, false, new Delete.DisabledCallback());
+        new S3MoveFeature(session, new S3AccessControlListFeature(session)).move(test, renamed, false, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,7 +74,7 @@ public class S3MoveFeatureTest {
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
         final Path renamed = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, false, new Delete.DisabledCallback());
+        new S3MoveFeature(session, new S3AccessControlListFeature(session)).move(test, renamed, false, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -84,9 +84,9 @@ public class S3MoveFeatureTest {
     @Test
     public void testSupport() throws Exception {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
-        assertFalse(new S3MoveFeature(null).isSupported(c, c));
+        assertFalse(new S3MoveFeature(null, null).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
-        assertTrue(new S3MoveFeature(null).isSupported(cf, cf));
+        assertTrue(new S3MoveFeature(null, null).isSupported(cf, cf));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class S3MoveFeatureTest {
         touch.touch(test, status);
         assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3MoveFeature(session).move(test, renamed, false, new Delete.DisabledCallback());
+        new S3MoveFeature(session, new S3AccessControlListFeature(session)).move(test, renamed, false, new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());

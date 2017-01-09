@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
@@ -45,10 +44,6 @@ public class S3MetadataFeature implements Headers {
             = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
-
-    public S3MetadataFeature(final S3Session session) {
-        this(session, (S3AccessControlListFeature) session.getFeature(AclPermission.class));
-    }
 
     public S3MetadataFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;

@@ -92,7 +92,7 @@ public class S3SingleUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -127,7 +127,7 @@ public class S3SingleUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("aws:kms", metadata.get("server-side-encryption"));
@@ -165,7 +165,7 @@ public class S3SingleUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
-        final Map<String, String> metadata = new S3MetadataFeature(session).getMetadata(test);
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
