@@ -48,7 +48,6 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.vault.DisabledVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
@@ -67,7 +66,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * Connection
      */
     protected C client;
-    protected VaultRegistry registry = new DisabledVaultRegistry();
+    protected VaultRegistry registry = VaultRegistry.DISABLED;
 
     private TranscriptListener listener = new DisabledTranscriptListener();
 

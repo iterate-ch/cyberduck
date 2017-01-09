@@ -1875,7 +1875,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewVault()
         {
-            return IsMounted() && Workdir!= null;
+            return IsMounted() && Workdir!= null && Session.getVault() != VaultRegistry.DISABLED;
         }
 
         private void View_DuplicateFile()
