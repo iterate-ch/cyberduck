@@ -39,6 +39,9 @@ public abstract class AlertController extends SheetController implements SheetCa
 
     private boolean suppressed = false;
 
+    @Outlet
+    private NSAlert alert;
+
     public AlertController(final NSAlert alert) {
         this.loadBundle(alert);
     }
@@ -74,6 +77,7 @@ public abstract class AlertController extends SheetController implements SheetCa
     }
 
     protected void loadBundle(final NSAlert alert) {
+        this.alert = alert;
         alert.setShowsHelp(true);
         alert.setDelegate(this.id());
         if(alert.showsSuppressionButton()) {
