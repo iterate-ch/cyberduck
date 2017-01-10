@@ -53,10 +53,9 @@ public class S3TouchFeatureTest {
 
     @Test
     public void testTouchEncrypted() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                ));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -78,10 +77,9 @@ public class S3TouchFeatureTest {
 
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                ));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
@@ -103,10 +101,9 @@ public class S3TouchFeatureTest {
 
     @Test
     public void testTouchEncryptedDefaultFeature() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                        System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                ));
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
         final S3Session session = new S3Session(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
