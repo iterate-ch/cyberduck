@@ -113,34 +113,53 @@ public abstract class WindowController extends BundleController implements NSWin
 
     @Override
     public void windowDidBecomeKey(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Become key for window %s", window));
+        }
     }
 
     @Override
     public void windowDidResignKey(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Resign key for window %s", window));
+        }
     }
 
     @Override
     public void windowDidBecomeMain(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Become main for window %s", window));
+        }
     }
 
     @Override
     public void windowDidResignMain(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Resign main for window %s", window));
+        }
     }
 
     public void windowWillEnterFullScreen(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Enter full screen for window %s", window));
+        }
     }
 
     public void windowWillExitFullScreen(final NSNotification notification) {
-        //
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Exit full screen for window %s", window));
+        }
     }
 
     public void windowDidFailToEnterFullScreen(final NSWindow window) {
         log.error("Error entering full screen");
+    }
+
+    @Override
+    public void windowWillBeginSheet(final NSNotification notification) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Attach sheet for window %s", window));
+        }
     }
 
     /**

@@ -144,35 +144,35 @@ public abstract class NSWindow extends NSResponder {
     public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
 
     /// enum values
-    public static interface NSWindowCollectionBehavior {
-        public static final int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
-        public static final int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel
-        public static final int NSWindowCollectionBehaviorStationary = 1 << 4; // unaffected by exposé.  Stays visible and stationary, like desktop window
+    public interface NSWindowCollectionBehavior {
+        int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
+        int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel
+        int NSWindowCollectionBehaviorStationary = 1 << 4; // unaffected by exposé.  Stays visible and stationary, like desktop window
 
-        public static final int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5; // default behavior if windowLevel == NSNormalWindowLevel
-        public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;  // default behavior if windowLevel != NSNormalWindowLevel
+        int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5; // default behavior if windowLevel == NSNormalWindowLevel
+        int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;  // default behavior if windowLevel != NSNormalWindowLevel
 
-        public static final int NSWindowNumberListAllApplications = 1 << 0;
-        public static final int NSWindowNumberListAllSpaces = 1 << 4;
+        int NSWindowNumberListAllApplications = 1 << 0;
+        int NSWindowNumberListAllSpaces = 1 << 4;
 
-        public static final int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7; // the frontmost window with this collection behavior will be the fullscreen window.
-        public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;  // windows with this collection behavior can be shown with the fullscreen window.
+        int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7; // the frontmost window with this collection behavior will be the fullscreen window.
+        int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;  // windows with this collection behavior can be shown with the fullscreen window.
     }
 
     /// enum values
-    public static interface NSSelectionDirection {
-        public static final int NSDirectSelection = 0;
-        public static final int NSSelectingNext = 1;
-        public static final int NSSelectingPrevious = 2;
+    public interface NSSelectionDirection {
+        int NSDirectSelection = 0;
+        int NSSelectingNext = 1;
+        int NSSelectingPrevious = 2;
     }
 
     /// enum values
-    public static interface NSWindowButton {
-        public static final int NSWindowCloseButton = 0;
-        public static final int NSWindowMiniaturizeButton = 1;
-        public static final int NSWindowZoomButton = 2;
-        public static final int NSWindowToolbarButton = 3;
-        public static final int NSWindowDocumentIconButton = 4;
+    public interface NSWindowButton {
+        int NSWindowCloseButton = 0;
+        int NSWindowMiniaturizeButton = 1;
+        int NSWindowZoomButton = 2;
+        int NSWindowToolbarButton = 3;
+        int NSWindowDocumentIconButton = 4;
     }
 
     public interface _Class extends ObjCClass {
@@ -230,7 +230,7 @@ public abstract class NSWindow extends NSResponder {
         }
     }
 
-    public static interface Delegate {
+    public interface Delegate {
         /**
          * Tells the delegate that the user has attempted to close a window or the window has
          * received a performClose: message. This method is optional.
@@ -242,7 +242,7 @@ public abstract class NSWindow extends NSResponder {
          * @param sender
          * @return
          */
-        public boolean windowShouldClose(NSWindow sender);
+        boolean windowShouldClose(NSWindow sender);
 
         /**
          * Tells the delegate that the user has attempted to close a window or the window has received
@@ -252,7 +252,14 @@ public abstract class NSWindow extends NSResponder {
          *
          * @param notification
          */
-        public void windowWillClose(NSNotification notification);
+        void windowWillClose(NSNotification notification);
+
+        /**
+         * Notifies the delegate that the window is about to open a sheet.
+         *
+         * @param notification
+         */
+        void windowWillBeginSheet(NSNotification notification);
 
         /**
          * Informs the delegate that the window has become the key window. This method is optional.
@@ -261,9 +268,9 @@ public abstract class NSWindow extends NSResponder {
          *
          * @param notification
          */
-        public void windowDidBecomeKey(NSNotification notification);
+        void windowDidBecomeKey(NSNotification notification);
 
-        public void windowDidBecomeMain(NSNotification notification);
+        void windowDidBecomeMain(NSNotification notification);
 
         /**
          * Informs the delegate that the window has resigned key window status. This method is optional.
@@ -272,9 +279,9 @@ public abstract class NSWindow extends NSResponder {
          *
          * @param notification
          */
-        public void windowDidResignKey(NSNotification notification);
+        void windowDidResignKey(NSNotification notification);
 
-        public void windowDidResignMain(NSNotification notification);
+        void windowDidResignMain(NSNotification notification);
     }
 
     /**
