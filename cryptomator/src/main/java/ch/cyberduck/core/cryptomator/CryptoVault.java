@@ -28,7 +28,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryIdProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
@@ -95,7 +94,6 @@ public class CryptoVault implements Vault {
     private Cryptor cryptor;
 
     private final CryptoFilenameProvider filenameProvider;
-    private final CryptoDirectoryIdProvider directoryIdProvider;
     private final CryptoDirectoryProvider directoryProvider;
 
     public CryptoVault(final Path home, final PasswordStore keychain) {
@@ -105,7 +103,6 @@ public class CryptoVault implements Vault {
         final Path vault = new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), home.attributes());
         vault.getType().addAll(home.getType());
         this.filenameProvider = new CryptoFilenameProvider(vault);
-        this.directoryIdProvider = new CryptoDirectoryIdProvider();
         this.directoryProvider = new CryptoDirectoryProvider(vault, this);
     }
 
@@ -389,10 +386,6 @@ public class CryptoVault implements Vault {
 
     public CryptoFilenameProvider getFilenameProvider() {
         return filenameProvider;
-    }
-
-    public CryptoDirectoryIdProvider getDirectoryIdProvider() {
-        return directoryIdProvider;
     }
 
     public CryptoDirectoryProvider getDirectoryProvider() {

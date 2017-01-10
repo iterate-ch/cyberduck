@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -57,21 +58,27 @@ public class CryptoDirectoryProvider {
      * @param directory Clear text
      */
     public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
+        final String directoryId;
         if(dataRoot.getParent().equals(directory)) {
-            return this.resolve(ROOT_DIR_ID);
+            directoryId = ROOT_DIR_ID;
         }
-        final Path parent = this.toEncrypted(session, directory.getParent());
-        final String cleartextName = directory.getName();
-        final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-        final String dirId = cryptomator.getDirectoryIdProvider().load(session, new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
-        return this.resolve(dirId);
-    }
-
-    private Path resolve(final String directoryId) {
+        else {
+            if(StringUtils.isBlank(directory.attributes().getDirectoryId())) {
+                final Path parent = this.toEncrypted(session, directory.getParent());
+                final String cleartextName = directory.getName();
+                final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+                // Read directory id from file
+                directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+            }
+            else {
+                directoryId = directory.attributes().getDirectoryId();
+            }
+        }
         final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
         // Intermediate directory
         final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
         final PathAttributes attributes = new PathAttributes();
+        // Save directory id for use in vault
         attributes.setDirectoryId(directoryId);
         return new Path(intermediate, dirHash.substring(2), dataRoot.getType(), attributes);
     }
