@@ -44,7 +44,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
     protected S3Object getDetails(final String key, final TransferStatus status) {
         final S3Object object = super.getDetails(key, status);
         final Checksum checksum = status.getChecksum();
-        if(null != checksum) {
+        if(!Checksum.NONE.equals(checksum)) {
             switch(checksum.algorithm) {
                 case crc32:
                     object.addMetadata("Content-CRC32", checksum.hash);
