@@ -101,9 +101,12 @@ public class CryptoVault implements Vault {
     public CryptoVault(final Path home, final PasswordStore keychain) {
         this.home = home;
         this.keychain = keychain;
-        this.filenameProvider = new CryptoFilenameProvider(home);
+        // New vault home with vault flag set for internal use
+        final Path vault = new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), home.attributes());
+        vault.getType().addAll(home.getType());
+        this.filenameProvider = new CryptoFilenameProvider(vault);
         this.directoryIdProvider = new CryptoDirectoryIdProvider();
-        this.directoryProvider = new CryptoDirectoryProvider(home, this);
+        this.directoryProvider = new CryptoDirectoryProvider(vault, this);
     }
 
     @Override
