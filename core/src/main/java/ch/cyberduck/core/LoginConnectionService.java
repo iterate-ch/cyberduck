@@ -41,24 +41,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
-    private final HostKeyCallback key;
-
-    private final ProgressListener listener;
-
-    private final TranscriptListener transcript;
-
     private final Resolver resolver
             = new Resolver();
-
-    private final ProxyFinder proxy;
-
-    private final LoginService login;
-
     private final FailureDiagnostics<Exception> diagnostics
             = new DefaultFailureDiagnostics();
-
+    private final HostKeyCallback key;
+    private final ProgressListener listener;
+    private final TranscriptListener transcript;
+    private final ProxyFinder proxy;
+    private final LoginService login;
     private final NotificationService notification;
-
     private final AtomicBoolean canceled
             = new AtomicBoolean();
 
@@ -67,8 +59,7 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
                                   final TranscriptListener transcript) {
-        this(new KeychainLoginService(prompt, keychain), key,
-                listener, transcript);
+        this(new KeychainLoginService(prompt, keychain), key, listener, transcript);
     }
 
     public LoginConnectionService(final LoginCallback prompt,
@@ -132,10 +123,12 @@ public class LoginConnectionService implements ConnectionService {
             return false;
         }
         // Obtain password from keychain or prompt
-        login.validate(bookmark,
-                MessageFormat.format(LocaleFactory.localizedString(
-                        "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
-                new LoginOptions(bookmark.getProtocol()));
+        synchronized(login) {
+            login.validate(bookmark,
+                    MessageFormat.format(LocaleFactory.localizedString(
+                            "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
+                    new LoginOptions(bookmark.getProtocol()));
+        }
         this.connect(session, cache);
         return true;
     }
