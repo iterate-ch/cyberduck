@@ -74,7 +74,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("b2.upload.checksum")) {
+        if(PreferencesFactory.get().getBoolean("b2.upload.checksum.verify")) {
             try {
                 digest = MessageDigest.getInstance("SHA1");
             }
