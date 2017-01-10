@@ -133,17 +133,6 @@ public class LoginConnectionService implements ConnectionService {
         return true;
     }
 
-    @Override
-    public boolean check(final Session<?> session, final Cache<Path> cache, final BackgroundException failure) throws BackgroundException {
-        if(null == failure) {
-            return this.check(session, cache);
-        }
-        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-            this.close(session);
-        }
-        return this.check(session, cache);
-    }
-
     private void close(final Session<?> session) {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                 session.getHost().getHostname()));

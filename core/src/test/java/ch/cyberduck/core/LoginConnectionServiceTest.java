@@ -10,7 +10,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.junit.Test;
 
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,26 +70,6 @@ public class LoginConnectionServiceTest {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty());
-    }
-
-    @Test(expected = ConnectionCanceledException.class)
-    public void testCheckReconnect() throws Exception {
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
-        final AtomicBoolean disconnected = new AtomicBoolean();
-        try {
-            final Session session = new NullSession(new Host(new TestProtocol(), "", new Credentials("user", ""))) {
-                @Override
-                public void interrupt() throws BackgroundException {
-                    disconnected.set(true);
-                    super.interrupt();
-                }
-            };
-            s.check(session, PathCache.empty(), new BackgroundException("m", new SocketException("m")));
-        }
-        finally {
-            assertTrue(disconnected.get());
-        }
     }
 
     @Test(expected = LoginCanceledException.class)
