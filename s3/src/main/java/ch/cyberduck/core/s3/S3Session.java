@@ -270,7 +270,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
-        if(type == SegmentedWrite.class) {
+        if(type == MultipartWrite.class) {
             return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Write.class) {

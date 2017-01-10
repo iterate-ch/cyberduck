@@ -43,8 +43,8 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.SegmentedWrite;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -241,7 +241,7 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }
-        if(type == SegmentedWrite.class) {
+        if(type == MultipartWrite.class) {
             return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
         if(type == Write.class) {
