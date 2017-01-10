@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -61,7 +62,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
                 status.setStorageClass(redundancy.getDefault());
             }
         }
-        if(null == status.getChecksum()) {
+        if(Checksum.NONE.equals(status.getChecksum())) {
             status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);
