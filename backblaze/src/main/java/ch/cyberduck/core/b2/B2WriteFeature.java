@@ -91,7 +91,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             public BaseB2Response call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final Checksum checksum = status.getChecksum();
-                    if(null == checksum) {
+                    if(Checksum.NONE.equals(checksum)) {
                         throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
                     }
                     if(status.isSegment()) {
