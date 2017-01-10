@@ -27,15 +27,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.microsoft.azure.storage.OperationContext;
 
-public class AzureTouchFeature implements Touch {
+public class AzureTouchFeature implements Touch<Void> {
 
-    private Write writer;
+    private Write<Void> writer;
 
     public AzureTouchFeature(final AzureSession session, final OperationContext context) {
         this(new AzureWriteFeature(session, context));
     }
 
-    public AzureTouchFeature(final Write write) {
+    public AzureTouchFeature(final Write<Void> write) {
         this.writer = write;
     }
 
@@ -50,7 +50,7 @@ public class AzureTouchFeature implements Touch {
     }
 
     @Override
-    public AzureTouchFeature withWriter(final Write writer) {
+    public AzureTouchFeature withWriter(final Write<Void> writer) {
         this.writer = writer;
         return this;
     }
