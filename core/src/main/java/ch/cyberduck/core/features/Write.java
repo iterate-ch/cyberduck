@@ -66,7 +66,7 @@ public interface Write<Reply> {
          */
         public Long size = 0L;
 
-        public Checksum checksum;
+        public Checksum checksum = Checksum.NONE;
 
         /**
          * Append

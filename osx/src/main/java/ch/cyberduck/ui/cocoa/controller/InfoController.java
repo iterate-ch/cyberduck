@@ -1687,7 +1687,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             final Path file = this.getSelected();
             final Checksum checksum = file.attributes().getChecksum();
-            if(checksum == null) {
+            if(!Checksum.NONE.equals(checksum)) {
                 checksumField.setStringValue(LocaleFactory.localizedString("Unknown"));
             }
             else {

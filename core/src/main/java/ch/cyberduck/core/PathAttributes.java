@@ -62,7 +62,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * MD5 checksum
      */
-    private Checksum checksum;
+    private Checksum checksum = Checksum.NONE;
 
     /**
      * ETag header in HTTP

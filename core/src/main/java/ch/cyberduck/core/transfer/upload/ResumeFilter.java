@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -66,7 +67,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 if(parent.isExists()) {
                     final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
                     if(append.size == local.attributes().getSize()) {
-                        if(append.checksum != null) {
+                        if(!Checksum.NONE.equals(append.checksum)) {
                             final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
                             if(compute.compute(file, local.getInputStream(), parent).equals(append.checksum)) {
                                 if(log.isInfoEnabled()) {

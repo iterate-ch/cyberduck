@@ -24,6 +24,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -56,7 +57,7 @@ public class ChecksumFilter extends AbstractCopyFilter {
                 final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
                 // Compare source with target attributes
                 if(append.size == attributes.getSize()) {
-                    if(append.checksum != null) {
+                    if(!Checksum.NONE.equals(append.checksum)) {
                         if(Objects.equals(attributes.getChecksum(), append.checksum)) {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Skip file %s with checksum %s", source, append.checksum));

@@ -57,7 +57,7 @@ public final class Checksum {
             return new Checksum(HashAlgorithm.crc32, hash);
         }
         log.warn(String.format("Failure to detect algorithm for checksum %s", hash));
-        return null;
+        return Checksum.NONE;
     }
 
     @Override

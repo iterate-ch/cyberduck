@@ -28,6 +28,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -81,7 +82,7 @@ public class B2LargeUploadServiceTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         // Large files do not have a SHA1 checksum. The value will always be "none".
-        assertNull(new B2AttributesFinderFeature(session).find(test).getChecksum());
+        assertEquals(Checksum.NONE, new B2AttributesFinderFeature(session).find(test).getChecksum());
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());

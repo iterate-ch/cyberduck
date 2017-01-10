@@ -62,7 +62,7 @@ public class SwiftObjectListServiceTest {
             if(p.isFile()) {
                 assertNotNull(p.attributes().getModificationDate());
                 assertNotNull(p.attributes().getSize());
-                assertNotNull(p.attributes().getChecksum());
+                assertNotNull(p.attributes().getChecksum().hash);
                 assertNull(p.attributes().getETag());
             }
             else if(p.isDirectory()) {

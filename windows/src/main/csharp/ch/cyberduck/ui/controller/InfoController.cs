@@ -1331,7 +1331,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 Path file = SelectedPath;
-                if (null == file.attributes().getChecksum())
+                if (Checksum.NONE == file.attributes().getChecksum())
                 {
                     View.Checksum = LocaleFactory.localizedString("Unknown");
                 }

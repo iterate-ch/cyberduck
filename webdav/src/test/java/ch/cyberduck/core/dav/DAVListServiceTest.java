@@ -28,6 +28,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -76,7 +77,7 @@ public class DAVListServiceTest {
             assertNotNull(p.attributes().getModificationDate());
             assertNotNull(p.attributes().getCreationDate());
             assertNotNull(p.attributes().getSize());
-            assertNull(p.attributes().getChecksum());
+            assertEquals(Checksum.NONE, p.attributes().getChecksum());
             assertNotNull(p.attributes().getETag());
         }
         session.close();

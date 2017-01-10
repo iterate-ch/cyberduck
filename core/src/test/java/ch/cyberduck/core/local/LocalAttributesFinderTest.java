@@ -2,6 +2,7 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
 
@@ -80,6 +81,6 @@ public class LocalAttributesFinderTest {
 
     @Test
     public void testGetChecksum() throws Exception {
-        assertNull(new LocalAttributes(UUID.randomUUID().toString()).getChecksum());
+        assertEquals(Checksum.NONE, new LocalAttributes(UUID.randomUUID().toString()).getChecksum());
     }
 }

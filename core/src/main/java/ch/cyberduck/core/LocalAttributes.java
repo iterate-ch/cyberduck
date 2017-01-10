@@ -32,10 +32,8 @@ public class LocalAttributes extends Attributes {
     private static final Logger log = Logger.getLogger(LocalAttributes.class);
 
     private final String path;
-
-    private Checksum checksum;
-
-    private Permission permission;
+    private Checksum checksum = Checksum.NONE;
+    private Permission permission = Permission.EMPTY;
 
     public LocalAttributes(final String path) {
         this.path = path;
