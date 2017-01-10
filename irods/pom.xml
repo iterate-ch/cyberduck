@@ -40,7 +40,7 @@
         <dependency>
             <groupId>ch.iterate.jargon</groupId>
             <artifactId>jargon-core</artifactId>
-            <version>4.1.10.4</version>
+            <version>4.1.10.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.claymoresystems</groupId>
