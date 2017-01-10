@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2013 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -28,18 +28,24 @@ namespace Ch.Cyberduck.Core.Local
 {
     public class SystemLocal : ch.cyberduck.core.Local
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SystemLocal).FullName);
+        private static readonly Logger Log = Logger.getLogger(typeof(SystemLocal).FullName);
 
         public SystemLocal(string parent, string name)
-            : base(parent, MakeValidFilename(name)) {}
+            : base(parent, MakeValidFilename(name))
+        {
+        }
 
         public SystemLocal(ch.cyberduck.core.Local parent, string name)
-            : base(parent, MakeValidFilename(name)) {}
+            : base(parent, MakeValidFilename(name))
+        {
+        }
 
         public SystemLocal(string path)
             : base(
                 Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
-                MakeValidFilename(FilenameUtils.getName(path))) {}
+                MakeValidFilename(FilenameUtils.getName(path)))
+        {
+        }
 
         public override char getDelimiter()
         {
@@ -51,7 +57,8 @@ namespace Ch.Cyberduck.Core.Local
             return getAbsolute().Equals(Directory.GetDirectoryRoot(getAbsolute()));
         }
 
-        public override String getAbbreviatedPath() {
+        public override String getAbbreviatedPath()
+        {
             return getAbsolute();
         }
 
@@ -100,7 +107,7 @@ namespace Ch.Cyberduck.Core.Local
                     string cleanpart = part;
                     foreach (char c in Path.GetInvalidFileNameChars())
                     {
-                        cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString()));
+                        cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString())).Trim();
                     }
                     sb.Append(cleanpart);
                     if (!parts[parts.Length - 1].Equals(part))
@@ -122,7 +129,7 @@ namespace Ch.Cyberduck.Core.Local
                     name = name.Replace(c.ToString(), "_");
                 }
             }
-            return name;
+            return name.Trim();
         }
-   }
+    }
 }
