@@ -101,7 +101,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private final CountDownLatch done
             = new CountDownLatch(1);
 
-    private Checksum checksum;
+    private Checksum checksum = Checksum.NONE;
 
     /**
      * MIME type
