@@ -359,15 +359,20 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(file.isFile()) {
                 if(this.options.checksum) {
-                    final Checksum checksum = status.getChecksum();
-                    if(null != checksum) {
-                        final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                        final Checksum download = compute.compute(file, local.getInputStream(), status);
-                        if(!checksum.equals(download)) {
-                            throw new ChecksumException(
-                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
-                                            download.algorithm.toString(), download.hash, checksum.hash));
+                    if(file.getType().contains(Path.Type.encrypted)) {
+                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                    }
+                    else {
+                        final Checksum checksum = status.getChecksum();
+                        if(null != checksum) {
+                            final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
+                            final Checksum download = compute.compute(file, local.getInputStream(), status);
+                            if(!checksum.equals(download)) {
+                                throw new ChecksumException(
+                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
+                                                download.algorithm.toString(), download.hash, checksum.hash));
+                            }
                         }
                     }
                 }

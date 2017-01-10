@@ -20,6 +20,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -53,5 +54,10 @@ public class VaultRegistryWriteFeature implements Write {
     @Override
     public boolean random() {
         return proxy.random();
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return proxy.checksum();
     }
 }

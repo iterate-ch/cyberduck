@@ -82,7 +82,7 @@ public class SwiftUrlProviderTest {
             Thread.sleep(1000L);
         }
         container.attributes().setRegion("DFW");
-        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(file, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         final DescriptiveUrlBag list = provider.toUrl(file);
         final DescriptiveUrl signed = list.find(DescriptiveUrl.Type.signed);
         assertNotNull(signed);

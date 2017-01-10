@@ -20,19 +20,21 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import ch.iterate.openstack.swift.exception.GenericException;
-import ch.iterate.openstack.swift.exception.NotFoundException;
 
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
@@ -41,8 +43,10 @@ public class SwiftMoveFeature implements Move {
             = new SwiftPathContainerService();
 
     private final SwiftSession session;
-
     private final SwiftRegionService regionService;
+
+    private Delete delete;
+    private ListService list;
 
     public SwiftMoveFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -51,40 +55,53 @@ public class SwiftMoveFeature implements Move {
     public SwiftMoveFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
+        this.delete = new SwiftDeleteFeature(session);
+        this.list = new SwiftObjectListService(session);
     }
 
     @Override
-    public void move(final Path file, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
+    public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            if(file.isFile() || file.isPlaceholder()) {
-                new SwiftCopyFeature(session, regionService).copy(file, renamed);
-                session.getClient().deleteObject(regionService.lookup(file),
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
+            if(source.isFile() || source.isPlaceholder()) {
+                new SwiftCopyFeature(session, regionService).copy(source, renamed);
+                session.getClient().deleteObject(regionService.lookup(source),
+                        containerService.getContainer(source).getName(), containerService.getKey(source));
             }
-            else if(file.isDirectory()) {
-                for(Path i : session.getFeature(ListService.class).list(file, new DisabledListProgressListener())) {
+            else if(source.isDirectory()) {
+                for(Path i : list.list(source, new DisabledListProgressListener())) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
                 try {
-                    session.getClient().deleteObject(regionService.lookup(file),
-                            containerService.getContainer(file).getName(), containerService.getKey(file));
+                    delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
                 }
-                catch(NotFoundException e) {
+                catch(NotfoundException e) {
                     // No real placeholder but just a delimiter returned in the object listing.
                     log.warn(e.getMessage());
                 }
             }
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, source);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, source);
         }
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return !containerService.isContainer(source);
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        this.list = list;
+        return this;
     }
 }

@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -29,7 +30,6 @@ import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -37,12 +37,12 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertTrue;
 
@@ -58,8 +58,8 @@ public class S3DirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -67,7 +67,7 @@ public class S3DirectoryFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature(session, new S3DirectoryFeature(session, new CryptoWriteFeature(session, new S3WriteFeature(session), cryptomator)), cryptomator).mkdir(test);
+        new CryptoDirectoryFeature<StorageObject>(session, new S3DirectoryFeature(session, new S3WriteFeature(session)), new S3WriteFeature(session), cryptomator).mkdir(test);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -82,7 +82,7 @@ public class S3DirectoryFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, RandomStringUtils.random(130), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
             @Override
@@ -91,7 +91,7 @@ public class S3DirectoryFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature(session, new S3DirectoryFeature(session, new CryptoWriteFeature(session, new S3WriteFeature(session), cryptomator)), cryptomator).mkdir(test);
+        new CryptoDirectoryFeature<StorageObject>(session, new S3DirectoryFeature(session, new S3WriteFeature(session)), new S3WriteFeature(session), cryptomator).mkdir(test);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -57,38 +57,26 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
-    private final S3SingleUploadService singleUploadService;
-    private final S3MultipartUploadService multipartUploadService;
+    private Write<StorageObject> writer;
 
-    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final S3SingleUploadService singleUploadService, final S3MultipartUploadService multipartUploadService) {
-        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), singleUploadService, multipartUploadService);
+    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                    final TransferAcceleration<S3Session> accelerateTransferOption) {
+        this(session, trust, key, accelerateTransferOption, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
     }
 
     public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final Long multipartThreshold, final S3SingleUploadService singleUploadService, final S3MultipartUploadService multipartUploadService) {
-        this(session, trust, key, multipartThreshold, new S3TransferAccelerationService(session), singleUploadService, multipartUploadService);
-    }
-
-    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final TransferAcceleration<S3Session> accelerateTransferOption, final S3SingleUploadService singleUploadService, final S3MultipartUploadService multipartUploadService) {
-        this(session, trust, key, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"), accelerateTransferOption, singleUploadService, multipartUploadService);
-    }
-
-    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final Long multipartThreshold,
-                                    final TransferAcceleration<S3Session> accelerateTransferOption, final S3SingleUploadService singleUploadService, final S3MultipartUploadService multipartUploadService) {
+                                    final TransferAcceleration<S3Session> accelerateTransferOption, final Long multipartThreshold) {
         this.session = session;
         this.trust = trust;
         this.key = key;
         this.multipartThreshold = multipartThreshold;
         this.accelerateTransferOption = accelerateTransferOption;
-        this.singleUploadService = singleUploadService;
-        this.multipartUploadService = multipartUploadService;
+        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class, new S3WriteFeature(session)).append(file, length, cache);
+        return writer.append(file, length, cache);
     }
 
     @Override
@@ -96,7 +84,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         try {
-            if(accelerateTransferOption.getStatus(file) ||
+            if(status.getLength() > 0 && accelerateTransferOption.getStatus(file) ||
                     (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
@@ -108,16 +96,16 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                         // Disabled by user
                         if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
                             // Use single upload service with accelerate proxy
-                            final S3SingleUploadService single = new S3SingleUploadService(tunneled, tunneled.getFeature(Write.class, new S3WriteFeature(tunneled, new S3DisabledMultipartService())));
+                            final S3SingleUploadService single = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
                             return single.upload(file, local, throttle, listener, status, prompt);
                         }
                     }
                     // Use multipart upload service with accelerate proxy
-                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled);
+                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
                     return service.upload(file, local, throttle, listener, status, prompt);
                 }
                 // Use single upload service with accelerate proxy
-                final S3SingleUploadService service = new S3SingleUploadService(tunneled, tunneled.getFeature(Write.class, new S3WriteFeature(tunneled, new S3DisabledMultipartService())));
+                final S3SingleUploadService service = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
                 return service.upload(file, local, throttle, listener, status, prompt);
             }
             log.warn(String.format("Transfer acceleration disabled for %s", file));
@@ -131,22 +119,28 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 // Disabled by user
                 if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
                     // Use single upload service
-                    return singleUploadService.upload(file, local, throttle, listener, status, prompt);
+                    return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
                 }
             }
             try {
-                return multipartUploadService.upload(file, local, throttle, listener, status, prompt);
+                return new S3MultipartUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
             }
             catch(NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure using multipart upload %s. Fallback to single upload.", e.getMessage()));
             }
         }
         // Use single upload service
-        return singleUploadService.upload(file, local, throttle, listener, status, prompt);
+        return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
     }
 
     public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {
         this.multipartThreshold = threshold;
+        return this;
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
         return this;
     }
 }

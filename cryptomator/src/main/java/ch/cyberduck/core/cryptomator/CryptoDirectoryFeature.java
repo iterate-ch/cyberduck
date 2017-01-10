@@ -20,6 +20,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
@@ -27,15 +28,15 @@ import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.Charset;
 
-public class CryptoDirectoryFeature implements Directory {
+public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     private final Session<?> session;
-    private final Directory delegate;
+    private final Directory<Reply> proxy;
     private final CryptoVault vault;
 
-    public CryptoDirectoryFeature(final Session<?> session, final Directory delegate, final CryptoVault cryptomator) {
+    public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate;
+        this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, cryptomator));
         this.vault = cryptomator;
     }
 
@@ -50,17 +51,21 @@ public class CryptoDirectoryFeature implements Directory {
         if(vault.contains(directory)) {
             final Path directoryMetafile = vault.encrypt(session, directory, true);
             final String directoryId = target.attributes().getDirectoryId();
-            final ContentWriter writer = new ContentWriter(session);
-            writer.write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
+            new ContentWriter(session).write(directoryMetafile, directoryId.getBytes(Charset.forName("UTF-8")));
             final Path intermediate = target.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
-                delegate.mkdir(intermediate, region, status);
+                session._getFeature(Directory.class).mkdir(intermediate, region, status);
             }
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
-        delegate.mkdir(target, region, status);
+        proxy.mkdir(target, region, status);
+    }
+
+    @Override
+    public CryptoDirectoryFeature<Reply> withWriter(final Write writer) {
+        return this;
     }
 }

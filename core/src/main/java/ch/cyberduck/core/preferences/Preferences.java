@@ -772,9 +772,6 @@ public abstract class Preferences {
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("spectra.upload.md5", String.valueOf(false));
-        defaults.put("spectra.upload.crc32", String.valueOf(true));
-
         /*
           NTLM Windows Domain
          */

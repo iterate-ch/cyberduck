@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,5 +46,11 @@ public class VaultRegistryDownloadFeature implements Download {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Download.class, proxy).offset(file);
+    }
+
+    @Override
+    public Download withReader(final Read reader) {
+        proxy.withReader(reader);
+        return this;
     }
 }

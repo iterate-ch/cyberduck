@@ -20,6 +20,7 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
@@ -50,5 +51,10 @@ public class IRODSTouchFeature implements Touch {
     @Override
     public boolean isSupported(final Path workdir) {
         return true;
+    }
+
+    @Override
+    public Touch withWriter(final Write writer) {
+        return this;
     }
 }

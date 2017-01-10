@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,5 +43,10 @@ public class SpectraTouchFeature implements Touch {
     public boolean isSupported(final Path workdir) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
+    }
+
+    @Override
+    public SpectraTouchFeature withWriter(final Write writer) {
+        return this;
     }
 }

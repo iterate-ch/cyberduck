@@ -22,12 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -38,14 +33,12 @@ import java.util.List;
 
 public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
 
-    private final Preferences preferences = PreferencesFactory.get();
-
-    private final SpectraSession session;
+    private final Write<StorageObject> writer;
     private final SpectraBulkService bulk;
 
     public SpectraUploadFeature(final SpectraSession session, final Write<StorageObject> writer, final SpectraBulkService bulk) {
         super(writer);
-        this.session = session;
+        this.writer = writer;
         this.bulk = bulk;
     }
 
@@ -58,16 +51,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
-        if(preferences.getBoolean("spectra.upload.crc32")) {
-            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.crc32))
-                    .compute(file, local.getInputStream(), status)
-            );
-        }
-        if(preferences.getBoolean("spectra.upload.md5")) {
-            status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.md5))
-                    .compute(file, local.getInputStream(), status)
-            );
-        }
+        status.setChecksum(writer.checksum().compute(file, local.getInputStream(), status));
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;

@@ -33,7 +33,7 @@ public class SwiftFindFeature implements Find {
     private PathCache cache;
 
     public SwiftFindFeature(final SwiftSession session) {
-        this(session.getFeature(Headers.class));
+        this(new SwiftMetadataFeature(session));
     }
 
     public SwiftFindFeature(final Headers feature) {

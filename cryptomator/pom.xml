@@ -94,6 +94,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>azure</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.cryptomator</groupId>
             <artifactId>cryptolib</artifactId>
             <version>1.0.10</version>

@@ -62,7 +62,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+                    1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -83,7 +84,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(random.length);
-        new SwiftLargeObjectUploadFeature(session, 1 * 1024L * 1024L, 1).upload(test, local,
+        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+                1 * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
@@ -121,7 +123,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         status.setLength(random.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
-            new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+            new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+                    1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -142,7 +145,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertFalse(status.isComplete());
 
         final TransferStatus append = new TransferStatus().append(true).length(1024L * 1024L).skip(1024L * 1024L);
-        new SwiftLargeObjectUploadFeature(session, 1024L * 1024L, 1).upload(test, local,
+        new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
+                1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);

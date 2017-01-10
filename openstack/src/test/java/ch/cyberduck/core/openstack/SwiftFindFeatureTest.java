@@ -65,7 +65,7 @@ public class SwiftFindFeatureTest {
         catch(NotfoundException e) {
             //
         }
-        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(file, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(file));
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.close();

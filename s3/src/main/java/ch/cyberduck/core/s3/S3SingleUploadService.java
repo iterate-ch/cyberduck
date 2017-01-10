@@ -26,9 +26,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -46,10 +43,12 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
     private final S3Session session;
+    private final Write<StorageObject> writer;
 
     public S3SingleUploadService(final S3Session session, final Write<StorageObject> writer) {
         super(writer);
         this.session = session;
+        this.writer = writer;
     }
 
     @Override
@@ -58,9 +57,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
-                status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
-                        .compute(file, local.getInputStream(), status)
-                );
+                status.setChecksum(writer.checksum().compute(file, local.getInputStream(), status));
                 break;
         }
         try {

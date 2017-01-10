@@ -26,6 +26,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -54,6 +55,11 @@ public class CryptoWriteFeatureTest {
                         @Override
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
                             assertTrue(file.equals(home) || file.isChild(home));
+                        }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
                         }
                     };
                 }

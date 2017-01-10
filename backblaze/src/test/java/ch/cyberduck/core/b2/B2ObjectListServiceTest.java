@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.UUID;
 
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.*;
 
@@ -66,10 +67,10 @@ public class B2ObjectListServiceTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(new byte[0], out);
         out.close();
-        final B2FileResponse resopnse = out.getStatus();
+        final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
         final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
         // Not found with missing version ID
         assertFalse(list.contains(file));
@@ -129,10 +130,10 @@ public class B2ObjectListServiceTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(file1, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file1, status);
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status);
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = out.getStatus();
+            final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
             final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file1.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file1));
@@ -146,10 +147,10 @@ public class B2ObjectListServiceTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(file2, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file2, status);
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status);
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = out.getStatus();
+            final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
             final List<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());
             file2.attributes().setVersionId(resopnse.getFileId());
             assertTrue(list.contains(file2));

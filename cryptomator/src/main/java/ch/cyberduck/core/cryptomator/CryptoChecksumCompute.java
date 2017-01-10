@@ -52,14 +52,13 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
 
     @Override
     public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
-        if(null == status.getHeader()) {
-            log.warn(String.format("Missing file header in status %s", status));
-            return delegate.compute(file, in, status);
-        }
         return this.compute(file, in, status.getHeader());
     }
 
     protected Checksum compute(final Path file, final InputStream in, final ByteBuffer header) throws ChecksumException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Calculate checksum for %s with header %s", file, header));
+        }
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),

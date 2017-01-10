@@ -60,7 +60,7 @@ public class S3EncryptionFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
         feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         final Encryption.Algorithm value = feature.getEncryption(test);

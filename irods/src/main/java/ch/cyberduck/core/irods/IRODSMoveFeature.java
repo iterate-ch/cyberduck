@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,9 +34,11 @@ import java.util.Collections;
 public class IRODSMoveFeature implements Move {
 
     private final IRODSSession session;
+    private Delete delete;
 
     public IRODSMoveFeature(IRODSSession session) {
         this.session = session;
+        this.delete = new IRODSDeleteFeature(session);
     }
 
     @Override
@@ -47,7 +50,6 @@ public class IRODSMoveFeature implements Move {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
             if(exists) {
-                final Delete delete = session.getFeature(Delete.class);
                 delete.delete(Collections.singletonList(renamed), new DisabledLoginCallback(), callback);
             }
             final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
@@ -61,5 +63,16 @@ public class IRODSMoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
     }
 }

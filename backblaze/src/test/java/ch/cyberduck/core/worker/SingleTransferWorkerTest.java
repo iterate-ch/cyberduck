@@ -86,7 +86,7 @@ public class SingleTransferWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new B2LargeUploadService(this, 100L * 1024L * 1024L) {
+                    return (T) new B2LargeUploadService(this) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {

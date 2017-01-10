@@ -31,6 +31,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -68,19 +70,19 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         this(session, regionService,
                 new SwiftObjectListService(session, regionService),
                 new SwiftSegmentService(session, regionService),
-                session.getFeature(Find.class, new DefaultFindFeature(session)));
+                new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService) {
-        this(session, regionService, listService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)));
+        this(session, regionService, listService, segmentService, new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
@@ -168,5 +170,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 }

@@ -167,7 +167,7 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveWriteFeature(this);
         }
         if(type == Upload.class) {
-            return (T) new DriveUploadFeature(this.getFeature(Write.class));
+            return (T) new DriveUploadFeature(new DriveWriteFeature(this));
         }
         if(type == Directory.class) {
             return (T) new DriveDirectoryFeature(this);

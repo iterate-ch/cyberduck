@@ -26,6 +26,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,7 +59,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     private final AttributesFinder attributes;
 
     public DriveWriteFeature(final DriveSession session) {
-        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public DriveWriteFeature(final DriveSession session, final Find finder, final AttributesFinder attributes) {
@@ -167,5 +169,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
             }
         };
         return this.write(file, status, command);
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 }

@@ -24,10 +24,12 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface Upload<Output> {
+public interface Upload<Reply> {
 
-    Output upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
-                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+    Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
+                 TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     Write.Append append(Path file, Long length, PathCache cache) throws BackgroundException;
+
+    Upload<Reply> withWriter(Write<Reply> writer);
 }

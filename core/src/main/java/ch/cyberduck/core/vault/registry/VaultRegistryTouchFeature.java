@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
@@ -47,5 +48,11 @@ public class VaultRegistryTouchFeature implements Touch {
         catch(BackgroundException e) {
             return false;
         }
+    }
+
+    @Override
+    public Touch withWriter(final Write writer) {
+        proxy.withWriter(writer);
+        return this;
     }
 }

@@ -35,7 +35,6 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -102,9 +101,12 @@ public class CryptoVault implements Vault {
     public CryptoVault(final Path home, final PasswordStore keychain) {
         this.home = home;
         this.keychain = keychain;
-        this.filenameProvider = new CryptoFilenameProvider(home);
+        // New vault home with vault flag set for internal use
+        final Path vault = new Path(home.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), home.attributes());
+        vault.getType().addAll(home.getType());
+        this.filenameProvider = new CryptoFilenameProvider(vault);
         this.directoryIdProvider = new CryptoDirectoryIdProvider();
-        this.directoryProvider = new CryptoDirectoryProvider(home, this);
+        this.directoryProvider = new CryptoDirectoryProvider(vault, this);
     }
 
     @Override
@@ -128,11 +130,10 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", masterKeyFile));
         }
-        final ContentWriter writer = new ContentWriter(session);
         // Obtain non encrypted directory writer
         final Directory feature = session._getFeature(Directory.class);
         feature.mkdir(home, region, new TransferStatus());
-        writer.write(masterKeyFile, masterKeyFileContent.serialize());
+        new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home);
         final Path firstLevel = secondLevel.getParent();
@@ -156,7 +157,7 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt to read master key from %s", masterKeyFile));
         }
-        final String json = new ContentReader(session).readToString(masterKeyFile);
+        final String json = new ContentReader(session).read(masterKeyFile);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Read master key %s", json));
         }
@@ -406,16 +407,17 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoListService(session, (ListService) delegate, this);
             }
             if(type == Touch.class) {
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), this);
+                // Use default touch feature because touch with remote implementation will not add encrypted file header
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), session._getFeature(Write.class), this);
             }
             if(type == Directory.class) {
-                return (T) new CryptoDirectoryFeature(session, (Directory) delegate, this);
+                return (T) new CryptoDirectoryFeature(session, (Directory) delegate, session._getFeature(Write.class), this);
             }
             if(type == Upload.class) {
-                return (T) new CryptoUploadFeature(session, (Upload) delegate, this);
+                return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
             }
             if(type == Download.class) {
-                return (T) new CryptoDownloadFeature(session, (Download) delegate, this);
+                return (T) new CryptoDownloadFeature(session, (Download) delegate, session._getFeature(Read.class), this);
             }
             if(type == Read.class) {
                 return (T) new CryptoReadFeature(session, (Read) delegate, this);
@@ -424,7 +426,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoWriteFeature(session, (Write) delegate, this);
             }
             if(type == Move.class) {
-                return (T) new CryptoMoveFeature(session, (Move) delegate, this);
+                return (T) new CryptoMoveFeature(session, (Move) delegate, session._getFeature(Delete.class), session._getFeature(ListService.class), this);
             }
             if(type == AttributesFinder.class) {
                 return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);
@@ -451,10 +453,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoCompressFeature(session, (Compress) delegate, this);
             }
             if(type == Bulk.class) {
-                return (T) new CryptoBulkFeature<>(session, (Bulk) delegate, this);
-            }
-            if(type == ChecksumCompute.class) {
-                return (T) new CryptoChecksumCompute((ChecksumCompute) delegate, this);
+                return (T) new CryptoBulkFeature(session, (Bulk) delegate, session._getFeature(Delete.class), this);
             }
             if(type == UnixPermission.class) {
                 return (T) new CryptoUnixPermission(session, (UnixPermission) delegate, this);

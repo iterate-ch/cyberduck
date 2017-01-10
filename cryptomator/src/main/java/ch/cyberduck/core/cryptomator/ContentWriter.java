@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,10 +40,7 @@ public class ContentWriter {
     public void write(final Path file, final byte[] content) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
         final TransferStatus status = new TransferStatus().length(content.length);
-        final ChecksumCompute checksum = session._getFeature(ChecksumCompute.class);
-        if(null != checksum) {
-            status.setChecksum(checksum.compute(file, new ByteArrayInputStream(content), new TransferStatus()));
-        }
+        status.setChecksum(write.checksum().compute(file, new ByteArrayInputStream(content), new TransferStatus()));
         final StatusOutputStream<?> out = write.write(file, status);
         try {
             IOUtils.write(content, out);

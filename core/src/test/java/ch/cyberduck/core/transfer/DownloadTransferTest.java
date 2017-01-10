@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -182,7 +183,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                        new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(destination) {
+                        new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(destination.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) throws BackgroundException {
                         return true;

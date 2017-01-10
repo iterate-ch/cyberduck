@@ -29,4 +29,6 @@ public interface Download {
                   TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
     boolean offset(Path file) throws BackgroundException;
+
+    Download withReader(Read reader);
 }

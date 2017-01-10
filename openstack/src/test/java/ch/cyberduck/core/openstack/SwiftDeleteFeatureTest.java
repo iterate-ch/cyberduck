@@ -91,7 +91,7 @@ public class SwiftDeleteFeatureTest {
                 new Path(container, "t", EnumSet.of(Path.Type.directory)),
                 name, EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
         assertFalse(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);

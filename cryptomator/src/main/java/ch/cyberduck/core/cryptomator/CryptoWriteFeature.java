@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -34,22 +35,22 @@ import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 
-public class CryptoWriteFeature implements Write {
+public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     private final Session<?> session;
-    private final Write delegate;
+    private final Write<Reply> delegate;
     private final Find finder;
     private final AttributesFinder attributes;
     private final CryptoVault vault;
 
-    public CryptoWriteFeature(final Session<?> session, final Write delegate, final CryptoVault vault) {
+    public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final CryptoVault vault) {
         this(session, delegate,
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)),
+                new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
+                new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
                 vault);
     }
 
-    public CryptoWriteFeature(final Session<?> session, final Write delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
+    public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
         this.session = session;
         this.delegate = delegate;
         this.finder = finder;
@@ -58,7 +59,7 @@ public class CryptoWriteFeature implements Write {
     }
 
     @Override
-    public StatusOutputStream<?> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Reply> write(final Path file, final TransferStatus status) throws BackgroundException {
         if(vault.contains(file)) {
             try {
                 final Path encrypted = vault.encrypt(session, file);
@@ -71,9 +72,9 @@ public class CryptoWriteFeature implements Write {
                 else {
                     header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
                 }
-                final StatusOutputStream<?> proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
+                final StatusOutputStream<Reply> proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
                 proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
-                return new CryptoOutputStream<>(proxy, cryptor, header);
+                return new CryptoOutputStream<Reply>(proxy, cryptor, header);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
@@ -84,8 +85,8 @@ public class CryptoWriteFeature implements Write {
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+        if(finder.withCache(cache).find(vault.encrypt(session, file))) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
@@ -99,5 +100,10 @@ public class CryptoWriteFeature implements Write {
     @Override
     public boolean random() {
         return delegate.random();
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new CryptoChecksumCompute(delegate.checksum(), vault);
     }
 }

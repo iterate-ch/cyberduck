@@ -18,7 +18,7 @@ public class SwiftTouchFeatureTest {
     @Test
     public void testFile() {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
-        assertFalse(new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).isSupported(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertFalse(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(new SwiftTouchFeature(session, new SwiftRegionService(session)).isSupported(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 }

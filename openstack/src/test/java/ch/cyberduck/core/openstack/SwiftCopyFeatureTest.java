@@ -52,7 +52,7 @@ public class SwiftCopyFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("ORD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftCopyFeature(session).copy(test, copy);
         assertTrue(new SwiftFindFeature(session).find(test));

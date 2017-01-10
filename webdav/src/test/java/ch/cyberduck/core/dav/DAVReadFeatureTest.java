@@ -15,6 +15,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
@@ -82,7 +83,7 @@ public class DAVReadFeatureTest {
         };
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertEquals(-1L, local.attributes().getSize());
-        new DefaultDownloadFeature(session).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new DefaultDownloadFeature(session.getFeature(Read.class)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals(923L, local.attributes().getSize());
     }

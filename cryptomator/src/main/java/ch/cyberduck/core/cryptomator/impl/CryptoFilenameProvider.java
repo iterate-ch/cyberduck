@@ -42,9 +42,7 @@ public class CryptoFilenameProvider {
     private final Path metadataRoot;
 
     public CryptoFilenameProvider(final Path vault) {
-        // new vault home with vault flag set for internal use
-        final Path parent = new Path(vault.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.vault), vault.attributes());
-        this.metadataRoot = new Path(parent, METADATA_DIR_NAME, EnumSet.of(Path.Type.directory, Path.Type.vault));
+        this.metadataRoot = new Path(vault, METADATA_DIR_NAME, vault.getType());
     }
 
     public boolean isDeflated(final String filename) {
@@ -52,7 +50,7 @@ public class CryptoFilenameProvider {
     }
 
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
-        return new ContentReader(session).readToString(resolve(shortName));
+        return new ContentReader(session).read(resolve(shortName));
     }
 
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
@@ -76,16 +74,15 @@ public class CryptoFilenameProvider {
         if(!find.find(secondLevel)) {
             mkdir.mkdir(secondLevel);
         }
-        final ContentWriter writer = new ContentWriter(session);
-        writer.write(metadataFile, longFileNameBytes);
+        new ContentWriter(session).write(metadataFile, longFileNameBytes);
         return shortName;
     }
 
     public Path resolve(final String filename) {
         // Intermediate directory
-        final Path first = new Path(metadataRoot, filename.substring(0, 2), EnumSet.of(Path.Type.directory, Path.Type.vault));
+        final Path first = new Path(metadataRoot, filename.substring(0, 2), metadataRoot.getType());
         // Intermediate directory
-        final Path second = new Path(first, filename.substring(2, 4), EnumSet.of(Path.Type.directory, Path.Type.vault));
+        final Path second = new Path(first, filename.substring(2, 4), metadataRoot.getType());
         return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
     }
 }

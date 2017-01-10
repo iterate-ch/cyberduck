@@ -44,6 +44,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.SegmentedWrite;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -240,18 +241,17 @@ public class SwiftSession extends HttpSession<Client> {
         if(type == Read.class) {
             return (T) new SwiftReadFeature(this, regionService);
         }
-        if(type == Write.class) {
+        if(type == SegmentedWrite.class) {
             return (T) new SwiftLargeUploadWriteFeature(this, regionService, new SwiftSegmentService(this, regionService));
         }
+        if(type == Write.class) {
+            return (T) new SwiftWriteFeature(this, regionService);
+        }
         if(type == Upload.class) {
-            return (T) new SwiftThresholdUploadService(this, regionService,
-                    new SwiftLargeObjectUploadFeature(this, regionService,
-                            PreferencesFactory.get().getLong("openstack.upload.largeobject.size"),
-                            PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency")),
-                    new SwiftSmallObjectUploadFeature(this.getFeature(Write.class, new SwiftWriteFeature(this, regionService))));
+            return (T) new SwiftThresholdUploadService(this, regionService, new SwiftWriteFeature(this, regionService));
         }
         if(type == Directory.class) {
-            return (T) new SwiftDirectoryFeature(this, regionService, this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
+            return (T) new SwiftDirectoryFeature(this, regionService, new SwiftWriteFeature(this, regionService));
         }
         if(type == Delete.class) {
             return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
@@ -266,7 +266,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMoveFeature(this, regionService);
         }
         if(type == Touch.class) {
-            return (T) new SwiftTouchFeature(this.getFeature(Write.class, new SwiftWriteFeature(this, regionService)));
+            return (T) new SwiftTouchFeature(this, regionService);
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);

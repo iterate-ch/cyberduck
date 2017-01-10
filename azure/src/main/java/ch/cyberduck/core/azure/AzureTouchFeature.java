@@ -25,16 +25,18 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class AzureTouchFeature implements Touch {
+import com.microsoft.azure.storage.OperationContext;
 
-    private final Write write;
+public class AzureTouchFeature implements Touch<Void> {
 
-    public AzureTouchFeature(final AzureSession session) {
-        this(session.getFeature(Write.class));
+    private Write<Void> writer;
+
+    public AzureTouchFeature(final AzureSession session, final OperationContext context) {
+        this(new AzureWriteFeature(session, context));
     }
 
-    public AzureTouchFeature(final Write write) {
-        this.write = write;
+    public AzureTouchFeature(final Write<Void> write) {
+        this.writer = write;
     }
 
     @Override
@@ -44,6 +46,12 @@ public class AzureTouchFeature implements Touch {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        new DefaultStreamCloser().close(write.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status));
+    }
+
+    @Override
+    public AzureTouchFeature withWriter(final Write<Void> writer) {
+        this.writer = writer;
+        return this;
     }
 }

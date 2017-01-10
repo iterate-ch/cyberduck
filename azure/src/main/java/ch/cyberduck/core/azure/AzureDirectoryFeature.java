@@ -18,37 +18,36 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URISyntaxException;
 
-import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
 import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
-public class AzureDirectoryFeature implements Directory {
-
-    private final AzureSession session;
-
-    private final OperationContext context;
+public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
             = new AzurePathContainerService();
 
+    private final AzureSession session;
+    private final OperationContext context;
+
+    private Write<Void> writer;
+
     public AzureDirectoryFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.context = context;
+        this.writer = new AzureWriteFeature(session, context);
     }
 
     @Override
@@ -66,10 +65,9 @@ public class AzureDirectoryFeature implements Directory {
                 container.create(options, context);
             }
             else {
-                // Create delimiter placeholder
-                final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)));
-                blob.upload(new ByteArrayInputStream(new byte[]{}), 0L, AccessCondition.generateEmptyCondition(), options, context);
+                // Add placeholder object
+                file.getType().add(Path.Type.placeholder);
+                new DefaultStreamCloser().close(writer.write(file, status));
             }
         }
         catch(URISyntaxException e) {
@@ -78,8 +76,11 @@ public class AzureDirectoryFeature implements Directory {
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, file);
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
+    }
+
+    @Override
+    public Directory<Void> withWriter(final Write<Void> writer) {
+        this.writer = writer;
+        return this;
     }
 }

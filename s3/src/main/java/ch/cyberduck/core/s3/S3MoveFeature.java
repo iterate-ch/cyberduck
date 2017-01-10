@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class S3MoveFeature implements Move {
@@ -43,9 +45,14 @@ public class S3MoveFeature implements Move {
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
 
+    private Delete delete;
+    private ListService list;
+
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
+        this.delete = new S3DefaultDeleteFeature(session);
+        this.list = new S3ObjectListService(session);
     }
 
     @Override
@@ -79,12 +86,10 @@ public class S3MoveFeature implements Move {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Received response headers for copy %s", headers));
                 }
-                session.getClient().deleteObject(
-                        containerService.getContainer(source).getName(),
-                        containerService.getKey(source));
+                delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
             if(source.isDirectory()) {
-                for(Path i : session.getFeature(ListService.class).list(source, new DisabledListProgressListener())) {
+                for(Path i : list.list(source, new DisabledListProgressListener())) {
                     this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
                 }
             }
@@ -97,5 +102,17 @@ public class S3MoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return !containerService.isContainer(source);
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        this.list = list;
+        return this;
     }
 }

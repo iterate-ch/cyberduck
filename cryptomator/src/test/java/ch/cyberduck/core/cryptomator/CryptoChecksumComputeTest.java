@@ -26,6 +26,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -58,6 +59,11 @@ public class CryptoChecksumComputeTest {
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
                             assertTrue(file.equals(home) || file.isChild(home));
                         }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
+                        }
                     };
                 }
                 return super._getFeature(type);
@@ -84,6 +90,5 @@ public class CryptoChecksumComputeTest {
                 compute.compute(file, input, new TransferStatus().withHeader(header)));
         assertNotEquals(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(header)),
                 sha.compute(file, new NullInputStream(0L), new TransferStatus()));
-        assertNotNull(compute.compute(file, new NullInputStream(0L), new TransferStatus().withHeader(null)).hash);
     }
 }

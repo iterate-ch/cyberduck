@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.*;
 
@@ -70,7 +70,7 @@ public class B2WriteFeatureTest {
         final byte[] content = RandomUtils.nextBytes(1);
         status.setLength(content.length);
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         try {
             out.close();

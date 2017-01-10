@@ -35,7 +35,9 @@ import ch.cyberduck.core.openstack.SwiftAttributesFinderFeature;
 import ch.cyberduck.core.openstack.SwiftDeleteFeature;
 import ch.cyberduck.core.openstack.SwiftLargeObjectUploadFeature;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
+import ch.cyberduck.core.openstack.SwiftWriteFeature;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,7 +87,8 @@ public class SingleTransferWorkerTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new SwiftLargeObjectUploadFeature(this, 1024L * 1024L, 5) {
+                    final SwiftRegionService regionService = new SwiftRegionService(this);
+                    return (T) new SwiftLargeObjectUploadFeature(this, regionService, new SwiftWriteFeature(this, regionService), 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {

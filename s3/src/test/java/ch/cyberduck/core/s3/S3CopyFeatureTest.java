@@ -48,7 +48,7 @@ public class S3CopyFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
-        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));
@@ -67,7 +67,7 @@ public class S3CopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session, new S3WriteFeature(session)).touch(test, new TransferStatus());
+        new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy);
         assertTrue(new S3FindFeature(session).find(test));

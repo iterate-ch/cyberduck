@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -259,6 +260,11 @@ public class CryptoVaultTest {
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
                             assertTrue(file.equals(home) || file.isChild(home));
                         }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
+                        }
                     };
                 }
                 return super._getFeature(type);
@@ -291,6 +297,11 @@ public class CryptoVaultTest {
                         @Override
                         public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
                             assertTrue(file.equals(home) || file.isChild(home));
+                        }
+
+                        @Override
+                        public Directory withWriter(final Write writer) {
+                            return this;
                         }
                     };
                 }

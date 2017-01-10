@@ -24,7 +24,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.vault.registry.*;
 
 import org.apache.log4j.Logger;
@@ -170,9 +169,6 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == Compress.class) {
             return (T) new VaultRegistryCompressFeature(session, (Compress) proxy, this);
-        }
-        if(type == ChecksumCompute.class) {
-            return (T) new VaultRegistryChecksumCompute(session, (ChecksumCompute) proxy, this);
         }
         if(type == UnixPermission.class) {
             return (T) new VaultRegistryUnixPermission(session, (UnixPermission) proxy, this);

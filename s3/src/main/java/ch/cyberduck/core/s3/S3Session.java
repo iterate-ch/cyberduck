@@ -52,9 +52,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -273,8 +270,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Read.class) {
             return (T) new S3ReadFeature(this);
         }
-        if(type == Write.class) {
+        if(type == SegmentedWrite.class) {
             return (T) new S3MultipartWriteFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new S3WriteFeature(this);
         }
         if(type == Download.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
@@ -284,18 +284,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this),
-                        new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
-                        new S3MultipartUploadService(this)
+                // With S3 Transfer Acceleration enabled
+                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this)
                 );
             }
-            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService(),
-                    new S3SingleUploadService(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService()))),
-                    new S3MultipartUploadService(this)
+            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService()
             );
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));
+            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, new S3AccessControlListFeature(this));
@@ -319,7 +316,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this, this.getFeature(Write.class, new S3WriteFeature(this, new S3DisabledMultipartService())));
+            return (T) new S3TouchFeature(this);
         }
         if(type == Location.class) {
             if(this.isConnected()) {
@@ -389,9 +386,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
             }
-        }
-        if(type == ChecksumCompute.class) {
-            return (T) ChecksumComputeFactory.get(HashAlgorithm.sha256);
         }
         return super._getFeature(type);
     }

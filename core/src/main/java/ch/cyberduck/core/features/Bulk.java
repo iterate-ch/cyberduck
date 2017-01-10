@@ -24,4 +24,6 @@ import java.util.Map;
 
 public interface Bulk<R> {
     R pre(Transfer.Type type, Map<Path, TransferStatus> files) throws BackgroundException;
+
+    Bulk<R> withDelete(Delete delete);
 }

@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -43,6 +44,12 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
         for(Path file : files.keySet()) {
             return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files);
         }
-        return (R) proxy.pre(type, files);
+        return proxy.pre(type, files);
+    }
+
+    @Override
+    public Bulk<R> withDelete(final Delete delete) {
+        proxy.withDelete(delete);
+        return this;
     }
 }

@@ -53,7 +53,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.*;
 
@@ -89,12 +89,12 @@ public class B2ReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(file, new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertEquals(-1L, local.attributes().getSize());
-        new DefaultDownloadFeature(session).download(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        new DefaultDownloadFeature(new B2ReadFeature(session)).download(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), new TransferStatus() {
                     @Override
                     public void setLength(long length) {
@@ -123,7 +123,7 @@ public class B2ReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(file, new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<B2FileResponse> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
         IOUtils.write(content, out);
         out.close();
         {
@@ -162,7 +162,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
+        new B2SingleUploadService(new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());
@@ -202,7 +202,7 @@ public class B2ReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session, new B2WriteFeature(session)).upload(
+        new B2SingleUploadService(new B2WriteFeature(session)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 new TransferStatus().length(content.length),
                 new DisabledConnectionCallback());

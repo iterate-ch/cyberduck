@@ -36,56 +36,56 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SwiftThresholdUploadService implements Upload {
+import ch.iterate.openstack.swift.model.StorageObject;
+
+public class SwiftThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
-    private final SwiftLargeObjectUploadFeature largeObjectUploadFeature;
-    private final SwiftSmallObjectUploadFeature smallObjectUploadFeature;
 
     private final Long threshold;
 
+    private Write<StorageObject> writer;
+
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
-                                       final SwiftLargeObjectUploadFeature largeObjectUploadFeature,
-                                       final SwiftSmallObjectUploadFeature smallObjectUploadFeature) {
-        this(session, regionService, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"),
-                largeObjectUploadFeature, smallObjectUploadFeature);
+                                       final SwiftWriteFeature writer) {
+        this(session, regionService, writer, PreferencesFactory.get().getLong("openstack.upload.largeobject.threshold"));
     }
 
 
     public SwiftThresholdUploadService(final SwiftSession session, final SwiftRegionService regionService,
-                                       final Long threshold,
-                                       final SwiftLargeObjectUploadFeature largeObjectUploadFeature,
-                                       final SwiftSmallObjectUploadFeature smallObjectUploadFeature) {
+                                       final SwiftWriteFeature writer,
+                                       final Long threshold) {
         this.session = session;
         this.regionService = regionService;
+        this.writer = writer;
         this.threshold = threshold;
-        this.largeObjectUploadFeature = largeObjectUploadFeature;
-        this.smallObjectUploadFeature = smallObjectUploadFeature;
     }
 
     @Override
     public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return session.getFeature(Write.class, new SwiftWriteFeature(session, regionService)).append(file, length, cache);
+        return writer.append(file, length, cache);
     }
 
     @Override
-    public Object upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final Upload feature;
+    public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                                final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final Upload<StorageObject> feature;
         if(status.getLength() > threshold) {
             if(!PreferencesFactory.get().getBoolean("openstack.upload.largeobject")) {
                 // Disabled by user
                 if(status.getLength() < PreferencesFactory.get().getLong("openstack.upload.largeobject.required.threshold")) {
                     log.warn("Large upload is disabled with property openstack.upload.largeobject");
-                    return smallObjectUploadFeature.upload(file, local, throttle, listener, status, callback);
+                    return new SwiftSmallObjectUploadFeature(writer).upload(file, local, throttle, listener, status, callback);
                 }
             }
-            feature = largeObjectUploadFeature;
+            feature = new SwiftLargeObjectUploadFeature(session, regionService, writer,
+                    PreferencesFactory.get().getLong("openstack.upload.largeobject.size"),
+                    PreferencesFactory.get().getInteger("openstack.upload.largeobject.concurrency"));
         }
         else {
-            feature = smallObjectUploadFeature;
+            feature = new SwiftSmallObjectUploadFeature(writer);
         }
         // Previous segments to delete
         final List<Path> segments = new ArrayList<Path>();
@@ -95,11 +95,17 @@ public class SwiftThresholdUploadService implements Upload {
                 segments.addAll(new SwiftSegmentService(session, regionService).list(file));
             }
         }
-        final Object checksum = feature.upload(file, local, throttle, listener, status, callback);
+        final StorageObject checksum = feature.upload(file, local, throttle, listener, status, callback);
         if(!segments.isEmpty()) {
             // Clean up any old segments
             new SwiftMultipleDeleteFeature(session).delete(segments, new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         return checksum;
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return this;
     }
 }

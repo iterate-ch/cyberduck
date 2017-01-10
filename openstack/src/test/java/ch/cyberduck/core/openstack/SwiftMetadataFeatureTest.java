@@ -70,7 +70,7 @@ public class SwiftMetadataFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(new SwiftWriteFeature(session, new SwiftRegionService(session))).touch(test, new TransferStatus());
+        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
         new SwiftMetadataFeature(session).setMetadata(test, Collections.<String, String>singletonMap("Test", v));
         final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);

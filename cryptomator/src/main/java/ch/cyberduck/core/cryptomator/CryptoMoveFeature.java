@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,25 +26,37 @@ import ch.cyberduck.core.features.Vault;
 public class CryptoMoveFeature implements Move {
 
     private final Session<?> session;
-    private final Move delegate;
+    private final Move proxy;
     private final Vault vault;
 
-    public CryptoMoveFeature(final Session<?> session, final Move delegate, final CryptoVault vault) {
+    public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final ListService list, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate;
-        this.vault = vault;
+        this.proxy = delegate
+                .withDelete(new CryptoDeleteFeature(session, delete, cryptomator))
+                .withList(new CryptoListService(session, list, cryptomator));
+        this.vault = cryptomator;
     }
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        delegate.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
+        proxy.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(vault.contains(source) && vault.contains(target)) {
-            return delegate.isSupported(source, target);
+            return proxy.isSupported(source, target);
         }
         return false;
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
     }
 }

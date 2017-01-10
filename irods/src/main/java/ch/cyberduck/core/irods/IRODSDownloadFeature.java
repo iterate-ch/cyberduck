@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
@@ -82,5 +83,10 @@ public class IRODSDownloadFeature implements Download {
     @Override
     public boolean offset(final Path file) throws BackgroundException {
         return false;
+    }
+
+    @Override
+    public Download withReader(final Read reader) {
+        return this;
     }
 }

@@ -10,6 +10,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
@@ -344,6 +346,16 @@ public class UploadTransferTest {
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
+
+                        @Override
+                        public Move withDelete(final Delete delete) {
+                            return this;
+                        }
+
+                        @Override
+                        public Move withList(final ListService list) {
+                            return this;
+                        }
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {
@@ -381,6 +393,11 @@ public class UploadTransferTest {
                         @Override
                         public boolean random() {
                             return false;
+                        }
+
+                        @Override
+                        public ChecksumCompute checksum() {
+                            return new DisabledChecksumCompute();
                         }
                     };
                 }

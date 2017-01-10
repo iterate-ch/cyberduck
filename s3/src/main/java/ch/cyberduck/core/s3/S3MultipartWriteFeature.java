@@ -58,11 +58,10 @@ public class S3MultipartWriteFeature implements Write {
     private final AttributesFinder attributes;
 
     public S3MultipartWriteFeature(final S3Session session) {
-        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public S3MultipartWriteFeature(final S3Session session,
-                                   final Find finder, final AttributesFinder attributes) {
+    public S3MultipartWriteFeature(final S3Session session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
@@ -154,7 +153,7 @@ public class S3MultipartWriteFeature implements Write {
                             final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
                             switch(session.getSignatureVersion()) {
                                 case AWS4HMACSHA256:
-                                    status.setChecksum(session.getFeature(ChecksumCompute.class, ChecksumComputeFactory.get(HashAlgorithm.sha256))
+                                    status.setChecksum(S3MultipartWriteFeature.this.checksum()
                                             .compute(file, new ByteArrayInputStream(b, off, len), status)
                                     );
                                     break;
@@ -238,5 +237,10 @@ public class S3MultipartWriteFeature implements Write {
                 close.set(true);
             }
         }
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

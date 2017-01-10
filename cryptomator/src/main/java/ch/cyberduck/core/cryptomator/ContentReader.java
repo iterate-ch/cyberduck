@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -36,7 +35,7 @@ public class ContentReader {
         this.session = session;
     }
 
-    public String readToString(final Path file) throws BackgroundException {
+    public String read(final Path file) throws BackgroundException {
         final Read read = session._getFeature(Read.class);
         final InputStream in = read.read(file, new TransferStatus());
         try {
@@ -47,20 +46,6 @@ public class ContentReader {
         }
         finally {
             IOUtils.closeQuietly(in);
-        }
-    }
-
-    public byte[] readToByteArray(final Path file) throws BackgroundException {
-        final Read read = session.getFeature(Read.class);
-        final InputStream in = read.read(file, new TransferStatus());
-        try {
-            return IOUtils.toByteArray(in);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        finally {
-            new DefaultStreamCloser().close(in);
         }
     }
 }

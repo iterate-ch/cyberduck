@@ -70,12 +70,12 @@ public class AzureObjectListService implements ListService {
             final AttributedList<Path> children = new AttributedList<Path>();
             ResultContinuation token = null;
             ResultSegment<ListBlobItem> result;
-            final String prefix;
-            if(containerService.isContainer(directory)) {
-                prefix = StringUtils.EMPTY;
-            }
-            else {
+            String prefix = StringUtils.EMPTY;
+            if(!containerService.isContainer(directory)) {
                 prefix = containerService.getKey(directory);
+                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                    prefix += Path.DELIMITER;
+                }
             }
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();

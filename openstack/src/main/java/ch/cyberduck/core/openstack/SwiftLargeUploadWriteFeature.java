@@ -25,6 +25,8 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -59,15 +61,15 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService), session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, session.getFeature(Find.class, new DefaultFindFeature(session)), session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
+        this(session, regionService, segmentService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
@@ -112,6 +114,11 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     @Override
     public boolean random() {
         return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum() {
+        return new DisabledChecksumCompute();
     }
 
     private final class LargeUploadOutputStream extends OutputStream {

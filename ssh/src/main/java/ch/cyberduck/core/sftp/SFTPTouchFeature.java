@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.EnumSet;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-public class SFTPTouchFeature implements Touch {
+public class SFTPTouchFeature implements Touch<Void> {
 
     private final SFTPSession session;
 
@@ -52,5 +53,10 @@ public class SFTPTouchFeature implements Touch {
     @Override
     public boolean isSupported(final Path workdir) {
         return true;
+    }
+
+    @Override
+    public SFTPTouchFeature withWriter(final Write writer) {
+        return this;
     }
 }

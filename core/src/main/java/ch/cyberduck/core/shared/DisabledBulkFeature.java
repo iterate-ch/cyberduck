@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -27,5 +28,10 @@ public class DisabledBulkFeature implements Bulk<Void> {
     @Override
     public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
         return null;
+    }
+
+    @Override
+    public Bulk<Void> withDelete(final Delete delete) {
+        return this;
     }
 }

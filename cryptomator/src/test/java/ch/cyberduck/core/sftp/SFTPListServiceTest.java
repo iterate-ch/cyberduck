@@ -32,7 +32,6 @@ import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -59,7 +58,7 @@ public class SFTPListServiceTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path home = session.getFeature(Home.class).find();
+        final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
@@ -70,7 +69,7 @@ public class SFTPListServiceTest {
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
-        new CryptoTouchFeature(session, new DefaultTouchFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature(session), new SFTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

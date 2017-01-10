@@ -28,7 +28,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class SwiftTouchFeature implements Touch {
+import ch.iterate.openstack.swift.model.StorageObject;
+
+public class SwiftTouchFeature implements Touch<StorageObject> {
 
     final PathContainerService containerService
             = new SwiftPathContainerService();
@@ -36,10 +38,10 @@ public class SwiftTouchFeature implements Touch {
     private final MimeTypeService mapping
             = new MappingMimeTypeService();
 
-    private final Write write;
+    private Write writer;
 
-    public SwiftTouchFeature(final Write write) {
-        this.write = write;
+    public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        this.writer = new SwiftWriteFeature(session, regionService);
     }
 
     @Override
@@ -47,12 +49,18 @@ public class SwiftTouchFeature implements Touch {
         final TransferStatus status = new TransferStatus();
         status.setMime(mapping.getMime(file.getName()));
         status.setLength(0L);
-        new DefaultStreamCloser().close(write.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status));
     }
 
     @Override
     public boolean isSupported(final Path workdir) {
         // Creating files is only possible inside a container.
         return !workdir.isRoot();
+    }
+
+    @Override
+    public Touch<StorageObject> withWriter(final Write writer) {
+        this.writer = writer;
+        return this;
     }
 }
