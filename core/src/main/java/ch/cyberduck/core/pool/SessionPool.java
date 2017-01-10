@@ -21,7 +21,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.vault.DisabledVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 public interface SessionPool {
@@ -98,7 +97,7 @@ public interface SessionPool {
 
         @Override
         public VaultRegistry getVault() {
-            return new DisabledVaultRegistry();
+            return VaultRegistry.DISABLED;
         }
 
         @Override

@@ -49,7 +49,6 @@ import ch.cyberduck.core.shared.DisabledMoveFeature;
 import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.shared.NullFileidProvider;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.vault.DisabledVaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
@@ -68,7 +67,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      * Connection
      */
     protected C client;
-    protected VaultRegistry registry = new DisabledVaultRegistry();
+    protected VaultRegistry registry = VaultRegistry.DISABLED;
 
     private TranscriptListener listener = new DisabledTranscriptListener();
 
@@ -267,10 +266,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
 
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type, final T feature) {
-        if(PreferencesFactory.get().getBoolean("cryptomator.enable")) {
-            return registry.getFeature(this, type, feature);
-        }
-        return feature;
+        return registry.getFeature(this, type, feature);
     }
 
     @SuppressWarnings("unchecked")

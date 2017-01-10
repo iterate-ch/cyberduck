@@ -21,6 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultRegistry extends VaultLookupListener {
+    VaultRegistry DISABLED = new DisabledVaultRegistry();
+
     /**
      * @param session Connection
      * @param file    File
