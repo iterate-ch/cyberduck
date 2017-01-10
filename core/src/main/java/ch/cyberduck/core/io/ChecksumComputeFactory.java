@@ -45,7 +45,7 @@ public final class ChecksumComputeFactory {
                 return new ChecksumCompute() {
                     @Override
                     public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
-                        return null;
+                        return Checksum.NONE;
                     }
                 };
         }
