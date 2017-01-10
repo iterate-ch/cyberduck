@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -54,8 +54,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
 
+            generalButton.Image = IconCache.Instance.IconForName("general", 32);
+            browserButton.Image = IconCache.Instance.IconForName("browser", 32);
+            transfersButton.Image = IconCache.Instance.IconForName("queue", 32);
+            editStripButton.Image = IconCache.Instance.IconForName("pencil", 32);
             sftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
+            bandwidthButton.Image = IconCache.Instance.IconForName("bandwidth", 32);
+            connectionButton.Image = IconCache.Instance.IconForName("connection", 32);
+            updateButton.Image = IconCache.Instance.IconForName("update", 32);
+            languageButton.Image = IconCache.Instance.IconForName("language", 32);
 
             connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
             defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
@@ -205,19 +213,28 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool AlternatingRowBackground
         {
             get { return false; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool HorizontalLines
         {
             get { return false; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public bool VerticalLines
         {
             get { return false; }
-            set { ; }
+            set
+            {
+                ;
+            }
         }
 
         public string DefaultEncoding
@@ -1306,7 +1323,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             DefaultStorageClassChangedEvent();
         }
-        
+
         private void updateButton_Click(object sender, EventArgs e)
         {
             if (!updateButton.Checked)
