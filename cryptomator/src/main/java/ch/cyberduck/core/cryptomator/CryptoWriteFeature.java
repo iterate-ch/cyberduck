@@ -44,7 +44,10 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     private final CryptoVault vault;
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final CryptoVault vault) {
-        this(session, delegate, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), vault);
+        this(session, delegate,
+                new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
+                new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
+                vault);
     }
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {

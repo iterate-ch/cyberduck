@@ -81,6 +81,7 @@ public class SFTPWriteFeatureTest {
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
+        assertEquals(content.length, new CryptoWriteFeature<Void>(session, new SFTPWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length));
         new StreamCopier(status, status).transfer(in, buffer);
