@@ -53,7 +53,7 @@ public class CreateSymlinkController extends FileController {
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
         final NSView view = super.getAccessoryView(alert);
-        inputField.setStringValue(FilenameUtils.getBaseName(selected.getName()));
+        this.updateField(inputField, FilenameUtils.getBaseName(selected.getName()));
         return view;
     }
 

@@ -62,7 +62,7 @@ public class DuplicateFileController extends FileController {
                 FilenameUtils.getBaseName(selected.getName()),
                 UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                 StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
-        inputField.setStringValue(proposal);
+        this.updateField(inputField, proposal);
         return view;
     }
 
