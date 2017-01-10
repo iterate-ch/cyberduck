@@ -95,6 +95,10 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
             log.debug(String.format("Digest verification disabled for file %s", file));
             return;
         }
+        if(file.getType().contains(Path.Type.encrypted)) {
+            log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+            return;
+        }
         final String expected = Hex.encodeHexString(digest.digest());
         if(!checksum.equals(Checksum.parse(expected))) {
             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
