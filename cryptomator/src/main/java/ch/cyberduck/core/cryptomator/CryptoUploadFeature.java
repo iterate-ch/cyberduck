@@ -27,9 +27,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
-
 public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     private final Session<?> session;
@@ -44,12 +41,6 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(vault.contains(file)) {
-            // Write header
-            final Cryptor cryptor = vault.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-        }
         return proxy.upload(vault.encrypt(session, file), local, throttle, listener, status, callback);
     }
 
