@@ -39,6 +39,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -75,13 +77,18 @@ public class SFTPWriteFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final OutputStream out = new CryptoWriteFeature<Void>(session, new SFTPWriteFeature(session), cryptomator).write(test, status);
+        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new SFTPWriteFeature(session), cryptomator);
+        final Cryptor cryptor = cryptomator.getCryptor();
+        final FileHeader header = cryptor.fileHeaderCryptor().create();
+        status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        status.setChecksum(writer.checksum().compute(test, new ByteArrayInputStream(content), status));
+        final OutputStream out = writer.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<Void>(session, new SFTPWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length));
         new StreamCopier(status, status).transfer(in, buffer);

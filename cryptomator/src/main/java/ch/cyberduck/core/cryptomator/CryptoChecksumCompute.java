@@ -29,6 +29,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -53,6 +54,9 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
 
     @Override
     public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+        if(Checksum.NONE == delegate.compute(file, new NullInputStream(0L), status)) {
+            return Checksum.NONE;
+        }
         return this.compute(file, in, status.getHeader());
     }
 

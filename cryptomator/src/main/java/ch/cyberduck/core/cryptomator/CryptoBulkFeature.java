@@ -20,9 +20,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +32,7 @@ import java.util.Map;
 public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Session<?> session;
     private final Bulk<R> proxy;
-    private final Vault cryptomator;
+    private final CryptoVault cryptomator;
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
@@ -42,7 +44,15 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
         final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
-            encrypted.put(cryptomator.encrypt(session, entry.getKey()), entry.getValue());
+            final Path file = entry.getKey();
+            final TransferStatus status = entry.getValue();
+            encrypted.put(cryptomator.encrypt(session, file), status);
+            if(cryptomator.contains(file)) {
+                // Write header
+                final Cryptor cryptor = cryptomator.getCryptor();
+                final FileHeader header = cryptor.fileHeaderCryptor().create();
+                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            }
         }
         return proxy.pre(type, encrypted);
     }
