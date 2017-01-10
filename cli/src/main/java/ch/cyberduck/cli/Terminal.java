@@ -64,8 +64,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.DisabledVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
@@ -229,8 +228,7 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
             );
-            source = new SingleSessionPool(connect, session, cache, PreferencesFactory.get().getBoolean("cryptomator.enable")
-                    ? new DefaultVaultRegistry(new TerminalPasswordCallback()) : new DisabledVaultRegistry());
+            source = new SingleSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -267,8 +265,7 @@ public class Terminal {
                                             new TerminalCertificateStore(reader)
                                     ),
                                     new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))
-                            ), cache, PreferencesFactory.get().getBoolean("cryptomator.enable") ?
-                                    new DefaultVaultRegistry(new TerminalPasswordCallback()) : new DisabledVaultRegistry())
+                            ), cache, VaultRegistryFactory.create(new TerminalPasswordCallback()))
                     );
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
