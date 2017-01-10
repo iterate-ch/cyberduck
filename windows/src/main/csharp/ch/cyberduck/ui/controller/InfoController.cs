@@ -38,6 +38,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.core.io;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
