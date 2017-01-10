@@ -44,10 +44,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     private final CryptoVault vault;
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final CryptoVault vault) {
-        this(session, delegate,
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)),
-                vault);
+        this(session, delegate, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), vault);
     }
 
     public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
@@ -85,8 +82,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+        if(finder.withCache(cache).find(vault.encrypt(session, file))) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
