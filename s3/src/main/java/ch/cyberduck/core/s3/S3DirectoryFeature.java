@@ -34,7 +34,7 @@ import org.jets3t.service.model.StorageObject;
 
 public class S3DirectoryFeature implements Directory<StorageObject> {
 
-    protected static final String MIMETYPE = "application/x-directory";
+    private static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
 
@@ -75,6 +75,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
+            file.getType().add(Path.Type.placeholder);
             new DefaultStreamCloser().close(writer.write(file, status));
         }
     }
