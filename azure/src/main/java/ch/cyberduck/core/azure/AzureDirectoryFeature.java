@@ -36,8 +36,6 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
 public class AzureDirectoryFeature implements Directory<Void> {
 
-    protected static final String MIMETYPE = "application/x-directory";
-
     private final PathContainerService containerService
             = new AzurePathContainerService();
 
@@ -68,7 +66,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             }
             else {
                 // Add placeholder object
-                status.setMime(MIMETYPE);
+                file.getType().add(Path.Type.placeholder);
                 new DefaultStreamCloser().close(writer.write(file, status));
             }
         }

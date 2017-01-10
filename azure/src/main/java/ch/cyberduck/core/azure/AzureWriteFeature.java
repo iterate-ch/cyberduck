@@ -95,9 +95,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CloudAppendBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getAppendBlobReference(
-                            AzureDirectoryFeature.MIMETYPE.equals(status.getMime()) ? containerService.getKey(file).concat(String.valueOf(Path.DELIMITER)) :
-                                    containerService.getKey(file));
+                    .getAppendBlobReference(containerService.getKey(file));
             if(StringUtils.isNotBlank(status.getMime())) {
                 blob.getProperties().setContentType(status.getMime());
             }
