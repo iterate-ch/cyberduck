@@ -43,11 +43,8 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
             = PreferencesFactory.get();
 
     private final S3Session session;
-
     private final TransferAcceleration<S3Session> accelerateTransferOption;
-
     private final X509TrustManager trust;
-
     private final X509KeyManager key;
 
     public S3ThresholdDownloadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
@@ -70,8 +67,7 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                          final StreamListener listener, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         try {
-            if(accelerateTransferOption.getStatus(file) ||
-                    (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
+            if(this.accelerate(file, status, prompt, bookmark)) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Tunnel download for file %s through accelerated endpoint %s", file, tunneled));
@@ -79,11 +75,28 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
                 new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle, listener, status, prompt);
                 return;
             }
-            log.warn(String.format("Transfer acceleration disabled for %s", file));
+            else {
+                log.warn(String.format("Transfer acceleration disabled for %s", file));
+            }
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
         }
         super.download(file, local, throttle, listener, status, prompt);
+    }
+
+    private boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
+        if(accelerateTransferOption.getStatus(file)) {
+            return false;
+        }
+        if(file.getType().contains(Path.Type.encrypted)) {
+            return false;
+        }
+        if(preferences.getBoolean("s3.accelerate.prompt")) {
+            if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -84,8 +84,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
         final Host bookmark = session.getHost();
         try {
-            if(status.getLength() > 0 && accelerateTransferOption.getStatus(file) ||
-                    (preferences.getBoolean("s3.accelerate.prompt") && accelerateTransferOption.prompt(bookmark, file, status, prompt))) {
+            if(this.accelerate(file, status, prompt, bookmark)) {
                 final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, tunneled));
@@ -108,7 +107,9 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
                 final S3SingleUploadService service = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
                 return service.upload(file, local, throttle, listener, status, prompt);
             }
-            log.warn(String.format("Transfer acceleration disabled for %s", file));
+            else {
+                log.warn(String.format("Transfer acceleration disabled for %s", file));
+            }
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
@@ -131,6 +132,26 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
+    }
+
+    protected boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
+        if(0L == status.getLength()) {
+            return false;
+        }
+        if(file.getType().contains(Path.Type.encrypted)) {
+            return false;
+        }
+        if(accelerateTransferOption.getStatus(file)) {
+            log.info(String.format("S3 transfer acceleration enabled for file %s", file));
+            return true;
+        }
+        if(preferences.getBoolean("s3.accelerate.prompt")) {
+            if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
+                log.info(String.format("S3 transfer acceleration enabled for file %s", file));
+                return true;
+            }
+        }
+        return false;
     }
 
     public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {
