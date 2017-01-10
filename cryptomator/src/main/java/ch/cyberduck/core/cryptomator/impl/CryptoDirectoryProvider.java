@@ -80,6 +80,9 @@ public class CryptoDirectoryProvider {
         final PathAttributes attributes = new PathAttributes();
         // Save directory id for use in vault
         attributes.setDirectoryId(directoryId);
-        return new Path(intermediate, dirHash.substring(2), dataRoot.getType(), attributes);
+        // Add encrypted type
+        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+        type.add(Path.Type.encrypted);
+        return new Path(intermediate, dirHash.substring(2), type, attributes);
     }
 }
