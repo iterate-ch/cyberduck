@@ -22,6 +22,7 @@ import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
+import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Credentials;
@@ -75,10 +76,17 @@ public class ConnectionController extends BookmarkController {
     }
 
     @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
-        // Reset password input
-        passwordField.setStringValue(StringUtils.EMPTY);
+    public void callback(final int returncode) {
+        if(SheetCallback.CANCEL_OPTION == returncode) {
+            credentials.setPassword(null);
+        }
+    }
+
+    @Override
+    public void windowDidBecomeKey(final NSNotification notification) {
+        // Reset credentials
+        this.updateField(usernameField, credentials.getUsername());
+        this.updateField(passwordField, credentials.getPassword());
     }
 
     public void setPasswordField(NSSecureTextField field) {

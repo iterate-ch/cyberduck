@@ -2670,7 +2670,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void sendCustomCommandClicked(final ID sender) {
-        CommandController controller = new CommandController(this, pool);
+        final CommandController controller = new CommandController(this, pool);
         final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller);
         sheet.beginSheet();
     }
@@ -2983,6 +2983,7 @@ public class BrowserController extends WindowController
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                     mount(controller.getBookmark());
                 }
+                controller.callback(returncode);
             }
         }, this, controller);
         sheet.beginSheet();
