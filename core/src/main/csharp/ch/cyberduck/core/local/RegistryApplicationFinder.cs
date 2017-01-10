@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
+// feedback@cyberduck.io
 // 
 
 using System;
@@ -23,11 +23,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Ch.Cyberduck.Core.Collections;
-using Ch.Cyberduck.Core.Local;
-using Microsoft.Win32;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Collections;
 using java.util;
+using Microsoft.Win32;
 using org.apache.commons.io;
 using org.apache.log4j;
 
@@ -36,7 +35,7 @@ namespace Ch.Cyberduck.Core.Local
     public class RegistryApplicationFinder : ApplicationFinder
     {
         private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
-        private static readonly Logger Log = Logger.getLogger(typeof (RegistryApplicationFinder).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
 
         private static readonly LRUCache<string, Application> applicationNameCache =
             new LRUCache<string, Application>(100);
@@ -60,16 +59,16 @@ namespace Ch.Cyberduck.Core.Local
                 {
                     FileVersionInfo info = FileVersionInfo.GetVersionInfo(path);
                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                                                                                   new Application(
-                                                                                       application.ToLower(),
-                                                                                       info.FileDescription)));
+                        new Application(
+                            application.ToLower(),
+                            info.FileDescription)));
                 }
                 else
                 {
                     applicationNameCache.Add(new KeyValuePair<string, Application>(application,
-                                                                                   new Application(
-                                                                                       application.ToLower(),
-                                                                                       FilenameUtils.getName(application))));
+                        new Application(
+                            application.ToLower(),
+                            FilenameUtils.getName(application))));
                 }
             }
             Application result;
@@ -91,12 +90,14 @@ namespace Ch.Cyberduck.Core.Local
                 Log.debug(string.Format("Return cached default application {0} for extension {1}", app, extension));
                 return app;
             }
-            String exe = GetExplorerRegisteredApplication(extension);
+            // Step 1 / Check if there is a registered edit command with File Explorer
+            String exe = GetExplorerRegisteredApplication(extension, "edit");
             if (null != exe)
             {
                 defaultApplicationCache.Add(extension, getDescription(exe));
             }
-            else
+            // Step 2 / Check registry 
+            if (null == exe)
             {
                 try
                 {
@@ -135,8 +136,18 @@ namespace Ch.Cyberduck.Core.Local
                     Log.error(string.Format("Exception while finding application for {0}", filename));
                 }
             }
+            // Step 3 / Check if there is a registered open command with File Explorer
+            if (null == exe)
+            {
+                exe = GetExplorerRegisteredApplication(extension, "open");
+                if (null != exe)
+                {
+                    defaultApplicationCache.Add(extension, getDescription(exe));
+                }
+            }
             defaultApplicationCache.TryGetValue(extension, out app);
-            if(null == app) {
+            if (null == app)
+            {
                 return Application.notfound;
             }
             return app;
@@ -187,7 +198,9 @@ namespace Ch.Cyberduck.Core.Local
                 }
                 map.Sort(
                     delegate(Application app1, Application app2)
-                        { return app1.getIdentifier().CompareTo(app2.getIdentifier()); });
+                    {
+                        return app1.getIdentifier().CompareTo(app2.getIdentifier());
+                    });
                 defaultApplicationListCache.Add(extension, map);
             }
             return Utils.ConvertToJavaList(defaultApplicationListCache[extension]);
@@ -200,17 +213,17 @@ namespace Ch.Cyberduck.Core.Local
 
         [DllImport("shlwapi.dll")]
         private static extern int AssocCreate(Guid clsid, ref Guid riid,
-                                              [MarshalAs(UnmanagedType.Interface)] out object ppv);
+            [MarshalAs(UnmanagedType.Interface)] out object ppv);
 
         /// <summary>
         /// Return with Explorer registered application by file's extension (for editing)
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="command"></param>
+        /// <param name="extension"></param>
+        /// <param name="verb"></param>
         /// <returns></returns>
         /// <see cref="http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html"/>
         /// <see cref="http://msdn.microsoft.com/en-us/library/cc144154%28VS.85%29.aspx"/>
-        private string GetExplorerRegisteredApplication(string extension)
+        private string GetExplorerRegisteredApplication(string extension, string verb)
         {
             try
             {
@@ -220,10 +233,10 @@ namespace Ch.Cyberduck.Core.Local
                 qa.Init(ASSOCF.INIT_DEFAULTTOSTAR, extension, UIntPtr.Zero, IntPtr.Zero);
 
                 int size = 0;
-                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, "edit", null, ref size);
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, verb, null, ref size);
 
                 StringBuilder sb = new StringBuilder(size);
-                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, "edit", sb, ref size);
+                qa.GetString(ASSOCF.NOTRUNCATE, ASSOCSTR.COMMAND, verb, sb, ref size);
 
                 string cmd = sb.ToString();
                 if (Utils.IsBlank(cmd))
@@ -233,15 +246,16 @@ namespace Ch.Cyberduck.Core.Local
 
                 if (cmd.Contains("\""))
                 {
-                    return cmd.Substring(1, cmd.LastIndexOf("\""));
+                    return cmd.Substring(1, cmd.IndexOf("\"", 1) - 1);
                 }
                 return cmd.Substring(0, cmd.IndexOf(" "));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return null;
             }
         }
+
 
         /// <summary>
         /// Extract edit command, fallback is the open command
@@ -330,17 +344,17 @@ namespace Ch.Cyberduck.Core.Local
         private interface IQueryAssociations
         {
             void Init([In] ASSOCF flags, [In, MarshalAs(UnmanagedType.LPWStr)] string pszAssoc, [In] UIntPtr hkProgid,
-                      [In] IntPtr hwnd);
+                [In] IntPtr hwnd);
 
             void GetString([In] ASSOCF flags, [In] ASSOCSTR str, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                           [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszOut, [In, Out] ref int pcchOut);
+                [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pwszOut, [In, Out] ref int pcchOut);
 
             void GetKey([In] ASSOCF flags, [In] ASSOCKEY str, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                        [Out] out UIntPtr phkeyOut);
+                [Out] out UIntPtr phkeyOut);
 
             void GetData([In] ASSOCF flags, [In] ASSOCDATA data, [In, MarshalAs(UnmanagedType.LPWStr)] string pwszExtra,
-                         [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] out byte[] pvOut,
-                         [In, Out] ref int pcbOut);
+                [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 4)] out byte[] pvOut,
+                [In, Out] ref int pcbOut);
 
             void GetEnum(); // not used actually
         }
