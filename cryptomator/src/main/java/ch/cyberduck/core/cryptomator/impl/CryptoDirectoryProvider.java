@@ -30,7 +30,6 @@ import java.util.EnumSet;
 public class CryptoDirectoryProvider {
 
     private static final String DATA_DIR_NAME = "d";
-
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
 
     private final Path dataRoot;
