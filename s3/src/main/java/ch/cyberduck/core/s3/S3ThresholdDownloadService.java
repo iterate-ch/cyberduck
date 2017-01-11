@@ -86,14 +86,20 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     }
 
     private boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
-        if(accelerateTransferOption.getStatus(file)) {
-            return false;
+        switch(session.getSignatureVersion()) {
+            case AWS2:
+                return false;
         }
         if(file.getType().contains(Path.Type.encrypted)) {
             return false;
         }
+        if(accelerateTransferOption.getStatus(file)) {
+            log.info(String.format("S3 transfer acceleration enabled for file %s", file));
+            return true;
+        }
         if(preferences.getBoolean("s3.accelerate.prompt")) {
             if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
+                log.info(String.format("S3 transfer acceleration enabled for file %s", file));
                 return true;
             }
         }
