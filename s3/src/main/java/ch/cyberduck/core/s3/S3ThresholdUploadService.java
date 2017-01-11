@@ -135,6 +135,10 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     protected boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
+        switch(session.getSignatureVersion()) {
+            case AWS2:
+                return false;
+        }
         if(file.getType().contains(Path.Type.encrypted)) {
             return false;
         }
