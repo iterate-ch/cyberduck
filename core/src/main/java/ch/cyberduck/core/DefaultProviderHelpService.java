@@ -40,7 +40,7 @@ public class DefaultProviderHelpService implements ProviderHelpService {
 
     @Override
     public String help(final Protocol provider) {
-        return this.help(provider.getProvider());
+        return this.help(provider.getIdentifier());
     }
 
     @Override
