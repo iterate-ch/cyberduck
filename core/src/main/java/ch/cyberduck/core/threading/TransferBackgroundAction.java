@@ -34,8 +34,6 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -175,7 +173,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
 
     @Override
     public String getActivity() {
-        return StringUtils.EMPTY;
+        return transfer.getName();
     }
 
     public TransferSpeedometer getMeter() {
