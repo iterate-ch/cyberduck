@@ -121,8 +121,11 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return null;
         }
         final AccessControlList list = new AccessControlList();
-        list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
-        list.grantPermission(new CanonicalGrantee(acl.getOwner().getIdentifier()), Permission.PERMISSION_FULL_CONTROL);
+        final Acl.CanonicalUser owner = acl.getOwner();
+        if(null != owner) {
+            list.setOwner(new S3Owner(owner.getIdentifier(), owner.getDisplayName()));
+            list.grantPermission(new CanonicalGrantee(owner.getIdentifier()), Permission.PERMISSION_FULL_CONTROL);
+        }
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
