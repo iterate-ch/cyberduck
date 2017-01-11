@@ -197,7 +197,7 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
-        assertNull(Checksum.parse(object.getMd5sum()));
+        assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
         assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 

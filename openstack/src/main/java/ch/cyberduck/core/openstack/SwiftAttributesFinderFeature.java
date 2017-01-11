@@ -104,7 +104,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                 if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
                     // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
                     // the concatenated string of ETags for each of the segments in the manifest.
-                    attributes.setChecksum(null);
+                    attributes.setChecksum(Checksum.NONE);
                 }
                 else {
                     attributes.setChecksum(Checksum.parse(etag));
