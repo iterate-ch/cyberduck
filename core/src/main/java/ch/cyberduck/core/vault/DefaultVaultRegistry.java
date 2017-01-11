@@ -176,6 +176,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == AclPermission.class) {
             return (T) new VaultRegistryAclPermissionFeature(session, (AclPermission) proxy, this);
         }
+        if(type == Copy.class) {
+            return (T) new VaultRegistryCopyFeature(session, (Copy) proxy, this);
+        }
         return proxy;
     }
 }
