@@ -2561,7 +2561,6 @@ source/ch/cyberduck/core/local/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/local/SystemLocal.cs -text
 source/ch/cyberduck/core/local/Win32FileDescriptor.cs -text
 source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
-source/ch/cyberduck/core/local/WindowsTemporaryFileService.cs -text
 source/ch/cyberduck/core/notification/NotificationServiceFactory.java -text
 source/ch/cyberduck/core/openstack/SwiftSession.java -text
 source/ch/cyberduck/core/preferences/AssemblyApplicationResourcesFinder.cs -text

@@ -27,6 +27,7 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -84,6 +85,9 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
     }
 
     protected String shorten(final String path) {
+        if(path.length() > PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold")) {
+            return DigestUtils.md5Hex(path);
+        }
         return path;
     }
 

@@ -75,7 +75,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             defaults.put("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
             defaults.put("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
-            defaults.put("factory.temporaryfiles.class", typeof(WindowsTemporaryFileService).AssemblyQualifiedName);
             defaults.put("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
             defaults.put("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
             defaults.put("factory.trash.class", typeof(RecycleLocalTrashFeature).AssemblyQualifiedName);
