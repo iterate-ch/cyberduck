@@ -18,8 +18,10 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -92,7 +94,9 @@ public interface SessionPool {
 
         @Override
         public Host getHost() {
-            return null;
+            return new Host(ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                    PreferencesFactory.get().getProperty("connection.hostname.default"),
+                    PreferencesFactory.get().getInteger("connection.port.default"));
         }
 
         @Override
