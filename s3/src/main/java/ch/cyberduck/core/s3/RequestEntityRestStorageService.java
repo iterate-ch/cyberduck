@@ -44,7 +44,6 @@ import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.AWSCredentials;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -83,9 +82,12 @@ public class RequestEntityRestStorageService extends RestS3Service {
             @Override
             public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
                 if(response.containsHeader("x-amz-bucket-region")) {
-                    regionEndpointCache.putRegionForBucketName(
-                            ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()),
-                            response.getFirstHeader("x-amz-bucket-region").getValue());
+                    final String host = ((HttpUriRequest) request).getURI().getHost();
+                    if(!StringUtils.equals(session.getHost().getHostname(), host)) {
+                        regionEndpointCache.putRegionForBucketName(
+                                StringUtils.split(StringUtils.removeEnd(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()), ".")[0],
+                                response.getFirstHeader("x-amz-bucket-region").getValue());
+                    }
                 }
                 return super.getRedirect(request, response, context);
             }
