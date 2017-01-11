@@ -57,6 +57,9 @@ public abstract class ThreadedDeleteFeature implements Delete {
      */
     protected void await() throws BackgroundException {
         synchronized(lock) {
+            if(null == pool) {
+                return;
+            }
             try {
                 pool.await();
             }
