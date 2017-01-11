@@ -17,6 +17,9 @@ https://cyberduck.io/
 - [Bugfix] Repeated prompt for client certificate (WebDAV) (#9746)
 - [Bugfix] Modification of distinct metadata for multiple selected files (WebDAV, Azure, S3, OpenStack Swift)
 - [Bugfix] Modification of distinct permissions for multiple selected files (FTP, SFTP)
+- [Bugfix] Wrong default editor selected (Windows) (#9256)
+- [Bugfix] Failure sorting by modification date in browser (#9801)
+- [Bugfix] Invalidations for files with special characters (Cloudfront) (#9748)
 
 5.2.2 [https://trac.cyberduck.io/milestone/5.2.2]
 - [Feature] Toggle transfer acceleration for bucket in Info panel (S3)
