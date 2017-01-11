@@ -69,19 +69,19 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
                     vault.getCryptor().fileHeaderCryptor().decryptHeader(header));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
-            final TransferStatus status = new TransferStatus();
             final ThreadPool pool = ThreadPoolFactory.get();
             try {
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
                     @Override
                     public TransferStatus call() throws Exception {
                         source.write(header.array());
+                        final TransferStatus status = new TransferStatus();
                         new StreamCopier(status, status).transfer(in, out);
                         return status;
                     }
                 });
                 try {
-                    return delegate.compute(file, sink, status);
+                    return delegate.compute(file, sink, new TransferStatus());
                 }
                 finally {
                     try {
