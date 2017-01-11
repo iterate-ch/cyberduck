@@ -28,6 +28,6 @@ public class VaultRegistryFactory {
 
     public static VaultRegistry create(final HostPasswordStore keychain, final PasswordCallback callback) {
         return PreferencesFactory.get().getBoolean("cryptomator.enable") ?
-                new DefaultVaultRegistry(keychain, callback) : new DisabledVaultRegistry();
+                new DefaultVaultRegistry(keychain, callback) : VaultRegistry.DISABLED;
     }
 }
