@@ -268,6 +268,8 @@ public abstract class Preferences {
         defaults.put("local.normalize.tilde", String.valueOf(true));
         defaults.put("local.list.native", String.valueOf(true));
         defaults.put("local.delimiter", File.separator);
+        defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
+
         /*
           Prompt to resolve bookmark of file outside of sandbox with choose panel
          */
