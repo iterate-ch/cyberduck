@@ -23,13 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryUnixPermission implements UnixPermission {
+public class VaultRegistryUnixPermissionFeature implements UnixPermission {
 
     private final Session<?> session;
     private final DefaultVaultRegistry registry;
     private final UnixPermission proxy;
 
-    public VaultRegistryUnixPermission(final Session<?> session, final UnixPermission proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryUnixPermissionFeature(final Session<?> session, final UnixPermission proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

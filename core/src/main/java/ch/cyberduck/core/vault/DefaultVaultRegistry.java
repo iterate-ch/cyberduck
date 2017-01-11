@@ -171,10 +171,10 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             return (T) new VaultRegistryCompressFeature(session, (Compress) proxy, this);
         }
         if(type == UnixPermission.class) {
-            return (T) new VaultRegistryUnixPermission(session, (UnixPermission) proxy, this);
+            return (T) new VaultRegistryUnixPermissionFeature(session, (UnixPermission) proxy, this);
         }
         if(type == AclPermission.class) {
-            return (T) new VaultRegistryAclPermission(session, (AclPermission) proxy, this);
+            return (T) new VaultRegistryAclPermissionFeature(session, (AclPermission) proxy, this);
         }
         return proxy;
     }

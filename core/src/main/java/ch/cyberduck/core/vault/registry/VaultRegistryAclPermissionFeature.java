@@ -25,13 +25,13 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import java.util.List;
 
-public class VaultRegistryAclPermission implements AclPermission {
+public class VaultRegistryAclPermissionFeature implements AclPermission {
 
     private final Session<?> session;
     private final AclPermission proxy;
     private final DefaultVaultRegistry registry;
 
-    public VaultRegistryAclPermission(final Session<?> session, final AclPermission proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryAclPermissionFeature(final Session<?> session, final AclPermission proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
