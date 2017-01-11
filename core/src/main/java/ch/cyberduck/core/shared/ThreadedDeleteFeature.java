@@ -30,17 +30,16 @@ import java.util.concurrent.Future;
 public abstract class ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(ThreadedDeleteFeature.class);
 
-    private final ThreadPool<Void> pool;
+    private static final Object lock = new Object();
 
-    public ThreadedDeleteFeature() {
-        this(new DefaultThreadPool<Void>(PreferencesFactory.get().getInteger("browser.delete.concurrency"), "delete"));
-    }
-
-    public ThreadedDeleteFeature(final ThreadPool<Void> pool) {
-        this.pool = pool;
-    }
+    private ThreadPool<Void> pool;
 
     protected Future<Void> submit(final Path file, final ThreadedDeleteFeature.Implementation feature) {
+        synchronized(lock) {
+            if(null == pool) {
+                pool = new DefaultThreadPool<Void>(PreferencesFactory.get().getInteger("browser.delete.concurrency"), "delete");
+            }
+        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s for delete", file));
         }
@@ -57,11 +56,14 @@ public abstract class ThreadedDeleteFeature implements Delete {
      * Await and shutdown
      */
     protected void await() throws BackgroundException {
-        try {
-            pool.await();
-        }
-        finally {
-            pool.shutdown(true);
+        synchronized(lock) {
+            try {
+                pool.await();
+            }
+            finally {
+                pool.shutdown(true);
+                pool = null;
+            }
         }
     }
 
