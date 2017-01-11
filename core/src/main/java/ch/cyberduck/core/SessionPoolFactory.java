@@ -31,8 +31,14 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
-        return PreferencesFactory.get().getBoolean("connection.pool.enable") ?
-                pooled(controller, cache, bookmark) : single(controller, cache, bookmark);
+        if(PreferencesFactory.get().getBoolean("connection.pool.enable")) {
+            switch(bookmark.getProtocol().getType()) {
+                case ftp:
+                    return single(controller, cache, bookmark);
+            }
+            return pooled(controller, cache, bookmark);
+        }
+        return single(controller, cache, bookmark);
     }
 
     public static SessionPool pooled(final Controller controller, final PathCache cache, final Host bookmark) {
