@@ -25,7 +25,11 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -40,6 +44,7 @@ import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -74,6 +79,17 @@ public class RequestEntityRestStorageService extends RestS3Service {
         final HttpClientBuilder builder = pool.build(listener);
         builder.disableContentCompression();
         builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
+        builder.setRedirectStrategy(new DefaultRedirectStrategy() {
+            @Override
+            public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
+                if(response.containsHeader("x-amz-bucket-region")) {
+                    regionEndpointCache.putRegionForBucketName(
+                            ServiceUtils.findBucketNameInHostname(((HttpUriRequest) request).getURI().getHost(), session.getHost().getHostname()),
+                            response.getFirstHeader("x-amz-bucket-region").getValue());
+                }
+                return super.getRedirect(request, response, context);
+            }
+        });
         this.setHttpClient(builder.build());
     }
 
