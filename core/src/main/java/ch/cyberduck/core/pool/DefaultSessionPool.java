@@ -130,7 +130,7 @@ public class DefaultSessionPool implements SessionPool {
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final Integer numActive = pool.getNumActive();
         if(numActive > POOL_WARNING_THRESHOLD) {
-            log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, pool));
+            log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, this));
         }
         try {
             /**
@@ -140,11 +140,11 @@ public class DefaultSessionPool implements SessionPool {
             while(!callback.isCanceled()) {
                 try {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Borrow session from pool %s", pool));
+                        log.info(String.format("Borrow session from pool %s", this));
                     }
                     final Session<?> session = pool.borrowObject();
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Borrowed session %s from pool %s", session, pool));
+                        log.info(String.format("Borrowed session %s from pool %s", session, this));
                     }
                     if(DISCONNECTED == features) {
                         features = new SingleSessionPool(connect, session, cache, registry);
