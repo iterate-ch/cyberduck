@@ -98,9 +98,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final WriteError lookup = error.getPathValue();
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
-                case DISALLOWED_NAME:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
+                case DISALLOWED_NAME:
                 case NO_WRITE_PERMISSION:
                 case CONFLICT:
                     return new AccessDeniedException(buffer.toString(), failure);
@@ -143,9 +143,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             final WriteError lookup = error.getPathValue();
             switch(lookup.tag()) {
                 case MALFORMED_PATH:
-                case DISALLOWED_NAME:
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
+                case DISALLOWED_NAME:
                 case NO_WRITE_PERMISSION:
                 case CONFLICT:
                     return new AccessDeniedException(buffer.toString(), failure);
