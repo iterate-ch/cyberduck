@@ -354,8 +354,8 @@ public class BrowserController extends WindowController
             final NSTableView browser = this.getSelectedBrowserView();
             final BrowserTableDataSource model = this.getSelectedBrowserModel();
             model.render(browser, Collections.emptyList());
-            this.setStatus();
         }
+        this.setStatus();
     }
 
     /**
@@ -436,7 +436,6 @@ public class BrowserController extends WindowController
                         )
                 );
             }
-            this.setStatus();
         }
     }
 
@@ -450,8 +449,8 @@ public class BrowserController extends WindowController
     private void reload(final NSTableView browser, final BrowserTableDataSource model, final Path workdir, final List<Path> selected, final Path folder) {
         this.workdir = workdir;
         this.setNavigation(workdir != null);
-        this.setStatus();
         model.render(browser, Collections.singletonList(folder));
+        this.setStatus();
         this.select(selected);
     }
 
@@ -1407,7 +1406,7 @@ public class BrowserController extends WindowController
              */
             @Override
             public void outlineViewItemDidExpand(final NSNotification notification) {
-                //
+                setStatus();
             }
 
             @Override
