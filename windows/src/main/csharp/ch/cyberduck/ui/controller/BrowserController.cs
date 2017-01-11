@@ -2437,7 +2437,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Workdir = workdir;
             SetNavigation(workdir != null);
-            SetStatus();
             if (Workdir != null)
             {
                 if (Workdir.Equals(folder))
@@ -2500,7 +2499,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 background(new ListAction(this, workdir, folder, selected, _cache, _limitListener));
             }
-            SetStatus();
         }
 
         public void SetWorkdir(Path directory)
