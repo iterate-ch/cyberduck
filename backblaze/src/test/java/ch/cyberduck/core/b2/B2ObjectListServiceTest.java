@@ -183,8 +183,8 @@ public class B2ObjectListServiceTest {
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket);
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
-        final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path file2 = new Path(folder2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new B2DirectoryFeature(session).mkdir(folder1);
@@ -269,7 +269,7 @@ public class B2ObjectListServiceTest {
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket);
         final String name = UUID.randomUUID().toString();
-        final Path folder1 = new Path(bucket, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path folder1 = new Path(bucket, name, EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
         new B2DirectoryFeature(session).mkdir(folder1);
         new B2TouchFeature(session).touch(file1, new TransferStatus());
