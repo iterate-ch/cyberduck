@@ -9,11 +9,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -24,7 +22,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,15 +79,5 @@ public class DefaultAttributesFinderFeatureTest {
             // Expected
         }
         session.close();
-    }
-
-    @Test
-    public void testFindPlaceholder() throws Exception {
-        assertNotNull(new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-            }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
     }
 }
