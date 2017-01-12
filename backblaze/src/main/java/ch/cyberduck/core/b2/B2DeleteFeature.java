@@ -49,6 +49,9 @@ public class B2DeleteFeature extends ThreadedDeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
+            if(file.isPlaceholder()) {
+                continue;
+            }
             if(file.getType().contains(Path.Type.upload)) {
                 new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
             }
@@ -56,36 +59,23 @@ public class B2DeleteFeature extends ThreadedDeleteFeature implements Delete {
                 @Override
                 public void delete(final Path file) throws BackgroundException {
                     callback.delete(file);
-                    if(file.isDirectory()) {
-                        try {
+                    try {
+                        if(file.isDirectory()) {
                             // Delete /.bzEmpty if any
                             session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER),
                                     new B2FileidProvider(session).getFileid(new Path(containerService.getContainer(file),
                                             String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), EnumSet.of(Path.Type.file))));
                         }
-                        catch(B2ApiException e) {
-                            log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
-                        }
-                        catch(IOException e) {
-                            throw new DefaultIOExceptionMappingService().map(e);
-                        }
-                    }
-                    else if(file.isFile()) {
-                        try {
+                        else if(file.isFile()) {
                             session.getClient().deleteFileVersion(containerService.getKey(file),
                                     new B2FileidProvider(session).getFileid(file));
                         }
-                        catch(B2ApiException e) {
-                            if(containerService.getKey(file).endsWith(B2DirectoryFeature.PLACEHOLDER)) {
-                                log.warn(String.format("Ignore failure %s deleting placeholder file %s", e.getMessage(), file));
-                            }
-                            else {
-                                throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
-                            }
-                        }
-                        catch(IOException e) {
-                            throw new DefaultIOExceptionMappingService().map(e);
-                        }
+                    }
+                    catch(B2ApiException e) {
+                        throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
+                    }
+                    catch(IOException e) {
+                        throw new DefaultIOExceptionMappingService().map(e);
                     }
                 }
             });

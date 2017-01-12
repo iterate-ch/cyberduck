@@ -58,10 +58,9 @@ public class B2FileidProvider implements IdProvider {
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
-            else if(file.isPlaceholder()) {
+            if(file.isPlaceholder()) {
                 return null;
             }
-            else {
                 final B2ListFilesResponse response = session.getClient().listFileNames(
                         this.getFileid(containerService.getContainer(file)), containerService.getKey(file), 2);
                 for(B2FileInfoResponse info : response.getFiles()) {
@@ -82,7 +81,6 @@ public class B2FileidProvider implements IdProvider {
                     }
                 }
                 throw new NotfoundException(file.getAbsolute());
-            }
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(session).map(e);
