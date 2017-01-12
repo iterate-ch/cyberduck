@@ -39,7 +39,7 @@ public class SwiftDeleteFeature implements Delete {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSegmentService segmentService;
 

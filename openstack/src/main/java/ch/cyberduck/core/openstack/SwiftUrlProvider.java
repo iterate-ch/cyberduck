@@ -58,7 +58,7 @@ public class SwiftUrlProvider implements UrlProvider {
     private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
 

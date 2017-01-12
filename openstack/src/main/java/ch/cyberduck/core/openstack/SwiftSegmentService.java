@@ -52,7 +52,7 @@ public class SwiftSegmentService {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final ISO8601DateParser dateParser
             = new ISO8601DateParser();
