@@ -39,6 +39,7 @@
         <module>googledrive</module>
         <module>backblaze</module>
         <module>dropbox</module>
+        <module>nio</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->

@@ -90,7 +90,8 @@ public interface Protocol extends Comparable<Protocol> {
             }
         },
         irods,
-        b2;
+        b2,
+        file;
 
         /**
          * Check login credentials for validity for this protocol.
