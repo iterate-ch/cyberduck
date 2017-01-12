@@ -35,7 +35,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2FileidProvider implements IdProvider {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

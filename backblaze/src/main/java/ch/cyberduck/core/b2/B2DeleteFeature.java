@@ -35,7 +35,7 @@ public class B2DeleteFeature extends ThreadedDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

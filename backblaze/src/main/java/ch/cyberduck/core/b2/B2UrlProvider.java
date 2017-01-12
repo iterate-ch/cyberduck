@@ -31,7 +31,7 @@ import java.util.Locale;
 public class B2UrlProvider implements UrlProvider {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 
