@@ -104,7 +104,6 @@ public class SwiftObjectListService implements ListService {
                             // add virtual directory if the placeholder object is missing
                             continue;
                         }
-                        types.add(Path.Type.placeholder);
                     }
                     children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attributes));
                     marker = object.getName();
