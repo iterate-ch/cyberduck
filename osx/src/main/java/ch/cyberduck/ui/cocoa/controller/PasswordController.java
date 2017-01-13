@@ -86,7 +86,7 @@ public class PasswordController extends AlertController {
         view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         if(options.keychain) {
             keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-            keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
+            keychainCheckbox.setTitle(LocaleFactory.localizedString("Save Password", "Keychain"));
             keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
             keychainCheckbox.setTarget(this.id());
             keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
