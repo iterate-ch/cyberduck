@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -224,7 +224,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="60EA92FC-678A-4CBB-8E8D-2970AD2D5F4E" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="EC4A67DF-66BD-4E2C-9972-4152A673F4C3" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -365,7 +365,7 @@
                         <action selector="downloadButtonClicked:" target="-1" id="164"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Завантаджити як…" keyEquivalent="" id="76">
+                <menuItem title="Завантажити як…" keyEquivalent="" id="76">
                     <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                     <connections>
                         <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
@@ -406,7 +406,7 @@
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="Нове символічне посилання…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
@@ -430,8 +430,8 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Стрворити архів" id="88">
-                    <menu key="submenu" title="Стрворити архів" id="89"/>
+                <menuItem title="Створити архів" id="88">
+                    <menu key="submenu" title="Створити архів" id="89"/>
                 </menuItem>
                 <menuItem title="Розархівувати" id="90">
                     <connections>
@@ -476,7 +476,7 @@ CA
         </comboBox>
         <menu title="Меню" id="99">
             <items>
-                <menuItem title="З'єднатись з сервером" id="100">
+                <menuItem title="З'єднатись із сервером" id="100">
                     <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
@@ -493,7 +493,7 @@ DQ
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Видалити закладкку" id="103">
+                <menuItem title="Видалити закладку" id="103">
                     <connections>
                         <action selector="deleteBookmarkButtonClicked:" target="-1" id="170"/>
                     </connections>
@@ -510,23 +510,23 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Сортувати за" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Сортувати за" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Псевдонім" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Ім'я хосту" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protocol" keyEquivalent="3" id="111">
+                            <menuItem title="Протокол" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>
@@ -569,7 +569,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="60EA92FC-678A-4CBB-8E8D-2970AD2D5F4E" width="1" height="1">
+        <image name="EC4A67DF-66BD-4E2C-9972-4152A673F4C3" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
