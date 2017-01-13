@@ -40,7 +40,7 @@ import synapticloop.b2.exception.B2ApiException;
 public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermission, Location {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

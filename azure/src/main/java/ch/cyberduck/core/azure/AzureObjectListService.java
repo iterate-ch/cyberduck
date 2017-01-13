@@ -83,7 +83,7 @@ public class AzureObjectListService implements ListService {
                         prefix, false, EnumSet.noneOf(BlobListingDetails.class),
                         PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
-                    if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)).equals(directory)) {
+                    if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
@@ -96,11 +96,9 @@ public class AzureObjectListService implements ListService {
                             attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(blob.getProperties().getContentMD5()))));
                         }
                     }
+                    // A directory is designated by a delimiter character.
                     final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory
-                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    if(StringUtils.endsWith(object.getUri().getPath(), String.valueOf(Path.DELIMITER))) {
-                        types.add(Path.Type.placeholder);
-                    }
+                            ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
                     final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), types, attributes);
                     children.add(child);
                 }

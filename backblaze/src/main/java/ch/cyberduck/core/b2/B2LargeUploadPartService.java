@@ -39,7 +39,7 @@ public class B2LargeUploadPartService {
     private static final Logger log = Logger.getLogger(B2LargeUploadPartService.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

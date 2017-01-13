@@ -80,6 +80,7 @@ public class DriveListService implements ListService {
                     else {
                         filename = PathNormalizer.name(f.getName());
                     }
+                    // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<AbstractPath.Type> type = DriveAttributesFinderFeature.DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
                             StringUtils.startsWith(f.getMimeType(), DriveAttributesFinderFeature.GOOGLE_APPS_PREFIX)
                                     ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);

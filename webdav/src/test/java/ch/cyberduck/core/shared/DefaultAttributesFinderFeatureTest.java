@@ -24,10 +24,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -121,15 +119,5 @@ public class DefaultAttributesFinderFeatureTest {
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
         session.close();
-    }
-
-    @Test
-    public void testFindPlaceholder() throws Exception {
-        assertNotNull(new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-            }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
     }
 }

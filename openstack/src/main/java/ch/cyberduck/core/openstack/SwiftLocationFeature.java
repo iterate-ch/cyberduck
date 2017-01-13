@@ -50,7 +50,7 @@ public class SwiftLocationFeature implements Location {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final Map<Path, Name> cache = new HashMap<Path, Name>();
 

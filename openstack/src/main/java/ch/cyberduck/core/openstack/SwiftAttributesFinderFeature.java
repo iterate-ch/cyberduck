@@ -47,7 +47,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final RFC1123DateFormatter dateParser
             = new RFC1123DateFormatter();

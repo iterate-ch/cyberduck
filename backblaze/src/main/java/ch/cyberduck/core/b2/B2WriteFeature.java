@@ -51,7 +51,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

@@ -35,7 +35,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftDirectoryFeature implements Directory<StorageObject> {
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

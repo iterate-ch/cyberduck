@@ -34,7 +34,7 @@ public class B2DeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 
@@ -46,6 +46,9 @@ public class B2DeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             if(containerService.isContainer(file)) {
+                continue;
+            }
+            if(file.isPlaceholder()) {
                 continue;
             }
             if(file.getType().contains(Path.Type.upload)) {

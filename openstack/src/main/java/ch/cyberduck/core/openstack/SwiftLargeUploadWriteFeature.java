@@ -52,7 +52,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
     private final Find finder;
