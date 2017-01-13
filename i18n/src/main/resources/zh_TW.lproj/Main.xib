@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -96,7 +96,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="檔案" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -113,7 +113,7 @@
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="打開連線⋯" keyEquivalent="o" id="246">
+                            <menuItem title="開啟連線…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
@@ -130,7 +130,7 @@
                             <menuItem isSeparatorItem="YES" id="249">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="新檔案夾⋯" keyEquivalent="N" id="250">
+                            <menuItem title="新資料夾…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
@@ -141,23 +141,23 @@
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="新檔案⋯" keyEquivalent="f" id="251">
+                            <menuItem title="新增檔案..." keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Symbolic Link…" id="252">
+                            <menuItem title="新增符號連結…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Rename File…" id="253">
+                            <menuItem title="重新命名檔案…" id="253">
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="複製檔案⋯" keyEquivalent="d" id="254">
+                            <menuItem title="複製檔案..." keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -165,22 +165,22 @@
                             <menuItem isSeparatorItem="YES" id="255">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Open Web URL" id="256">
+                            <menuItem title="開啟網址" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Open Web URL" id="257"/>
+                                <menu key="submenu" title="開啟網址" id="257"/>
                             </menuItem>
                             <menuItem title="編輯於" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="編輯於" id="259"/>
                             </menuItem>
-                            <menuItem title="Quick Look" image="NSQuickLookTemplate" id="260">
+                            <menuItem title="快速查看" image="NSQuickLookTemplate" id="260">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="簡介" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="資訊" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
@@ -194,24 +194,24 @@
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="下載成⋯" keyEquivalent="" id="264">
+                            <menuItem title="下載為..." keyEquivalent="" id="264">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                                 <connections>
                                     <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download To…" id="265">
+                            <menuItem title="下載至..." id="265">
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="上傳⋯" keyEquivalent="" id="266">
+                            <menuItem title="上傳..." keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="同步⋯" id="267">
+                            <menuItem title="同步..." id="267">
                                 <connections>
                                     <action selector="syncButtonClicked:" target="-1" id="388"/>
                                 </connections>
@@ -225,7 +225,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Revert" id="270">
+                            <menuItem title="恢復原狀" id="270">
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
@@ -233,10 +233,10 @@ CA
                             <menuItem isSeparatorItem="YES" id="271">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Create Archive" id="272">
-                                <menu key="submenu" title="Create Archive" id="273"/>
+                            <menuItem title="建立壓縮檔" id="272">
+                                <menu key="submenu" title="建立壓縮檔" id="273"/>
                             </menuItem>
-                            <menuItem title="Expand Archive" id="274">
+                            <menuItem title="展開壓縮檔" id="274">
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
@@ -244,7 +244,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="275">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="列印⋯" keyEquivalent="p" id="276">
+                            <menuItem title="列印..." keyEquivalent="p" id="276">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="392"/>
                                 </connections>
@@ -286,9 +286,9 @@ CA
                                     <action selector="copy:" target="-1" id="397"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="複製 URL" id="286">
+                            <menuItem title="複製網址" id="286">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="複製 URL" id="287"/>
+                                <menu key="submenu" title="複製網址" id="287"/>
                             </menuItem>
                             <menuItem title="貼上" keyEquivalent="v" id="288">
                                 <connections>
@@ -330,7 +330,7 @@ CA
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="自定工具列⋯" tag="1" id="299">
+                            <menuItem title="自訂工具列..." tag="1" id="299">
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
                                 </connections>
@@ -338,7 +338,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="300">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="顯示隱藏檔" keyEquivalent="R" id="301">
+                            <menuItem title="顯示隱藏檔案" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
@@ -349,7 +349,7 @@ CA
                             <menuItem isSeparatorItem="YES" tag="2" id="304">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Toggle Log Drawer" keyEquivalent="l" id="305">
+                            <menuItem title="切換 Log Drawer" keyEquivalent="l" id="305">
                                 <connections>
                                     <action selector="toggleLogDrawer:" target="-1" id="405"/>
                                 </connections>
@@ -368,7 +368,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="309">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="前往檔案夾" keyEquivalent="g" id="310">
+                            <menuItem title="前往資料夾" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -383,17 +383,17 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="離開檔案夾" keyEquivalent="" id="313">
+                            <menuItem title="離開資料夾" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="進入檔案夾" keyEquivalent="" id="314">
+                            <menuItem title="進入資料夾" keyEquivalent="" id="314">
                                 <connections>
                                     <action selector="insideButtonClicked:" target="-1" id="411"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Search…" keyEquivalent="/" id="315">
+                            <menuItem title="搜尋..." keyEquivalent="/" id="315">
                                 <connections>
                                     <action selector="searchButtonClicked:" target="-1" id="412"/>
                                 </connections>
@@ -401,13 +401,13 @@ CA
                             <menuItem isSeparatorItem="YES" id="316">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="送出指令⋯" keyEquivalent="c" id="317">
+                            <menuItem title="傳送指令..." keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Open in Terminal.app" id="318">
+                            <menuItem title="在 Terminal.app 中開啟" id="318">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="openTerminalButtonClicked:" target="-1" id="414"/>
@@ -421,7 +421,7 @@ CA
                                     <action selector="interruptButtonClicked:" target="-1" id="415"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="切斷連線" keyEquivalent="y" id="321">
+                            <menuItem title="中斷連線" keyEquivalent="y" id="321">
                                 <connections>
                                     <action selector="disconnectButtonClicked:" target="-1" id="416"/>
                                 </connections>
@@ -432,28 +432,28 @@ CA
                 <menuItem title="書籤" id="322">
                     <menu key="submenu" title="書籤" id="323">
                         <items>
-                            <menuItem title="Toggle Bookmarks" keyEquivalent="b" id="324">
+                            <menuItem title="切換書籤" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sort By" id="325">
+                            <menuItem title="排序依" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sort By" id="326">
+                                <menu key="submenu" title="排序依" id="326">
                                     <items>
-                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
+                                        <menuItem title="暱稱" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Hostname" keyEquivalent="2" id="328">
+                                        <menuItem title="主機名稱" keyEquivalent="2" id="328">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Protocol" keyEquivalent="3" id="329">
+                                        <menuItem title="通訊協定" keyEquivalent="3" id="329">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByProtocol:" target="-1" id="420"/>
@@ -465,7 +465,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="330">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="新書籤" keyEquivalent="B" id="331">
+                            <menuItem title="新增書籤" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
@@ -481,7 +481,7 @@ CA
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Duplicate Bookmark" id="334">
+                            <menuItem title="複製書籤" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -509,7 +509,7 @@ CA
                                     <action selector="showTransferQueueClicked:" target="-1" id="426"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Activity" keyEquivalent="0" id="341">
+                            <menuItem title="活動" keyEquivalent="0" id="341">
                                 <connections>
                                     <action selector="showActivityWindowClicked:" target="-1" id="427"/>
                                 </connections>
@@ -548,7 +548,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="349">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="提報臭蟲" id="350">
+                            <menuItem title="報告錯誤" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -559,9 +559,9 @@ CA
                 </menuItem>
             </items>
         </menu>
-        <menu title="目錄" id="351">
+        <menu title="選單" id="351">
             <items>
-                <menuItem title="新視窗" keyEquivalent="n" id="352">
+                <menuItem title="新增視窗" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>
