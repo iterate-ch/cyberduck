@@ -15,5 +15,6 @@ public class MappingMimeTypeServiceTest {
         assertEquals("application/javascript", s.getMime("f.js"));
         assertEquals("video/mp2t", s.getMime("f.ts"));
         assertEquals("application/x-mpegurl", s.getMime("f.m3u8"));
+        assertEquals("application/octet-stream", s.getMime("._f.txt"));
     }
 }

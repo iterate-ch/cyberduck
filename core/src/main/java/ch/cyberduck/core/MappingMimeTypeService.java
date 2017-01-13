@@ -50,12 +50,15 @@ public class MappingMimeTypeService implements MimeTypeService {
             }
         }
         catch(IOException e) {
-            log.error("Failure loading mime.types");
+            log.error(String.format("Failure loading mime.types. %s", e.getMessage()));
         }
     }
 
     @Override
     public String getMime(final String filename) {
+        if(StringUtils.startsWith(filename, "._")) {
+            return "application/octet-stream";
+        }
         // Reads from mime.types in classpath
         return types.getMimetype(StringUtils.lowerCase(filename));
     }

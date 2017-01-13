@@ -20,8 +20,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -36,9 +34,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DefaultTouchFeature<T> implements Touch<T> {
 
-    private final MimeTypeService mapping
-            = new MappingMimeTypeService();
-
     private final Upload<T> feature;
 
     public DefaultTouchFeature(final Session<?> session) {
@@ -49,7 +44,6 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
-        status.setMime(mapping.getMime(file.getName()));
         try {
             feature.upload(file, temp,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),

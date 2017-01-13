@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.io.IRODSFile;
@@ -30,7 +29,7 @@ import org.irods.jargon.core.pub.io.IRODSFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IRODSDeleteFeature extends ThreadedDeleteFeature implements Delete {
+public class IRODSDeleteFeature implements Delete {
 
     private final IRODSSession session;
 
@@ -53,28 +52,22 @@ public class IRODSDeleteFeature extends ThreadedDeleteFeature implements Delete 
                 continue;
             }
             deleted.add(file);
-            this.submit(file, new Implementation() {
-                @Override
-                public void delete(final Path file) throws BackgroundException {
-                    callback.delete(file);
-                    try {
-                        final IRODSFile f = session.getClient().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
-                        if(!f.exists()) {
-                            throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
-                        }
-                        if(f.isFile()) {
-                            session.getClient().fileDeleteForce(f);
-                        }
-                        else if(f.isDirectory()) {
-                            session.getClient().directoryDeleteForce(f);
-                        }
-                    }
-                    catch(JargonException e) {
-                        throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
+            callback.delete(file);
+            try {
+                final IRODSFile f = session.getClient().getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+                if(!f.exists()) {
+                    throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
                 }
-            });
+                if(f.isFile()) {
+                    session.getClient().fileDeleteForce(f);
+                }
+                else if(f.isDirectory()) {
+                    session.getClient().directoryDeleteForce(f);
+                }
+            }
+            catch(JargonException e) {
+                throw new IRODSExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
         }
-        this.await();
     }
 }

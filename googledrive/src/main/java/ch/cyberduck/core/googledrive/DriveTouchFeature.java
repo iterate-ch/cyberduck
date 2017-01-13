@@ -45,6 +45,7 @@ public class DriveTouchFeature implements Touch {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
+                    .setMimeType(status.getMime())
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
             insert.execute();
         }
