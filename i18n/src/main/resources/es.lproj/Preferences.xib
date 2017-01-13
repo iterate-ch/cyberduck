@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -541,7 +541,7 @@
                                     <textField verticalHuggingPriority="750" id="107">
                                         <rect key="frame" x="9" y="120" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Archivos duplicados:" id="108">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Archivos existentes:" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -636,7 +636,7 @@
                                     <button id="131">
                                         <rect key="frame" x="165" y="96" width="394" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Reescribir siempre los archivos cuando se vuelven a cargar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Sobrescribir siempre los archivos cuando se vuelven a cargar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -644,7 +644,7 @@
                                     <button id="133">
                                         <rect key="frame" x="165" y="4" width="394" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Reescribir siempre los archivos cuando se vuelven a cargar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" title="Sobrescribir siempre los archivos cuando se vuelven a cargar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1578,7 +1578,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Encriptación" id="350">
+                <box title="Cifrado" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">

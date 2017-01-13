@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -102,7 +102,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="3" customClass="NSPanel">
+        <window title="Asetukset" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" unifiedTitleAndToolbar="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
@@ -116,25 +116,25 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <font key="font" metaFont="system"/>
                         <tabViewItems>
-                            <tabViewItem label="General" identifier="general" id="6">
+                            <tabViewItem label="Yleinen" identifier="general" id="6">
                                 <view key="view" id="7">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Browser" identifier="browser" id="8">
+                            <tabViewItem label="Selain" identifier="browser" id="8">
                                 <view key="view" id="9">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Transfers" identifier="queue" id="10">
+                            <tabViewItem label="Siirrot" identifier="queue" id="10">
                                 <view key="view" id="11">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Editor" identifier="pencil" id="12">
+                            <tabViewItem label="Ulkoinen editori" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -164,25 +164,25 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Bandwidth" identifier="bandwidth" id="22">
+                            <tabViewItem label="Kaista" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Connection" identifier="connection" id="24">
+                            <tabViewItem label="Yhteys" identifier="connection" id="24">
                                 <view key="view" id="25">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Update" identifier="update" id="26">
+                            <tabViewItem label="Päivitä" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Language" identifier="language" id="28">
+                            <tabViewItem label="Kieli" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -197,7 +197,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="417"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Browser" id="31">
+                <box title="Selain" id="31">
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
@@ -220,7 +220,7 @@
                             <button id="36">
                                 <rect key="frame" x="10" y="72" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Open new browser window on startup" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
+                                <buttonCell key="cell" type="check" title="Avaa uusi selainikkuna käynnistyksen yhteydessä" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -228,7 +228,7 @@
                             <textField verticalHuggingPriority="750" id="38">
                                 <rect key="frame" x="9" y="48" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Connect to bookmark:" id="39">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Yhdistä kirjanmerkkiin:" id="39">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -237,7 +237,7 @@
                             <button id="40">
                                 <rect key="frame" x="10" y="130" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Save Workspace" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
+                                <buttonCell key="cell" type="check" title="Talleta Työpöytä" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -245,7 +245,7 @@
                             <textField verticalHuggingPriority="750" id="42">
                                 <rect key="frame" x="9" y="96" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Will save all open browsers when quitting and restore the connections upon relaunch." id="43">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Tallenna kaikki yhteydet ja palauta ne uudelleenkäynnistyksessä." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -254,7 +254,7 @@
                             <textField verticalHuggingPriority="750" id="44">
                                 <rect key="frame" x="9" y="12" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Open an empty browser when opening the application. A connection to the selected bookmark is opened for a new browser." id="45">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Avaa uusi selain ohjelman käynnnistyessä. Yhteys valittuun kirjanmerkkiin avataan uuteen selaimeen." id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -263,7 +263,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Connection" id="46">
+                <box title="Yhteys" id="46">
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="jTZ-Rs-0Ac">
@@ -273,7 +273,7 @@
                             <textField verticalHuggingPriority="750" id="47">
                                 <rect key="frame" x="17" y="39" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Default protocol:" id="48">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Oletusprotokolla:" id="48">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -295,7 +295,7 @@
                             <button id="53">
                                 <rect key="frame" x="10" y="157" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Use Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
+                                <buttonCell key="cell" type="check" title="Käytä avainnippua" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -303,7 +303,7 @@
                             <button id="55">
                                 <rect key="frame" x="10" y="99" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Confirm disconnect" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
+                                <buttonCell key="cell" type="check" title="Vahvista yhteyden katkaisu" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -311,7 +311,7 @@
                             <textField verticalHuggingPriority="750" id="57">
                                 <rect key="frame" x="9" y="123" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Search for passwords in the Keychain. Save passwords upon successful login in the Keychain by default." id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Etsi salasanoja Avainnipusta. Tallenna salasanat oletuksena Avainnippuun yhteydenoton onnistuessa." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -320,7 +320,7 @@
                             <textField verticalHuggingPriority="750" id="59">
                                 <rect key="frame" x="9" y="65" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ask before closing a connected browser window." id="60">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Kysy ennen kuin kytkeytynyt ikkuna suljetaan." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -335,7 +335,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Bookmarks" id="62">
+                <box title="Kirjanmerkit" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="h51-aZ-jAv">
@@ -345,14 +345,14 @@
                             <popUpButton verticalHuggingPriority="750" id="63">
                                 <rect key="frame" x="9" y="8" width="200" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Use Small Icons" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
+                                <popUpButtonCell key="cell" type="push" title="Käytä pieniä kuvakkeita" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="OtherViews" id="65">
                                         <items>
-                                            <menuItem title="Use Small Icons" state="on" id="66"/>
-                                            <menuItem title="Use Medium Icons" tag="1" id="67"/>
-                                            <menuItem title="Use Large Icons" tag="2" id="68"/>
+                                            <menuItem title="Käytä pieniä kuvakkeita" state="on" id="66"/>
+                                            <menuItem title="Käytä keskikokoisia kuvakkeita" tag="1" id="67"/>
+                                            <menuItem title="Käytä isoja kuvakkeita" tag="2" id="68"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
@@ -360,7 +360,7 @@
                             <textField verticalHuggingPriority="750" id="69">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="When using small icons, only the nickname of the bookmark is displayed." id="70">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Käytettäessä pieniä kuvakkeita, vain kirjanmerkin lempinimi näytetään kirjanmerkkivalinnassa." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -369,7 +369,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Appearance" id="71">
+                <box title="Ulkoasu" id="71">
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
@@ -379,7 +379,7 @@
                             <button id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Use alternating row background" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Käytä vaihtelevaa rivin taustaa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -387,7 +387,7 @@
                             <button id="74">
                                 <rect key="frame" x="10" y="30" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Horizontal Lines" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
+                                <buttonCell key="cell" type="check" title="Vaakaviivat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -395,7 +395,7 @@
                             <button id="76">
                                 <rect key="frame" x="10" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Vertical Lines" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
+                                <buttonCell key="cell" type="check" title="Pystyviivat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -403,7 +403,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="General" id="78">
+                <box title="Yleinen" id="78">
                     <rect key="frame" x="17" y="216" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="zSl-Q7-PPX">
@@ -413,7 +413,7 @@
                             <button id="79">
                                 <rect key="frame" x="10" y="141" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Show hidden files" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
+                                <buttonCell key="cell" type="check" title="Näytä piilotetut tiedostot" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -421,7 +421,7 @@
                             <button id="81">
                                 <rect key="frame" x="10" y="121" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Double click opens file in external editor" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
+                                <buttonCell key="cell" type="check" title="Kaksoisosoitus avaa tiedoston ulkoiseen editoriin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -429,7 +429,7 @@
                             <button id="83">
                                 <rect key="frame" x="10" y="81" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Info window always shows current selection" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
+                                <buttonCell key="cell" type="check" title="Tietoja-ikkuna näyttää aina nykyisen valinnan" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -437,7 +437,7 @@
                             <button id="85">
                                 <rect key="frame" x="10" y="61" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Use spring-loaded folders when dragging files" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
+                                <buttonCell key="cell" type="check" title="Käytä itseavautuvia kansioita tiedostojen raahauksessa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -459,7 +459,7 @@
                             <textField verticalHuggingPriority="750" id="89">
                                 <rect key="frame" x="120.5" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Short" id="90">
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Lyhyt" id="90">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -468,7 +468,7 @@
                             <textField verticalHuggingPriority="750" id="91">
                                 <rect key="frame" x="222" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Medium" id="92">
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Keskinkertainen" id="92">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -477,7 +477,7 @@
                             <textField verticalHuggingPriority="750" id="93">
                                 <rect key="frame" x="324" y="12" width="100" height="11"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Long" id="94">
+                                <textFieldCell key="cell" controlSize="mini" sendsActionOnEndEditing="YES" alignment="center" title="Pitkä" id="94">
                                     <font key="font" metaFont="miniSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -486,7 +486,7 @@
                             <button id="95">
                                 <rect key="frame" x="78" y="35" width="80" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="with delay:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
+                                <buttonCell key="cell" type="check" title="viiveellä:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
@@ -498,7 +498,7 @@
                             <button id="97">
                                 <rect key="frame" x="10" y="101" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Return key selects folder or file to rename" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Rivinvaihtonäppäin valitsee hakemiston tai tiedoston nimen muokattavaksi" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -517,7 +517,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <font key="font" metaFont="system"/>
                     <tabViewItems>
-                        <tabViewItem label="General" identifier="1" id="101">
+                        <tabViewItem label="Yleinen" identifier="1" id="101">
                             <view key="view" id="102">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -525,7 +525,7 @@
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Open downloaded files with default application" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
+                                        <buttonCell key="cell" type="check" title="Avaa tuodut tiedostot oletusohjelmalla " bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -533,7 +533,7 @@
                                     <button id="105">
                                         <rect key="frame" x="10" y="214" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Remove when transfer completes" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
+                                        <buttonCell key="cell" type="check" title="Poista kohteet siirron valmistuttua" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -541,7 +541,7 @@
                                     <textField verticalHuggingPriority="750" id="107">
                                         <rect key="frame" x="9" y="120" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Existing Files:" id="108">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Olemassaolevat tiedostot:" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -550,7 +550,7 @@
                                     <textField verticalHuggingPriority="750" id="109">
                                         <rect key="frame" x="9" y="146" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Download Folder:" id="110">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Latauskansio:" id="110">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -572,7 +572,7 @@
                                     <button id="115">
                                         <rect key="frame" x="10" y="254" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Bring window to front when transfer starts" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
+                                        <buttonCell key="cell" type="check" title="Tuo Siirrot-ikkuna eteen tiedostoja siirrettäessä" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -580,7 +580,7 @@
                                     <button id="117">
                                         <rect key="frame" x="10" y="234" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Close window when transfer completes" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
+                                        <buttonCell key="cell" type="check" title="Sulje Siirto-ikkuna siirtojen päätyttyä" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -592,7 +592,7 @@
                                     <textField verticalHuggingPriority="750" id="120">
                                         <rect key="frame" x="9" y="76" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="121">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Viedyt" id="121">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -605,7 +605,7 @@
                                     <textField verticalHuggingPriority="750" id="123">
                                         <rect key="frame" x="9" y="194" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="124">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Tuodut" id="124">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -614,7 +614,7 @@
                                     <textField verticalHuggingPriority="750" id="125">
                                         <rect key="frame" x="9" y="28" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Existing Files:" id="126">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Olemassaolevat tiedostot:" id="126">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -636,7 +636,7 @@
                                     <button id="131">
                                         <rect key="frame" x="165" y="96" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Always overwrite when reloading" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Korvaa tiedostot uudelleen haettaessa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -644,7 +644,7 @@
                                     <button id="133">
                                         <rect key="frame" x="165" y="4" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Always overwrite when reloading" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" title="Korvaa tiedostot uudelleen haettaessa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -665,7 +665,7 @@
                                     <textField verticalHuggingPriority="750" id="139">
                                         <rect key="frame" x="9" y="278" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="140">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Siirrä tiedostoja:" id="140">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -674,13 +674,13 @@
                                     <popUpButton verticalHuggingPriority="750" id="141">
                                         <rect key="frame" x="164" y="272" width="200" height="26"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <popUpButtonCell key="cell" type="push" title="Open new connection" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
+                                        <popUpButtonCell key="cell" type="push" title="Avaa uusi yhteys" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
                                             <menu key="menu" title="OtherViews" id="143">
                                                 <items>
-                                                    <menuItem title="Open new connection" state="on" id="144"/>
-                                                    <menuItem title="Use browser connection" id="145"/>
+                                                    <menuItem title="Avaa uusi yhteys" state="on" id="144"/>
+                                                    <menuItem title="Käytä selaimen yhteyttä" id="145"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -688,7 +688,7 @@
                                     <button id="146">
                                         <rect key="frame" x="10" y="52" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Upload with temporary filename" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
+                                        <buttonCell key="cell" type="check" title="Lataa käyttäen tilapäistä nimeä" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -696,7 +696,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Permissions" identifier="2" id="148">
+                        <tabViewItem label="Oikeudet" identifier="2" id="148">
                             <view key="view" id="149">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -704,7 +704,7 @@
                                     <button id="150">
                                         <rect key="frame" x="10" y="115" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Change permissions" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
+                                        <buttonCell key="cell" type="check" title="Muokkaa oikeuksia" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -712,7 +712,7 @@
                                     <button id="152">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Change permissions" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
+                                        <buttonCell key="cell" type="check" title="Muokkaa oikeuksia" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -720,7 +720,7 @@
                                     <button id="154">
                                         <rect key="frame" x="220" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -728,7 +728,7 @@
                                     <button id="156">
                                         <rect key="frame" x="303" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Execute" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
+                                        <buttonCell key="cell" type="check" title="Suoritus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -745,7 +745,7 @@
                                     <button id="160">
                                         <rect key="frame" x="220" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -753,7 +753,7 @@
                                     <textField verticalHuggingPriority="750" id="162">
                                         <rect key="frame" x="9" y="37" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Group" id="163">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ryhmä" id="163">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -762,7 +762,7 @@
                                     <button id="164">
                                         <rect key="frame" x="303" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Execute" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
+                                        <buttonCell key="cell" type="check" title="Suoritus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -770,7 +770,7 @@
                                     <button id="166">
                                         <rect key="frame" x="303" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Execute" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
+                                        <buttonCell key="cell" type="check" title="Suoritus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -778,7 +778,7 @@
                                     <button id="168">
                                         <rect key="frame" x="137" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -786,7 +786,7 @@
                                     <button id="170">
                                         <rect key="frame" x="137" y="53" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -794,7 +794,7 @@
                                     <button id="172">
                                         <rect key="frame" x="137" y="35" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -802,7 +802,7 @@
                                     <textField verticalHuggingPriority="750" id="174">
                                         <rect key="frame" x="9" y="54" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Owner" id="175">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Omistaja" id="175">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -811,7 +811,7 @@
                                     <button id="176">
                                         <rect key="frame" x="220" y="17" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -819,7 +819,7 @@
                                     <button id="178">
                                         <rect key="frame" x="137" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -827,7 +827,7 @@
                                     <button id="180">
                                         <rect key="frame" x="303" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Execute" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
+                                        <buttonCell key="cell" type="check" title="Suoritus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -835,7 +835,7 @@
                                     <textField verticalHuggingPriority="750" id="182">
                                         <rect key="frame" x="9" y="179" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Group" id="183">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Ryhmä" id="183">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -852,7 +852,7 @@
                                     <button id="186">
                                         <rect key="frame" x="137" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -860,7 +860,7 @@
                                     <button id="188">
                                         <rect key="frame" x="137" y="177" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Read" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
+                                        <buttonCell key="cell" type="check" title="Luku" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -868,7 +868,7 @@
                                     <button id="190">
                                         <rect key="frame" x="303" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Execute" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
+                                        <buttonCell key="cell" type="check" title="Suoritus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -876,7 +876,7 @@
                                     <button id="192">
                                         <rect key="frame" x="220" y="177" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -884,7 +884,7 @@
                                     <button id="194">
                                         <rect key="frame" x="220" y="159" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -892,7 +892,7 @@
                                     <button id="196">
                                         <rect key="frame" x="220" y="195" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Write" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
+                                        <buttonCell key="cell" type="check" title="Kirjoitus" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -900,7 +900,7 @@
                                     <textField verticalHuggingPriority="750" id="198">
                                         <rect key="frame" x="9" y="161" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Others" id="199">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Muut" id="199">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -909,7 +909,7 @@
                                     <textField verticalHuggingPriority="750" id="200">
                                         <rect key="frame" x="9" y="196" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Owner" id="201">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Omistaja" id="201">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -918,7 +918,7 @@
                                     <button id="202">
                                         <rect key="frame" x="48" y="91" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="radio" title="to the permissions of the local file or folder" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
+                                        <buttonCell key="cell" type="radio" title="oikeudet paikalliselle tiedostolle" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -926,7 +926,7 @@
                                     <button id="204">
                                         <rect key="frame" x="48" y="74" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="radio" title="to these permissions:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
+                                        <buttonCell key="cell" type="radio" title="nämä oikeudet:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -934,7 +934,7 @@
                                     <button id="206">
                                         <rect key="frame" x="48" y="233" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="radio" title="to the permissions of the remote file or folder" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
+                                        <buttonCell key="cell" type="radio" title="oikeudet etätiedostolle" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -942,7 +942,7 @@
                                     <button id="208">
                                         <rect key="frame" x="48" y="216" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="radio" title="to these permissions:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
+                                        <buttonCell key="cell" type="radio" title="nämä oikeudet:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -954,7 +954,7 @@
                                     <textField verticalHuggingPriority="750" id="211">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="212">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Tuodut" id="212">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -967,7 +967,7 @@
                                     <textField verticalHuggingPriority="750" id="214">
                                         <rect key="frame" x="9" y="140" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="215">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Viedyt" id="215">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -982,7 +982,7 @@
                                             <menu key="menu" title="OtherViews" id="218">
                                                 <items>
                                                     <menuItem title="for Files" state="on" id="219"/>
-                                                    <menuItem title="for Folders" tag="1" id="220"/>
+                                                    <menuItem title="kansioille" tag="1" id="220"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -990,13 +990,13 @@
                                     <popUpButton verticalHuggingPriority="750" id="221">
                                         <rect key="frame" x="191" y="218" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <popUpButtonCell key="cell" type="push" title="for Files" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
+                                        <popUpButtonCell key="cell" type="push" title="tiedostoille" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                             <menu key="menu" title="OtherViews" id="223">
                                                 <items>
-                                                    <menuItem title="for Files" state="on" id="224"/>
-                                                    <menuItem title="for Folders" tag="1" id="225"/>
+                                                    <menuItem title="tiedostoille" state="on" id="224"/>
+                                                    <menuItem title="kansioille" tag="1" id="225"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -1004,7 +1004,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Timestamps" identifier="3" id="226">
+                        <tabViewItem label="Aikaleimat" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -1012,7 +1012,7 @@
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preserve modification date" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="Säilytä muutosaika" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1020,7 +1020,7 @@
                                     <button id="230">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preserve modification date" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="Säilytä muutosaika" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1032,7 +1032,7 @@
                                     <textField verticalHuggingPriority="750" id="233">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="234">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Tuodut" id="234">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1045,7 +1045,7 @@
                                     <textField verticalHuggingPriority="750" id="236">
                                         <rect key="frame" x="9" y="225" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="237">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Viedyt" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1054,7 +1054,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Filter" identifier="4" id="238">
+                        <tabViewItem label="Lisäasetukset" identifier="4" id="238">
                             <view key="view" id="239">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -1066,7 +1066,7 @@
                                     <textField verticalHuggingPriority="750" id="241">
                                         <rect key="frame" x="9" y="282" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="242">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Tuodut" id="242">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1079,7 +1079,7 @@
                                     <textField verticalHuggingPriority="750" id="244">
                                         <rect key="frame" x="9" y="155" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="245">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Viedyt" id="245">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1142,7 +1142,7 @@
                                     <button id="256">
                                         <rect key="frame" x="9" y="257" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Skip files matching the regular expression:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
+                                        <buttonCell key="cell" type="check" title="Ohita tiedostot jotka täsmäävät säännölliseen lausekkeeseen:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1150,7 +1150,7 @@
                                     <button id="258">
                                         <rect key="frame" x="9" y="130" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Skip files matching the regular expression:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
+                                        <buttonCell key="cell" type="check" title="Ohita tiedostot jotka täsmäävät säännölliseen lausekkeeseen:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1158,7 +1158,7 @@
                                     <button verticalHuggingPriority="750" id="260">
                                         <rect key="frame" x="378" y="257" width="72" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <buttonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
+                                        <buttonCell key="cell" type="push" title="Oletus" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1166,7 +1166,7 @@
                                     <button verticalHuggingPriority="750" id="262">
                                         <rect key="frame" x="378" y="130" width="72" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <buttonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
+                                        <buttonCell key="cell" type="push" title="Oletus" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1182,7 +1182,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Default Protocol Handler" id="265">
+                <box title="Oletus protokollakäsittelijä" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
@@ -1205,7 +1205,7 @@
                             <textField verticalHuggingPriority="750" id="270">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select the default application to be opened for files or links pointing to an FTP location." id="271">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Valitse oletusohjelma joka avataan käytettäessä FTP-protokollaa." id="271">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1220,7 +1220,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Default Protocol Handler" id="273">
+                <box title="Oletus protokollakäsittelijä" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
@@ -1243,7 +1243,7 @@
                             <textField verticalHuggingPriority="750" id="278">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select the default application to be opened for files or links pointing to an SFTP location." id="279">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Valitse oletusohjelma joka avataan käytettäessä SFTP-protokollaa." id="279">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1258,7 +1258,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="383"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
-                <box title="Text Encoding" id="281">
+                <box title="Merkkimuunnos" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="N8s-vX-pXb">
@@ -1281,9 +1281,8 @@
                             <textField verticalHuggingPriority="750" id="286">
                                 <rect key="frame" x="9" y="40" width="450" height="42"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Valittua tekstikoodausta käytetään kääntämään tiedostonnimet selaimessa. Tämän valinnan tulisi vastata palvelimen asetusta." id="287">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">The selected default text encoding is used to convert characters in filenames displayed in the browser. This should match the text encoding used on the server.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1291,7 +1290,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Proxies" id="288">
+                <box title="Välipalvelimet" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
@@ -1301,7 +1300,7 @@
                             <button verticalHuggingPriority="750" id="289">
                                 <rect key="frame" x="149" y="5" width="156" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="push" title="Change Settings…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
+                                <buttonCell key="cell" type="push" title="Muokkaa asetuksia…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1309,7 +1308,7 @@
                             <button id="291">
                                 <rect key="frame" x="10" y="49" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Use system proxy settings" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
+                                <buttonCell key="cell" type="check" title="Käytä järjestelmän välipalvelun asetuksia" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1317,7 +1316,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Timeouts" id="293">
+                <box title="Aikavalvontakatkaisu" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
@@ -1327,7 +1326,7 @@
                             <textField verticalHuggingPriority="750" id="294">
                                 <rect key="frame" x="9" y="88" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Timeout for opening connections (seconds):" id="295">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Aikavalvontakatkaisu yhteyttä avatessa (sekunnit):" id="295">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1356,7 +1355,7 @@
                             <textField verticalHuggingPriority="750" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Number of retries:" id="301">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Uudelleenyritysten määrä:" id="301">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1365,7 +1364,7 @@
                             <textField verticalHuggingPriority="750" id="302">
                                 <rect key="frame" x="9" y="39" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="with delay (seconds):" id="303">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="viiveellä (sekuntia):" id="303">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1374,7 +1373,7 @@
                             <button id="304">
                                 <rect key="frame" x="10" y="62" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Repeat failed networking tasks" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
+                                <buttonCell key="cell" type="check" title="Yritä uudelleen epäonnistuneita verkko-operaatioita" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1432,7 +1431,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="165"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Update" id="316">
+                <box title="Päivitä" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="V20-wh-cwb">
@@ -1442,7 +1441,7 @@
                             <button id="317">
                                 <rect key="frame" x="10" y="84" width="241" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Automatically check for updates in" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                <buttonCell key="cell" type="check" title="Tarkista päivitykset automaattisesti" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1450,7 +1449,7 @@
                             <button verticalHuggingPriority="750" id="319">
                                 <rect key="frame" x="143" y="38" width="182" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Check for Update Now" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                <buttonCell key="cell" type="push" title="Tarkista päivitykset nyt" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1486,7 +1485,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Throttle Transfers" id="328">
+                <box title="Rajoita siirtonopeutta" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
@@ -1500,7 +1499,7 @@
                             <textField verticalHuggingPriority="750" id="330">
                                 <rect key="frame" x="9" y="104" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="331">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Tuodut" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1513,7 +1512,7 @@
                             <textField verticalHuggingPriority="750" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="334">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Viedyt" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1527,7 +1526,7 @@
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="OtherViews" id="337">
                                         <items>
-                                            <menuItem title="Unlimited Bandwidth" tag="-1" id="338"/>
+                                            <menuItem title="Rajoittamaton kaista" tag="-1" id="338"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="339">
                                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                             </menuItem>
@@ -1538,7 +1537,7 @@
                             <textField verticalHuggingPriority="750" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maximum Throughput:" id="341">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maksimi siirtokapasiteetti:" id="341">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1552,7 +1551,7 @@
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="OtherViews" id="344">
                                         <items>
-                                            <menuItem title="Unlimited Bandwidth" tag="-1" id="345"/>
+                                            <menuItem title="Rajoittamaton kaista" tag="-1" id="345"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="346">
                                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                             </menuItem>
@@ -1563,7 +1562,7 @@
                             <textField verticalHuggingPriority="750" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maximum Throughput:" id="348">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Maksimi siirtokapasiteetti:" id="348">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1578,7 +1577,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Encryption" id="350">
+                <box title="Salaus" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
@@ -1597,7 +1596,7 @@
                             <textField verticalHuggingPriority="750" id="354">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algorithm to encrypt files with on upload." id="355">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Valitse algoritmi jolla vietävät tiedostot salataan" id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1606,7 +1605,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Default Bucket Location" id="356">
+                <box title="Bucketin oletussijainti" id="356">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
@@ -1625,7 +1624,7 @@
                             <textField verticalHuggingPriority="750" id="360">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="The geographic location in which buckets will be created by default." id="361">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Buckettien maantieteellinen sijainti oletuksena" id="361">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1634,7 +1633,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Default Storage Class" id="362">
+                <box title="Tallennusluokka" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
@@ -1655,7 +1654,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy.</string>
+                                    <string key="title">Valitsemalla Reduced Redundancy Storage (RRS) voit vähentää kustannuksia tallentamalla yksinkertaisemmin vähemmän kriittiset, muualta löytyvät tiedot.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1669,7 +1668,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Editor" id="369">
+                <box title="Ulkoinen editori" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
@@ -1692,7 +1691,7 @@
                             <textField verticalHuggingPriority="750" id="374">
                                 <rect key="frame" x="9" y="75" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select a text editor to open files with by default if no other application installed can be found to edit a given file type." id="375">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Valitse oletusarvoinen tekstieditori jota käytetään oletuksena jos tiedostotyypille ei löydy ohjelmaa" id="375">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1701,7 +1700,7 @@
                             <button id="376">
                                 <rect key="frame" x="10" y="11" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Always use this application" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
+                                <buttonCell key="cell" type="check" title="Käytä aina tätä ohjelmaa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1715,7 +1714,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Language" id="409">
+                <box title="Kieli" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="mcs-pM-Cfr">
@@ -1725,7 +1724,7 @@
                             <textField verticalHuggingPriority="750" id="410">
                                 <rect key="frame" x="9" y="41" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Changes take effect the next time you open the application." id="411">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Muutokset tulevat voimaan kun ohjelma käynnistetään seuraavan kerran." id="411">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
