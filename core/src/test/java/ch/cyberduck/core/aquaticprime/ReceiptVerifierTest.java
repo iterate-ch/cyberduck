@@ -12,7 +12,8 @@ public class ReceiptVerifierTest {
 
     @Test
     public void testVerify() throws Exception {
-        ReceiptVerifier r = new ReceiptVerifier(new Local("src/test/resources/receipt"));
+        ReceiptVerifier r = new ReceiptVerifier(new Local("src/test/resources/receipt",
+                "ch.sudo.cyberduck", "4.7"));
         assertTrue(r.verify());
         assertEquals("b8e85600dffe", r.getGuid());
     }
