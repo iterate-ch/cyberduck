@@ -160,7 +160,7 @@ public class S3ObjectListService implements ListService {
                 if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(parent)) {
                     continue;
                 }
-                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory));
+                final Path file = new Path(parent, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 file.attributes().setRegion(bucket.attributes().getRegion());
                 children.add(file);
             }
