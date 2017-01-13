@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +39,10 @@ public class TouchWorker extends Worker<Boolean> {
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
         if(feature.isSupported(file.getParent())) {
-            feature.touch(file, new TransferStatus());
+            feature.touch(file, new TransferStatus()
+                    .exists(false)
+                    .length(0L)
+                    .mime(new MappingMimeTypeService().getMime(file.getName())));
             return true;
         }
         return false;
