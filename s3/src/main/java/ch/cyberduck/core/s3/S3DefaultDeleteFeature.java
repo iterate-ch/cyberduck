@@ -60,8 +60,13 @@ public class S3DefaultDeleteFeature implements Delete {
             if(file.getType().contains(Path.Type.upload)) {
                 callback.delete(file);
                 // In-progress multipart upload
-                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                try {
+                    multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                            containerService.getContainer(file).getName(), containerService.getKey(file)));
+                }
+                catch(NotfoundException ignored) {
+                    log.warn(String.format("Ignore failure deleting multipart upload %s", file));
+                }
                 continue;
             }
             callback.delete(file);
