@@ -59,6 +59,7 @@ public class B2FileidProvider implements IdProvider {
                 throw new NotfoundException(file.getAbsolute());
             }
             if(file.isPlaceholder()) {
+                // Placeholder does not exist
                 return null;
             }
             final B2ListFilesResponse response = session.getClient().listFileNames(
