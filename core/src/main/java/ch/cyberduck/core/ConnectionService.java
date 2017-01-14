@@ -31,6 +31,8 @@ public interface ConnectionService {
      */
     void connect(Session<?> session, Cache<Path> cache) throws BackgroundException;
 
+    void close(Session<?> session);
+
     /**
      * Cancel blocking connect operation if any
      */
