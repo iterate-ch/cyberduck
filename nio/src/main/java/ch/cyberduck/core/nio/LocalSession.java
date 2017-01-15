@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
@@ -82,6 +83,9 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Move.class) {
             return (T) new LocalMoveFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new LocalDirectoryFeature(this);
         }
         return super._getFeature(type);
     }
