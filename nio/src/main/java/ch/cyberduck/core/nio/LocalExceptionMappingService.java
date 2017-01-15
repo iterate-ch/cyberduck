@@ -17,17 +17,23 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 
 public class LocalExceptionMappingService extends AbstractExceptionMappingService<IOException> {
+
     @Override
     public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
         if(e instanceof AccessDeniedException) {
             return new ch.cyberduck.core.exception.AccessDeniedException(buffer.toString(), e);
+        }
+        if(e instanceof NoSuchFileException) {
+            return new NotfoundException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
