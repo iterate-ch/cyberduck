@@ -85,6 +85,16 @@ public class DefaultSessionPool implements SessionPool {
         this.pool.setAbandonedConfig(abandon);
     }
 
+    public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final PathCache cache,
+                              final ProgressListener progress, final Host bookmark, final GenericObjectPool<Session> pool) {
+        this.connect = connect;
+        this.progress = progress;
+        this.cache = cache;
+        this.bookmark = bookmark;
+        this.registry = registry;
+        this.pool = pool;
+    }
+
     public static final class CustomPoolEvictionPolicy implements EvictionPolicy<Session<?>> {
         public CustomPoolEvictionPolicy() {
             //
@@ -245,11 +255,19 @@ public class DefaultSessionPool implements SessionPool {
         try {
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                 try {
-                    // Activation of this method decrements the active count and attempts to destroy the instance
-                    pool.invalidateObject(session);
+                    session.interrupt();
                 }
-                catch(Exception ignored) {
-                    log.warn(String.format("Failure invalidating session %s in pool", session));
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e.getDetail()));
+                }
+                finally {
+                    try {
+                        // Activation of this method decrements the active count and attempts to destroy the instance
+                        pool.invalidateObject(session);
+                    }
+                    catch(Exception e) {
+                        log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
+                    }
                 }
             }
             else {
