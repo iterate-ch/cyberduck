@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -32,7 +33,14 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.Test;
+
+import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultSessionPoolTest {
 
@@ -54,5 +62,65 @@ public class DefaultSessionPoolTest {
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
         pool.borrow(BackgroundActionState.running);
+    }
+
+    @Test
+    public void testCheckReconnectSocketFailure() throws Exception {
+        final AtomicBoolean interrupt = new AtomicBoolean();
+        final Host bookmark = new Host(new TestProtocol());
+        final TestLoginConnectionService connect = new TestLoginConnectionService() {
+            @Override
+            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+                return true;
+            }
+        };
+        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), bookmark,
+                new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                    @Override
+                    public Session create() {
+                        return new NullSession(bookmark) {
+                            @Override
+                            public void interrupt() throws BackgroundException {
+                                interrupt.set(true);
+                                super.interrupt();
+                            }
+                        };
+                    }
+                }));
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        pool.release(session, new BackgroundException("m", new SocketException("m")));
+        assertTrue(interrupt.get());
+    }
+
+    @Test
+    public void testCheckReconnectApplicationFailure() throws Exception {
+        final AtomicBoolean interrupt = new AtomicBoolean();
+        final Host bookmark = new Host(new TestProtocol());
+        final TestLoginConnectionService connect = new TestLoginConnectionService() {
+            @Override
+            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+                return true;
+            }
+        };
+        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), bookmark,
+                new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        PathCache.empty(), bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                    @Override
+                    public Session create() {
+                        return new NullSession(bookmark) {
+                            @Override
+                            public void interrupt() throws BackgroundException {
+                                interrupt.set(true);
+                                super.interrupt();
+                            }
+                        };
+                    }
+                }));
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        pool.release(session, new BackgroundException("m", "d"));
+        assertFalse(interrupt.get());
     }
 }
