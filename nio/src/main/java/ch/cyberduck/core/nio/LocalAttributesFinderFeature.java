@@ -55,7 +55,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
     public PathAttributes convert(final java.nio.file.Path path) throws IOException {
         final boolean isPosix = path.getFileSystem().supportedFileAttributeViews().contains("posix");
         final PathAttributes attributes = new PathAttributes();
-        final Class provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
+        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
         final BasicFileAttributes a = Files.readAttributes(path, provider);
         attributes.setSize(a.size());
         attributes.setModificationDate(a.lastModifiedTime().toMillis());
