@@ -203,6 +203,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected void disconnect() {
         state = State.closed;
         listener = null;
+        client = null;
     }
 
     /**
