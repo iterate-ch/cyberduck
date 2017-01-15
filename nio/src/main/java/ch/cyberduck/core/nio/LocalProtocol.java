@@ -85,4 +85,9 @@ public class LocalProtocol extends AbstractProtocol {
     public String getDefaultHostname() {
         return "localhost";
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
