@@ -33,13 +33,14 @@ import org.junit.Test;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SingleSessionPoolTest {
 
     @Test
     public void testCheckReconnectSocketFailure() throws Exception {
-        final AtomicBoolean disconnected = new AtomicBoolean();
+        final AtomicBoolean interrupt = new AtomicBoolean();
         final SingleSessionPool pool = new SingleSessionPool(new TestLoginConnectionService() {
             @Override
             public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
@@ -48,11 +49,32 @@ public class SingleSessionPoolTest {
         }, new NullSession(new Host(new TestProtocol())) {
             @Override
             public void interrupt() throws BackgroundException {
-                disconnected.set(true);
+                interrupt.set(true);
+                super.interrupt();
             }
         }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", new SocketException("m")));
-        assertTrue(disconnected.get());
+        assertTrue(interrupt.get());
+    }
+
+    @Test
+    public void testCheckReconnectApplicationFailure() throws Exception {
+        final AtomicBoolean interrupt = new AtomicBoolean();
+        final SingleSessionPool pool = new SingleSessionPool(new TestLoginConnectionService() {
+            @Override
+            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+                return true;
+            }
+        }, new NullSession(new Host(new TestProtocol())) {
+            @Override
+            public void interrupt() throws BackgroundException {
+                interrupt.set(true);
+                super.interrupt();
+            }
+        }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        final Session<?> session = pool.borrow(BackgroundActionState.running);
+        pool.release(session, new BackgroundException("m", "d"));
+        assertFalse(interrupt.get());
     }
 }
