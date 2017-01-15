@@ -49,7 +49,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final PathCache cache) {
-        throw new UnsupportedOperationException();
+        return this;
     }
 
     public PathAttributes convert(final java.nio.file.Path path) throws IOException {
