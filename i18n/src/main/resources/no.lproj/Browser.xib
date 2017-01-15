@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -224,7 +224,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="26ABC828-7B93-4D29-804D-E8D3F65C2135" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="8DFD34E9-002D-401B-9989-D48095E2206B" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -353,7 +353,7 @@
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Duplisert fil…" keyEquivalent="d" id="73">
+                <menuItem title="Dupliser fil…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
@@ -430,8 +430,8 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Create Archive" id="88">
-                    <menu key="submenu" title="Create Archive" id="89"/>
+                <menuItem title="Opprett arkiv" id="88">
+                    <menu key="submenu" title="Opprett arkiv" id="89"/>
                 </menuItem>
                 <menuItem title="Utvid arkiv" id="90">
                     <connections>
@@ -503,16 +503,16 @@ DQ
                         <action selector="editBookmarkButtonClicked:" target="-1" id="171"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Duplicate Bookmark" id="105">
+                <menuItem title="Dupliser bokmerke" id="105">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="duplicateBookmarkButtonClicked:" target="-1" id="183"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Sorter på" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Sorter på" id="108">
                         <items>
                             <menuItem title="Kallenavn" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
@@ -520,7 +520,7 @@ DQ
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Vertsnavn" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
@@ -569,7 +569,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="26ABC828-7B93-4D29-804D-E8D3F65C2135" width="1" height="1">
+        <image name="8DFD34E9-002D-401B-9989-D48095E2206B" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
