@@ -19,13 +19,12 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-public class LocalDeleteFeature extends ThreadedDeleteFeature implements Delete {
+public class LocalDeleteFeature implements Delete {
 
     private final LocalSession session;
 
@@ -37,22 +36,15 @@ public class LocalDeleteFeature extends ThreadedDeleteFeature implements Delete 
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             if(file.isFile() || file.isSymbolicLink()) {
-                this.submit(file, new Implementation() {
-                    @Override
-                    public void delete(final Path file) throws BackgroundException {
-                        callback.delete(file);
-                        try {
-                            Files.delete(session.getClient().getPath(file.getAbsolute()));
-                        }
-                        catch(IOException e) {
-                            throw new LocalExceptionMappingService().map("Cannot delete {0}", e, file);
-                        }
-                    }
-                });
+                callback.delete(file);
+                try {
+                    Files.delete(session.getClient().getPath(file.getAbsolute()));
+                }
+                catch(IOException e) {
+                    throw new LocalExceptionMappingService().map("Cannot delete {0}", e, file);
+                }
             }
         }
-        // Await and shutdown
-        this.await();
         for(Path file : files) {
             if(file.isDirectory() && !file.isSymbolicLink()) {
                 callback.delete(file);
