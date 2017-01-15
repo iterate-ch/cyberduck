@@ -36,12 +36,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class SingleSessionPoolTest {
+public class StatelessSessionPoolTest {
 
     @Test
     public void testCheckReconnectSocketFailure() throws Exception {
         final AtomicBoolean interrupt = new AtomicBoolean();
-        final SingleSessionPool pool = new SingleSessionPool(new TestLoginConnectionService() {
+        final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
             public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
                 return true;
@@ -61,7 +61,7 @@ public class SingleSessionPoolTest {
     @Test
     public void testCheckReconnectApplicationFailure() throws Exception {
         final AtomicBoolean interrupt = new AtomicBoolean();
-        final SingleSessionPool pool = new SingleSessionPool(new TestLoginConnectionService() {
+        final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
             public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
                 return true;

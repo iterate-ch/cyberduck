@@ -43,7 +43,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -228,7 +228,7 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
             );
-            source = new SingleSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
+            source = new StatelessSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -259,7 +259,7 @@ public class Terminal {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     return this.transfer(new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
-                            source, destination = new SingleSessionPool(connect, SessionFactory.create(target,
+                            source, destination = new StatelessSessionPool(connect, SessionFactory.create(target,
                                     new CertificateStoreX509TrustManager(
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)

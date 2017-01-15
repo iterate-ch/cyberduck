@@ -27,8 +27,8 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
-public class SingleSessionPool implements SessionPool {
-    private static final Logger log = Logger.getLogger(SingleSessionPool.class);
+public class StatelessSessionPool implements SessionPool {
+    private static final Logger log = Logger.getLogger(StatelessSessionPool.class);
 
     private final FailureDiagnostics<Exception> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
@@ -36,8 +36,8 @@ public class SingleSessionPool implements SessionPool {
     private final PathCache cache;
     private final VaultRegistry registry;
 
-    public SingleSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                             final VaultRegistry registry) {
+    public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
+                                final VaultRegistry registry) {
         this.connect = connect;
         this.session = session;
         this.registry = registry;
@@ -47,46 +47,56 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        connect.check(session, cache);
-        return session;
+        synchronized(session) {
+            connect.check(session, cache);
+            return session;
+        }
     }
 
     @Override
-    public void release(final Session<?> session, final BackgroundException failure) {
-        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-            connect.close(session);
+    public void release(final Session<?> conn, final BackgroundException failure) {
+        synchronized(session) {
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                connect.close(conn);
+            }
         }
     }
 
     @Override
     public void evict() {
-        try {
-            session.close();
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
-        }
-        finally {
-            registry.clear();
+        synchronized(session) {
+            try {
+                session.close();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
+            }
+            finally {
+                registry.clear();
+            }
         }
     }
 
     @Override
     public void shutdown() {
-        try {
-            session.close();
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Failure closing session. %s", e.getMessage()));
-        }
-        finally {
-            registry.clear();
+        synchronized(session) {
+            try {
+                session.close();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure closing session. %s", e.getMessage()));
+            }
+            finally {
+                registry.clear();
+            }
         }
     }
 
     @Override
     public Session.State getState() {
-        return session.getState();
+        synchronized(session) {
+            return session.getState();
+        }
     }
 
     @Override

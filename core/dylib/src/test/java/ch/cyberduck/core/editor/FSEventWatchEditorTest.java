@@ -28,7 +28,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
@@ -45,7 +45,7 @@ public class FSEventWatchEditorTest {
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
         final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
-                new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), path, new DisabledListProgressListener());
+                new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), path, new DisabledListProgressListener());
         assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
         assertEquals("t.txt", editor.getRemote().getName());
         final Local local = editor.getLocal();
@@ -60,7 +60,7 @@ public class FSEventWatchEditorTest {
         final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
         final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),
-                new SingleSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledListProgressListener());
+                new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledListProgressListener());
         assertEquals(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)), editor.getRemote());
     }
 }

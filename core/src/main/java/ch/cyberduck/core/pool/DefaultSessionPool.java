@@ -157,7 +157,7 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, this));
                     }
                     if(DISCONNECTED == features) {
-                        features = new SingleSessionPool(connect, session, cache, registry);
+                        features = new StatelessSessionPool(connect, session, cache, registry);
                     }
                     return session;
                 }
