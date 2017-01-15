@@ -66,6 +66,7 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Attributes.class) {
             return (T) new LocalAttributesFinderFeature(this);
