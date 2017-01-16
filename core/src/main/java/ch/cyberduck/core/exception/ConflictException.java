@@ -15,7 +15,7 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class ConflictException extends AccessDeniedException {
+public class ConflictException extends RetriableAccessDeniedException {
     public ConflictException(final String detail) {
         super(detail);
     }
