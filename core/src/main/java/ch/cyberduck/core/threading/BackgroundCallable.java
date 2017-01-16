@@ -31,7 +31,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
     @Override
     public T call() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Acquired lock for background runnable %s", action));
+            log.debug(String.format("Running background action %s", action));
         }
         if(action.isCanceled()) {
             // Canceled action yields no result

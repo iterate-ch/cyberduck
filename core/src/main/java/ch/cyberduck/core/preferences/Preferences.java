@@ -847,7 +847,6 @@ public abstract class Preferences {
         /*
          * Session pool
          */
-        defaults.put("connection.pool.enable", String.valueOf(true));
         defaults.put("connection.pool.minidle", String.valueOf(1));
         defaults.put("connection.pool.maxidle", String.valueOf(5));
         defaults.put("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
