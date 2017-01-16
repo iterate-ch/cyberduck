@@ -105,15 +105,24 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() throws BackgroundException {
-        return new DefaultRetryCallable<T>(new DefaultRetryCallable.BackgroundExceptionCallable<T>() {
-            @Override
-            public T call() throws BackgroundException {
-                // Reset status
-                SessionBackgroundAction.this.reset();
-                // Run action
-                return SessionBackgroundAction.this.run();
-            }
-        }, progressListener, this).call();
+        try {
+            return new DefaultRetryCallable<T>(new DefaultRetryCallable.BackgroundExceptionCallable<T>() {
+                @Override
+                public T call() throws BackgroundException {
+                    // Reset status
+                    SessionBackgroundAction.this.reset();
+                    // Run action
+                    return SessionBackgroundAction.this.run();
+                }
+            }, progressListener, this).call();
+        }
+        catch(ConnectionCanceledException e) {
+            throw e;
+        }
+        catch(BackgroundException e) {
+            failed = true;
+            throw e;
+        }
     }
 
     @Override
@@ -180,7 +189,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public boolean alert(final BackgroundException failure) {
-        if(this.hasFailed() && !this.isCanceled()) {
+        if(!this.isCanceled()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Display alert for failure %s", failure));
             }
