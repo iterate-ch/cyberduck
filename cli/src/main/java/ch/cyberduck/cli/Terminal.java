@@ -350,8 +350,7 @@ public class Terminal {
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -360,8 +359,7 @@ public class Terminal {
     protected Exit mount(final SessionPool session) {
         final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
                 controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -373,8 +371,7 @@ public class Terminal {
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
                 controller,
                 session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -393,8 +390,7 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -427,8 +423,7 @@ public class Terminal {
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         try {

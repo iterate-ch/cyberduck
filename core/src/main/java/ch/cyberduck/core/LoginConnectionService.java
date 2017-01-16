@@ -28,8 +28,6 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,18 +39,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LoginConnectionService implements ConnectionService {
     private static final Logger log = Logger.getLogger(LoginConnectionService.class);
 
-    private final Resolver resolver
-            = new Resolver();
-    private final FailureDiagnostics<Exception> diagnostics
-            = new DefaultFailureDiagnostics();
+    private final Resolver resolver = new Resolver();
+    private final AtomicBoolean canceled = new AtomicBoolean();
     private final HostKeyCallback key;
     private final ProgressListener listener;
     private final TranscriptListener transcript;
     private final ProxyFinder proxy;
     private final LoginService login;
     private final NotificationService notification;
-    private final AtomicBoolean canceled
-            = new AtomicBoolean();
 
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,

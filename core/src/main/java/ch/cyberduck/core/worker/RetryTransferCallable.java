@@ -15,10 +15,9 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.threading.RetryCallable;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public abstract class RetryTransferCallable
-        extends RetryCallable<TransferStatus>
+public abstract class RetryTransferCallable extends AbstractRetryCallable<TransferStatus>
         implements TransferWorker.TransferCallable {
 }

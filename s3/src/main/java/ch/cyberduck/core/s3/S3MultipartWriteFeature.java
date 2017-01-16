@@ -20,7 +20,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.RetryCallable;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -143,7 +143,7 @@ public class S3MultipartWriteFeature implements Write {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                completed.add(new RetryCallable<MultipartPart>() {
+                completed.add(new AbstractRetryCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
                         try {

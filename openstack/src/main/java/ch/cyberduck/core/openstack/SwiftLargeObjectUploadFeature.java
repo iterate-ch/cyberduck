@@ -33,8 +33,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -197,7 +197,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool<StorageObject> pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length) {
-        return pool.execute(new RetryCallable<StorageObject>() {
+        return pool.execute(new AbstractRetryCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 final TransferStatus status = new TransferStatus()

@@ -83,6 +83,9 @@ public class SessionPoolFactory {
                 // HTTP connection pool
                 return stateless(controller, cache, bookmark, keychain, login, password, key);
             default:
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Create new pooled connection pool for %s", bookmark));
+                }
                 return new DefaultSessionPool(
                         new LoginConnectionService(
                                 login,
@@ -93,7 +96,6 @@ public class SessionPoolFactory {
                         new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                         new KeychainX509KeyManager(bookmark), VaultRegistryFactory.create(keychain, password), cache, controller, bookmark
                 )
-                        .withRetry(PreferencesFactory.get().getInteger("connection.retry"))
                         .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                         .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                         .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
@@ -112,6 +114,9 @@ public class SessionPoolFactory {
     public static SessionPool stateless(final Controller controller, final PathCache cache, final Host bookmark,
                                         final HostPasswordStore keychain, final LoginCallback login,
                                         final PasswordCallback password, final HostKeyCallback key) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Create new stateless connection pool for %s", bookmark));
+        }
         final Session<?> session = SessionFactory.create(bookmark,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark));
@@ -138,6 +143,9 @@ public class SessionPoolFactory {
     public static SessionPool stateful(final Controller controller, final PathCache cache, final Host bookmark,
                                        final HostPasswordStore keychain, final LoginCallback login,
                                        final PasswordCallback password, final HostKeyCallback key) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Create new stateful connection pool for %s", bookmark));
+        }
         final Session<?> session = SessionFactory.create(bookmark,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark));

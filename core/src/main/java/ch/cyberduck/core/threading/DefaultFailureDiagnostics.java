@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ResolveFailedException;
@@ -33,11 +34,11 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
-public final class DefaultFailureDiagnostics implements FailureDiagnostics<Exception> {
+public final class DefaultFailureDiagnostics implements FailureDiagnostics<BackgroundException> {
     private static final Logger log = Logger.getLogger(DefaultFailureDiagnostics.class);
 
     @Override
-    public Type determine(final Exception failure) {
+    public Type determine(final BackgroundException failure) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determine cause for failure %s", failure));
         }

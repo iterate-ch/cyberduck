@@ -30,8 +30,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -208,7 +208,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new RetryCallable<B2UploadPartResponse>() {
+        return pool.execute(new AbstractRetryCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
                 final TransferStatus status = new TransferStatus()

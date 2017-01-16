@@ -17,7 +17,6 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -42,7 +40,6 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.NoSuchElementException;
 
 public class DefaultSessionPool implements SessionPool {
@@ -51,7 +48,7 @@ public class DefaultSessionPool implements SessionPool {
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;
 
-    private final FailureDiagnostics<Exception> diagnostics
+    private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
@@ -64,8 +61,6 @@ public class DefaultSessionPool implements SessionPool {
     private final GenericObjectPool<Session> pool;
 
     private SessionPool features = SessionPool.DISCONNECTED;
-
-    private int retry = 0;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
                               final VaultRegistry registry, final PathCache cache, final ProgressListener progress, final Host bookmark) {
@@ -131,11 +126,6 @@ public class DefaultSessionPool implements SessionPool {
         return this;
     }
 
-    public DefaultSessionPool withRetry(final int retry) {
-        this.retry = retry;
-        return this;
-    }
-
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         final Integer numActive = pool.getNumActive();
@@ -175,11 +165,14 @@ public class DefaultSessionPool implements SessionPool {
                         continue;
                     }
                     if(cause instanceof BackgroundException) {
-                        // fix null pointer
                         final BackgroundException failure = (BackgroundException) cause;
                         log.warn(String.format("Failure %s obtaining connection for %s", failure, this));
-                        if(this.retry(failure, retry - repeat++)) {
-                            continue;
+                        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                            final int max = Math.max(1, pool.getMaxIdle() - 1);
+                            log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
+                            pool.setMaxIdle(max);
+                            // Clear pool from idle connections
+                            pool.clear();
                         }
                         throw failure;
                     }
@@ -198,53 +191,6 @@ public class DefaultSessionPool implements SessionPool {
             }
             throw new BackgroundException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * The number of times a new connection attempt should be made. Takes into
-     * account the number of times already tried.
-     *
-     * @param failure   Connect failure
-     * @param remaining Remaining number of connect attempts. The initial connection attempt does not count
-     * @return Greater than zero if a failed action should be repeated again
-     */
-    protected boolean retry(final BackgroundException failure, final int remaining) {
-        if(remaining > 0) {
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Retry for failure %s", failure));
-                }
-                final int max = Math.max(1, pool.getMaxIdle() - 1);
-                log.warn(String.format("Lower maximum idle pool size to %d connections.", max));
-                pool.setMaxIdle(max);
-                // Clear pool from idle connections
-                pool.clear();
-                // This is an automated retry. Wait some time first.
-                this.pause(remaining);
-                // Retry to connect
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Idle this action for some time. Blocks the caller.
-     */
-    protected void pause(final int attempt) {
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-            @Override
-            public boolean isCanceled() {
-                return pool.isClosed();
-            }
-
-            @Override
-            public void progress(final Integer delay) {
-                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                        delay, attempt));
-            }
-        });
-        pauser.await();
     }
 
     @Override

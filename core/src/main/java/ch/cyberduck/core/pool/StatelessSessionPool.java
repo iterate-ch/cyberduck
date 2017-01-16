@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 public class StatelessSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(StatelessSessionPool.class);
 
-    private final FailureDiagnostics<Exception> diagnostics = new DefaultFailureDiagnostics();
+    private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
     private final Session<?> session;
     private final PathCache cache;
