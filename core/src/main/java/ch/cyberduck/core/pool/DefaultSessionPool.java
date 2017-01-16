@@ -48,7 +48,7 @@ public class DefaultSessionPool implements SessionPool {
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;
 
-    private final FailureDiagnostics<Exception> diagnostics
+    private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;

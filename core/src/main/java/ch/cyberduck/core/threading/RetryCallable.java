@@ -33,7 +33,7 @@ public abstract class RetryCallable<T> implements Callable<T> {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final FailureDiagnostics<Exception> diagnostics
+    private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
     /**
