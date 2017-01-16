@@ -133,7 +133,8 @@ public class LoginConnectionService implements ConnectionService {
         return true;
     }
 
-    private void close(final Session<?> session) {
+    @Override
+    public void close(final Session<?> session) {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
                 session.getHost().getHostname()));
         try {

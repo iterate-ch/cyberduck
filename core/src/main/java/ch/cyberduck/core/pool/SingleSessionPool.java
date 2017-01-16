@@ -21,6 +21,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
@@ -28,6 +30,7 @@ import org.apache.log4j.Logger;
 public class SingleSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(SingleSessionPool.class);
 
+    private final FailureDiagnostics<Exception> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
     private final Session<?> session;
     private final PathCache cache;
@@ -50,7 +53,9 @@ public class SingleSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> session, final BackgroundException failure) {
-        //
+        if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            connect.close(session);
+        }
     }
 
     @Override
