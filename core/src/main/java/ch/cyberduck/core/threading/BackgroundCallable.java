@@ -8,13 +8,11 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 
-public final class BackgroundCallable<T> implements Callable<T> {
+public class BackgroundCallable<T> implements Callable<T> {
     private static final Logger log = Logger.getLogger(BackgroundCallable.class);
 
     private final BackgroundAction<T> action;
-
     private final Controller controller;
-
     private final BackgroundActionRegistry registry;
 
     /**
