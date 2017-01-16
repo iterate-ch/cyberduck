@@ -19,24 +19,22 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T>
-        implements ProgressListener, TranscriptListener {
-    private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
+import java.text.MessageFormat;
 
-    /**
-     * Contains all exceptions thrown while this action was running
-     */
-    private BackgroundException exception;
+public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T> implements ProgressListener, TranscriptListener {
+    private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
 
     /**
      * This action encountered one or more exceptions
@@ -49,14 +47,21 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private StringBuilder transcript
             = new StringBuilder();
 
+    /**
+     * The number of times to retry a failed action
+     */
+    private int retry =
+            PreferencesFactory.get().getInteger("connection.retry");
+
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
 
     private final AlertCallback alert;
-
     private final ProgressListener progressListener;
-
     private final TranscriptListener transcriptListener;
+
+    private final FailureDiagnostics<Exception> diagnostics
+            = new DefaultFailureDiagnostics();
 
     protected final SessionPool pool;
 
@@ -68,10 +73,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         this.alert = alert;
         this.progressListener = progress;
         this.transcriptListener = transcript;
-    }
-
-    public BackgroundException getException() {
-        return exception;
     }
 
     @Override
@@ -111,27 +112,52 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() throws BackgroundException {
-        try {
-            // Reset status
-            this.reset();
-            // Run action
-            return this.run();
+        /**
+         * The number of times this action has been run
+         */
+        int repeat = 0;
+        while(!this.isCanceled()) {
+            try {
+                // Reset status
+                this.reset();
+                // Run action
+                return this.run();
+            }
+            catch(ConnectionCanceledException failure) {
+                log.warn(String.format("Canceled executing background action %s. %s", this, failure.getDetail()));
+                throw failure;
+            }
+            catch(BackgroundException failure) {
+                log.warn(String.format("Failure executing background action %s. %s", this, failure.getDetail()));
+                failed = true;
+                if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                    if(this.retry(failure, retry - repeat++)) {
+                        // This is an automated retry. Wait some time first.
+                        this.pause(retry - repeat++);
+                        repeat++;
+                        if(this.isCanceled()) {
+                            throw failure;
+                        }
+                        // Re-run the action
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Retry failed background action %s", this));
+                        }
+                    }
+                    else {
+                        throw failure;
+                    }
+                }
+                else {
+                    throw failure;
+                }
+            }
+            catch(Exception e) {
+                log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
+                failed = true;
+                throw new BackgroundException(e);
+            }
         }
-        catch(ConnectionCanceledException e) {
-            throw e;
-        }
-        catch(BackgroundException failure) {
-            log.warn(String.format("Failure executing background action: %s", failure));
-            exception = failure;
-            failed = true;
-            throw failure;
-        }
-        catch(Exception e) {
-            log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
-            exception = new BackgroundException(e);
-            failed = true;
-            throw e;
-        }
+        throw new ConnectionCanceledException();
     }
 
     @Override
@@ -151,14 +177,59 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     public abstract T run(final Session<?> session) throws BackgroundException;
 
+    /**
+     * The number of times a new connection attempt should be made. Takes into
+     * account the number of times already tried.
+     *
+     * @param failure   Connect failure
+     * @param remaining Remaining number of connect attempts. The initial connection attempt does not count
+     * @return Greater than zero if a failed action should be repeated again
+     */
+    protected boolean retry(final BackgroundException failure, final int remaining) {
+        if(remaining > 0) {
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Retry for failure %s", failure));
+                }
+                // This is an automated retry. Wait some time first.
+                this.pause(remaining);
+                // Retry to connect
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Idle this action for some time. Blocks the caller.
+     */
+    protected void pause(final int attempt) {
+        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return SessionBackgroundAction.this.isCanceled();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
+                        delay, attempt));
+            }
+        });
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Pause failed background action %s", this));
+        }
+        pauser.await();
+    }
+
     @Override
-    public boolean alert(final BackgroundException e) {
+    public boolean alert(final BackgroundException failure) {
         if(this.hasFailed() && !this.isCanceled()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Display alert for failure %s", exception));
+                log.info(String.format("Display alert for failure %s", failure));
             }
             // Display alert if the action was not canceled intentionally
-            return alert.alert(pool.getHost(), exception, transcript);
+            return alert.alert(pool.getHost(), failure, transcript);
         }
         return false;
     }
@@ -176,9 +247,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SessionBackgroundAction{");
-        sb.append("pool=").append(pool);
-        sb.append(", failed=").append(failed);
-        sb.append(", exception=").append(exception);
+        sb.append("failed=").append(failed);
+        sb.append(", retry=").append(retry);
+        sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();
     }

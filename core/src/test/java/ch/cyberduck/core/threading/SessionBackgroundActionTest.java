@@ -71,7 +71,6 @@ public class SessionBackgroundActionTest {
             // Ignore
         }
         assertFalse(a.hasFailed());
-        assertNull(a.getException());
     }
 
     @Test
@@ -110,7 +109,6 @@ public class SessionBackgroundActionTest {
             // Ignore
         }
         assertTrue(a.hasFailed());
-        assertNotNull(a.getException());
     }
 
     @Test
@@ -149,7 +147,6 @@ public class SessionBackgroundActionTest {
             // Ignore
         }
         assertFalse(a.hasFailed());
-        assertNull(a.getException());
     }
 
     @Test
