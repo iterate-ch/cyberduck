@@ -145,7 +145,6 @@ public class ConcurrentTransferWorkerTest {
                 new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener()
         );
         pool.withMaxTotal(connections);
-        pool.withRetry(10);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertTrue(worker.run(s));
         worker.release(s, ConcurrentTransferWorker.Connection.source);

@@ -143,7 +143,7 @@ public class TransferBackgroundActionTest {
         action.call();
         assertTrue(destination.isConnected());
         action.finish();
-        assertNull(action.getException());
+        assertFalse(action.hasFailed());
         assertTrue(start.get());
         assertTrue(stop.get());
         assertTrue(t.isComplete());
@@ -200,7 +200,7 @@ public class TransferBackgroundActionTest {
         action.prepare();
         action.call();
         action.finish();
-        assertNull(action.getException());
+        assertFalse(action.hasFailed());
         assertTrue(start.get());
         assertTrue(stop.get());
         assertTrue(t.isComplete());
@@ -228,7 +228,7 @@ public class TransferBackgroundActionTest {
         }, SessionPool.DISCONNECTED, new TransferAdapter(),
                 new DownloadTransfer(host, Collections.singletonList(new TransferItem(new Path("/home/test", EnumSet.of(Path.Type.file)), new NullLocal("/t")))), options) {
             @Override
-            public boolean alert(final BackgroundException e) {
+            public boolean alert(final BackgroundException failure) {
                 final boolean alerted = alert.get();
                 alert.set(true);
                 return !alerted;
@@ -238,7 +238,7 @@ public class TransferBackgroundActionTest {
         // Connect, prepare and run
         new BackgroundCallable<Boolean>(action, controller, BackgroundActionRegistry.global()).call();
         assertTrue(alert.get());
-        assertNotNull(action.getException());
+        assertTrue(action.hasFailed());
 //        assertTrue(options.resumeRequested);
     }
 }
