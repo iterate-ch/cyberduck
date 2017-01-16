@@ -100,7 +100,7 @@ public final class BackgroundCallable<T> implements Callable<T> {
         }
     }
 
-    private void failure(final Exception trace, final Exception failure) {
+    protected void failure(final Exception trace, final Exception failure) {
         try {
             trace.initCause(failure);
         }
