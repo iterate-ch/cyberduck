@@ -39,7 +39,7 @@ public class StatelessSessionPool implements SessionPool {
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
                                 final VaultRegistry registry) {
         this.connect = connect;
-        this.session = session;
+        this.session = session.withRegistry(registry);
         this.registry = registry;
         this.cache = cache;
     }
