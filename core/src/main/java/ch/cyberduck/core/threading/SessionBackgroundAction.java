@@ -26,7 +26,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -46,12 +45,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      */
     private StringBuilder transcript
             = new StringBuilder();
-
-    /**
-     * The number of times to retry a failed action
-     */
-    private int retry =
-            PreferencesFactory.get().getInteger("connection.retry");
 
     private static final String LINE_SEPARATOR
             = System.getProperty("line.separator");
@@ -112,52 +105,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() throws BackgroundException {
-        /**
-         * The number of times this action has been run
-         */
-        int repeat = 0;
-        while(!this.isCanceled()) {
-            try {
+        return new DefaultRetryCallable<T>(new DefaultRetryCallable.BackgroundExceptionCallable<T>() {
+            @Override
+            public T call() throws BackgroundException {
                 // Reset status
-                this.reset();
+                SessionBackgroundAction.this.reset();
                 // Run action
-                return this.run();
+                return SessionBackgroundAction.this.run();
             }
-            catch(ConnectionCanceledException failure) {
-                log.warn(String.format("Canceled executing background action %s. %s", this, failure.getDetail()));
-                throw failure;
-            }
-            catch(BackgroundException failure) {
-                log.warn(String.format("Failure executing background action %s. %s", this, failure.getDetail()));
-                failed = true;
-                if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                    if(this.retry(failure, retry - repeat++)) {
-                        // This is an automated retry. Wait some time first.
-                        this.pause(retry - repeat++);
-                        repeat++;
-                        if(this.isCanceled()) {
-                            throw failure;
-                        }
-                        // Re-run the action
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Retry failed background action %s", this));
-                        }
-                    }
-                    else {
-                        throw failure;
-                    }
-                }
-                else {
-                    throw failure;
-                }
-            }
-            catch(Exception e) {
-                log.fatal(String.format("Failure running background task. %s", e.getMessage()), e);
-                failed = true;
-                throw new BackgroundException(e);
-            }
-        }
-        throw new ConnectionCanceledException();
+        }, progressListener, this).call();
     }
 
     @Override
@@ -248,7 +204,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public String toString() {
         final StringBuilder sb = new StringBuilder("SessionBackgroundAction{");
         sb.append("failed=").append(failed);
-        sb.append(", retry=").append(retry);
         sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();

@@ -15,39 +15,42 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.log4j.Logger;
+import java.util.concurrent.Callable;
 
-public class DefaultRetryCallable<T> extends RetryCallable<T> {
-    private static final Logger log = Logger.getLogger(DefaultRetryCallable.class);
+public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
 
-    private final RetryCallable<T> delegate;
+    private final BackgroundExceptionCallable<T> delegate;
+    private final ProgressListener listener;
+    private final BackgroundActionState cancel;
 
-    private final StreamCancelation cancel;
-
-
-    public DefaultRetryCallable(final RetryCallable<T> delegate, final StreamCancelation cancel) {
+    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
         this.delegate = delegate;
+        this.listener = listener;
         this.cancel = cancel;
     }
 
     @Override
     public T call() throws BackgroundException {
-        while(true) {
+        while(!cancel.isCanceled()) {
             try {
                 return delegate.call();
             }
             catch(BackgroundException e) {
-                if(this.retry(e, new DisabledProgressListener(), cancel)) {
-                    // Continue
-                }
-                else {
+                if(!this.retry(e, listener, cancel)) {
                     throw e;
                 }
+                // Continue
             }
         }
+        throw new ConnectionCanceledException();
+    }
+
+    public static abstract class BackgroundExceptionCallable<T> implements Callable<T> {
+        @Override
+        public abstract T call() throws BackgroundException;
     }
 }
