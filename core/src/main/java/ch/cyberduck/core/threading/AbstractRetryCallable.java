@@ -28,8 +28,8 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.concurrent.Callable;
 
-public abstract class RetryCallable<T> implements Callable<T> {
-    private static final Logger log = Logger.getLogger(RetryCallable.class);
+public abstract class AbstractRetryCallable<T> implements Callable<T> {
+    private static final Logger log = Logger.getLogger(AbstractRetryCallable.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -37,14 +37,33 @@ public abstract class RetryCallable<T> implements Callable<T> {
             = new DefaultFailureDiagnostics();
 
     /**
+     * The number of times to retry a failed action
+     */
+    private int retry =
+            PreferencesFactory.get().getInteger("connection.retry");
+
+    /**
      * The number of times this action has been run
      */
     private int count = 0;
-
     private int backoff = preferences.getInteger("connection.retry.delay");
 
     @Override
     public abstract T call() throws BackgroundException;
+
+    public boolean retry(final BackgroundException failure, final ProgressListener progress, final StreamCancelation cancel) {
+        return this.retry(failure, progress, new BackgroundActionState() {
+            @Override
+            public boolean isCanceled() {
+                return cancel.isCanceled();
+            }
+
+            @Override
+            public boolean isRunning() {
+                return true;
+            }
+        });
+    }
 
     /**
      * @param failure  Failure
@@ -52,8 +71,8 @@ public abstract class RetryCallable<T> implements Callable<T> {
      * @param cancel   Progress callback
      * @return Increment counter and return true if retry attempt should be made for a failed transfer
      */
-    public boolean retry(final BackgroundException failure, final ProgressListener progress, final StreamCancelation cancel) {
-        if(++count > preferences.getInteger("connection.retry")) {
+    public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+        if(++count > retry) {
             log.warn(String.format("Cancel retry for failure %s", failure));
             return false;
         }
