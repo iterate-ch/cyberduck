@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
@@ -383,13 +384,17 @@ namespace Ch.Cyberduck.Core.Preferences
                     // The name of this computer cannot be obtained.
                 }
             }
-
-            // UWP
-            if (Utils.IsUWPSupported)
+            if (Utils.IsRunningAsUWP)
             {
-                defaults.put("update.check", $"{false}");
-                defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+                SetUWPDefaults(defaults);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SetUWPDefaults(Map defaults)
+        {
+            defaults.put("update.check", $"{false}");
+            defaults.put("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         protected override void post()

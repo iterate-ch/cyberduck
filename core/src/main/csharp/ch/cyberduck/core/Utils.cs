@@ -76,20 +76,16 @@ namespace Ch.Cyberduck.Core
 
         // Original by Matteo Pagani (https://github.com/qmatteoq/DesktopBridgeHelpers) licensed under MIT
         // modified by Jöran Malek for iterate GmbH
-        public static bool IsUWPSupported
+        public static bool IsRunningAsUWP
         {
             get
             {
-                if ((Environment.OSVersion.Version.Major + Environment.OSVersion.Version.Minor/100.0) <= 6.1)
+                if (Environment.OSVersion.Version.Major + Environment.OSVersion.Version.Minor/10.0 <= 6.1)
                     return false;
-                else
-                {
-                    StringBuilder sb = new StringBuilder(1024);
-                    int length = 0;
-                    int result = GetCurrentPackageFullName(ref length, ref sb);
-
-                    return result != 15700;
-                }
+                StringBuilder sb = new StringBuilder(1024);
+                int length = 0;
+                int result = GetCurrentPackageFullName(ref length, ref sb);
+                return result != 15700;
             }
         }
 
