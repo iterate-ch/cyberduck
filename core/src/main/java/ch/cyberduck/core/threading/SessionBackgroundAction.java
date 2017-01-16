@@ -60,7 +60,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private final ProgressListener progressListener;
     private final TranscriptListener transcriptListener;
 
-    private final FailureDiagnostics<Exception> diagnostics
+    private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
 
     protected final SessionPool pool;
