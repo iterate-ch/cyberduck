@@ -157,10 +157,7 @@ public class SFTPSession extends Session<SSHClient> {
                 try {
                     return key.verify(hostname, port, publicKey);
                 }
-                catch(ConnectionCanceledException e) {
-                    return false;
-                }
-                catch(ChecksumException e) {
+                catch(ConnectionCanceledException | ChecksumException e) {
                     return false;
                 }
             }
@@ -258,7 +255,7 @@ public class SFTPSession extends Session<SSHClient> {
                     continue;
                 }
             }
-            catch(IllegalStateException s) {
+            catch(IllegalStateException ignored) {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
                         disconnectListener.getFailure(), auth));
                 try {
