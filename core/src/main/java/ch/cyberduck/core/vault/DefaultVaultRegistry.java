@@ -179,6 +179,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Copy.class) {
             return (T) new VaultRegistryCopyFeature(session, (Copy) proxy, this);
         }
+        if(type == Timestamp.class) {
+            return (T) new VaultRegistryTimestampFeature(session, (Timestamp) proxy, this);
+        }
         return proxy;
     }
 }
