@@ -146,36 +146,145 @@ public class BrowserController extends WindowController
         implements ProgressListener, TranscriptListener, NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = Logger.getLogger(BrowserController.class);
 
+    private static NSPoint cascade = new NSPoint(0, 0);
+
+    private final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
+    private final NSImageCell imageCellPrototype = NSImageCell.imageCell();
+    private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
+    private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
+
+    private final TableColumnFactory browserListColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
+    private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
+
+    private final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
+
+    public final BrowserToolbarValidator browserToolbarValidator
+            = new BrowserToolbarValidator(this);
+
     private final BookmarkCollection bookmarks
             = BookmarkCollection.defaultCollection();
 
-    private final BrowserToolbarFactory browserToolbarFactory = new BrowserToolbarFactory(this);
+    private final BrowserToolbarFactory browserToolbarFactory
+            = new BrowserToolbarFactory(this);
 
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
 
-    public final BrowserToolbarValidator browserToolbarValidator = new BrowserToolbarValidator(this);
+    private final QuickLook quicklook
+            = QuickLookFactory.get();
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
+    private final Navigation navigation = new Navigation();
 
     /**
      * Connection pool
      */
     private SessionPool pool = SessionPool.DISCONNECTED;
-
+    private Path workdir;
     /**
      * Log Drawer
      */
     private TranscriptController transcript;
-
-    private final QuickLook quicklook = QuickLookFactory.get();
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
     /**
      * Hide files beginning with '.'
      */
     private boolean showHiddenFiles;
-
     private Filter<Path> filenameFilter;
+
+    private PathPasteboard pasteboard;
+
+    private final ListProgressListener listener
+            = new PromptLimitedListProgressListener(this);
+    /**
+     * Caching files listings of previously listed directories
+     */
+    private final PathCache cache
+            = new PathCache(preferences.getInteger("browser.cache.size"));
+
+    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
+    @Outlet
+    protected NSProgressIndicator statusSpinner;
+    @Outlet
+    protected NSProgressIndicator browserSpinner;
+    @Delegate
+    private BrowserOutlineViewDataSource browserOutlineModel;
+    @Outlet
+    private NSOutlineView browserOutlineView;
+    @Delegate
+    private AbstractBrowserTableDelegate browserOutlineViewDelegate;
+    @Delegate
+    private BrowserListViewDataSource browserListModel;
+    @Outlet
+    private NSTableView browserListView;
+    @Delegate
+    private AbstractBrowserTableDelegate browserListViewDelegate;
+    @Outlet
+    private NSToolbar toolbar;
+    @Outlet
+    private NSDrawer logDrawer;
+    @Outlet
+    private NSTitlebarAccessoryViewController accessoryView;
+    @Outlet
+    private NSTabView browserTabView;
+    @Outlet
+    private NSMenu editMenu;
+    @Delegate
+    private EditMenuDelegate editMenuDelegate;
+    @Outlet
+    private NSMenu urlMenu;
+    @Delegate
+    private URLMenuDelegate urlMenuDelegate;
+    @Outlet
+    private NSMenu openUrlMenu;
+    @Delegate
+    private URLMenuDelegate openUrlMenuDelegate;
+    @Outlet
+    private NSMenu archiveMenu;
+    @Delegate
+    private ArchiveMenuDelegate archiveMenuDelegate;
+    @Outlet
+    private NSSegmentedControl bookmarkSwitchView;
+    @Delegate
+    private BookmarkTableDataSource bookmarkModel;
+    @Outlet
+    private NSTableView bookmarkTable;
+    @Delegate
+    private AbstractTableDelegate<Host> bookmarkTableDelegate;
+    @Outlet
+    private NSComboBox quickConnectPopup;
+    @Outlet
+    private NSSearchField searchField;
+    @Outlet
+    private NSButton editBookmarkButton;
+    @Outlet
+    private NSButton addBookmarkButton;
+    @Outlet
+    private NSButton deleteBookmarkButton;
+    @Outlet
+    private NSSegmentedControl navigationButton;
+    @Outlet
+    private NSSegmentedControl upButton;
+    @Outlet
+    private NSPopUpButton pathPopupButton;
+    @Outlet
+    private NSPopUpButton encodingPopup;
+    @Outlet
+    private NSTextField statusLabel;
+    @Outlet
+    private NSButton securityLabel;
+    @Outlet
+    private NSOpenPanel downloadToPanel;
+    @Outlet
+    private NSSavePanel downloadAsPanel;
+    @Outlet
+    private NSOpenPanel syncPanel;
+    @Outlet
+    private NSOpenPanel uploadPanel;
+    @Outlet
+    private NSButton uploadPanelHiddenFilesCheckbox;
 
     {
         if(PreferencesFactory.get().getBoolean("browser.showHidden")) {
@@ -188,62 +297,8 @@ public class BrowserController extends WindowController
         }
     }
 
-    private final NSTextFieldCell outlineCellPrototype = OutlineCell.outlineCell();
-    private final NSImageCell imageCellPrototype = NSImageCell.imageCell();
-    private final NSTextFieldCell textCellPrototype = NSTextFieldCell.textFieldCell();
-    private final NSTextFieldCell filenameCellPrototype = NSTextFieldCell.textFieldCell();
-
-    private final TableColumnFactory browserListColumnsFactory = new TableColumnFactory();
-    private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
-    private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
-
-    // setting appearance attributes()
-    private final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
-
-    @Delegate
-    private BrowserOutlineViewDataSource browserOutlineModel;
-
-    @Outlet
-    private NSOutlineView browserOutlineView;
-
-    @Delegate
-    private AbstractBrowserTableDelegate browserOutlineViewDelegate;
-
-    @Delegate
-    private BrowserListViewDataSource browserListModel;
-
-    @Outlet
-    private NSTableView browserListView;
-
-    @Delegate
-    private AbstractBrowserTableDelegate browserListViewDelegate;
-
-    private NSToolbar toolbar;
-
-    private final Navigation navigation = new Navigation();
-
-    private PathPasteboard pasteboard;
-
-    private final ListProgressListener listener
-            = new PromptLimitedListProgressListener(this);
-
-    /**
-     * Caching files listings of previously listed directories
-     */
-    private final PathCache cache
-            = new PathCache(preferences.getInteger("browser.cache.size"));
-
     public BrowserController() {
         this.loadBundle();
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Browser";
-    }
-
-    protected void validateToolbar() {
-        toolbar.validateVisibleItems();
     }
 
     public static void updateBookmarkTableRowHeight() {
@@ -264,6 +319,49 @@ public class BrowserController extends WindowController
             controller._updateBrowserColumns(controller.browserListView, controller.browserListViewDelegate);
             controller._updateBrowserColumns(controller.browserOutlineView, controller.browserOutlineViewDelegate);
         }
+    }
+
+    /**
+     * @param app Singleton
+     * @return NSApplication.TerminateLater if the application should not yet be terminated
+     */
+    public static NSUInteger applicationShouldTerminate(final NSApplication app) {
+        // Determine if there are any open connections
+        for(final BrowserController controller : MainController.getBrowsers()) {
+            if(!controller.unmount(new DisabledSheetCallback() {
+                                       @Override
+                                       public void callback(final int returncode) {
+                                           if(returncode == DEFAULT_OPTION) { //Disconnect
+                                               controller.window().close();
+                                               if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
+                                                   app.replyToApplicationShouldTerminate(true);
+                                               }
+                                           }
+                                           else {
+                                               app.replyToApplicationShouldTerminate(false);
+                                           }
+
+                                       }
+                                   }, new Runnable() {
+                                       @Override
+                                       public void run() {
+                                           //
+                                       }
+                                   }
+            )) {
+                return NSApplication.NSTerminateCancel;
+            }
+        }
+        return NSApplication.NSTerminateNow;
+    }
+
+    @Override
+    protected String getBundleName() {
+        return "Browser";
+    }
+
+    protected void validateToolbar() {
+        toolbar.validateVisibleItems();
     }
 
     @Override
@@ -295,10 +393,6 @@ public class BrowserController extends WindowController
         return this.filenameFilter;
     }
 
-    public PathPasteboard getPasteboard() {
-        return pasteboard;
-    }
-
     protected void setFilter(final Filter<Path> filter) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set path filter to %s", filter));
@@ -310,6 +404,10 @@ public class BrowserController extends WindowController
         else {
             this.filenameFilter = filter;
         }
+    }
+
+    public PathPasteboard getPasteboard() {
+        return pasteboard;
     }
 
     protected void setShowHiddenFiles(boolean showHidden) {
@@ -549,8 +647,6 @@ public class BrowserController extends WindowController
         return this.getSelectedBrowserView().numberOfSelectedRows().intValue();
     }
 
-    private static NSPoint cascade = new NSPoint(0, 0);
-
     @Override
     public void setWindow(NSWindow window) {
         // Save frame rectangle
@@ -627,9 +723,6 @@ public class BrowserController extends WindowController
         return true;
     }
 
-    @Outlet
-    private NSDrawer logDrawer;
-
     @Action
     public void drawerDidOpen(NSNotification notification) {
         preferences.setProperty("browser.transcript.open", true);
@@ -659,8 +752,6 @@ public class BrowserController extends WindowController
         this.logDrawer.setDelegate(this.id());
     }
 
-    private NSTitlebarAccessoryViewController accessoryView;
-
     @Action
     public void setDonateButton(NSButton button) {
         if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
@@ -688,21 +779,9 @@ public class BrowserController extends WindowController
         }
     }
 
-    public enum BrowserTab {
-        bookmarks,
-        list,
-        outline;
-
-        public static BrowserTab byPosition(final int position) {
-            return BrowserTab.values()[position];
-        }
-    }
-
     public BrowserTab getSelectedTabView() {
         return BrowserTab.byPosition(browserTabView.indexOfTabViewItem(browserTabView.selectedTabViewItem()));
     }
-
-    private NSTabView browserTabView;
 
     @Action
     public void setBrowserTabView(NSTabView browserTabView) {
@@ -745,12 +824,6 @@ public class BrowserController extends WindowController
         }
     }
 
-    @Outlet
-    private NSMenu editMenu;
-
-    @Delegate
-    private EditMenuDelegate editMenuDelegate;
-
     @Action
     public void setEditMenu(NSMenu editMenu) {
         this.editMenu = editMenu;
@@ -779,12 +852,6 @@ public class BrowserController extends WindowController
         return editMenuDelegate;
     }
 
-    @Outlet
-    private NSMenu urlMenu;
-
-    @Delegate
-    private URLMenuDelegate urlMenuDelegate;
-
     @Action
     public void setUrlMenu(NSMenu urlMenu) {
         this.urlMenu = urlMenu;
@@ -807,12 +874,6 @@ public class BrowserController extends WindowController
         };
         this.urlMenu.setDelegate(urlMenuDelegate.id());
     }
-
-    @Outlet
-    private NSMenu openUrlMenu;
-
-    @Delegate
-    private URLMenuDelegate openUrlMenuDelegate;
 
     @Action
     public void setOpenUrlMenu(NSMenu openUrlMenu) {
@@ -837,12 +898,6 @@ public class BrowserController extends WindowController
         this.openUrlMenu.setDelegate(openUrlMenuDelegate.id());
     }
 
-    @Outlet
-    private NSMenu archiveMenu;
-
-    @Delegate
-    private ArchiveMenuDelegate archiveMenuDelegate;
-
     @Action
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
@@ -866,30 +921,6 @@ public class BrowserController extends WindowController
     public void sortBookmarksByProtocol(final ID sender) {
         bookmarks.sortByProtocol();
         this.reloadBookmarks();
-    }
-
-    private NSSegmentedControl bookmarkSwitchView;
-
-    private enum BookmarkSwitchSegement {
-        browser {
-            @Override
-            public NSImage image() {
-                final NSImage image = IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", "outline"), 16);
-                image.setTemplate(true);
-                return image;
-            }
-        },
-        bookmarks,
-        history,
-        rendezvous;
-
-        public NSImage image() {
-            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
-        }
-
-        public static BookmarkSwitchSegement byPosition(final int position) {
-            return BookmarkSwitchSegement.values()[position];
-        }
     }
 
     @Action
@@ -935,19 +966,6 @@ public class BrowserController extends WindowController
             case rendezvous:
                 this.selectBookmarks(selected);
                 break;
-        }
-    }
-
-    public enum BrowserSwitchSegement {
-        list,
-        outline;
-
-        public NSImage image() {
-            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
-        }
-
-        public static BrowserSwitchSegement byPosition(final int position) {
-            return BrowserSwitchSegement.values()[position];
         }
     }
 
@@ -1042,207 +1060,6 @@ public class BrowserController extends WindowController
     public void reloadBookmarks() {
         bookmarkTable.reloadData();
         this.setStatus();
-    }
-
-    private abstract class AbstractBrowserOutlineViewDelegate extends AbstractBrowserTableDelegate
-            implements NSOutlineView.Delegate {
-
-        protected AbstractBrowserOutlineViewDelegate(final NSTableColumn selectedColumn) {
-            super(selectedColumn);
-        }
-
-        @Action
-        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
-                                                                                     ID rect, NSTableColumn c,
-                                                                                     NSObject item, NSPoint mouseLocation) {
-            return this.tooltip(cache.lookup(new NSObjectPathReference(item)));
-        }
-
-        @Action
-        public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
-                                                                      final NSTableColumn tableColumn,
-                                                                      final NSObject item) {
-            if(tableColumn.identifier().equals(Column.filename.name())) {
-                return browserOutlineModel.outlineView_objectValueForTableColumn_byItem(view, tableColumn, item).toString();
-            }
-            return null;
-        }
-
-        @Override
-        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
-            browserOutlineView.setIndicatorImage_inTableColumn(image,
-                    browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
-        }
-
-        @Override
-        protected Path pathAtRow(final int row) {
-            if(row < browserOutlineView.numberOfRows().intValue()) {
-                return cache.lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
-            }
-            log.warn(String.format("No item at row %d", row));
-            return null;
-        }
-    }
-
-    private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate
-            implements NSTableView.Delegate {
-
-        protected AbstractBrowserListViewDelegate(final NSTableColumn selectedColumn) {
-            super(selectedColumn);
-        }
-
-        public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
-                                                                                  ID rect, NSTableColumn c,
-                                                                                  NSInteger row, NSPoint mouseLocation) {
-            return this.tooltip(browserListModel.get(workdir()).get(row.intValue()));
-        }
-
-        @Override
-        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
-            browserListView.setIndicatorImage_inTableColumn(image,
-                    browserListView.tableColumnWithIdentifier(columnIdentifier));
-        }
-
-        public String tableView_typeSelectStringForTableColumn_row(final NSTableView view,
-                                                                   final NSTableColumn tableColumn,
-                                                                   final NSInteger row) {
-            if(tableColumn.identifier().equals(Column.filename.name())) {
-                return browserListModel.tableView_objectValueForTableColumn_row(view, tableColumn, row).toString();
-            }
-            return null;
-        }
-
-        @Override
-        protected Path pathAtRow(int row) {
-            final AttributedList<Path> children = browserListModel.get(workdir());
-            if(row < children.size()) {
-                return children.get(row);
-            }
-            log.warn(String.format("No item at row %d", row));
-            return null;
-        }
-    }
-
-    private abstract class AbstractBrowserTableDelegate extends AbstractPathTableDelegate {
-
-        protected AbstractBrowserTableDelegate(final NSTableColumn selectedColumn) {
-            super(selectedColumn);
-        }
-
-        @Override
-        public boolean isColumnRowEditable(NSTableColumn column, int row) {
-            if(preferences.getBoolean("browser.editable")) {
-                return column.identifier().equals(Column.filename.name());
-            }
-            return false;
-        }
-
-        @Override
-        public void tableRowDoubleClicked(final ID sender) {
-            BrowserController.this.insideButtonClicked(sender);
-        }
-
-        @Action
-        public void spaceKeyPressed(final ID sender) {
-            quicklookButtonClicked(sender);
-        }
-
-        @Override
-        public void deleteKeyPressed(final ID sender) {
-            BrowserController.this.deleteFileButtonClicked(sender);
-        }
-
-        @Override
-        public void tableColumnClicked(final NSTableView view, final NSTableColumn tableColumn) {
-            if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
-                this.setSortedAscending(!this.isSortedAscending());
-            }
-            else {
-                // Remove sorting indicator on previously selected column
-                this.setBrowserColumnSortingIndicator(null, this.selectedColumnIdentifier());
-                // Set the newly selected column
-                this.setSelectedColumn(tableColumn);
-                // Update the default value
-                preferences.setProperty("browser.sort.column", this.selectedColumnIdentifier());
-            }
-            this.setBrowserColumnSortingIndicator(
-                    this.isSortedAscending() ?
-                            IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
-                            IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
-                    tableColumn.identifier()
-            );
-            reload();
-        }
-
-        @Override
-        public void columnDidResize(final String columnIdentifier, final float width) {
-            preferences.setProperty(String.format("browser.column.%s.width", columnIdentifier), width);
-        }
-
-        @Override
-        public void selectionDidChange(NSNotification notification) {
-            final List<Path> selected = getSelectedPaths();
-            if(quicklook.isOpen()) {
-                updateQuickLookSelection(selected);
-            }
-            if(preferences.getBoolean("browser.info.inspector")) {
-                InfoController c = InfoControllerFactory.get(BrowserController.this);
-                if(null != c) {
-                    // Currently open info panel
-                    c.setFiles(selected);
-                }
-            }
-        }
-
-        protected abstract Path pathAtRow(int row);
-
-        protected abstract void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier);
-
-        private static final double kSwipeGestureLeft = 1.000000;
-        private static final double kSwipeGestureRight = -1.000000;
-        private static final double kSwipeGestureUp = 1.000000;
-        private static final double kSwipeGestureDown = -1.000000;
-
-        /**
-         * Available in Mac OS X v10.6 and later.
-         *
-         * @param event Swipe event
-         */
-        @Action
-        public void swipeWithEvent(NSEvent event) {
-            if(event.deltaX().doubleValue() == kSwipeGestureLeft) {
-                BrowserController.this.backButtonClicked(event.id());
-            }
-            else if(event.deltaX().doubleValue() == kSwipeGestureRight) {
-                BrowserController.this.forwardButtonClicked(event.id());
-            }
-            else if(event.deltaY().doubleValue() == kSwipeGestureUp) {
-                NSInteger row = getSelectedBrowserView().selectedRow();
-                NSInteger next;
-                if(-1 == row.intValue()) {
-                    // No current selection
-                    next = new NSInteger(0);
-                }
-                else {
-                    next = new NSInteger(row.longValue() - 1);
-                }
-                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(next), false);
-            }
-            else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
-                NSInteger row = getSelectedBrowserView().selectedRow();
-                NSInteger next;
-                if(-1 == row.intValue()) {
-                    // No current selection
-                    next = new NSInteger(0);
-                }
-                else {
-                    next = new NSInteger(row.longValue() + 1);
-                }
-                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(next), false);
-            }
-        }
     }
 
     /**
@@ -1670,14 +1487,13 @@ public class BrowserController extends WindowController
         this.reload();
     }
 
-    @Delegate
-    private BookmarkTableDataSource bookmarkModel;
+    public NSTableView getBookmarkTable() {
+        return bookmarkTable;
+    }
 
-    @Outlet
-    private NSTableView bookmarkTable;
-
-    @Delegate
-    private AbstractTableDelegate<Host> bookmarkTableDelegate;
+    // ----------------------------------------------------------
+    // Manage Bookmarks
+    // ----------------------------------------------------------
 
     @Action
     public void setBookmarkTable(NSTableView view) {
@@ -1713,6 +1529,11 @@ public class BrowserController extends WindowController
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host>(
                 bookmarkTable.tableColumnWithIdentifier(BookmarkTableDataSource.Column.bookmark.name())
         ) {
+            private static final double kSwipeGestureLeft = 1.000000;
+            private static final double kSwipeGestureRight = -1.000000;
+            private static final double kSwipeGestureUp = 1.000000;
+            private static final double kSwipeGestureDown = -1.000000;
+
             @Override
             public String tooltip(Host bookmark) {
                 return new HostUrlProvider().get(bookmark);
@@ -1776,11 +1597,6 @@ public class BrowserController extends WindowController
             public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
                 return false;
             }
-
-            private static final double kSwipeGestureLeft = 1.000000;
-            private static final double kSwipeGestureRight = -1.000000;
-            private static final double kSwipeGestureUp = 1.000000;
-            private static final double kSwipeGestureDown = -1.000000;
 
             /**
              * Available in Mac OS X v10.6 and later.
@@ -1852,18 +1668,13 @@ public class BrowserController extends WindowController
         bookmarkTable.sizeToFit();
     }
 
-    public NSTableView getBookmarkTable() {
-        return bookmarkTable;
-    }
-
     public BookmarkTableDataSource getBookmarkModel() {
         return bookmarkModel;
     }
 
-    @Outlet
-    private NSComboBox quickConnectPopup;
-
-    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
+    public NSComboBox getQuickConnectPopup() {
+        return quickConnectPopup;
+    }
 
     @Action
     public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
@@ -1881,24 +1692,6 @@ public class BrowserController extends WindowController
                 NSComboBox.ComboBoxWillPopUpNotification,
                 this.quickConnectPopup);
         this.quickConnectWillPopUp(null);
-    }
-
-    public NSComboBox getQuickConnectPopup() {
-        return quickConnectPopup;
-    }
-
-    private class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
-        @Override
-        public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
-            return new NSInteger(bookmarks.size());
-        }
-
-        @Override
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(
-                    BookmarkNameProvider.toString(bookmarks.get(row.intValue()))
-            );
-        }
     }
 
     @Action
@@ -1924,9 +1717,6 @@ public class BrowserController extends WindowController
         // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
         this.mount(HostParser.parse(input));
     }
-
-    @Outlet
-    private NSSearchField searchField;
 
     @Action
     public void setSearchField(NSSearchField searchField) {
@@ -2038,10 +1828,6 @@ public class BrowserController extends WindowController
         this.reloadBookmarks();
     }
 
-    // ----------------------------------------------------------
-    // Manage Bookmarks
-    // ----------------------------------------------------------
-
     @Action
     public void connectBookmarkButtonClicked(final ID sender) {
         if(bookmarkTable.numberOfSelectedRows().intValue() == 1) {
@@ -2050,8 +1836,9 @@ public class BrowserController extends WindowController
         }
     }
 
-    @Outlet
-    private NSButton editBookmarkButton;
+    // ----------------------------------------------------------
+    // Browser navigation
+    // ----------------------------------------------------------
 
     @Action
     public void setEditBookmarkButton(NSButton editBookmarkButton) {
@@ -2078,9 +1865,6 @@ public class BrowserController extends WindowController
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
     }
-
-    @Outlet
-    private NSButton addBookmarkButton;
 
     @Action
     public void setAddBookmarkButton(NSButton addBookmarkButton) {
@@ -2121,9 +1905,6 @@ public class BrowserController extends WindowController
         final BookmarkController c = BookmarkControllerFactory.create(bookmarks, item);
         c.window().makeKeyAndOrderFront(null);
     }
-
-    @Outlet
-    private NSButton deleteBookmarkButton;
 
     @Action
     public void setDeleteBookmarkButton(NSButton deleteBookmarkButton) {
@@ -2169,35 +1950,31 @@ public class BrowserController extends WindowController
         });
     }
 
-    // ----------------------------------------------------------
-    // Browser navigation
-    // ----------------------------------------------------------
-
     public Navigation getNavigation() {
         return navigation;
     }
 
-    private enum NavigationSegment {
-        back(0),
-        forward(1),
-        up(0);
-
-        private final int position;
-
-        NavigationSegment(final int position) {
-            this.position = position;
+    private void setNavigation(boolean enabled) {
+        if(!enabled) {
+            searchField.setStringValue(StringUtils.EMPTY);
         }
-
-        public int position() {
-            return position;
+        pathPopupButton.removeAllItems();
+        if(enabled) {
+            // Update the current working directory
+            navigation.add(workdir);
+            Path p = workdir;
+            do {
+                this.addNavigation(p);
+                p = p.getParent();
+            }
+            while(!p.isRoot());
+            this.addNavigation(p);
         }
-
-        public static NavigationSegment byPosition(final int position) {
-            return NavigationSegment.values()[position];
-        }
+        pathPopupButton.setEnabled(enabled);
+        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
+        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NavigationSegment.forward.position());
+        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
     }
-
-    private NSSegmentedControl navigationButton;
 
     @Action
     public void setNavigationButton(NSSegmentedControl navigationButton) {
@@ -2247,9 +2024,6 @@ public class BrowserController extends WindowController
         }
     }
 
-    @Outlet
-    private NSSegmentedControl upButton;
-
     @Action
     public void setUpButton(NSSegmentedControl upButton) {
         this.upButton = upButton;
@@ -2264,11 +2038,6 @@ public class BrowserController extends WindowController
         final Path previous = this.workdir();
         this.setWorkdir(previous.getParent(), previous);
     }
-
-    private Path workdir;
-
-    @Outlet
-    private NSPopUpButton pathPopupButton;
 
     @Action
     public void setPathPopup(NSPopUpButton pathPopupButton) {
@@ -2296,8 +2065,9 @@ public class BrowserController extends WindowController
         }
     }
 
-    @Outlet
-    private NSPopUpButton encodingPopup;
+    public NSPopUpButton getEncodingPopup() {
+        return encodingPopup;
+    }
 
     @Action
     public void setEncodingPopup(NSPopUpButton encodingPopup) {
@@ -2307,10 +2077,6 @@ public class BrowserController extends WindowController
         this.encodingPopup.removeAllItems();
         this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
         this.encodingPopup.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
-    }
-
-    public NSPopUpButton getEncodingPopup() {
-        return encodingPopup;
     }
 
     @Action
@@ -2344,21 +2110,10 @@ public class BrowserController extends WindowController
         this.encodingPopup.selectItemWithTitle(encoding);
     }
 
-    // ----------------------------------------------------------
-    // Drawers
-    // ----------------------------------------------------------
-
     @Action
     public void toggleLogDrawer(final ID sender) {
         this.logDrawer.toggle(this.id());
     }
-
-    // ----------------------------------------------------------
-    // Status
-    // ----------------------------------------------------------
-
-    @Outlet
-    protected NSProgressIndicator statusSpinner;
 
     @Action
     public void setStatusSpinner(NSProgressIndicator statusSpinner) {
@@ -2367,16 +2122,10 @@ public class BrowserController extends WindowController
         this.statusSpinner.setIndeterminate(true);
     }
 
-    @Outlet
-    protected NSProgressIndicator browserSpinner;
-
     @Action
     public void setBrowserSpinner(NSProgressIndicator browserSpinner) {
         this.browserSpinner = browserSpinner;
     }
-
-    @Outlet
-    private NSTextField statusLabel;
 
     @Action
     public void setStatusLabel(NSTextField statusLabel) {
@@ -2452,9 +2201,6 @@ public class BrowserController extends WindowController
         transcript.log(request, message);
     }
 
-    @Outlet
-    private NSButton securityLabel;
-
     @Action
     public void setSecurityLabel(NSButton securityLabel) {
         this.securityLabel = securityLabel;
@@ -2473,10 +2219,6 @@ public class BrowserController extends WindowController
             log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
         }
     }
-
-    // ----------------------------------------------------------
-    // Selector methods for the toolbar items
-    // ----------------------------------------------------------
 
     @Action
     public void quicklookButtonClicked(final ID sender) {
@@ -2732,8 +2474,6 @@ public class BrowserController extends WindowController
         new DeleteController(this).delete(this.getSelectedPaths());
     }
 
-    private NSOpenPanel downloadToPanel;
-
     @Action
     public void downloadToButtonClicked(final ID sender) {
         downloadToPanel = NSOpenPanel.openPanel();
@@ -2764,9 +2504,6 @@ public class BrowserController extends WindowController
         downloadToPanel = null;
     }
 
-    @Outlet
-    private NSSavePanel downloadAsPanel;
-
     @Action
     public void downloadAsButtonClicked(final ID sender) {
         downloadAsPanel = NSSavePanel.savePanel();
@@ -2792,9 +2529,6 @@ public class BrowserController extends WindowController
             }
         }
     }
-
-    @Outlet
-    private NSOpenPanel syncPanel;
 
     @Action
     public void syncButtonClicked(final ID sender) {
@@ -2850,10 +2584,6 @@ public class BrowserController extends WindowController
         }
         this.transfer(new DownloadTransfer(pool.getHost(), downloads), Collections.emptyList());
     }
-
-    private NSOpenPanel uploadPanel;
-
-    private NSButton uploadPanelHiddenFilesCheckbox;
 
     @Action
     public void uploadButtonClicked(final ID sender) {
@@ -3288,28 +3018,6 @@ public class BrowserController extends WindowController
         }
     }
 
-    private void setNavigation(boolean enabled) {
-        if(!enabled) {
-            searchField.setStringValue(StringUtils.EMPTY);
-        }
-        pathPopupButton.removeAllItems();
-        if(enabled) {
-            // Update the current working directory
-            navigation.add(workdir);
-            Path p = workdir;
-            do {
-                this.addNavigation(p);
-                p = p.getParent();
-            }
-            while(!p.isRoot());
-            this.addNavigation(p);
-        }
-        pathPopupButton.setEnabled(enabled);
-        navigationButton.setEnabled_forSegment(enabled && navigation.getBack().size() > 1, NavigationSegment.back.position());
-        navigationButton.setEnabled_forSegment(enabled && navigation.getForward().size() > 0, NavigationSegment.forward.position());
-        upButton.setEnabled_forSegment(enabled && !workdir.isRoot(), NavigationSegment.up.position());
-    }
-
     private void addNavigation(final Path p) {
         pathPopupButton.addItemWithTitle(p.getAbsolute());
         pathPopupButton.lastItem().setRepresentedObject(p.getAbsolute());
@@ -3482,40 +3190,6 @@ public class BrowserController extends WindowController
     @Action
     public void printDocument(final ID sender) {
         this.print(this.getSelectedBrowserView());
-    }
-
-    /**
-     * @param app Singleton
-     * @return NSApplication.TerminateLater if the application should not yet be terminated
-     */
-    public static NSUInteger applicationShouldTerminate(final NSApplication app) {
-        // Determine if there are any open connections
-        for(final BrowserController controller : MainController.getBrowsers()) {
-            if(!controller.unmount(new DisabledSheetCallback() {
-                                       @Override
-                                       public void callback(final int returncode) {
-                                           if(returncode == DEFAULT_OPTION) { //Disconnect
-                                               controller.window().close();
-                                               if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
-                                                   app.replyToApplicationShouldTerminate(true);
-                                               }
-                                           }
-                                           else {
-                                               app.replyToApplicationShouldTerminate(false);
-                                           }
-
-                                       }
-                                   }, new Runnable() {
-                                       @Override
-                                       public void run() {
-                                           //
-                                       }
-                                   }
-            )) {
-                return NSApplication.NSTerminateCancel;
-            }
-        }
-        return NSApplication.NSTerminateNow;
     }
 
     @Override
@@ -3704,6 +3378,286 @@ public class BrowserController extends WindowController
         editMenu.setDelegate(null);
 
         super.invalidate();
+    }
+
+    public enum BrowserTab {
+        bookmarks,
+        list,
+        outline;
+
+        public static BrowserTab byPosition(final int position) {
+            return BrowserTab.values()[position];
+        }
+    }
+
+    private enum BookmarkSwitchSegement {
+        browser {
+            @Override
+            public NSImage image() {
+                final NSImage image = IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", "outline"), 16);
+                image.setTemplate(true);
+                return image;
+            }
+        },
+        bookmarks,
+        history,
+        rendezvous;
+
+        public static BookmarkSwitchSegement byPosition(final int position) {
+            return BookmarkSwitchSegement.values()[position];
+        }
+
+        public NSImage image() {
+            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+        }
+    }
+
+    public enum BrowserSwitchSegement {
+        list,
+        outline;
+
+        public static BrowserSwitchSegement byPosition(final int position) {
+            return BrowserSwitchSegement.values()[position];
+        }
+
+        public NSImage image() {
+            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+        }
+    }
+
+    private enum NavigationSegment {
+        back(0),
+        forward(1),
+        up(0);
+
+        private final int position;
+
+        NavigationSegment(final int position) {
+            this.position = position;
+        }
+
+        public static NavigationSegment byPosition(final int position) {
+            return NavigationSegment.values()[position];
+        }
+
+        public int position() {
+            return position;
+        }
+    }
+
+    private abstract class AbstractBrowserOutlineViewDelegate extends AbstractBrowserTableDelegate
+            implements NSOutlineView.Delegate {
+
+        protected AbstractBrowserOutlineViewDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
+        @Action
+        public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
+                                                                                     ID rect, NSTableColumn c,
+                                                                                     NSObject item, NSPoint mouseLocation) {
+            return this.tooltip(cache.lookup(new NSObjectPathReference(item)));
+        }
+
+        @Action
+        public String outlineView_typeSelectStringForTableColumn_item(final NSOutlineView view,
+                                                                      final NSTableColumn tableColumn,
+                                                                      final NSObject item) {
+            if(tableColumn.identifier().equals(Column.filename.name())) {
+                return browserOutlineModel.outlineView_objectValueForTableColumn_byItem(view, tableColumn, item).toString();
+            }
+            return null;
+        }
+
+        @Override
+        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
+            browserOutlineView.setIndicatorImage_inTableColumn(image,
+                    browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
+        }
+
+        @Override
+        protected Path pathAtRow(final int row) {
+            if(row < browserOutlineView.numberOfRows().intValue()) {
+                return cache.lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
+            }
+            log.warn(String.format("No item at row %d", row));
+            return null;
+        }
+    }
+
+    private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate
+            implements NSTableView.Delegate {
+
+        protected AbstractBrowserListViewDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
+        public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
+                                                                                  ID rect, NSTableColumn c,
+                                                                                  NSInteger row, NSPoint mouseLocation) {
+            return this.tooltip(browserListModel.get(workdir()).get(row.intValue()));
+        }
+
+        @Override
+        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
+            browserListView.setIndicatorImage_inTableColumn(image,
+                    browserListView.tableColumnWithIdentifier(columnIdentifier));
+        }
+
+        public String tableView_typeSelectStringForTableColumn_row(final NSTableView view,
+                                                                   final NSTableColumn tableColumn,
+                                                                   final NSInteger row) {
+            if(tableColumn.identifier().equals(Column.filename.name())) {
+                return browserListModel.tableView_objectValueForTableColumn_row(view, tableColumn, row).toString();
+            }
+            return null;
+        }
+
+        @Override
+        protected Path pathAtRow(int row) {
+            final AttributedList<Path> children = browserListModel.get(workdir());
+            if(row < children.size()) {
+                return children.get(row);
+            }
+            log.warn(String.format("No item at row %d", row));
+            return null;
+        }
+    }
+
+    private abstract class AbstractBrowserTableDelegate extends AbstractPathTableDelegate {
+
+        private static final double kSwipeGestureLeft = 1.000000;
+        private static final double kSwipeGestureRight = -1.000000;
+        private static final double kSwipeGestureUp = 1.000000;
+        private static final double kSwipeGestureDown = -1.000000;
+
+        protected AbstractBrowserTableDelegate(final NSTableColumn selectedColumn) {
+            super(selectedColumn);
+        }
+
+        @Override
+        public boolean isColumnRowEditable(NSTableColumn column, int row) {
+            if(preferences.getBoolean("browser.editable")) {
+                return column.identifier().equals(Column.filename.name());
+            }
+            return false;
+        }
+
+        @Override
+        public void tableRowDoubleClicked(final ID sender) {
+            BrowserController.this.insideButtonClicked(sender);
+        }
+
+        @Action
+        public void spaceKeyPressed(final ID sender) {
+            quicklookButtonClicked(sender);
+        }
+
+        @Override
+        public void deleteKeyPressed(final ID sender) {
+            BrowserController.this.deleteFileButtonClicked(sender);
+        }
+
+        @Override
+        public void tableColumnClicked(final NSTableView view, final NSTableColumn tableColumn) {
+            if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
+                this.setSortedAscending(!this.isSortedAscending());
+            }
+            else {
+                // Remove sorting indicator on previously selected column
+                this.setBrowserColumnSortingIndicator(null, this.selectedColumnIdentifier());
+                // Set the newly selected column
+                this.setSelectedColumn(tableColumn);
+                // Update the default value
+                preferences.setProperty("browser.sort.column", this.selectedColumnIdentifier());
+            }
+            this.setBrowserColumnSortingIndicator(
+                    this.isSortedAscending() ?
+                            IconCacheFactory.<NSImage>get().iconNamed("NSAscendingSortIndicator") :
+                            IconCacheFactory.<NSImage>get().iconNamed("NSDescendingSortIndicator"),
+                    tableColumn.identifier()
+            );
+            reload();
+        }
+
+        @Override
+        public void columnDidResize(final String columnIdentifier, final float width) {
+            preferences.setProperty(String.format("browser.column.%s.width", columnIdentifier), width);
+        }
+
+        @Override
+        public void selectionDidChange(NSNotification notification) {
+            final List<Path> selected = getSelectedPaths();
+            if(quicklook.isOpen()) {
+                updateQuickLookSelection(selected);
+            }
+            if(preferences.getBoolean("browser.info.inspector")) {
+                InfoController c = InfoControllerFactory.get(BrowserController.this);
+                if(null != c) {
+                    // Currently open info panel
+                    c.setFiles(selected);
+                }
+            }
+        }
+
+        protected abstract Path pathAtRow(int row);
+
+        protected abstract void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier);
+
+        /**
+         * Available in Mac OS X v10.6 and later.
+         *
+         * @param event Swipe event
+         */
+        @Action
+        public void swipeWithEvent(NSEvent event) {
+            if(event.deltaX().doubleValue() == kSwipeGestureLeft) {
+                BrowserController.this.backButtonClicked(event.id());
+            }
+            else if(event.deltaX().doubleValue() == kSwipeGestureRight) {
+                BrowserController.this.forwardButtonClicked(event.id());
+            }
+            else if(event.deltaY().doubleValue() == kSwipeGestureUp) {
+                NSInteger row = getSelectedBrowserView().selectedRow();
+                NSInteger next;
+                if(-1 == row.intValue()) {
+                    // No current selection
+                    next = new NSInteger(0);
+                }
+                else {
+                    next = new NSInteger(row.longValue() - 1);
+                }
+                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
+                        NSIndexSet.indexSetWithIndex(next), false);
+            }
+            else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
+                NSInteger row = getSelectedBrowserView().selectedRow();
+                NSInteger next;
+                if(-1 == row.intValue()) {
+                    // No current selection
+                    next = new NSInteger(0);
+                }
+                else {
+                    next = new NSInteger(row.longValue() + 1);
+                }
+                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
+                        NSIndexSet.indexSetWithIndex(next), false);
+            }
+        }
+    }
+
+    private class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
+        @Override
+        public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
+            return new NSInteger(bookmarks.size());
+        }
+
+        @Override
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(
+                    BookmarkNameProvider.toString(bookmarks.get(row.intValue()))
+            );
+        }
     }
 
     private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
