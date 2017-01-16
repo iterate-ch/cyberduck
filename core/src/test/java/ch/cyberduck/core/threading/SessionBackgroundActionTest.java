@@ -19,14 +19,14 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -45,18 +45,7 @@ public class SessionBackgroundActionTest {
     public void testGetExceptionConnectionCanceledException() throws Exception {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback() {
-        }, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                //
-            }
-        }
-        ) {
+        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -83,19 +72,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                //
-            }
-        }
-        ) {
-
+        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
@@ -121,18 +98,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                //
-            }
-        }
-        ) {
+        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -160,18 +126,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new TranscriptListener() {
-            @Override
-            public void log(final Type request, final String message) {
-                //
-            }
-        }
-        ) {
+        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
