@@ -76,34 +76,39 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
             log.warn(String.format("Cancel retry for failure %s", failure));
             return false;
         }
+        int delay;
         switch(diagnostics.determine(failure)) {
             case network:
+                delay = backoff;
+                break;
             case application:
-                final int delay;
                 if(failure instanceof RetriableAccessDeniedException) {
                     delay = (int) ((RetriableAccessDeniedException) failure).getRetry().getSeconds();
                 }
                 else {
-                    delay = backoff;
-                    // Exponential backoff
-                    backoff *= 2;
+                    log.warn(String.format("No retry for failure %s", failure));
+                    return false;
                 }
-                log.warn(String.format("Retry for failure %s with delay of %ds", failure, delay));
-                final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-                    @Override
-                    public boolean isCanceled() {
-                        return cancel.isCanceled();
-                    }
-
-                    @Override
-                    public void progress(final Integer delay) {
-                        progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
-                    }
-                }, delay);
-                pause.await();
-                return true;
+                break;
+            default:
+                log.warn(String.format("No retry for failure %s", failure));
+                return false;
         }
-        log.warn(String.format("No retry for failure %s", failure));
-        return false;
+        log.warn(String.format("Retry for failure %s with delay of %ds", failure, delay));
+        final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+            @Override
+            public boolean isCanceled() {
+                return cancel.isCanceled();
+            }
+
+            @Override
+            public void progress(final Integer delay) {
+                progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds", "Status"), delay));
+            }
+        }, delay);
+        // Exponential backoff
+        backoff *= 2;
+        pause.await();
+        return true;
     }
 }
