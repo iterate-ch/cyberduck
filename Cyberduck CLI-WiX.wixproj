@@ -57,7 +57,7 @@
     </PropertyGroup>
   </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;%(SignMsi.FullPath)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -68,6 +68,6 @@
     <Assemblies Include="cli/windows/target/*.exe" />
   </ItemGroup>
   <Target Name="SignDLLs" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\%(Assemblies.Identity)'))&quot;" />
   </Target>
 </Project>
