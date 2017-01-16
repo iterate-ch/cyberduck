@@ -35,13 +35,24 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
+        return create(controller, cache, bookmark,
+                PasswordStoreFactory.get(),
+                LoginCallbackFactory.get(controller),
+                PasswordCallbackFactory.get(controller),
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
+        );
+    }
+
+    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
+                                     final HostPasswordStore keychain, final LoginCallback login,
+                                     final PasswordCallback password, final HostKeyCallback key) {
         switch(bookmark.getProtocol().getType()) {
             case ftp:
             case irods:
                 // Stateful
-                return stateful(controller, cache, bookmark);
+                return stateful(controller, cache, bookmark, keychain, login, password, key);
             default:
-                return pooled(controller, cache, bookmark);
+                return pooled(controller, cache, bookmark, keychain, login, password, key);
         }
     }
 
