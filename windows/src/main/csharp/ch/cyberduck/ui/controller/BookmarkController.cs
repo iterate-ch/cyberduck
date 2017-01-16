@@ -372,6 +372,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedClientCertificateEvent()
         {
             _host.getCredentials().setCertificate(View.SelectedClientCertificate);
+			ItemChanged();
         }
 
         private void InitPrivateKeys()
