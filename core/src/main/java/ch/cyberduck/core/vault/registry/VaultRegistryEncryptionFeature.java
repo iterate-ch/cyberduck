@@ -51,8 +51,7 @@ public class VaultRegistryEncryptionFeature implements Encryption {
     }
 
     @Override
-    public Algorithm getDefault(final Path file) {
-        throw new UnsupportedOperationException();
+    public Algorithm getDefault(final Path file) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Encryption.class, proxy).getDefault(file);
     }
-
 }
