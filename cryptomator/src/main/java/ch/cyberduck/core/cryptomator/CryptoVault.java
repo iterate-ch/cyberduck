@@ -481,6 +481,15 @@ public class CryptoVault implements Vault {
             if(type == Redundancy.class) {
                 return (T) new CryptoRedundancyFeature(session, (Redundancy) delegate, this);
             }
+            if(type == Search.class) {
+                return (T) new CryptoSearchFeature(session, (Search) delegate, this);
+            }
+            if(type == TransferAcceleration.class) {
+                return (T) new CryptoTransferAccelerationFeature<>(session, (TransferAcceleration) delegate, this);
+            }
+            if(type == Versioning.class) {
+                return (T) new CryptoVersioningFeature(session, (Versioning) delegate, this);
+            }
         }
         return delegate;
     }
