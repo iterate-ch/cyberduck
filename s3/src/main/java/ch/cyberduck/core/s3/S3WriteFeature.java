@@ -119,7 +119,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             object.setContentType(mime);
         }
         final Checksum checksum = status.getChecksum();
-        if(!Checksum.NONE.equals(checksum)) {
+        if(Checksum.NONE != checksum) {
             switch(checksum.algorithm) {
                 case md5:
                     object.setMd5Hash(ServiceUtils.fromHex(checksum.hash));

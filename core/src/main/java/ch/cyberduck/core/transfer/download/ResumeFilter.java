@@ -25,6 +25,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Download;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -68,7 +69,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                 // Read remote attributes
                 final PathAttributes attributes = attribute.find(file);
                 if(local.attributes().getSize() == attributes.getSize()) {
-                    if(attributes.getChecksum() != null) {
+                    if(Checksum.NONE != attributes.getChecksum()) {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                         if(compute.compute(file, local.getInputStream(), parent).equals(attributes.getChecksum())) {
                             if(log.isInfoEnabled()) {

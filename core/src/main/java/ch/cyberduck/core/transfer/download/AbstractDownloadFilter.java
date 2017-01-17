@@ -364,7 +364,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     }
                     else {
                         final Checksum checksum = status.getChecksum();
-                        if(!Checksum.NONE.equals(checksum)) {
+                        if(Checksum.NONE != checksum) {
                             final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
                             final Checksum download = compute.compute(file, local.getInputStream(), status);
                             if(!checksum.equals(download)) {

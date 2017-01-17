@@ -47,9 +47,8 @@ public class PathTooltipService {
             tooltip.append("\n").append(file.attributes().getRegion());
         }
         final Checksum checksum = file.attributes().getChecksum();
-        if(!Checksum.NONE.equals(checksum)) {
-            tooltip.append("\n").append(String.format("%s %s",
-                    StringUtils.upperCase(checksum.algorithm.name()), checksum.hash));
+        if(Checksum.NONE != checksum) {
+            tooltip.append("\n").append(String.format("%s %s", StringUtils.upperCase(checksum.algorithm.name()), checksum.hash));
         }
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             tooltip.append("\n").append(file.attributes().getVersionId());

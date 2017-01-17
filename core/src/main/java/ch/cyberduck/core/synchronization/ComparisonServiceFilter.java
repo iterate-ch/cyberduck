@@ -87,7 +87,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 final PathAttributes attributes = attribute.find(file);
                 {
                     // MD5/ETag Checksum is supported
-                    if(!Checksum.NONE.equals(attributes.getChecksum())) {
+                    if(Checksum.NONE != attributes.getChecksum()) {
                         progress.message(MessageFormat.format(
                                 LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                         local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
