@@ -86,20 +86,18 @@
             </fileset>
         </copy>
 
+        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
+            <target name="Build"/>
+            <property name="Version" value="${normalized.version}.0"/>
+            <property name="Platform" value="${msbuild.architecture}"/>
+            <property name="Configuration" value="${msbuild.configuration}"/>
+        </msbuild>
         <msbuild buildfile="${home}/Cyberduck Bootstrapper.wixproj">
             <target name="Build"/>
             <property name="Version" value="${normalized.version}.${revision}"/>
             <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
             <property name="Platform" value="${msbuild.architecture}"/>
-        </msbuild>
-        <msbuild buildfile="${home}/Cyberduck WindowsStore.msbproj">
-            <target name="Build"/>
-            <property name="Version" value="${normalized.version}.0"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-            <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="CyberduckInstallerPath" value="${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe" />
-            <property name="CyberduckInstallerArgs" value="/Q /S" />
         </msbuild>
     </target>
 
