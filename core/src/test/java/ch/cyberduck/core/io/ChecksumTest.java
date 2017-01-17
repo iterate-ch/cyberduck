@@ -34,6 +34,8 @@ public class ChecksumTest {
                 Checksum.parse("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
         assertEquals(Checksum.NONE,
                 Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709-2"));
+        assertEquals(Checksum.NONE, Checksum.parse(""));
+        assertEquals(Checksum.NONE, Checksum.parse(null));
         assertEquals(new Checksum(HashAlgorithm.sha512, "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"),
                 Checksum.parse("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"));
         assertEquals(new Checksum(HashAlgorithm.crc32, "d202ef8d"),
