@@ -41,6 +41,7 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
@@ -285,6 +286,9 @@ public class GoogleStorageSession extends S3Session {
     public <T> T _getFeature(final Class<T> type) {
         if(type == Upload.class) {
             return (T) new S3SingleUploadService(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
+        }
+        if(type == MultipartWrite.class) {
+            return null;
         }
         if(type == Write.class) {
             return (T) new S3WriteFeature(this, new S3DisabledMultipartService());
