@@ -49,7 +49,7 @@ public interface Encryption {
      * @param file Default encryption setting for file
      * @return Default server side algorithm to use or null if SSE is disabled
      */
-    Algorithm getDefault(Path file);
+    Algorithm getDefault(Path file) throws BackgroundException;
 
     /**
      * Get server side encryption algorithm

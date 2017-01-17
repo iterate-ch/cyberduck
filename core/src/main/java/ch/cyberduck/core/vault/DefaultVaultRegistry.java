@@ -182,6 +182,33 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Timestamp.class) {
             return (T) new VaultRegistryTimestampFeature(session, (Timestamp) proxy, this);
         }
+        if(type == Encryption.class) {
+            return (T) new VaultRegistryEncryptionFeature(session, (Encryption) proxy, this);
+        }
+        if(type == Lifecycle.class) {
+            return (T) new VaultRegistryLifecycleFeature(session, (Lifecycle) proxy, this);
+        }
+        if(type == Location.class) {
+            return (T) new VaultRegistryLocationFeature(session, (Location) proxy, this);
+        }
+        if(type == Lock.class) {
+            return (T) new VaultRegistryLockFeature<>(session, (Lock) proxy, this);
+        }
+        if(type == Logging.class) {
+            return (T) new VaultRegistryLoggingFeature(session, (Logging) proxy, this);
+        }
+        if(type == Redundancy.class) {
+            return (T) new VaultRegistryRedundancyFeature(session, (Redundancy) proxy, this);
+        }
+        if(type == Search.class) {
+            return (T) new VaultRegistrySearchFeature(session, (Search) proxy, this);
+        }
+        if(type == TransferAcceleration.class) {
+            return (T) new VaultRegistryTransferAccelerationFeature<>(session, (TransferAcceleration) proxy, this);
+        }
+        if(type == Versioning.class) {
+            return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
+        }
         return proxy;
     }
 }
