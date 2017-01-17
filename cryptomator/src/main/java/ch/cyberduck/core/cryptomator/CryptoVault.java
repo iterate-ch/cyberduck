@@ -490,6 +490,9 @@ public class CryptoVault implements Vault {
             if(type == Versioning.class) {
                 return (T) new CryptoVersioningFeature(session, (Versioning) delegate, this);
             }
+            if(type == Home.class) {
+                return (T) new CryptoHomeFeature(session, (Home) delegate, this);
+            }
         }
         return delegate;
     }
