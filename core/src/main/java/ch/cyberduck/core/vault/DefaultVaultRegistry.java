@@ -143,6 +143,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Write.class) {
             return (T) new VaultRegistryWriteFeature(session, (Write) proxy, this);
         }
+        if(type == MultipartWrite.class) {
+            return (T) new VaultRegistryMultipartWriteFeature(session, (MultipartWrite) proxy, this);
+        }
         if(type == Move.class) {
             return (T) new VaultRegistryMoveFeature(session, (Move) proxy, this);
         }
