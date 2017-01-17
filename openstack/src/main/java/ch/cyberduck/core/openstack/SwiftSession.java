@@ -140,9 +140,6 @@ public class SwiftSession extends HttpSession<Client> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        finally {
-            super.logout();
-        }
     }
 
     @Override

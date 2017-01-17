@@ -192,9 +192,6 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
         }
-        finally {
-            super.logout();
-        }
     }
 
     @Override
