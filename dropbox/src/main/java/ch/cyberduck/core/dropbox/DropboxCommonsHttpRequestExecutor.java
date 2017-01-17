@@ -167,4 +167,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
             }
         };
     }
+
+    public void shutdown() throws IOException {
+        client.close();
+    }
 }
