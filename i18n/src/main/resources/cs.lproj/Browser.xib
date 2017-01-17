@@ -224,7 +224,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="D80D3459-39ED-4BD6-99B8-9DA636583D8A" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="BC60DF39-1995-4954-B0A1-9D212255413B" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -395,7 +395,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nové Šifrované úložiště…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -569,7 +569,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="D80D3459-39ED-4BD6-99B8-9DA636583D8A" width="1" height="1">
+        <image name="BC60DF39-1995-4954-B0A1-9D212255413B" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
