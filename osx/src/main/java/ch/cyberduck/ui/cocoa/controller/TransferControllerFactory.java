@@ -66,7 +66,7 @@ public final class TransferControllerFactory {
                 @Override
                 public void callback(int returncode) {
                     if(returncode == DEFAULT_OPTION) { //Quit
-                        final BackgroundActionRegistry registry = shared.getActions();
+                        final BackgroundActionRegistry registry = shared.getRegistry();
                         for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                             action.cancel();
                         }

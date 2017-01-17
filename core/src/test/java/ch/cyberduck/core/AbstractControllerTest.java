@@ -49,7 +49,7 @@ public class AbstractControllerTest {
             @Override
             public void cleanup() {
                 assertEquals("main", Thread.currentThread().getName());
-                assertFalse(controller.getActions().contains(this));
+                assertFalse(controller.getRegistry().contains(this));
             }
 
             @Override
@@ -61,7 +61,7 @@ public class AbstractControllerTest {
         controller.background(new AbstractBackgroundAction() {
             @Override
             public Object run() throws BackgroundException {
-                assertFalse(controller.getActions().contains(action));
+                assertFalse(controller.getRegistry().contains(action));
                 return null;
             }
 
@@ -71,7 +71,7 @@ public class AbstractControllerTest {
             }
         });
         entry.await(1, TimeUnit.SECONDS);
-        assertTrue(controller.getActions().contains(action));
+        assertTrue(controller.getRegistry().contains(action));
         exit.countDown();
     }
 

@@ -50,7 +50,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.TransferBackgroundAction;
@@ -364,7 +363,6 @@ public final class TransferController extends WindowController implements NSTool
             final Transfer transfer = collection.get(index.intValue());
             transfer.setBandwidth(bandwidth);
             if(transfer.isRunning()) {
-                final BackgroundActionRegistry registry = this.getActions();
                 // Find matching background task
                 for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
                     if(action instanceof TransferBackgroundAction) {
@@ -754,7 +752,6 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void stopButtonClicked(final ID sender) {
         final NSIndexSet selected = transferTable.selectedRowIndexes();
-        final BackgroundActionRegistry registry = this.getActions();
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
@@ -774,7 +771,6 @@ public final class TransferController extends WindowController implements NSTool
     @Action
     public void stopAllButtonClicked(final ID sender) {
         final Collection<Transfer> transfers = transferTableModel.getSource();
-        final BackgroundActionRegistry registry = this.getActions();
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
                 // Find matching background task

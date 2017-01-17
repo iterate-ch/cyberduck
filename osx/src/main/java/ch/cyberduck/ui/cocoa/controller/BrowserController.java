@@ -2134,7 +2134,7 @@ public class BrowserController extends WindowController
     }
 
     public void setStatus() {
-        final BackgroundAction current = this.getActions().getCurrent();
+        final BackgroundAction current = registry.getCurrent();
         this.message(null != current ? current.getActivity() : null);
     }
 
@@ -2722,8 +2722,8 @@ public class BrowserController extends WindowController
     public void disconnectButtonClicked(final ID sender) {
         if(this.isActivityRunning()) {
             // Remove all pending actions
-            for(BackgroundAction action : this.getActions().toArray(
-                    new BackgroundAction[this.getActions().size()])) {
+            for(BackgroundAction action : registry.toArray(
+                    new BackgroundAction[registry.size()])) {
                 action.cancel();
             }
         }
