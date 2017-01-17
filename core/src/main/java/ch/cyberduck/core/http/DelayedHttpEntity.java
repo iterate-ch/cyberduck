@@ -57,7 +57,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     public abstract long getContentLength();
 
     public InputStream getContent() throws IOException {
-        throw new UnsupportedOperationException("No content here");
+        throw new IOException(new UnsupportedOperationException("No content here"));
     }
 
     /**
