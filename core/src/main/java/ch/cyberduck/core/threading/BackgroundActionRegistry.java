@@ -22,7 +22,10 @@ import ch.cyberduck.core.Collection;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
     private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
@@ -42,7 +45,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         }
     }
 
-    private BackgroundAction current;
+    private final Set<BackgroundAction> running = new LinkedHashSet<>();
 
     public BackgroundActionRegistry() {
         //
@@ -54,19 +57,21 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
      * @return The currently running background action. Null if none is currently running.
      */
     public synchronized BackgroundAction getCurrent() {
-        return current;
+        final Iterator<BackgroundAction> iter = running.iterator();
+        if(iter.hasNext()) {
+            return iter.next();
+        }
+        return null;
     }
 
     @Override
     public synchronized void start(final BackgroundAction action) {
-        current = action;
+        running.add(action);
     }
 
     @Override
     public synchronized void stop(final BackgroundAction action) {
-        if(action == current) {
-            current = null;
-        }
+        running.remove(action);
     }
 
     @Override
