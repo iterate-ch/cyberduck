@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -372,7 +372,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedClientCertificateEvent()
         {
             _host.getCredentials().setCertificate(View.SelectedClientCertificate);
-			ItemChanged();
+            ItemChanged();
         }
 
         private void InitPrivateKeys()
@@ -536,7 +536,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedPrivateKey = LocaleFactory.localizedString("None");
             }
-            View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https;
+            View.ClientCertificateFieldEnabled = _host.getProtocol().getScheme() == Scheme.https ||
+                                                 _host.getProtocol().getScheme() == Scheme.ftps;
             if (_host.getCredentials().isCertificateAuthentication())
             {
                 View.SelectedClientCertificate = _host.getCredentials().getCertificate();
