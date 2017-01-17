@@ -134,7 +134,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
 
         @Override
         public void write(final int value) throws IOException {
-            throw new UnsupportedOperationException();
+            throw new IOException(new UnsupportedOperationException());
         }
 
         @Override
