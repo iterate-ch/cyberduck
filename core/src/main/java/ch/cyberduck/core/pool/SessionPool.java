@@ -77,6 +77,10 @@ public interface SessionPool {
     }
 
     final class DisconnectedSessionPool implements SessionPool {
+        private static final Host DISCONNECTED = new Host(ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                PreferencesFactory.get().getProperty("connection.hostname.default"),
+                PreferencesFactory.get().getInteger("connection.port.default"));
+
         @Override
         public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
             return null;
@@ -94,9 +98,7 @@ public interface SessionPool {
 
         @Override
         public Host getHost() {
-            return new Host(ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
-                    PreferencesFactory.get().getProperty("connection.hostname.default"),
-                    PreferencesFactory.get().getInteger("connection.port.default"));
+            return DISCONNECTED;
         }
 
         @Override
