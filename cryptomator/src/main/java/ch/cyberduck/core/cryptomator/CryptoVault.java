@@ -463,6 +463,9 @@ public class CryptoVault implements Vault {
             if(type == Timestamp.class) {
                 return (T) new CryptoTimestampFeature(session, (Timestamp) delegate, this);
             }
+            if(type == Encryption.class) {
+                return (T) new CryptoEncryptionFeature(session, (Encryption) delegate, this);
+            }
         }
         return delegate;
     }
