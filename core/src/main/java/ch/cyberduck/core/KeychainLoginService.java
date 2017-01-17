@@ -75,6 +75,8 @@ public class KeychainLoginService implements LoginService {
             keychain.save(bookmark);
             // Flag for successful authentication
             credentials.setPassed(true);
+            // Nullify password.
+            credentials.setPassword(null);
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
@@ -111,8 +113,8 @@ public class KeychainLoginService implements LoginService {
                             appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
                             callback.prompt(bookmark, credentials,
                                     String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                                            appender.toString(),
-                                            options);
+                                    appender.toString(),
+                                    options);
                         }
                         // We decide later if the key is encrypted and a password must be known to decrypt.
                     }

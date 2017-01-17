@@ -114,9 +114,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map(e);
         }
-        finally {
-            super.logout();
-        }
     }
 
     protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
