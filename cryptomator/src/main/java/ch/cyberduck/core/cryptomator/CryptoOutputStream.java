@@ -46,7 +46,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
     @Override
     public void write(final int b) throws IOException {
-        throw new UnsupportedOperationException();
+        throw new IOException(new UnsupportedOperationException());
     }
 
     @Override
