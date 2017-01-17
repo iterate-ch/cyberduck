@@ -1381,7 +1381,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (isActivityRunning())
             {
                 // Remove all pending actions)
-                foreach (BackgroundAction action in getRegistry()().toArray(new BackgroundAction[getRegistry()().size()]))
+                foreach (BackgroundAction action in getRegistry().toArray(new BackgroundAction[getRegistry().size()]))
                 {
                     action.cancel();
                 }
@@ -2722,7 +2722,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void SetStatus()
         {
-            BackgroundAction current = getRegistry()().getCurrent();
+            BackgroundAction current = getRegistry().getCurrent();
             message(null != current ? current.getActivity() : null);
         }
 

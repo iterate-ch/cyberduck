@@ -153,9 +153,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (result.CommandButtonResult == 0)
                     {
                         // Quit
-                        for (int i = 0; i < _instance.getRegistry()().size(); i++)
+                        for (int i = 0; i < _instance.getRegistry().size(); i++)
                         {
-                            ((BackgroundAction) _instance.getRegistry()().get(i)).cancel();
+                            ((BackgroundAction) _instance.getRegistry().get(i)).cancel();
                         }
                         return true;
                     }
@@ -351,7 +351,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 transfer.setBandwidth(View.Bandwidth);
                 if (transfer.isRunning())
                 {
-                    BackgroundActionRegistry registry = getRegistry()();
+                    BackgroundActionRegistry registry = getRegistry();
                     // Find matching background task
                     for (int i = 0; i < registry.size(); i++)
                     {
@@ -528,7 +528,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (IProgressView progressView in View.SelectedTransfers)
             {
                 Transfer transfer = GetTransferFromView(progressView);
-                BackgroundActionRegistry registry = getRegistry()();
+                BackgroundActionRegistry registry = getRegistry();
                 if (transfer.isRunning())
                 {
                     // Find matching background task
