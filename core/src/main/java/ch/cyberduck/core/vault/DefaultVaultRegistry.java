@@ -200,6 +200,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Redundancy.class) {
             return (T) new VaultRegistryRedundancyFeature(session, (Redundancy) proxy, this);
         }
+        if(type == Search.class) {
+            return (T) new VaultRegistrySearchFeature(session, (Search) proxy, this);
+        }
+        if(type == TransferAcceleration.class) {
+            return (T) new VaultRegistryTransferAccelerationFeature<>(session, (TransferAcceleration) proxy, this);
+        }
+        if(type == Versioning.class) {
+            return (T) new VaultRegistryVersioningFeature(session, (Versioning) proxy, this);
+        }
         return proxy;
     }
 }
