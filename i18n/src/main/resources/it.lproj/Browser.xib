@@ -224,7 +224,7 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="B1A60851-019A-4831-B971-D175AA0DF937" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="792FDED1-A140-4816-A272-7486F24EB485" imagePosition="only" alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -569,7 +569,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="B1A60851-019A-4831-B971-D175AA0DF937" width="1" height="1">
+        <image name="792FDED1-A140-4816-A272-7486F24EB485" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw
