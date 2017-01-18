@@ -7,7 +7,40 @@
     <Logo>Assets\CyberduckAppx.50x50.png</Logo>
   </Properties>
   <Resources>
-    <Resource Language="en-us" />
+    <Resource Language="ar" />
+    <Resource Language="bg" />
+    <Resource Language="ca" />
+    <Resource Language="cs" />
+    <Resource Language="cy" />
+    <Resource Language="da" />
+    <Resource Language="de" />
+    <Resource Language="el" />
+    <Resource Language="en" />
+    <Resource Language="es" />
+    <Resource Language="fi" />
+    <Resource Language="fr" />
+    <Resource Language="he" />
+    <Resource Language="it" />
+    <Resource Language="ja" />
+    <Resource Language="ka" />
+    <Resource Language="ko" />
+    <Resource Language="lv" />
+    <Resource Language="nl" />
+    <Resource Language="no" />
+    <Resource Language="pl" />
+    <Resource Language="pt-br" />
+    <Resource Language="pt-pt" />
+    <Resource Language="ro" />
+    <Resource Language="ru" />
+    <Resource Language="sk" />
+    <Resource Language="sl" />
+    <Resource Language="sr" />
+    <Resource Language="sv" />
+    <Resource Language="th" />
+    <Resource Language="tr" />
+    <Resource Language="uk" />
+    <Resource Language="zh-cn" />
+    <Resource Language="zh-tw" />
   </Resources>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
