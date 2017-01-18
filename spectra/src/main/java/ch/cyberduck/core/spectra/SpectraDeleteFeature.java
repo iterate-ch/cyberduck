@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
 import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import java.io.IOException;
 import java.security.SignatureException;
@@ -70,7 +71,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(SignatureException e) {
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 }

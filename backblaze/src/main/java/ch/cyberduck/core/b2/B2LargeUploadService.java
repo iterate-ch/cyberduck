@@ -34,6 +34,7 @@ import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
@@ -169,7 +170,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 if(e.getCause() instanceof BackgroundException) {
                     throw (BackgroundException) e.getCause();
                 }
-                throw new BackgroundException(e);
+                throw new DefaultExceptionMappingService().map(e.getCause());
             }
             finally {
                 pool.shutdown(false);

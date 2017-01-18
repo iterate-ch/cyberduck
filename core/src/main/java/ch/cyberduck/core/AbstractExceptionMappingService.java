@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.TimeoutException;
 
-public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
+public abstract class AbstractExceptionMappingService<T extends Throwable> implements ExceptionMappingService<T> {
     private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
 
     public BackgroundException map(final String message, final T failure) {

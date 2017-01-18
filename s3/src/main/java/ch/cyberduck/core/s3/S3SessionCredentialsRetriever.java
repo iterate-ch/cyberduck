@@ -96,7 +96,7 @@ public class S3SessionCredentialsRetriever {
             return new AWSSessionCredentials(key, secret, token);
         }
         catch(UnsupportedEncodingException e) {
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);
