@@ -59,7 +59,7 @@ public class SyncTransferTest {
         }));
         final AtomicBoolean prompt = new AtomicBoolean();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        assertEquals(null, t.action(session, session, false, false, new DisabledTransferPrompt() {
+        assertEquals(null, t.action(session, null, false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);
@@ -79,7 +79,7 @@ public class SyncTransferTest {
                 return AttributedList.emptyList();
             }
         };
-        final TransferPathFilter filter = t.filter(session, session, TransferAction.download, new DisabledProgressListener());
+        final TransferPathFilter filter = t.filter(session, null, TransferAction.download, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertFalse(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a"),
                 new TransferStatus().exists(true)));
@@ -90,7 +90,7 @@ public class SyncTransferTest {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final TransferPathFilter filter = t.filter(session, session, TransferAction.upload, new DisabledProgressListener());
+        final TransferPathFilter filter = t.filter(session, null, TransferAction.upload, new DisabledProgressListener());
         final Path test = new Path(p, "a", EnumSet.of(Path.Type.file));
         assertTrue(filter.accept(test, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
                     @Override
@@ -116,7 +116,7 @@ public class SyncTransferTest {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         SyncTransfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        final TransferPathFilter filter = t.filter(session, session, TransferAction.mirror, new DisabledProgressListener());
+        final TransferPathFilter filter = t.filter(session, null, TransferAction.mirror, new DisabledProgressListener());
         assertTrue(filter.accept(new Path(p, "a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
                     @Override
                     public boolean exists() {
@@ -182,7 +182,7 @@ public class SyncTransferTest {
         };
         directory.mkdir();
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
-        final List<TransferItem> list = t.list(session, session, root, directory, new DisabledListProgressListener());
+        final List<TransferItem> list = t.list(session, null, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
     }
 
@@ -210,7 +210,7 @@ public class SyncTransferTest {
         };
         directory.mkdir();
         Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
-        final List<TransferItem> list = t.list(session, session, root, directory, new DisabledListProgressListener());
+        final List<TransferItem> list = t.list(session, null, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
@@ -218,9 +218,9 @@ public class SyncTransferTest {
                 return true;
             }
         };
-        assertFalse(t.filter(session, session, TransferAction.download, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, session, TransferAction.upload, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, session, TransferAction.mirror, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
+        assertFalse(t.filter(session, null, TransferAction.download, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.upload, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.mirror, new DisabledProgressListener()).accept(root, local, new TransferStatus().exists(true)));
     }
 
     @Test
@@ -248,7 +248,7 @@ public class SyncTransferTest {
             }
         };
         final Transfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(root, directory));
-        final List<TransferItem> list = t.list(session, session, root, directory, new DisabledListProgressListener());
+        final List<TransferItem> list = t.list(session, null, root, directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
         final NullLocal local = new NullLocal(directory, "a") {
             @Override
@@ -256,12 +256,12 @@ public class SyncTransferTest {
                 return false;
             }
         };
-        assertTrue(t.filter(session, session, TransferAction.download, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, session, TransferAction.upload, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, session, TransferAction.mirror, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
-        assertTrue(t.filter(session, session, TransferAction.download, new DisabledProgressListener()).accept(a, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.download, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.upload, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.mirror, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.download, new DisabledProgressListener()).accept(a, local, new TransferStatus().exists(true)));
         // Because root is directory
-        assertTrue(t.filter(session, session, TransferAction.upload, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
-        assertFalse(t.filter(session, session, TransferAction.upload, new DisabledProgressListener()).accept(a, local, new TransferStatus().exists(true)));
+        assertTrue(t.filter(session, null, TransferAction.upload, new DisabledProgressListener()).accept(root, directory, new TransferStatus().exists(true)));
+        assertFalse(t.filter(session, null, TransferAction.upload, new DisabledProgressListener()).accept(a, local, new TransferStatus().exists(true)));
     }
 }

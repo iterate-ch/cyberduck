@@ -156,7 +156,7 @@ public class SyncTransfer extends Transfer {
         // Set chosen action (upload, download, mirror) from prompt
         return new SynchronizationPathFilter(
                 comparison = new CachingComparisonServiceFilter(
-                        new ComparisonServiceFilter(destination, destination.getHost().getTimezone(), listener).withCache(cache)
+                        new ComparisonServiceFilter(source, source.getHost().getTimezone(), listener).withCache(cache)
                 ).withCache(compareCache),
                 download.filter(source, destination, TransferAction.overwrite, listener),
                 upload.filter(source, destination, TransferAction.overwrite, listener),
@@ -176,7 +176,7 @@ public class SyncTransfer extends Transfer {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = source.getFeature(Find.class, new DefaultFindFeature(destination)).withCache(cache);
+        final Find finder = source.getFeature(Find.class, new DefaultFindFeature(source)).withCache(cache);
         if(finder.find(directory)) {
             final List<TransferItem> list = download.list(source, destination, directory, local, listener);
             for(TransferItem item : list) {
