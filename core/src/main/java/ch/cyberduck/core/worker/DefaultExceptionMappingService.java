@@ -16,12 +16,14 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class DefaultExceptionMappingService extends AbstractExceptionMappingService<Throwable> {
+
     @Override
     public BackgroundException map(final Throwable failure) {
         final StringBuilder buffer = new StringBuilder();
@@ -36,6 +38,6 @@ public class DefaultExceptionMappingService extends AbstractExceptionMappingServ
                 this.append(buffer, cause.getMessage());
             }
         }
-        return this.wrap(failure, buffer);
+        return this.wrap(failure, LocaleFactory.localizedString("Error", "Error"), buffer);
     }
 }

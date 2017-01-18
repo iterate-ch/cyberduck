@@ -79,6 +79,10 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
     }
 
     protected BackgroundException wrap(final T failure, final StringBuilder buffer) {
+        return this.wrap(failure, LocaleFactory.localizedString("Connection failed", "Error"), buffer);
+    }
+
+    protected BackgroundException wrap(final T failure, final String title, final StringBuilder buffer) {
         if(buffer.toString().isEmpty()) {
             log.warn(String.format("No message for failure %s", failure));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
@@ -105,7 +109,6 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
-        return new BackgroundException(
-                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), failure);
+        return new BackgroundException(title, buffer.toString(), failure);
     }
 }
