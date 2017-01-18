@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Headers;
 import java.util.Collections;
 import java.util.Map;
 
-public class DefaultHeadersFeature implements Headers {
+public class DisabledHeadersFeature implements Headers {
     @Override
     public Map<String, String> getDefault(final Local local) {
         return Collections.emptyMap();
