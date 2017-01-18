@@ -35,7 +35,7 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.TimeoutException;
 
-public abstract class AbstractExceptionMappingService<T extends Exception> implements ExceptionMappingService<T> {
+public abstract class AbstractExceptionMappingService<T extends Throwable> implements ExceptionMappingService<T> {
     private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
 
     public BackgroundException map(final String message, final T failure) {
@@ -79,6 +79,10 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
     }
 
     protected BackgroundException wrap(final T failure, final StringBuilder buffer) {
+        return this.wrap(failure, LocaleFactory.localizedString("Connection failed", "Error"), buffer);
+    }
+
+    protected BackgroundException wrap(final T failure, final String title, final StringBuilder buffer) {
         if(buffer.toString().isEmpty()) {
             log.warn(String.format("No message for failure %s", failure));
             this.append(buffer, LocaleFactory.localizedString("Interoperability failure", "Error"));
@@ -105,7 +109,6 @@ public abstract class AbstractExceptionMappingService<T extends Exception> imple
                 return new ConnectionRefusedException(buffer.toString(), failure);
             }
         }
-        return new BackgroundException(
-                LocaleFactory.localizedString("Connection failed", "Error"), buffer.toString(), failure);
+        return new BackgroundException(title, buffer.toString(), failure);
     }
 }

@@ -167,7 +167,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         if(e.getCause() instanceof BackgroundException) {
                             throw (BackgroundException) e.getCause();
                         }
-                        throw new BackgroundException(e);
+                        throw new BackgroundException(e.getCause());
                     }
                 }
                 // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request

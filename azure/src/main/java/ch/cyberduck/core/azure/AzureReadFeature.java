@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -77,7 +78,7 @@ public class AzureReadFeature implements Read {
                 }
                 catch(IndexOutOfBoundsException e) {
                     // If offset is invalid
-                    throw new BackgroundException(e);
+                    throw new DefaultExceptionMappingService().map(e);
                 }
             }
             return new ProxyInputStream(in) {

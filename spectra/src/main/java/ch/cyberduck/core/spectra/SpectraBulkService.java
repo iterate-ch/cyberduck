@@ -28,6 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -157,7 +158,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             return jobs;
         }
         catch(XmlProcessingException | SignatureException e) {
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);
@@ -245,7 +246,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(SignatureException e) {
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 

@@ -31,6 +31,7 @@ import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.AbandonedConfig;
@@ -177,7 +178,7 @@ public class DefaultSessionPool implements SessionPool {
                         throw failure;
                     }
                     log.error(String.format("Borrowing session from pool %s failed with %s", this, e));
-                    throw new BackgroundException(e);
+                    throw new DefaultExceptionMappingService().map(cause);
                 }
             }
             throw new ConnectionCanceledException();
