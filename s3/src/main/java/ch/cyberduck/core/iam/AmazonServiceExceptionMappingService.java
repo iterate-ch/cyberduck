@@ -21,6 +21,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -71,6 +72,8 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                     return new NotfoundException(buffer.toString(), e);
                 case HttpStatus.SC_SERVICE_UNAVAILABLE:
                     return new ConnectionRefusedException(buffer.toString(), e);
+                case HttpStatus.SC_REQUEST_TIMEOUT:
+                    return new ConnectionTimeoutException(buffer.toString(), failure);
             }
         }
         this.append(buffer, e.getMessage());

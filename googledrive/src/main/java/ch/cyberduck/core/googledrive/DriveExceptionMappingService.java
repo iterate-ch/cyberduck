@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -82,6 +83,8 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
                     return new InteroperabilityException(buffer.toString(), failure);
                 case HttpStatus.SC_SERVICE_UNAVAILABLE:
                     return new ConnectionRefusedException(buffer.toString(), failure);
+                case HttpStatus.SC_REQUEST_TIMEOUT:
+                    return new ConnectionTimeoutException(buffer.toString(), failure);
             }
         }
         return super.map(failure);

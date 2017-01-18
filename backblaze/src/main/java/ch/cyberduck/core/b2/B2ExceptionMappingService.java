@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -106,6 +107,8 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
                 return new ConnectionRefusedException(buffer.toString(), e);
+            case HttpStatus.SC_REQUEST_TIMEOUT:
+                return new ConnectionTimeoutException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {
                     // Too Many Requests (429)

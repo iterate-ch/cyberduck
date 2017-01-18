@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -89,6 +90,8 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                 return new RetriableAccessDeniedException(buffer.toString(), e);
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), e);
+            case HttpStatus.SC_REQUEST_TIMEOUT:
+                return new ConnectionTimeoutException(buffer.toString(), e);
         }
         if(e.getCause() instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
