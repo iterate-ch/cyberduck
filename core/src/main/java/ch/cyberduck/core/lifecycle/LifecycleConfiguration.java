@@ -17,8 +17,6 @@ package ch.cyberduck.core.lifecycle;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.jets3t.service.model.S3Object;
-
 public class LifecycleConfiguration {
 
     public static LifecycleConfiguration empty() {
@@ -31,10 +29,6 @@ public class LifecycleConfiguration {
 
     public LifecycleConfiguration() {
         //
-    }
-
-    public LifecycleConfiguration(final Integer transition, final Integer expiration) {
-        this(transition, S3Object.STORAGE_CLASS_GLACIER, expiration);
     }
 
     public LifecycleConfiguration(final Integer transition, final String storageClass, final Integer expiration) {
