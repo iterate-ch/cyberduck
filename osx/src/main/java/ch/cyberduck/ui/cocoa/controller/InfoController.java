@@ -334,7 +334,6 @@ public class InfoController extends ToolbarWindowController {
         switch(item) {
             case info:
                 this.initGeneral();
-                this.initPermissions();
                 break;
             case permissions:
                 this.initPermissions();
@@ -492,11 +491,11 @@ public class InfoController extends ToolbarWindowController {
     protected List<NSView> getPanels() {
         List<NSView> views = new ArrayList<NSView>();
         views.add(panelGeneral);
-        if(session.getFeature(UnixPermission.class) != null) {
-            views.add(panelPermissions);
-        }
         if(session.getFeature(AclPermission.class) != null) {
             views.add(panelAcl);
+        }
+        else {
+            views.add(panelPermissions);
         }
         views.add(panelMetadata);
         views.add(panelDistribution);
@@ -508,11 +507,11 @@ public class InfoController extends ToolbarWindowController {
     protected List<String> getPanelIdentifiers() {
         List<String> identifiers = new ArrayList<String>();
         identifiers.add(InfoToolbarItem.info.name());
-        if(session.getFeature(UnixPermission.class) != null) {
-            identifiers.add(InfoToolbarItem.permissions.name());
-        }
         if(session.getFeature(AclPermission.class) != null) {
             identifiers.add(InfoToolbarItem.acl.name());
+        }
+        else {
+            identifiers.add(InfoToolbarItem.permissions.name());
         }
         identifiers.add(InfoToolbarItem.metadata.name());
         identifiers.add(InfoToolbarItem.distribution.name());
