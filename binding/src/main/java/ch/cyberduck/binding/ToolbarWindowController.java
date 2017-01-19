@@ -39,7 +39,6 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -75,9 +74,6 @@ public abstract class ToolbarWindowController extends WindowController implement
     protected abstract List<String> getPanelIdentifiers();
 
     private NSToolbar toolbar;
-
-    private List<NSTabViewItem> tabs
-            = new ArrayList<NSTabViewItem>();
 
     @Override
     public void awakeFromNib() {
