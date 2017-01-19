@@ -6,6 +6,9 @@ https://cyberduck.io/
 - [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
 
+5.3.3 [https://trac.cyberduck.io/milestone/5.3.3
+- [Bugfix] Downloads fail with exception after completion (OpenStack Swift) (#9814)
+
 5.3.2 [https://trac.cyberduck.io/milestone/5.3.2
 - [Bugfix] Synchronize transfers fail with exception
 - [Bugfix] Repeat transfer failures due to HTTP request timeout (Backblaze B2)
