@@ -7,6 +7,7 @@
     <Logo>Assets\CyberduckAppx.50x50.png</Logo>
   </Properties>
   <Resources>
+    <Resource Language="en" />
     <Resource Language="ar" />
     <Resource Language="bg" />
     <Resource Language="ca" />
@@ -15,7 +16,6 @@
     <Resource Language="da" />
     <Resource Language="de" />
     <Resource Language="el" />
-    <Resource Language="en" />
     <Resource Language="es" />
     <Resource Language="fi" />
     <Resource Language="fr" />
@@ -34,7 +34,7 @@
     <Resource Language="ru" />
     <Resource Language="sk" />
     <Resource Language="sl" />
-    <Resource Language="sr" />
+    <Resource Language="sr-latn" />
     <Resource Language="sv" />
     <Resource Language="th" />
     <Resource Language="tr" />
