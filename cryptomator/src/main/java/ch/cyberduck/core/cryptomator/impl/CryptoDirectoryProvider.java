@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,31 +59,34 @@ public class CryptoDirectoryProvider {
      * @param directory Clear text
      */
     public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
-        final String directoryId;
-        if(dataRoot.getParent().equals(directory)) {
-            directoryId = ROOT_DIR_ID;
-        }
-        else {
-            if(StringUtils.isBlank(directory.attributes().getDirectoryId())) {
-                final Path parent = this.toEncrypted(session, directory.getParent());
-                final String cleartextName = directory.getName();
-                final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-                // Read directory id from file
-                directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+        if(directory.getType().contains(Path.Type.directory)) {
+            final String directoryId;
+            if(dataRoot.getParent().equals(directory)) {
+                directoryId = ROOT_DIR_ID;
             }
             else {
-                directoryId = directory.attributes().getDirectoryId();
+                if(StringUtils.isBlank(directory.attributes().getDirectoryId())) {
+                    final Path parent = this.toEncrypted(session, directory.getParent());
+                    final String cleartextName = directory.getName();
+                    final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+                    // Read directory id from file
+                    directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+                }
+                else {
+                    directoryId = directory.attributes().getDirectoryId();
+                }
             }
+            final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
+            // Intermediate directory
+            final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
+            final PathAttributes attributes = new PathAttributes();
+            // Save directory id for use in vault
+            attributes.setDirectoryId(directoryId);
+            // Add encrypted type
+            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+            type.add(Path.Type.encrypted);
+            return new Path(intermediate, dirHash.substring(2), type, attributes);
         }
-        final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
-        // Intermediate directory
-        final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
-        final PathAttributes attributes = new PathAttributes();
-        // Save directory id for use in vault
-        attributes.setDirectoryId(directoryId);
-        // Add encrypted type
-        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
-        type.add(Path.Type.encrypted);
-        return new Path(intermediate, dirHash.substring(2), type, attributes);
+        throw new NotfoundException(directory.getAbsolute());
     }
 }
