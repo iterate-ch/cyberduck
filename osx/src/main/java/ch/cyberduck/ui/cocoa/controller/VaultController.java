@@ -38,6 +38,7 @@ import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 public class VaultController extends FolderController {
@@ -132,6 +133,7 @@ public class VaultController extends FolderController {
     @Override
     public void callback(final int returncode, final Path file) {
         final String passphrase = passwordField.stringValue();
+        file.setType(EnumSet.of(Path.Type.directory));
         callback.callback(file, this.getLocation(), passphrase);
     }
 
