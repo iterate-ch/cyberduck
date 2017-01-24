@@ -195,11 +195,16 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     if(method.equals(Distribution.STREAMING)) {
                         for(StreamingDistributionSummary d : client.listStreamingDistributions(
                                 new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
-                            final S3Origin o = d.getS3Origin();
-                            // We currently only support one distribution per bucket
-                            final Distribution distribution = readStreamingDistribution(client, d, container, method);
-                            cache.put(container, distribution);
-                            return distribution;
+                            final S3Origin config = d.getS3Origin();
+                            if(config != null) {
+                                final URI origin = getOrigin(container, method);
+                                if(config.getDomainName().equals(origin.getHost())) {
+                                    // We currently only support one distribution per bucket
+                                    final Distribution distribution = readStreamingDistribution(client, d, container, method);
+                                    cache.put(container, distribution);
+                                    return distribution;
+                                }
+                            }
                         }
                     }
                     else if(method.equals(Distribution.DOWNLOAD)) {
@@ -207,11 +212,15 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         for(DistributionSummary d : client.listDistributions(
                                 new ListDistributionsRequest()).getDistributionList().getItems()) {
                             for(Origin o : d.getOrigins().getItems()) {
-                                if(o.getS3OriginConfig() != null) {
-                                    // We currently only support one distribution per bucket
-                                    final Distribution distribution = readDownloadDistribution(client, d, container, method);
-                                    cache.put(container, distribution);
-                                    return distribution;
+                                final S3OriginConfig config = o.getS3OriginConfig();
+                                if(config != null) {
+                                    final URI origin = getOrigin(container, method);
+                                    if(o.getDomainName().equals(origin.getHost())) {
+                                        // We currently only support one distribution per bucket
+                                        final Distribution distribution = readDownloadDistribution(client, d, container, method);
+                                        cache.put(container, distribution);
+                                        return distribution;
+                                    }
                                 }
                             }
                         }
