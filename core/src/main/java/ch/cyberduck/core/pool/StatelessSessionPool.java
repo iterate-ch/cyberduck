@@ -110,6 +110,11 @@ public class StatelessSessionPool implements SessionPool {
     }
 
     @Override
+    public PathCache getCache() {
+        return cache;
+    }
+
+    @Override
     public VaultRegistry getVault() {
         return registry;
     }

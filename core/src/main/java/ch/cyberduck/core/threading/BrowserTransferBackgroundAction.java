@@ -16,6 +16,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAdapter;
@@ -29,13 +30,14 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
 
     public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
                                            final Transfer transfer, final TransferCallback callback) {
-        super(controller, pool, pool, new TransferAdapter() {
-            @Override
-            public void progress(final TransferProgress status) {
-                controller.message(status.getProgress());
-                super.progress(status);
-            }
-        }, transfer, new TransferOptions());
+        super(controller, pool, transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getDestination()) : pool,
+                new TransferAdapter() {
+                    @Override
+                    public void progress(final TransferProgress status) {
+                        controller.message(status.getProgress());
+                        super.progress(status);
+                    }
+                }, transfer, new TransferOptions());
         this.transfer = transfer;
         this.callback = callback;
     }
