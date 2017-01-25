@@ -4,6 +4,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -36,7 +37,7 @@ public class LoginConnectionServiceTest {
         s.check(session, PathCache.empty());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test(expected = ResolveFailedException.class)
     public void testConnectDnsFailure() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol(), "unknownhost.local", new Credentials("user", "p"))) {
             @Override
@@ -55,8 +56,9 @@ public class LoginConnectionServiceTest {
                 new DisabledTranscriptListener());
         try {
             s.check(session, PathCache.empty());
+            fail();
         }
-        catch(BackgroundException e) {
+        catch(ResolveFailedException e) {
             assertEquals("Connection failed", e.getMessage());
             assertEquals("DNS lookup for unknownhost.local failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
             assertEquals(UnknownHostException.class, e.getCause().getClass());
