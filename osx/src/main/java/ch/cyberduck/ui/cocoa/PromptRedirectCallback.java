@@ -20,11 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
+import ch.cyberduck.ui.cocoa.controller.RedirectAlertController;
 
 import org.apache.log4j.Logger;
 
@@ -52,23 +51,12 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setMessageText(LocaleFactory.localizedString("Redirect"));
-                alert.setInformativeText(LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-                super.loadBundle(alert);
-            }
-        };
+        final AlertController alert = new RedirectAlertController(method);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }
         return option;
     }
+
 }
