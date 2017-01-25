@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -25,10 +25,7 @@ import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
-import org.apache.log4j.Logger;
-
 public class PromptAlertCallback implements AlertCallback {
-    private static final Logger log = Logger.getLogger(PromptAlertCallback.class);
 
     private final WindowController parent;
     private final NotificationAlertCallback notification = new NotificationAlertCallback();

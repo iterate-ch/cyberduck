@@ -69,7 +69,7 @@ import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.*;
-import ch.cyberduck.ui.cocoa.PromptRecursiveCallback;
+import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

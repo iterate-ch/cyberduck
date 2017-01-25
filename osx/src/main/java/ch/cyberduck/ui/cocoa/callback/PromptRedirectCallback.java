@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,32 +18,42 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.ui.cocoa.controller.RecursiveAlertController;
+import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.http.RedirectCallback;
+import ch.cyberduck.ui.cocoa.controller.RedirectAlertController;
 
-public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
+import org.apache.log4j.Logger;
+
+public class PromptRedirectCallback implements RedirectCallback {
+    private static final Logger log = Logger.getLogger(PromptRedirectCallback.class);
+
+    private final RedirectCallback preferences
+            = new PreferencesRedirectCallback();
 
     private final WindowController controller;
 
     private boolean suppressed;
-
     private boolean option;
 
-    public PromptRecursiveCallback(final WindowController controller) {
+    public PromptRedirectCallback(final WindowController controller) {
         this.controller = controller;
     }
 
     @Override
-    public boolean recurse(final Path directory, final T value) {
+    public boolean redirect(final String method) {
         if(suppressed) {
             return option;
         }
-        final AlertController alert = new RecursiveAlertController<T>(value, directory);
+        if(preferences.redirect(method)) {
+            // Allow if set defaults
+            return true;
+        }
+        final AlertController alert = new RedirectAlertController(method);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }
         return option;
     }
+
 }
