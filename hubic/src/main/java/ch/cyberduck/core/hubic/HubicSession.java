@@ -82,6 +82,9 @@ public class HubicSession extends SwiftSession {
     private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
         final Credential credentials = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
         try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Attempt authentication with %s", credentials));
+            }
             client.authenticate(new HubicAuthenticationRequest(credentials.getAccessToken()),
                     new HubicAuthenticationResponseHandler());
         }
