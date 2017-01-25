@@ -396,26 +396,33 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      */
     private String readInvalidationStatus(final AmazonCloudFrontClient client,
                                           final Distribution distribution) throws BackgroundException {
-        boolean complete = false;
-        int inprogress = 0;
         try {
-            final List<InvalidationSummary> summaries = client.listInvalidations(new ListInvalidationsRequest(distribution.getId()))
-                    .getInvalidationList().getItems();
-            for(InvalidationSummary s : summaries) {
-                if("Completed".equals(s.getStatus())) {
-                    // No schema for status enumeration. Fail.
-                    complete = true;
+            int pending = 0;
+            int completed = 0;
+            String marker = null;
+            do {
+                final ListInvalidationsResult response = client.listInvalidations(new ListInvalidationsRequest(distribution.getId()).withMarker(marker));
+                for(InvalidationSummary s : response.getInvalidationList().getItems()) {
+                    // When the invalidation batch is finished, the status is Completed.
+                    if("Completed".equals(s.getStatus())) {
+                        // No schema for status enumeration. Fail.
+                        completed++;
+                    }
+                    else {
+                        // InProgress
+                        pending++;
+                    }
                 }
-                else {
-                    // InProgress
-                    inprogress++;
+                if(response.getInvalidationList().isTruncated()) {
+                    marker = response.getInvalidationList().getNextMarker();
                 }
             }
-            if(inprogress > 0) {
-                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations in progress", "S3"), inprogress);
+            while(marker != null);
+            if(pending > 0) {
+                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations in progress", "S3"), pending);
             }
-            if(complete) {
-                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations completed", "S3"), summaries.size());
+            if(completed > 0) {
+                return MessageFormat.format(LocaleFactory.localizedString("{0} invalidations completed", "S3"), completed);
             }
             return LocaleFactory.localizedString("None");
         }
