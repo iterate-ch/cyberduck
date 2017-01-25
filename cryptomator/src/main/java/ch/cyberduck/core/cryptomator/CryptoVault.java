@@ -401,7 +401,7 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Upload.class)), session._getFeature(Write.class), this);
             }
             if(type == Directory.class) {
                 return (T) new CryptoDirectoryFeature(session, (Directory) delegate, session._getFeature(Write.class), this);
