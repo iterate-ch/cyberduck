@@ -20,6 +20,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -46,7 +47,7 @@ import synapticloop.b2.response.BaseB2Response;
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
     private static final Logger log = Logger.getLogger(B2SingleUploadService.class);
 
-    private final Write<BaseB2Response> writer;
+    private Write<BaseB2Response> writer;
 
     public B2SingleUploadService(final Write<BaseB2Response> writer) {
         super(writer);
@@ -105,5 +106,11 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
                     MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
                             checksum.algorithm.toString(), expected, checksum.hash));
         }
+    }
+
+    @Override
+    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }
