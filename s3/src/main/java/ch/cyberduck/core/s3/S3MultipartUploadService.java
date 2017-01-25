@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -69,7 +70,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private final S3DefaultMultipartService multipartService;
 
-    private final Write<StorageObject> writer;
+    private Write<StorageObject> writer;
     /**
      * A split smaller than 5M is not allowed
      */
@@ -274,5 +275,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
         });
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }
