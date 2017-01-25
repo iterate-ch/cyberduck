@@ -888,6 +888,7 @@ public abstract class Preferences {
           In seconds
          */
         defaults.put("connection.retry.delay", String.valueOf(0));
+        defaults.put("connection.retry.backoff.enable", String.valueOf(false));
 
         defaults.put("connection.hostname.default", StringUtils.EMPTY);
         /*
