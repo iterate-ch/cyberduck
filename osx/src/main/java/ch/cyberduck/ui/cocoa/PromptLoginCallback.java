@@ -23,13 +23,11 @@ import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -40,6 +38,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.ui.cocoa.controller.InsecureLoginAlertController;
 import ch.cyberduck.ui.cocoa.controller.LoginController;
 
 import org.apache.log4j.Logger;
@@ -67,26 +66,7 @@ public final class PromptLoginCallback implements LoginCallback {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", protocol));
         }
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                alert.setMessageText(title);
-                alert.setInformativeText(message);
-                alert.addButtonWithTitle(continueButton);
-                alert.addButtonWithTitle(disconnectButton);
-                alert.setShowsHelp(true);
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
-                super.loadBundle(alert);
-            }
-
-            @Override
-            protected String help() {
-                return new DefaultProviderHelpService().help(protocol);
-            }
-        };
+        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, protocol);
         int option = alert.beginSheet(parent);
         if(alert.isSuppressed()) {
             // Never show again.
@@ -137,4 +117,5 @@ public final class PromptLoginCallback implements LoginCallback {
         }
         throw new LoginCanceledException();
     }
+
 }
