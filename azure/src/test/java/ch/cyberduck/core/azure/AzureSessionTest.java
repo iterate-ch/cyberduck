@@ -10,7 +10,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -20,6 +25,16 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class AzureSessionTest {
+
+    @Test
+    public void testFeatures() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "test.cyberduck.ch");
+        final Session session = new AzureSession(host);
+        assertNotNull(session.getFeature(AclPermission.class));
+        assertNotNull(session.getFeature(Directory.class));
+        assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(Touch.class));
+    }
 
     @Test
     public void testConnect() throws Exception {
