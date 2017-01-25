@@ -263,15 +263,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(status.isComplete()) {
-            if(file.isFile()) {
-                if(this.options.temporary) {
-                    final Move move = session.getFeature(Move.class);
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Rename file %s to %s", status.getRename().remote, file));
-                    }
-                    move.move(file, status.getDisplayname().remote, status.isExists(), new Delete.DisabledCallback());
-                }
-            }
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = session.getFeature(UnixPermission.class);
                 if(feature != null) {
@@ -312,6 +303,15 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                         // Ignore
                         log.warn(e.getMessage());
                     }
+                }
+            }
+            if(file.isFile()) {
+                if(this.options.temporary) {
+                    final Move move = session.getFeature(Move.class);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
+                    }
+                    move.move(file, status.getDisplayname().remote, status.isExists(), new Delete.DisabledCallback());
                 }
             }
         }
