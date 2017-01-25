@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.worker.Worker;
-
-import java.text.MessageFormat;
+import ch.cyberduck.ui.cocoa.controller.RecursiveAlertController;
 
 public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
 
@@ -42,21 +39,7 @@ public class PromptRecursiveCallback<T> implements Worker.RecursiveCallback<T> {
         if(suppressed) {
             return option;
         }
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                alert.setMessageText(LocaleFactory.localizedString("Apply changes recursively"));
-                alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("Do you want to set {0} on {1} recursively for all contained files?"),
-                        value, directory.getName()));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-                super.loadBundle(alert);
-            }
-        };
+        final AlertController alert = new RecursiveAlertController<T>(value, directory);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;

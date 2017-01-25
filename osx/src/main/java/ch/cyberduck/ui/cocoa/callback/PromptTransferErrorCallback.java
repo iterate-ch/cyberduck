@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,11 +17,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.ui.cocoa.controller.TransferErrorAlertController;
 
 public class PromptTransferErrorCallback implements TransferErrorCallback {
 
@@ -39,20 +38,7 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
         if(suppressed) {
             return !option;
         }
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-                alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-                super.loadBundle(alert);
-            }
-        };
+        final AlertController alert = new TransferErrorAlertController(failure);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;

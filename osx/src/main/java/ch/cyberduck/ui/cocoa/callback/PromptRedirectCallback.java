@@ -1,8 +1,8 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,18 +13,14 @@ package ch.cyberduck.ui.cocoa;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.ch
  */
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.http.RedirectCallback;
+import ch.cyberduck.ui.cocoa.controller.RedirectAlertController;
 
 import org.apache.log4j.Logger;
 
@@ -52,23 +48,12 @@ public class PromptRedirectCallback implements RedirectCallback {
             // Allow if set defaults
             return true;
         }
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setMessageText(LocaleFactory.localizedString("Redirect"));
-                alert.setInformativeText(LocaleFactory.localizedString(String.format("Allow redirect for method %s", method), "Alert"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
-                super.loadBundle(alert);
-            }
-        };
+        final AlertController alert = new RedirectAlertController(method);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }
         return option;
     }
+
 }

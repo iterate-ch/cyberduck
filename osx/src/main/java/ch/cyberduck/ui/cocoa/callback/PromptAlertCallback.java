@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.callback;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -17,22 +17,15 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
-import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
-
-import org.apache.log4j.Logger;
+import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
 public class PromptAlertCallback implements AlertCallback {
-    private static final Logger log = Logger.getLogger(PromptAlertCallback.class);
 
     private final WindowController parent;
     private final NotificationAlertCallback notification = new NotificationAlertCallback();
@@ -46,25 +39,7 @@ public class PromptAlertCallback implements AlertCallback {
         // Send notification
         notification.alert(host, failure, transcript);
         // Run prompt
-        final AlertController alert = new AlertController() {
-            @Override
-            public void loadBundle() {
-                final NSAlert alert = NSAlert.alert();
-                alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
-                alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-                if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-                    alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-                }
-                this.loadBundle(alert);
-            }
-
-            @Override
-            protected String help() {
-                return new DefaultProviderHelpService().help(host.getProtocol());
-            }
-        };
+        final AlertController alert = new BackgroundExceptionAlertController(failure, host);
         switch(alert.beginSheet(parent)) {
             case SheetCallback.ALTERNATE_OPTION:
                 ReachabilityFactory.get().diagnose(host);
@@ -74,4 +49,5 @@ public class PromptAlertCallback implements AlertCallback {
         }
         return false;
     }
+
 }
