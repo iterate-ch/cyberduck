@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Touch;
 
 import org.junit.Test;
 
@@ -41,6 +42,7 @@ public class B2SessionTest {
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(Touch.class));
     }
 
     @Test(expected = LoginFailureException.class)
