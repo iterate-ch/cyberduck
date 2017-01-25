@@ -21,6 +21,8 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.jets3t.service.security.AWSCredentials;
@@ -37,7 +39,7 @@ public class S3SessionCredentialsRetrieverTest {
 
     @Test
     public void testParse() throws Exception {
-        final AWSCredentials c = new S3SessionCredentialsRetriever(new DisabledTranscriptListener(),
+        final AWSCredentials c = new S3SessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
                 .parse(IOUtils.toInputStream("{\n" +
                         "  \"Code\" : \"Success\",\n" +
@@ -56,7 +58,7 @@ public class S3SessionCredentialsRetrieverTest {
     @Test(expected = ConnectionTimeoutException.class)
     @Ignore
     public void testGet() throws Exception {
-        new S3SessionCredentialsRetriever(new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
+        new S3SessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
                 "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
                 .get();
     }
