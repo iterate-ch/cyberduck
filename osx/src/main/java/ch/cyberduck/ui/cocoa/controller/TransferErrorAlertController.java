@@ -17,37 +17,26 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 
-public class BackgroundExceptionAlertController extends AlertController {
+public class TransferErrorAlertController extends AlertController {
     private final BackgroundException failure;
-    private final Host host;
 
-    public BackgroundExceptionAlertController(final BackgroundException failure, final Host host) {
+    public TransferErrorAlertController(final BackgroundException failure) {
         this.failure = failure;
-        this.host = host;
     }
 
     @Override
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
+        alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
         alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-        if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
-            alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
-        }
-        this.loadBundle(alert);
-    }
-
-    @Override
-    protected String help() {
-        return new DefaultProviderHelpService().help(host.getProtocol());
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
+        alert.setShowsSuppressionButton(true);
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Always"));
+        super.loadBundle(alert);
     }
 }

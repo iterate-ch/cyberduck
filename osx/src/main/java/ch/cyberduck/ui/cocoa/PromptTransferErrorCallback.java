@@ -20,7 +20,7 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
+import ch.cyberduck.ui.cocoa.controller.TransferErrorAlertController;
 
 public class PromptTransferErrorCallback implements TransferErrorCallback {
 
@@ -38,12 +38,11 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
         if(suppressed) {
             return !option;
         }
-        final AlertController alert = new BackgroundExceptionAlertController(failure);
+        final AlertController alert = new TransferErrorAlertController(failure);
         option = alert.beginSheet(controller) == SheetCallback.DEFAULT_OPTION;
         if(alert.isSuppressed()) {
             suppressed = true;
         }
         return !option;
     }
-
 }
