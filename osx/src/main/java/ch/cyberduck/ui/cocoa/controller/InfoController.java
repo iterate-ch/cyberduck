@@ -106,7 +106,8 @@ public class InfoController extends ToolbarWindowController {
 
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
 
-    private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
 
     /**
      * Selected files
