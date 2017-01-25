@@ -208,7 +208,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             throws BackgroundException {
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
-                client.setProviderCredentials(new S3SessionCredentialsRetriever(this, host.getProtocol().getContext()).get());
+                client.setProviderCredentials(new S3SessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get());
             }
             catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
