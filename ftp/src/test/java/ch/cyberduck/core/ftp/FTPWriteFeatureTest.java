@@ -12,10 +12,10 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -181,7 +181,7 @@ public class FTPWriteFeatureTest {
         assertEquals(false, new FTPWriteFeature(session).append(
                 new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(f, new TransferStatus());
+        session.getFeature(Touch.class).touch(f, new TransferStatus());
         assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -38,12 +38,14 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -185,6 +187,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == Quota.class) {
             return (T) new DropboxQuotaFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
         }
         return super._getFeature(type);
     }

@@ -29,8 +29,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -59,7 +59,7 @@ public class DAVMoveFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
@@ -96,9 +96,9 @@ public class DAVMoveFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(target, new TransferStatus());
+        session.getFeature(Touch.class).touch(target, new TransferStatus());
         new DAVMoveFeature(session).move(test, target, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         assertTrue(session.getFeature(Find.class).find(target));

@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
@@ -39,7 +38,6 @@ import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -275,9 +273,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == Bulk.class) {
             return (T) new DisabledBulkFeature();
-        }
-        if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(this);
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();

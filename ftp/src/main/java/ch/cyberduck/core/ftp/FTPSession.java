@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.idna.PunycodeConverter;
@@ -46,6 +47,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -350,6 +353,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         }
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);
+        }
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(new DefaultUploadFeature(new FTPWriteFeature(this)));
         }
         return super._getFeature(type);
     }

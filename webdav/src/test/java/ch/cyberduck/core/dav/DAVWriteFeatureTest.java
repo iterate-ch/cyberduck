@@ -14,6 +14,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.http.RedirectCallback;
@@ -22,7 +23,6 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -290,7 +290,7 @@ public class DAVWriteFeatureTest {
         assertFalse(feature.append(
                 new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(test, new TransferStatus());
+        session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

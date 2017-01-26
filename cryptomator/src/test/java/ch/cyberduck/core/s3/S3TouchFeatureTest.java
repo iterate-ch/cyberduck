@@ -117,7 +117,7 @@ public class S3TouchFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature(session), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new S3SingleUploadService(session, new S3WriteFeature(session))), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

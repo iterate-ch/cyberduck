@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -69,7 +70,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     private final Long partSize;
 
     private final Integer concurrency;
-    private final Write<BaseB2Response> writer;
+
+    private Write<BaseB2Response> writer;
 
     public B2LargeUploadService(final B2Session session) {
         this(session, new B2WriteFeature(session), PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
@@ -248,5 +250,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
         });
+    }
+
+    @Override
+    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }
