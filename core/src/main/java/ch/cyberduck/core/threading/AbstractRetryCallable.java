@@ -107,7 +107,9 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
             }
         }, delay);
         // Exponential backoff
-        backoff *= 2;
+        if(preferences.getBoolean("connection.retry.backoff.enable")) {
+            backoff *= 2;
+        }
         pause.await();
         return true;
     }
