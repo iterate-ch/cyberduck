@@ -84,6 +84,9 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 }
                 break;
             }
+            case encoding: {
+//                controller.getSession().getHost().getEncoding()
+            }
         }
         return this.validate(item.action());
     }
@@ -117,7 +120,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(encoding.action())) {
-            return this.isBrowser() && !controller.isActivityRunning();
+            return this.isBrowser();
         }
         else if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {

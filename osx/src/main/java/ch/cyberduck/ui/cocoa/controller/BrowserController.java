@@ -20,7 +20,6 @@ import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
-import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetInvoker;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
@@ -204,7 +203,6 @@ public class BrowserController extends WindowController
     private final PathCache cache
             = new PathCache(preferences.getInteger("browser.cache.size"));
 
-    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
     @Outlet
     protected NSProgressIndicator statusSpinner;
     @Outlet
@@ -254,8 +252,6 @@ public class BrowserController extends WindowController
     @Delegate
     private AbstractTableDelegate<Host> bookmarkTableDelegate;
     @Outlet
-    private NSComboBox quickConnectPopup;
-    @Outlet
     private NSSearchField searchField;
     @Outlet
     private NSButton editBookmarkButton;
@@ -269,8 +265,6 @@ public class BrowserController extends WindowController
     private NSSegmentedControl upButton;
     @Outlet
     private NSPopUpButton pathPopupButton;
-    @Outlet
-    private NSPopUpButton encodingPopup;
     @Outlet
     private NSTextField statusLabel;
     @Outlet
@@ -373,7 +367,6 @@ public class BrowserController extends WindowController
         this.toolbar.setAllowsUserCustomization(true);
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
-        this.window.makeFirstResponder(quickConnectPopup);
         this._updateBrowserColumns(browserListView, browserListViewDelegate);
         this._updateBrowserColumns(browserOutlineView, browserOutlineViewDelegate);
         if(preferences.getBoolean("browser.transcript.open")) {
@@ -427,18 +420,14 @@ public class BrowserController extends WindowController
     private void getFocus() {
         NSView view;
         if(this.getSelectedTabView() == BrowserTab.bookmarks) {
-            view = bookmarkTable;
+            window.makeFirstResponder(bookmarkTable);
         }
         else {
             if(this.isMounted()) {
-                view = this.getSelectedBrowserView();
-            }
-            else {
-                view = quickConnectPopup;
+                window.makeFirstResponder(this.getSelectedBrowserView());
             }
         }
         this.setStatus();
-        window.makeFirstResponder(view);
     }
 
     /**
@@ -1672,41 +1661,12 @@ public class BrowserController extends WindowController
         return bookmarkModel;
     }
 
-    public NSComboBox getQuickConnectPopup() {
-        return quickConnectPopup;
-    }
-
     @Action
-    public void setQuickConnectPopup(NSComboBox quickConnectPopup) {
-        this.quickConnectPopup = quickConnectPopup;
-        this.quickConnectPopup.setTarget(this.id());
-        this.quickConnectPopup.setCompletes(true);
-        this.quickConnectPopup.setAction(Foundation.selector("quickConnectSelectionChanged:"));
-        // Make sure action is not sent twice.
-        this.quickConnectPopup.cell().setSendsActionOnEndEditing(false);
-        this.quickConnectPopup.setUsesDataSource(true);
-        this.quickConnectPopup.setDataSource(quickConnectPopupModel.id());
-        this.quickConnectPopup.setFocusRingType(NSView.NSFocusRingType.NSFocusRingTypeNone.ordinal());
-        notificationCenter.addObserver(this.id(),
-                Foundation.selector("quickConnectWillPopUp:"),
-                NSComboBox.ComboBoxWillPopUpNotification,
-                this.quickConnectPopup);
-        this.quickConnectWillPopUp(null);
-    }
-
-    @Action
-    public void quickConnectWillPopUp(NSNotification notification) {
-        int size = bookmarks.size();
-        quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
-    }
-
-    @Action
-    public void quickConnectSelectionChanged(final ID sender) {
-        String input = quickConnectPopup.stringValue();
+    public void quickConnectSelectionChanged(final NSComboBox sender) {
+        final String input = StringUtils.trim(sender.stringValue());
         if(StringUtils.isBlank(input)) {
             return;
         }
-        input = input.trim();
         // First look for equivalent bookmarks
         for(Host h : bookmarks) {
             if(BookmarkNameProvider.toString(h).equals(input)) {
@@ -2065,35 +2025,12 @@ public class BrowserController extends WindowController
         }
     }
 
-    public NSPopUpButton getEncodingPopup() {
-        return encodingPopup;
-    }
-
-    @Action
-    public void setEncodingPopup(NSPopUpButton encodingPopup) {
-        this.encodingPopup = encodingPopup;
-        this.encodingPopup.setTarget(this.id());
-        this.encodingPopup.setAction(Foundation.selector("encodingButtonClicked:"));
-        this.encodingPopup.removeAllItems();
-        this.encodingPopup.addItemsWithTitles(NSArray.arrayWithObjects(new DefaultCharsetProvider().availableCharsets()));
-        this.encodingPopup.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
-    }
-
-    @Action
-    public void encodingButtonClicked(final NSPopUpButton sender) {
-        this.encodingChanged(sender.titleOfSelectedItem());
-    }
-
     @Action
     public void encodingMenuClicked(final NSMenuItem sender) {
-        this.encodingChanged(sender.title());
-    }
-
-    public void encodingChanged(final String encoding) {
+        final String encoding = sender.representedObject();
         if(null == encoding) {
             return;
         }
-        this.setEncoding(encoding);
         if(this.isMounted()) {
             if(pool.getHost().getEncoding().equals(encoding)) {
                 return;
@@ -2101,13 +2038,6 @@ public class BrowserController extends WindowController
             pool.getHost().setEncoding(encoding);
             this.mount(pool.getHost());
         }
-    }
-
-    /**
-     * @param encoding Character encoding
-     */
-    private void setEncoding(final String encoding) {
-        this.encodingPopup.selectItemWithTitle(encoding);
     }
 
     @Action
@@ -3062,8 +2992,6 @@ public class BrowserController extends WindowController
                                     pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                     // Update status icon
                                     bookmarkTable.setNeedsDisplay();
-                                    // Update character encoding in browser
-                                    setEncoding(bookmark.getEncoding());
                                     // Set the working directory
                                     setWorkdir(workdir);
                                     // Close bookmarks
@@ -3274,7 +3202,7 @@ public class BrowserController extends WindowController
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
             item.setState(this.getFilter() instanceof NullFilter ? NSCell.NSOnState : NSCell.NSOffState);
         }
-        else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
+        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.encoding.action())) {
             if(this.isMounted()) {
                 item.setState(pool.getHost().getEncoding().equalsIgnoreCase(
                         item.title()) ? NSCell.NSOnState : NSCell.NSOffState);
@@ -3370,9 +3298,6 @@ public class BrowserController extends WindowController
         browserListColumnsFactory.clear();
         browserOutlineColumnsFactory.clear();
         bookmarkTableColumnFactory.clear();
-
-        quickConnectPopup.setDelegate(null);
-        quickConnectPopup.setDataSource(null);
 
         archiveMenu.setDelegate(null);
         editMenu.setDelegate(null);
@@ -3643,20 +3568,6 @@ public class BrowserController extends WindowController
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
                         NSIndexSet.indexSetWithIndex(next), false);
             }
-        }
-    }
-
-    private class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
-        @Override
-        public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
-            return new NSInteger(bookmarks.size());
-        }
-
-        @Override
-        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return NSString.stringWithString(
-                    BookmarkNameProvider.toString(bookmarks.get(row.intValue()))
-            );
         }
     }
 
