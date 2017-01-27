@@ -95,4 +95,18 @@ public final class UploadFilterOptions {
         redundancy = enabled;
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UploadFilterOptions{");
+        sb.append("permissions=").append(permissions);
+        sb.append(", acl=").append(acl);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", metadata=").append(metadata);
+        sb.append(", temporary=").append(temporary);
+        sb.append(", encryption=").append(encryption);
+        sb.append(", redundancy=").append(redundancy);
+        sb.append('}');
+        return sb.toString();
+    }
 }
