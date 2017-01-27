@@ -53,7 +53,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
-import static ch.cyberduck.ui.cocoa.toolbar.TransferToolbarFactory.TransferToolbarItem.bandwidth;
 
 public class BrowserToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
 
@@ -526,10 +525,10 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     toolbarMenu.setSubmenu(charsetMenu);
                     item.setMenuFormRepresentation(toolbarMenu);
                     final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(120, 26));
-                    button.setImage(bandwidth.image());
+                    button.setImage(encoding.image());
                     button.setMenu(charsetMenu);
                     button.setTarget(controller.id());
-                    button.setAction(bandwidth.action());
+                    button.setAction(encoding.action());
                     button.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
                     item.setView(button);
                     return item;
