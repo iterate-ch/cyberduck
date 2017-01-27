@@ -65,7 +65,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
                 }
             }
             else {
-                // A new file is created; if the file already exists, it is opened and truncated.
+                // A new file is created; if the file already exists, it is opened and truncated to preserve ownership of file.
                 if(status.isExists()) {
                     if(file.isSymbolicLink()) {
                         // Workaround for #7327
