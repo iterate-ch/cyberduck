@@ -3668,7 +3668,7 @@ public class BrowserController extends WindowController
                                                  final TransferOptions options, final List<TransferItem> downloads) {
             super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
                 @Override
-                public void progress(final TransferProgress status) {
+                public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
                     controller.message(status.getProgress());
                 }
             }, controller, download, options, new TransferPrompt() {

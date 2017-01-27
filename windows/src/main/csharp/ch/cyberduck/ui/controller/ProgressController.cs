@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
             invoke(new SimpleDefaultMainAction(this, d));
         }
 
-        public void start(Transfer t)
+        public void transferDidStart(Transfer t)
         {
             AsyncDelegate d = delegate
             {
@@ -83,7 +83,7 @@ namespace Ch.Cyberduck.Ui.Controller
             invoke(new SimpleDefaultMainAction(this, d));
         }
 
-        public void stop(Transfer t)
+        public void transferDidStop(Transfer t)
         {
             AsyncDelegate d = delegate
             {
@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Controller
             invoke(new SimpleDefaultMainAction(this, d));
         }
 
-        public void progress(TransferProgress tp)
+        public void transferDidProgress(Transfer t, TransferProgress tp)
         {
             Progress(tp.getProgress());
             AsyncDelegate d = delegate

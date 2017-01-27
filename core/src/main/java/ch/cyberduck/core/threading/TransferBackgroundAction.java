@@ -134,13 +134,13 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     public void prepare() throws ConnectionCanceledException {
         super.prepare();
         transfer.start();
-        listener.start(transfer);
+        listener.transferDidStart(transfer);
         timerPool = new ScheduledThreadPool();
         progressTimer = timerPool.repeat(new Runnable() {
             @Override
             public void run() {
                 if(transfer.isReset()) {
-                    listener.progress(meter.getStatus());
+                    listener.transferDidProgress(transfer, meter.getStatus());
                 }
             }
         }, 100L, TimeUnit.MILLISECONDS);
@@ -167,7 +167,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
         super.finish();
         progressTimer.cancel(false);
         transfer.stop();
-        listener.stop(transfer);
+        listener.transferDidStop(transfer);
         timerPool.shutdown();
     }
 

@@ -57,9 +57,9 @@ import ch.cyberduck.core.threading.TransferCollectionBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferListener;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferQueueFactory;
@@ -87,7 +87,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public final class TransferController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation {
+public final class TransferController extends WindowController implements TransferListener, NSToolbar.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(TransferController.class);
 
     private final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
@@ -625,8 +625,33 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * @param transfer Transfer
      */
-    public void start(final Transfer transfer) {
-        this.start(transfer, new TransferOptions());
+    public void transferDidStart(final Transfer transfer) {
+        final ProgressController progress = transferTableModel.getController(transfer);
+        progress.transferDidStart(transfer);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                toolbar.validateVisibleItems();
+            }
+        });
+    }
+
+    @Override
+    public void transferDidStop(final Transfer transfer) {
+        final ProgressController progress = transferTableModel.getController(transfer);
+        progress.transferDidStop(transfer);
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                toolbar.validateVisibleItems();
+            }
+        });
+    }
+
+    @Override
+    public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
+        final ProgressController progress = transferTableModel.getController(transfer);
+        progress.transferDidProgress(transfer, status);
     }
 
     /**
@@ -652,37 +677,7 @@ public final class TransferController extends WindowController implements NSTool
         final TransferBackgroundAction action = new TransferCollectionBackgroundAction(this,
                 null == source ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, source),
                 null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.pooled(this, cache, destination),
-                new TransferAdapter() {
-                    @Override
-                    public void start(final Transfer transfer) {
-                        super.start(transfer);
-                        progress.start(transfer);
-                        invoke(new DefaultMainAction() {
-                            @Override
-                            public void run() {
-                                toolbar.validateVisibleItems();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void stop(final Transfer transfer) {
-                        super.stop(transfer);
-                        progress.stop(transfer);
-                        invoke(new DefaultMainAction() {
-                            @Override
-                            public void run() {
-                                toolbar.validateVisibleItems();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void progress(final TransferProgress status) {
-                        super.progress(status);
-                        progress.progress(status);
-                    }
-                }, progress, transfer.withCache(cache), options) {
+                this, progress, transfer.withCache(cache), options) {
             @Override
             public void init() {
                 super.init();

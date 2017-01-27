@@ -64,6 +64,7 @@ import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
@@ -807,7 +808,7 @@ public class MainController extends BundleController implements NSApplication.De
                     file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), file));
         }
         final TransferController t = TransferControllerFactory.get();
-        t.start(new UploadTransfer(bookmark, roots));
+        t.start(new UploadTransfer(bookmark, roots), new TransferOptions());
     }
 
     /**
@@ -1351,7 +1352,7 @@ public class MainController extends BundleController implements NSApplication.De
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())));
+                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {

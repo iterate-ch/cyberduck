@@ -23,21 +23,21 @@ public class TransferAdapter implements TransferListener {
     private static final Logger log = Logger.getLogger(TransferAdapter.class);
 
     @Override
-    public void start(final Transfer transfer) {
+    public void transferDidStart(final Transfer transfer) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer %s", transfer));
         }
     }
 
     @Override
-    public void stop(final Transfer transfer) {
+    public void transferDidStop(final Transfer transfer) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Stop transfer %s", transfer));
         }
     }
 
     @Override
-    public void progress(final TransferProgress status) {
+    public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
         if(log.isDebugEnabled()) {
             log.debug(status.toString());
         }

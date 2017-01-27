@@ -42,6 +42,7 @@ import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
@@ -435,7 +436,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     if(!uploads.isEmpty()) {
                         // If anything has been added to the queue, then process the queue
                         final Transfer t = new UploadTransfer(host, uploads);
-                        TransferControllerFactory.get().start(t);
+                        TransferControllerFactory.get().start(t, new TransferOptions());
                     }
                     return true;
                 }

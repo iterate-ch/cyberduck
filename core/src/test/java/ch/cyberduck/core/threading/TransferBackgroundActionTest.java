@@ -123,19 +123,19 @@ public class TransferBackgroundActionTest {
                         new TestLoginConnectionService(), destination, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
                 new TransferListener() {
                     @Override
-                    public void start(final Transfer transfer) {
+                    public void transferDidStart(final Transfer transfer) {
                         assertEquals(t, transfer);
                         start.set(true);
                     }
 
                     @Override
-                    public void stop(final Transfer transfer) {
+                    public void transferDidStop(final Transfer transfer) {
                         assertEquals(t, transfer);
                         stop.set(true);
                     }
 
                     @Override
-                    public void progress(final TransferProgress status) {
+                    public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
                         //
                     }
                 }, t, new TransferOptions());
@@ -181,19 +181,19 @@ public class TransferBackgroundActionTest {
                 new StatelessSessionPool(
                         new TestLoginConnectionService(), destination, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new TransferListener() {
             @Override
-            public void start(final Transfer transfer) {
+            public void transferDidStart(final Transfer transfer) {
                 assertEquals(t, transfer);
                 start.set(true);
             }
 
             @Override
-            public void stop(final Transfer transfer) {
+            public void transferDidStop(final Transfer transfer) {
                 assertEquals(t, transfer);
                 stop.set(true);
             }
 
             @Override
-            public void progress(final TransferProgress status) {
+            public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
                 //
             }
         }, t, new TransferOptions());
