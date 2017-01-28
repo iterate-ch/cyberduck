@@ -119,6 +119,7 @@ public class BackgroundCallableTest {
                     fail();
                 }
                 finish.set(true);
+                super.finish();
             }
 
             @Override
@@ -127,6 +128,7 @@ public class BackgroundCallableTest {
                     fail();
                 }
                 cleanup.set(true);
+                super.cleanup();
             }
 
             @Override
