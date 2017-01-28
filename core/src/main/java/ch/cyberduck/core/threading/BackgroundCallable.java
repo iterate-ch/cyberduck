@@ -71,29 +71,34 @@ public class BackgroundCallable<T> implements Callable<T> {
             return null;
         }
         finally {
-            try {
-                action.finish();
-            }
-            finally {
-                registry.remove(action);
-            }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Invoke cleanup for background action %s", action));
-            }
-            // Invoke the cleanup on the main thread to let the action synchronize the user interface
-            controller.invoke(new ControllerMainAction(controller) {
-                @Override
-                public void run() {
-                    try {
-                        action.cleanup();
-                    }
-                    catch(Exception e) {
-                        log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                    }
+            if(action.isRunning()) {
+                try {
+                    action.finish();
                 }
-            });
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Releasing lock for background runnable %s", action));
+                finally {
+                    registry.remove(action);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Invoke cleanup for background action %s", action));
+                }
+                // Invoke the cleanup on the main thread to let the action synchronize the user interface
+                controller.invoke(new ControllerMainAction(controller) {
+                    @Override
+                    public void run() {
+                        try {
+                            action.cleanup();
+                        }
+                        catch(Exception e) {
+                            log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                        }
+                    }
+                });
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Releasing lock for background runnable %s", action));
+                }
+            }
+            else {
+                log.debug(String.format("Skip running cleanup for stopped action %s", action));
             }
         }
     }
