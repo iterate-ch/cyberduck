@@ -62,8 +62,6 @@ public class BackgroundCallableTest {
 
     @Test
     public void testCallReturnValueFailureRetryDisabled() throws Exception {
-        final Object expected = new Object();
-
         final BackgroundCallable<Object> c = new BackgroundCallable<>(new AbstractBackgroundAction<Object>() {
             final AtomicBoolean exception = new AtomicBoolean();
 
@@ -77,15 +75,79 @@ public class BackgroundCallableTest {
                 finally {
                     exception.set(true);
                 }
-                return expected;
+                return new Object();
+            }
+
+            @Override
+            public boolean alert(final BackgroundException e) {
+                return false;
             }
         }, new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
-                //
+                runnable.run();
             }
         }, new BackgroundActionRegistry());
         assertNull(c.call());
+    }
+
+    @Test
+    public void testCallReturnValueFailureRetryEnabled() throws Exception {
+        final Object expected = new Object();
+        final BackgroundCallable<Object> c = new BackgroundCallable<>(new AbstractBackgroundAction<Object>() {
+            final AtomicBoolean exception = new AtomicBoolean();
+            final AtomicBoolean retry = new AtomicBoolean();
+            final AtomicBoolean finish = new AtomicBoolean();
+            final AtomicBoolean cleanup = new AtomicBoolean();
+
+            @Override
+            public Object run() throws BackgroundException {
+                try {
+                    if(!exception.get()) {
+                        throw new BackgroundException();
+                    }
+                }
+                finally {
+                    exception.set(true);
+                }
+                return expected;
+            }
+
+            @Override
+            public void finish() {
+                if(finish.get()) {
+                    fail();
+                }
+                finish.set(true);
+            }
+
+            @Override
+            public void cleanup() {
+                if(cleanup.get()) {
+                    fail();
+                }
+                cleanup.set(true);
+            }
+
+            @Override
+            public boolean alert(final BackgroundException e) {
+                try {
+                    if(!retry.get()) {
+                        return true;
+                    }
+                }
+                finally {
+                    retry.set(true);
+                }
+                return false;
+            }
+        }, new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+                runnable.run();
+            }
+        }, new BackgroundActionRegistry());
+        assertEquals(expected, c.call());
     }
 
     @Test
@@ -93,7 +155,7 @@ public class BackgroundCallableTest {
         final Object run = new Object();
         final Object finish = new Object();
         final Object cleanup = new Object();
-        final Stack stack = new Stack();
+        final Stack<Object> stack = new Stack<>();
 
         final BackgroundCallable<Object> c = new BackgroundCallable<>(new AbstractBackgroundAction<Object>() {
             @Override
