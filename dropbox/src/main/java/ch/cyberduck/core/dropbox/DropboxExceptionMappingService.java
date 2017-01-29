@@ -38,6 +38,7 @@ import com.dropbox.core.v2.files.*;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class DropboxExceptionMappingService extends AbstractExceptionMappingService<DbxException> {
 
@@ -47,7 +48,19 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         final JsonParser parser = new JsonParser();
         try {
             final JsonObject json = parser.parse(new StringReader(failure.getMessage())).getAsJsonObject();
-            this.append(buffer, StringUtils.replace(json.getAsJsonObject("error").getAsJsonPrimitive(".tag").getAsString(), "_", " "));
+            final JsonObject error = json.getAsJsonObject("error");
+            if(null == error) {
+                this.append(buffer, failure.getMessage());
+            }
+            else {
+                final JsonPrimitive tag = error.getAsJsonPrimitive(".tag");
+                if(null == tag) {
+                    this.append(buffer, failure.getMessage());
+                }
+                else {
+                    this.append(buffer, StringUtils.replace(tag.getAsString(), "_", " "));
+                }
+            }
         }
         catch(JsonParseException e) {
             // Ignore
