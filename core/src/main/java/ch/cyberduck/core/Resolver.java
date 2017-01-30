@@ -29,11 +29,9 @@ import org.apache.log4j.Logger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class Resolver {
@@ -51,7 +49,7 @@ public final class Resolver {
      * @throws ResolveCanceledException If the lookup has been interrupted
      */
     public InetAddress resolve(final String hostname, final CancelCallback callback) throws ResolveFailedException, ResolveCanceledException {
-        final CyclicBarrier signal = new CyclicBarrier(2);
+        final CountDownLatch signal = new CountDownLatch(1);
         final AtomicReference<InetAddress> resolved = new AtomicReference<>();
         final AtomicReference<UnknownHostException> failure = new AtomicReference<>();
         final Thread resolver = threadFactory.newThread(new Runnable() {
@@ -69,27 +67,15 @@ public final class Resolver {
                     failure.set(e);
                 }
                 finally {
-                    try {
-                        signal.await();
-                    }
-                    catch(InterruptedException | BrokenBarrierException e) {
-                        e.printStackTrace();
-                    }
+                    signal.countDown();
                 }
             }
         });
         resolver.start();
-        while(!signal.isBroken()) {
-            try {
-                log.debug(String.format("Waiting for resolving of %s", hostname));
-                // Wait for #run to finish
-                signal.await(500, TimeUnit.MILLISECONDS);
-            }
-            catch(BrokenBarrierException | InterruptedException e) {
-                log.error(String.format("Waiting for resolving of %s", hostname), e);
-                throw new ResolveCanceledException(e);
-            }
-            catch(TimeoutException e) {
+        log.debug(String.format("Waiting for resolving of %s", hostname));
+        // Wait for #run to finish
+        try {
+            while(!signal.await(500, TimeUnit.MILLISECONDS)) {
                 try {
                     callback.verify();
                 }
@@ -97,6 +83,16 @@ public final class Resolver {
                     throw new ResolveCanceledException(c);
                 }
             }
+        }
+        catch(InterruptedException e) {
+            log.error(String.format("Waiting for resolving of %s", hostname), e);
+            throw new ResolveCanceledException(e);
+        }
+        try {
+            callback.verify();
+        }
+        catch(ConnectionCanceledException c) {
+            throw new ResolveCanceledException(c);
         }
         if(null == resolved.get()) {
             if(null == failure.get()) {
