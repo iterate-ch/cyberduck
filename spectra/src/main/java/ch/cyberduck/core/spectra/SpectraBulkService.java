@@ -15,6 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -270,7 +271,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
                         break;
                     }
-                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
+                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname(),
+                            new DisabledCancelCallback()).getHostAddress())) {
                         break;
                     }
                     log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));

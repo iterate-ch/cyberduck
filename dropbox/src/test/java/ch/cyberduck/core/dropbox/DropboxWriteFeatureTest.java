@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -77,7 +78,7 @@ public class DropboxWriteFeatureTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
 
@@ -137,7 +138,7 @@ public class DropboxWriteFeatureTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session, 44000L);
 

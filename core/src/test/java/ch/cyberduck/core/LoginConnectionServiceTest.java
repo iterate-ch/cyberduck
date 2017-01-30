@@ -34,10 +34,10 @@ public class LoginConnectionServiceTest {
                         return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
                     }
                 });
-        s.check(session, PathCache.empty());
+        s.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
-    @Test(expected = ResolveFailedException.class)
+    @Test
     public void testConnectDnsFailure() throws Exception {
         final Session session = new NullSession(new Host(new TestProtocol(), "unknownhost.local", new Credentials("user", "p"))) {
             @Override
@@ -55,7 +55,7 @@ public class LoginConnectionServiceTest {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         try {
-            s.check(session, PathCache.empty());
+            s.check(session, PathCache.empty(), new DisabledCancelCallback());
             fail();
         }
         catch(ResolveFailedException e) {
@@ -63,7 +63,18 @@ public class LoginConnectionServiceTest {
             assertEquals("DNS lookup for unknownhost.local failed. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.", e.getDetail());
             assertEquals(UnknownHostException.class, e.getCause().getClass());
             assertEquals(Session.State.closed, session.getState());
-            throw e;
+        }
+        try {
+            s.check(new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
+                @Override
+                public boolean isConnected() {
+                    return false;
+                }
+            }, PathCache.empty(), new DisabledCancelCallback());
+            fail();
+        }
+        catch(LoginCanceledException e) {
+
         }
     }
 
@@ -71,7 +82,7 @@ public class LoginConnectionServiceTest {
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty());
+        s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -99,8 +110,7 @@ public class LoginConnectionServiceTest {
                 return "a";
             }
         }, new DisabledProgressListener(), new DisabledTranscriptListener());
-        final Host host = new Host(new TestProtocol(), "localhost", new Credentials("user", ""));
-        final Session session = new NullSession(host) {
+        final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
             public Void connect(final HostKeyCallback key) throws BackgroundException {
                 connected.set(true);
@@ -126,7 +136,7 @@ public class LoginConnectionServiceTest {
             }
         };
         try {
-            s.check(session, PathCache.empty());
+            s.check(session, PathCache.empty(), new DisabledCancelCallback());
         }
         finally {
             assertTrue(keychain.get());
