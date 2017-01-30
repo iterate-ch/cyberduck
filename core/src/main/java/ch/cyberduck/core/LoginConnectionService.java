@@ -111,7 +111,7 @@ public class LoginConnectionService implements ConnectionService {
                             "Login {0} with username and password", "Credentials"), bookmark.getHostname()),
                     new LoginOptions(bookmark.getProtocol()));
         }
-        this.connect(session, cache, null);
+        this.connect(session, cache, callback);
         return true;
     }
 
