@@ -52,18 +52,22 @@ public class LocalSession extends Session<FileSystem> {
 
     @Override
     protected FileSystem connect(final HostKeyCallback key) throws BackgroundException {
-        client = FileSystems.getDefault();
-        return client;
+        return FileSystems.getDefault();
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return listService.list(directory, listener);
+        return new LocalListService(this).list(directory, listener);
     }
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
-        listService = new LocalListService(this);
+        //
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        //
     }
 
     @Override
