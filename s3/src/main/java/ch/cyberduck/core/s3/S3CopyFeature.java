@@ -20,14 +20,18 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 
+import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
 public class S3CopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(S3CopyFeature.class);
 
     private final S3Session session;
 
@@ -53,7 +57,13 @@ public class S3CopyFeature implements Copy {
                 this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
             }
             else {
-                final Acl acl = accessControlListFeature.getPermission(source);
+                Acl acl = Acl.EMPTY;
+                try {
+                    acl = accessControlListFeature.getPermission(source);
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure %s", e.getDetail()));
+                }
                 this.copy(source, copy, storageClass, encryption, acl);
             }
         }
