@@ -83,7 +83,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         super.prepare();
         this.message(this.getActivity());
     }

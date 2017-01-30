@@ -35,40 +35,12 @@ public class BackgroundCallable<T> implements Callable<T> {
             // Canceled action yields no result
             return null;
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prepare background action %s", action));
+        }
+        action.prepare();
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Prepare background action %s", action));
-            }
-            action.prepare();
-            // Execute the action of the runnable
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Call background action %s", action));
-            }
-            return action.call();
-        }
-        catch(ConnectionCanceledException e) {
-            // Do not report as failed
-            log.warn(String.format("Connection canceled for background task %s", action));
-            // Canceled action yields no result
-            return null;
-        }
-        catch(BackgroundException e) {
-            this.failure(client, e);
-            // If there was any failure, display the summary now
-            if(action.alert(e)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Retry background action %s", action));
-                }
-                // Retry
-                return this.call();
-            }
-            // Failed action yields no result
-            return null;
-        }
-        catch(Exception e) {
-            this.failure(client, e);
-            // Failed action yields no result
-            return null;
+            return this.run();
         }
         finally {
             try {
@@ -95,6 +67,40 @@ public class BackgroundCallable<T> implements Callable<T> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Releasing lock for background runnable %s", action));
             }
+        }
+    }
+
+    protected T run() {
+        try {
+            // Execute the action of the runnable
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Call background action %s", action));
+            }
+            return action.call();
+        }
+        catch(ConnectionCanceledException e) {
+            // Do not report as failed
+            log.warn(String.format("Connection canceled for background task %s", action));
+            // Canceled action yields no result
+            return null;
+        }
+        catch(BackgroundException e) {
+            this.failure(client, e);
+            // If there was any failure, display the summary now
+            if(action.alert(e)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Retry background action %s", action));
+                }
+                // Retry
+                return this.run();
+            }
+            // Failed action yields no result
+            return null;
+        }
+        catch(Exception e) {
+            this.failure(client, e);
+            // Failed action yields no result
+            return null;
         }
     }
 
