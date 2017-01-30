@@ -18,23 +18,35 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 public interface ConnectionService {
 
     /**
-     * Prompt for credentials and connect to server if not already connected
+     * Assert that the connection to the remote host is still alive and opens connection if needed.
+     * Prompts for credentials and connect to server if not already connected.
+     *
+     * @param session  Session
+     * @param cache    Cache
+     * @param callback Cancel
+     * @return True if new connection was opened. False if connection is reused.
+     * @throws BackgroundException If opening connection fails
      */
-    boolean check(Session<?> session, Cache<Path> cache) throws BackgroundException;
+    boolean check(Session<?> session, Cache<Path> cache, final CancelCallback callback) throws BackgroundException;
 
     /**
      * Open connection
+     *
+     * @param session  Connection
+     * @param cache    Directory cache
+     * @param callback Cancel
      */
-    void connect(Session<?> session, Cache<Path> cache) throws BackgroundException;
-
-    void close(Session<?> session);
+    void connect(Session<?> session, Cache<Path> cache, final CancelCallback callback) throws BackgroundException;
 
     /**
-     * Cancel blocking connect operation if any
+     * Disconnect
+     *
+     * @param session Connection
      */
-    void cancel();
+    void close(Session<?> session);
 }
