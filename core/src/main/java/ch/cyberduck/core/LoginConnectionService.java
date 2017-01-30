@@ -185,7 +185,7 @@ public class LoginConnectionService implements ConnectionService {
             }
             else {
                 // Reconnect and next attempt with updated credentials
-                this.connect(session, cache, null);
+                this.connect(session, cache, callback);
             }
         }
     }
