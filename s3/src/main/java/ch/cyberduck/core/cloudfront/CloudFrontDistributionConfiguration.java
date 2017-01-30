@@ -415,9 +415,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         pending++;
                     }
                 }
-                if(response.getInvalidationList().isTruncated()) {
-                    marker = response.getInvalidationList().getNextMarker();
-                }
+                marker = response.getInvalidationList().getNextMarker();
             }
             while(marker != null);
             if(pending > 0) {
