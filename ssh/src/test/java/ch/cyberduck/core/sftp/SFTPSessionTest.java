@@ -209,7 +209,7 @@ public class SFTPSessionTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            login.check(session, PathCache.empty());
+            login.check(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
