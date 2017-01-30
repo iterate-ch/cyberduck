@@ -20,7 +20,9 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Encryption;
 
@@ -53,7 +55,13 @@ public class S3CopyFeature implements Copy {
                 this.copy(source, copy, storageClass, encryption, Acl.EMPTY);
             }
             else {
-                final Acl acl = accessControlListFeature.getPermission(source);
+                final Acl acl;
+                try {
+                    acl = accessControlListFeature.getPermission(source);
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    acl = Acl.EMPTY;
+                }
                 this.copy(source, copy, storageClass, encryption, acl);
             }
         }

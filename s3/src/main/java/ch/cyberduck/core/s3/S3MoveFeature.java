@@ -18,12 +18,15 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Move;
@@ -75,7 +78,14 @@ public class S3MoveFeature implements Move {
                 }
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {
-                    destination.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(source)));
+                    final Acl acl;
+                    try {
+                        acl = accessControlListFeature.getPermission(source);
+                    }
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        acl = Acl.EMPTY;
+                    }
+                    destination.setAcl(accessControlListFeature.convert(acl));
                 }
                 // Moving the object retaining the metadata of the original.
                 final Map<String, Object> headers = session.getClient().copyObject(

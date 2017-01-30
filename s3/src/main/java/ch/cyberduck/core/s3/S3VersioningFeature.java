@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -180,7 +181,14 @@ public class S3VersioningFeature implements Versioning {
                     destination.setAcl(null);
                 }
                 else {
-                    destination.setAcl(accessControlListFeature.convert(accessControlListFeature.getPermission(file)));
+                    final Acl acl;
+                    try {
+                        acl = accessControlListFeature.getPermission(file);
+                    }
+                    catch(AccessDeniedException | InteroperabilityException e) {
+                        acl = Acl.EMPTY;
+                    }
+                    destination.setAcl(accessControlListFeature.convert(acl));
                 }
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
                         containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
