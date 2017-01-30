@@ -401,7 +401,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             int completed = 0;
             String marker = null;
             do {
-                final ListInvalidationsResult response = client.listInvalidations(new ListInvalidationsRequest(distribution.getId()).withMarker(marker));
+                final ListInvalidationsResult response = client.listInvalidations(new ListInvalidationsRequest(distribution.getId())
+                        .withMaxItems(String.valueOf(1000))
+                        .withMarker(marker));
                 for(InvalidationSummary s : response.getInvalidationList().getItems()) {
                     // When the invalidation batch is finished, the status is Completed.
                     if("Completed".equals(s.getStatus())) {
@@ -413,9 +415,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                         pending++;
                     }
                 }
-                if(response.getInvalidationList().isTruncated()) {
-                    marker = response.getInvalidationList().getNextMarker();
-                }
+                marker = response.getInvalidationList().getNextMarker();
             }
             while(marker != null);
             if(pending > 0) {
