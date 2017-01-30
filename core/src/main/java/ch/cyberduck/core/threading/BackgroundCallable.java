@@ -35,11 +35,43 @@ public class BackgroundCallable<T> implements Callable<T> {
             // Canceled action yields no result
             return null;
         }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prepare background action %s", action));
+        }
+        action.prepare();
         try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Prepare background action %s", action));
+            return this.run();
+        }
+        finally {
+            try {
+                action.finish();
             }
-            action.prepare();
+            finally {
+                registry.remove(action);
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Invoke cleanup for background action %s", action));
+            }
+            // Invoke the cleanup on the main thread to let the action synchronize the user interface
+            controller.invoke(new ControllerMainAction(controller) {
+                @Override
+                public void run() {
+                    try {
+                        action.cleanup();
+                    }
+                    catch(Exception e) {
+                        log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                    }
+                }
+            });
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Releasing lock for background runnable %s", action));
+            }
+        }
+    }
+
+    protected T run() {
+        try {
             // Execute the action of the runnable
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Call background action %s", action));
@@ -60,7 +92,7 @@ public class BackgroundCallable<T> implements Callable<T> {
                     log.debug(String.format("Retry background action %s", action));
                 }
                 // Retry
-                return this.call();
+                return this.run();
             }
             // Failed action yields no result
             return null;
@@ -69,37 +101,6 @@ public class BackgroundCallable<T> implements Callable<T> {
             this.failure(client, e);
             // Failed action yields no result
             return null;
-        }
-        finally {
-            if(action.isRunning()) {
-                try {
-                    action.finish();
-                }
-                finally {
-                    registry.remove(action);
-                }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Invoke cleanup for background action %s", action));
-                }
-                // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                controller.invoke(new ControllerMainAction(controller) {
-                    @Override
-                    public void run() {
-                        try {
-                            action.cleanup();
-                        }
-                        catch(Exception e) {
-                            log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
-                        }
-                    }
-                });
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Releasing lock for background runnable %s", action));
-                }
-            }
-            else {
-                log.debug(String.format("Skip running cleanup for stopped action %s", action));
-            }
         }
     }
 

@@ -65,6 +65,7 @@ public class BackgroundCallableTest {
 
     @Test
     public void testCallReturnValueFailureRetryDisabled() throws Exception {
+        final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
         final Object cleanup = new Object();
@@ -72,6 +73,12 @@ public class BackgroundCallableTest {
 
         final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
             final AtomicBoolean exception = new AtomicBoolean();
+
+            @Override
+            public void prepare() {
+                stack.push(prepare);
+                super.prepare();
+            }
 
             @Override
             public Object run() throws BackgroundException {
@@ -113,14 +120,16 @@ public class BackgroundCallableTest {
         assertNull(c.call());
         assertFalse(action.isRunning());
         assertFalse(action.isCanceled());
-        assertEquals(3, stack.size());
+        assertEquals(4, stack.size());
         assertEquals(cleanup, stack.pop());
         assertEquals(finish, stack.pop());
         assertEquals(run, stack.pop());
+        assertEquals(prepare, stack.pop());
     }
 
     @Test
     public void testCallReturnValueFailureRetryEnabled() throws Exception {
+        final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
         final Object cleanup = new Object();
@@ -129,9 +138,15 @@ public class BackgroundCallableTest {
         final Object expected = new Object();
         final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
             final AtomicBoolean exception = new AtomicBoolean();
-            final AtomicBoolean retry = new AtomicBoolean();
-            final AtomicBoolean finish = new AtomicBoolean();
-            final AtomicBoolean cleanup = new AtomicBoolean();
+            final AtomicBoolean retry_a = new AtomicBoolean();
+            final AtomicBoolean finish_a = new AtomicBoolean();
+            final AtomicBoolean cleanup_a = new AtomicBoolean();
+
+            @Override
+            public void prepare() {
+                stack.push(prepare);
+                super.prepare();
+            }
 
             @Override
             public Object run() throws BackgroundException {
@@ -150,32 +165,32 @@ public class BackgroundCallableTest {
             @Override
             public void finish() {
                 stack.push(finish);
-                if(finish.get()) {
+                if(finish_a.get()) {
                     fail();
                 }
-                finish.set(true);
+                finish_a.set(true);
                 super.finish();
             }
 
             @Override
             public void cleanup() {
                 stack.push(cleanup);
-                if(cleanup.get()) {
+                if(cleanup_a.get()) {
                     fail();
                 }
-                cleanup.set(true);
+                cleanup_a.set(true);
                 super.cleanup();
             }
 
             @Override
             public boolean alert(final BackgroundException e) {
                 try {
-                    if(!retry.get()) {
+                    if(!retry_a.get()) {
                         return true;
                     }
                 }
                 finally {
-                    retry.set(true);
+                    retry_a.set(true);
                 }
                 return false;
             }
@@ -189,20 +204,29 @@ public class BackgroundCallableTest {
         assertEquals(expected, c.call());
         assertFalse(action.isRunning());
         assertFalse(action.isCanceled());
-        assertEquals(3, stack.size());
+        assertEquals(5, stack.size());
         assertEquals(cleanup, stack.pop());
         assertEquals(finish, stack.pop());
         assertEquals(run, stack.pop());
+        assertEquals(run, stack.pop());
+        assertEquals(prepare, stack.pop());
     }
 
     @Test
     public void testCallInvokeCleanup() throws Exception {
+        final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
         final Object cleanup = new Object();
         final Stack<Object> stack = new Stack<>();
 
         final BackgroundCallable<Object> c = new BackgroundCallable<>(new AbstractBackgroundAction<Object>() {
+            @Override
+            public void prepare() {
+                stack.push(prepare);
+                super.prepare();
+            }
+
             @Override
             public Object run() throws BackgroundException {
                 stack.push(run);
@@ -225,9 +249,10 @@ public class BackgroundCallableTest {
             }
         }, new BackgroundActionRegistry());
         assertSame(run, c.call());
-        assertEquals(3, stack.size());
+        assertEquals(4, stack.size());
         assertEquals(cleanup, stack.pop());
         assertEquals(finish, stack.pop());
         assertEquals(run, stack.pop());
+        assertEquals(prepare, stack.pop());
     }
 }
