@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -56,7 +57,7 @@ public class DefaultSessionPoolTest {
     public void testConnectRefuse() throws Exception {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 throw new ConnectionRefusedException("t", new RuntimeException());
             }
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
@@ -70,7 +71,7 @@ public class DefaultSessionPoolTest {
         final Host bookmark = new Host(new TestProtocol());
         final TestLoginConnectionService connect = new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         };
@@ -100,7 +101,7 @@ public class DefaultSessionPoolTest {
         final Host bookmark = new Host(new TestProtocol());
         final TestLoginConnectionService connect = new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         };

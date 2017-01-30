@@ -26,6 +26,7 @@ import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {
@@ -63,7 +64,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {
