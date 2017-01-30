@@ -558,7 +558,7 @@ public class DAVSessionTest {
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        s.check(session, PathCache.empty());
+        s.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test
