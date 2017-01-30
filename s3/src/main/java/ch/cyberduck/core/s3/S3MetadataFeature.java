@@ -78,12 +78,12 @@ public class S3MetadataFeature implements Headers {
                 target.replaceAllMetadata(new HashMap<String, Object>(metadata));
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {
-                    final Acl acl;
+                    Acl acl = Acl.EMPTY;
                     try {
                         acl = accessControlListFeature.getPermission(file);
                     }
                     catch(AccessDeniedException | InteroperabilityException e) {
-                        acl = Acl.EMPTY;
+                        log.warn(String.format("Ignore failure %s", e.getDetail()));
                     }
                     target.setAcl(accessControlListFeature.convert(acl));
                 }

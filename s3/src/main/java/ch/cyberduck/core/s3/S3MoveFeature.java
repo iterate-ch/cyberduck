@@ -78,12 +78,12 @@ public class S3MoveFeature implements Move {
                 }
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {
-                    final Acl acl;
+                    Acl acl = Acl.EMPTY;
                     try {
                         acl = accessControlListFeature.getPermission(source);
                     }
                     catch(AccessDeniedException | InteroperabilityException e) {
-                        acl = Acl.EMPTY;
+                        log.warn(String.format("Ignore failure %s", e.getDetail()));
                     }
                     destination.setAcl(accessControlListFeature.convert(acl));
                 }

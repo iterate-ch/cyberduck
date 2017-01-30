@@ -181,12 +181,12 @@ public class S3VersioningFeature implements Versioning {
                     destination.setAcl(null);
                 }
                 else {
-                    final Acl acl;
+                    Acl acl = Acl.EMPTY;
                     try {
                         acl = accessControlListFeature.getPermission(file);
                     }
                     catch(AccessDeniedException | InteroperabilityException e) {
-                        acl = Acl.EMPTY;
+                        log.warn(String.format("Ignore failure %s", e.getDetail()));
                     }
                     destination.setAcl(accessControlListFeature.convert(acl));
                 }
