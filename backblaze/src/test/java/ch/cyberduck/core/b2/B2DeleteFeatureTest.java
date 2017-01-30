@@ -64,7 +64,7 @@ public class B2DeleteFeatureTest {
                         )));
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file, new TransferStatus());
@@ -81,7 +81,7 @@ public class B2DeleteFeatureTest {
                         )));
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(file);

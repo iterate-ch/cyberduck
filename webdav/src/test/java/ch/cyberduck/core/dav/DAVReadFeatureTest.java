@@ -71,7 +71,7 @@ public class DAVReadFeatureTest {
         final DAVSession session = new DAVSession(host);
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus() {
@@ -96,7 +96,7 @@ public class DAVReadFeatureTest {
         final DAVSession session = new DAVSession(host);
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        service.connect(session, PathCache.empty());
+        service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         // Unknown length in status
         final TransferStatus status = new TransferStatus();

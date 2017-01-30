@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -68,7 +69,7 @@ public class DriveSessionTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -101,7 +102,7 @@ public class DriveSessionTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

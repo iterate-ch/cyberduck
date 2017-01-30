@@ -36,8 +36,7 @@ public interface ConnectionService {
 
     /**
      * Open connection
-     *
-     * @param session  Connection
+     *  @param session  Connection
      * @param cache    Directory cache
      * @param callback Cancel
      */

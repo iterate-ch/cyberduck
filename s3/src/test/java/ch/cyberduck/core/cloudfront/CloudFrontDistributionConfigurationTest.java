@@ -129,7 +129,7 @@ public class CloudFrontDistributionConfigurationTest {
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword(System.getProperties().getProperty("s3.secret"));
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         host.getCredentials().setPassword(null);
         assertNull(host.getCredentials().getPassword());

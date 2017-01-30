@@ -146,7 +146,7 @@ public class S3SessionTest {
                 p.set(true);
                 credentials.setPassword(System.getProperties().getProperty("s3.secret"));
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(p.get());
         session.close();
     }
@@ -304,7 +304,7 @@ public class S3SessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(verified.get());
         session.close();
     }
