@@ -28,9 +28,21 @@ public class BackgroundExceptionAlertController extends AlertController {
     private final BackgroundException failure;
     private final Host host;
 
+    public final String defaultButton;
+    public final String cancelButton;
+
     public BackgroundExceptionAlertController(final BackgroundException failure, final Host host) {
         this.failure = failure;
         this.host = host;
+        this.defaultButton = LocaleFactory.localizedString("Try Again", "Alert");
+        this.cancelButton = LocaleFactory.localizedString("Cancel", "Alert");
+    }
+
+    public BackgroundExceptionAlertController(final BackgroundException failure, final Host host, final String defaultButton, final String cancelButton) {
+        this.failure = failure;
+        this.host = host;
+        this.defaultButton = defaultButton;
+        this.cancelButton = cancelButton;
     }
 
     @Override
@@ -38,8 +50,8 @@ public class BackgroundExceptionAlertController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
         alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Try Again", "Alert"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+        alert.addButtonWithTitle(defaultButton);
+        alert.addButtonWithTitle(cancelButton);
         if(new DefaultFailureDiagnostics().determine(failure) == FailureDiagnostics.Type.network) {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
         }
