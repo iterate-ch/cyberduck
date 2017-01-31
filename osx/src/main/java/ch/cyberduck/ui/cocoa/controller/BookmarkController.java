@@ -225,9 +225,6 @@ public class BookmarkController extends SheetController implements CollectionLis
 
                         @Override
                         public Boolean run() throws BackgroundException {
-                            if(!preferences.getBoolean("connection.hostname.check")) {
-                                return reachable = true;
-                            }
                             return reachable = ReachabilityFactory.get().isReachable(bookmark);
                         }
 

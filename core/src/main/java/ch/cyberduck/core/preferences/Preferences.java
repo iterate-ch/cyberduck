@@ -892,10 +892,9 @@ public abstract class Preferences {
 
         defaults.put("connection.hostname.default", StringUtils.EMPTY);
         /*
-          Try to resolve the hostname when entered in connection dialog
+          Convert hostname to Punycode
          */
-        defaults.put("connection.hostname.check", String.valueOf(true)); //Check hostname reachability using NSNetworkDiagnostics
-        defaults.put("connection.hostname.idn", String.valueOf(true)); //Convert hostnames to Punycode
+        defaults.put("connection.hostname.idn", String.valueOf(true));
 
         /*
           java.net.preferIPv6Addresses
