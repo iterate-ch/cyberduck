@@ -133,7 +133,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u112</version>
+                                            <version>8u121</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
