@@ -17,29 +17,21 @@ package ch.cyberduck.core.ftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -111,7 +103,11 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.list);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        final Path home = new FTPWorkdirService(session).find();
+        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(directory);
+        assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -127,7 +123,11 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
         list.remove(FTPListService.Command.mlsd);
-        assertTrue(list.list(new Path(new FTPWorkdirService(session).find(), "test.d", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        final Path home = new FTPWorkdirService(session).find();
+        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new FTPDirectoryFeature(session).mkdir(directory);
+        assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -174,13 +174,15 @@ public class FTPListServiceTest {
             }
         });
         final Path directory = new FTPWorkdirService(session).find();
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session))).touch(file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());
         assertTrue(set.get());
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        assertTrue(list.contains(
-                new Path(directory, "test", EnumSet.of(Path.Type.file))));
+        assertTrue(list.contains(file));
         service.list(directory, new DisabledListProgressListener());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
