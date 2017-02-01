@@ -1131,11 +1131,13 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         if(updater.hasUpdatePrivileges()) {
-            final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
-            if(next < System.currentTimeMillis()) {
-                updater.check(true);
+            if(PreferencesFactory.get().getBoolean("update.check")) {
+                final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
+                if(next < System.currentTimeMillis()) {
+                    updater.check(true);
+                }
+                updater.register();
             }
-            updater.register();
         }
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
                 this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
