@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpSession;
@@ -156,6 +157,9 @@ public class OAuth2AuthorizationService {
                 );
             }
             try {
+                if(StringUtils.isBlank(token.getPassword())) {
+                    throw new LoginCanceledException();
+                }
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(token.getPassword())
                         .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
