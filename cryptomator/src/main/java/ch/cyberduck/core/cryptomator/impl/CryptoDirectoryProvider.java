@@ -25,11 +25,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class CryptoDirectoryProvider {
+    private static final Logger log = Logger.getLogger(CryptoDirectoryProvider.class);
 
     private static final String DATA_DIR_NAME = "d";
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
@@ -52,6 +54,9 @@ public class CryptoDirectoryProvider {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
                 cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
+        }
         return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
@@ -70,7 +75,13 @@ public class CryptoDirectoryProvider {
                     final String cleartextName = directory.getName();
                     final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
                     // Read directory id from file
-                    directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+                    try {
+                        directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+                    }
+                    catch(NotfoundException e) {
+                        log.warn(String.format("Missing directory ID for folder %s", directory));
+                        throw e;
+                    }
                 }
                 else {
                     directoryId = directory.attributes().getDirectoryId();
