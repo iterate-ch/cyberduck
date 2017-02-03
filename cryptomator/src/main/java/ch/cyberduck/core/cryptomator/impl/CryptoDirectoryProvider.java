@@ -18,7 +18,9 @@ package ch.cyberduck.core.cryptomator.impl;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,6 +40,9 @@ public class CryptoDirectoryProvider {
 
     private final Path dataRoot;
     private final CryptoVault cryptomator;
+
+    private final RandomStringService random
+            = new UUIDRandomStringService();
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
@@ -65,7 +70,7 @@ public class CryptoDirectoryProvider {
      */
     public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
         if(directory.getType().contains(Path.Type.directory)) {
-            final String directoryId;
+            String directoryId;
             if(dataRoot.getParent().equals(directory)) {
                 directoryId = ROOT_DIR_ID;
             }
@@ -80,7 +85,7 @@ public class CryptoDirectoryProvider {
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Missing directory ID for folder %s", directory));
-                        throw e;
+                        directoryId = random.random();
                     }
                 }
                 else {
