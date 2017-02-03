@@ -38,6 +38,8 @@ public class StatelessSessionPool implements SessionPool {
     private final PathCache cache;
     private final VaultRegistry registry;
 
+    private final Object lock = new Object();
+
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
                                 final VaultRegistry registry) {
         this.connect = connect;
@@ -49,7 +51,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        synchronized(session) {
+        synchronized(lock) {
             connect.check(session, cache, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
@@ -64,7 +66,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        synchronized(session) {
+        synchronized(lock) {
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                 connect.close(conn);
             }
@@ -73,7 +75,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void evict() {
-        synchronized(session) {
+        synchronized(lock) {
             try {
                 session.close();
             }
@@ -88,7 +90,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void shutdown() {
-        synchronized(session) {
+        synchronized(lock) {
             try {
                 session.close();
             }
@@ -103,9 +105,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session.State getState() {
-        synchronized(session) {
-            return session.getState();
-        }
+        return session.getState();
     }
 
     @Override
