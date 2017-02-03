@@ -16,7 +16,9 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -33,6 +35,8 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Session<?> session;
     private final Bulk<R> proxy;
     private final CryptoVault cryptomator;
+    private final RandomStringService random
+            = new UUIDRandomStringService();
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
@@ -46,6 +50,11 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
+            if(!status.isExists()) {
+                if(file.isDirectory()) {
+                    file.attributes().setDirectoryId(random.random());
+                }
+            }
             encrypted.put(cryptomator.encrypt(session, file), status);
             if(cryptomator.contains(file)) {
                 // Write header

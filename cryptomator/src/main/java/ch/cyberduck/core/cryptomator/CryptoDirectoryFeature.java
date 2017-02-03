@@ -16,7 +16,9 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -33,6 +35,8 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private final Session<?> session;
     private final Directory<Reply> proxy;
     private final CryptoVault vault;
+    private final RandomStringService random
+            = new UUIDRandomStringService();
 
     public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
@@ -47,10 +51,13 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+        if(!status.isExists()) {
+            directory.attributes().setDirectoryId(random.random());
+        }
         final Path target = vault.encrypt(session, directory);
         if(vault.contains(directory)) {
             final Path directoryMetafile = vault.encrypt(session, directory, true);
-            new ContentWriter(session).write(directoryMetafile, directoryMetafile.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
+            new ContentWriter(session).write(directoryMetafile, directory.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
             final Path intermediate = target.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
                 session._getFeature(Directory.class).mkdir(intermediate, region, status);
