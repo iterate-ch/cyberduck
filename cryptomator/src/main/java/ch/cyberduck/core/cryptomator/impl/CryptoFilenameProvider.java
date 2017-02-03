@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
 import java.util.EnumSet;
@@ -32,6 +33,7 @@ import com.google.common.io.BaseEncoding;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CryptoFilenameProvider {
+    private static final Logger log = Logger.getLogger(CryptoFilenameProvider.class);
 
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final String LONG_NAME_FILE_EXT = ".lng";
@@ -75,6 +77,9 @@ public class CryptoFilenameProvider {
             mkdir.mkdir(secondLevel);
         }
         new ContentWriter(session).write(metadataFile, longFileNameBytes);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Deflated %s to %s", filename, shortName));
+        }
         return shortName;
     }
 
