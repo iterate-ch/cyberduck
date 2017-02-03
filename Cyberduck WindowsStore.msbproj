@@ -184,6 +184,9 @@
       <PackagePath>$(PackageLayout)\profiles\B2.cyberduckprofile</PackagePath>
     </LayoutFile>
 
+    <LayoutFile Include="$(OutputPath)msvcr100.dll">
+      <PackagePath>$(PackageLayout)\msvcr100.dll</PackagePath>
+    </LayoutFile>
   </ItemGroup>
 
   <Target Name="UsesFrameworkSdk">
