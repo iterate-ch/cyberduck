@@ -82,7 +82,7 @@ public class DriveReadFeature implements Read {
             }
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Download failed", e, file);
+            throw new DriveExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 }
