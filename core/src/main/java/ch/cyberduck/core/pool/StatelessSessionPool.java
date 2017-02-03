@@ -103,9 +103,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session.State getState() {
-        synchronized(session) {
-            return session.getState();
-        }
+        return session.getState();
     }
 
     @Override
