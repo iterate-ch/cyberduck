@@ -66,7 +66,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     @Override
     public void clear() {
         if(log.isInfoEnabled()) {
-            log.info("Close vaults");
+            log.info(String.format("Close %d registered vaults", this.size()));
         }
         this.forEach(Vault::close);
         super.clear();
