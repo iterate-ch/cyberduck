@@ -70,7 +70,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
                     vault.getCryptor().fileHeaderCryptor().decryptHeader(header));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
-            final ThreadPool pool = ThreadPoolFactory.get();
+            final ThreadPool<TransferStatus> pool = ThreadPoolFactory.get();
             try {
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
                     @Override
