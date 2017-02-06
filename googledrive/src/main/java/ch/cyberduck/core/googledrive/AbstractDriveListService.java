@@ -1,7 +1,7 @@
 package ch.cyberduck.core.googledrive;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,25 +36,26 @@ import java.util.EnumSet;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
-public class DriveListService implements ListService {
-    private static final Logger log = Logger.getLogger(DriveListService.class);
+public abstract class AbstractDriveListService implements ListService {
+    private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
     private final DriveSession session;
-
     private final int pagesize;
-
     private final DriveAttributesFinderFeature attributes;
-
     private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
-    public DriveListService(final DriveSession session) {
+    public AbstractDriveListService(final DriveSession session) {
         this(session, PreferencesFactory.get().getInteger("googledrive.list.limit"));
     }
 
-    public DriveListService(final DriveSession session, final int pagesize) {
+    public AbstractDriveListService(final DriveSession session, final int pagesize) {
+        this(session, pagesize, new DriveAttributesFinderFeature(session));
+    }
+
+    public AbstractDriveListService(final DriveSession session, final int pagesize, final DriveAttributesFinderFeature attributes) {
         this.session = session;
         this.pagesize = pagesize;
-        this.attributes = new DriveAttributesFinderFeature(session);
+        this.attributes = attributes;
     }
 
     @Override
@@ -64,10 +65,13 @@ public class DriveListService implements ListService {
             String page = null;
             do {
                 final FileList list = session.getClient().files().list()
-                        .setQ(String.format("'%s' in parents", new DriveFileidProvider(session).getFileid(directory)))
+                        .setQ(this.query(directory))
                         .setPageToken(page)
                         .setFields("nextPageToken, files")
                         .setPageSize(pagesize).execute();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
+                }
                 for(File f : list.getFiles()) {
                     final PathAttributes properties = attributes.toAttributes(f);
                     if(properties == null) {
@@ -90,6 +94,9 @@ public class DriveListService implements ListService {
                 }
                 listener.chunk(directory, children);
                 page = list.getNextPageToken();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Continue with next page token %s", page));
+                }
             }
             while(page != null);
             return children;
@@ -98,4 +105,6 @@ public class DriveListService implements ListService {
             throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
+
+    protected abstract String query(final Path directory) throws BackgroundException;
 }
