@@ -141,7 +141,7 @@ public class S3MultipartWriteFeature implements Write {
         }
 
         @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
+        public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
                 completed.add(new AbstractRetryCallable<MultipartPart>() {
                     @Override
@@ -154,7 +154,7 @@ public class S3MultipartWriteFeature implements Write {
                             switch(session.getSignatureVersion()) {
                                 case AWS4HMACSHA256:
                                     status.setChecksum(S3MultipartWriteFeature.this.checksum()
-                                            .compute(file, new ByteArrayInputStream(b, off, len), status)
+                                            .compute(file, new ByteArrayInputStream(content, off, len), status)
                                     );
                                     break;
                             }
@@ -162,7 +162,7 @@ public class S3MultipartWriteFeature implements Write {
                             try {
                                 session.getClient().putObjectWithRequestEntityImpl(
                                         containerService.getContainer(file).getName(), part,
-                                        new ByteArrayEntity(b, off, len), parameters);
+                                        new ByteArrayEntity(content, off, len), parameters);
                             }
                             catch(ServiceException e) {
                                 throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
