@@ -150,14 +150,15 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new AttributedList<>(Arrays.asList(
-                    new Path("My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                    new Path("Shared with me", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+            final AttributedList<Path> root = new AttributedList<Path>(Arrays.asList(
+                    new Path("Shared", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                     new Path("Starred", EnumSet.of(Path.Type.directory, Path.Type.volume))
             ));
+            root.addAll(new DriveDefaultListService(this).list(directory, listener));
+            return root;
         }
         switch(directory.getName()) {
-            case "Shared with me":
+            case "Shared":
                 return new DriveSharedFolderListService(this).list(directory, listener);
             case "Starred":
                 return new DriveStarredFolderListService(this).list(directory, listener);
