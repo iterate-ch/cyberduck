@@ -152,12 +152,15 @@ public class DriveSession extends HttpSession<Drive> {
         if(directory.isRoot()) {
             return new AttributedList<>(Arrays.asList(
                     new Path("My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                    new Path("Shared with me", EnumSet.of(Path.Type.directory, Path.Type.volume))
+                    new Path("Shared with me", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                    new Path("Starred", EnumSet.of(Path.Type.directory, Path.Type.volume))
             ));
         }
         switch(directory.getName()) {
             case "Shared with me":
                 return new DriveSharedFolderListService(this).list(directory, listener);
+            case "Starred":
+                return new DriveStarredFolderListService(this).list(directory, listener);
             default:
                 return new DriveDefaultListService(this).list(directory, listener);
         }
