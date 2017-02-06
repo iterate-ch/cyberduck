@@ -37,7 +37,7 @@ public class DriveTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return !workdir.isRoot();
+        return true;
     }
 
     @Override
