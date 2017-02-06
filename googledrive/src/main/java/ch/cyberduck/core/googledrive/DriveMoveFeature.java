@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -30,30 +31,25 @@ import com.google.api.services.drive.model.File;
 public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
-
-    private Delete delete;
-    private ListService list;
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public DriveMoveFeature(DriveSession session) {
         this.session = session;
-        this.delete = new DriveDeleteFeature(session);
-        this.list = new DriveListService(session);
     }
 
     @Override
     public boolean isSupported(Path source, final Path target) {
-        return true;
+        return !containerService.isContainer(source);
     }
 
     @Override
     public Move withDelete(final Delete delete) {
-        this.delete = delete;
         return this;
     }
 
     @Override
     public Move withList(final ListService list) {
-        this.list = list;
         return this;
     }
 
