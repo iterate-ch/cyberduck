@@ -47,7 +47,10 @@ public class AzureLoggingFeature implements Logging {
     public LoggingConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
             final ServiceProperties properties = session.getClient().downloadServiceProperties(null, context);
-            final LoggingConfiguration configuration = new LoggingConfiguration(!properties.getLogging().getLogOperationTypes().isEmpty());
+            final LoggingConfiguration configuration = new LoggingConfiguration(
+                    !properties.getLogging().getLogOperationTypes().isEmpty(),
+                    "$logs"
+            );
             // When you have configured Storage Logging to log request data from your storage account, it saves the log data
             // to blobs in a container named $logs in your storage account.
             configuration.setContainers(Collections.singletonList(
