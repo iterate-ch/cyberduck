@@ -36,9 +36,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.security.Security;
-
-import sun.security.mscapi.SunMSCAPI;
 
 public class TerminalPreferences extends MemoryPreferences {
     private static final Logger log = Logger.getLogger(TerminalPreferences.class);
@@ -94,20 +91,9 @@ public class TerminalPreferences extends MemoryPreferences {
 
         switch(Factory.Platform.getDefault()) {
             case mac: {
-                defaults.put("connection.ssl.keystore.type", "KeychainStore");
-                defaults.put("connection.ssl.keystore.provider", "Apple");
-
                 break;
             }
             case windows: {
-                Security.addProvider(new SunMSCAPI());
-                defaults.put("connection.ssl.keystore.type", "Windows-MY");
-                defaults.put("connection.ssl.keystore.provider", "SunMSCAPI");
-
-                // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
-                defaults.put("connection.ssl.securerandom.algorithm", "Windows-PRNG");
-                defaults.put("connection.ssl.securerandom.provider", "SunMSCAPI");
-
                 break;
             }
             case linux: {
