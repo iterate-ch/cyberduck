@@ -15,15 +15,17 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
-import java.util.Collections;
+import org.apache.commons.codec.binary.StringUtils;
+
+import java.io.IOException;
+
+import com.google.api.services.drive.model.File;
 
 public class DriveMoveFeature implements Move {
 
@@ -57,18 +59,32 @@ public class DriveMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        if(file.isDirectory()) {
-            new DriveDirectoryFeature(session).mkdir(renamed);
-            for(Path i : list.list(file, new DisabledListProgressListener())) {
-                this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
+        try {
+            final String fileid = new DriveFileidProvider(session).getFileid(file);
+            if(!StringUtils.equals(file.getName(), renamed.getName())) {
+                // Rename title
+                final File properties = new File();
+                properties.setName(renamed.getName());
+                final File update = session.getClient().files().update(fileid, properties).execute();
             }
-            delete.delete(Collections.singletonList(file),
-                    new DisabledLoginCallback(), callback);
+            // Retrieve the existing parents to remove
+            final StringBuilder previousParents = new StringBuilder();
+            final File reference = session.getClient().files().get(fileid)
+                    .setFields("parents")
+                    .execute();
+            for(String parent : reference.getParents()) {
+                previousParents.append(parent);
+                previousParents.append(',');
+            }
+            // Move the file to the new folder
+            session.getClient().files().update(fileid, null)
+                    .setAddParents(new DriveFileidProvider(session).getFileid(renamed.getParent()))
+                    .setRemoveParents(previousParents.toString())
+                    .setFields("id, parents")
+                    .execute();
         }
-        else {
-            new DriveCopyFeature(session).copy(file, renamed);
-            delete.delete(Collections.singletonList(file),
-                    new DisabledLoginCallback(), callback);
+        catch(IOException e) {
+            throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 }

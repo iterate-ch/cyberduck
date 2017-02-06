@@ -31,6 +31,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -82,8 +83,9 @@ public class DriveCopyFeatureTest {
         new DriveTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveCopyFeature(session).copy(test, copy);
-        assertTrue(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(copy));
+        final Find find = new DefaultFindFeature(session);
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
         new DriveDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

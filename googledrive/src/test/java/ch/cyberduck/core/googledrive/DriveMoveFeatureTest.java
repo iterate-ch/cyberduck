@@ -32,6 +32,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -82,8 +83,9 @@ public class DriveMoveFeatureTest {
         new DriveDirectoryFeature(session).mkdir(folder);
         final Path target = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(test, target, false, new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(target));
+        final Find find = new DefaultFindFeature(session);
+        assertFalse(find.find(test));
+        assertTrue(find.find(target));
         new DriveDeleteFeature(session).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -122,7 +124,7 @@ public class DriveMoveFeatureTest {
         new DriveTouchFeature(session).touch(sourceFile, new TransferStatus());
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.DisabledCallback());
-        final Find find = session.getFeature(Find.class);
+        final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(sourceDirectory));
         assertFalse(find.find(sourceFile));
         assertTrue(find.find(targetDirectory));
