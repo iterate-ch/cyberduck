@@ -57,7 +57,6 @@ public class CryptoDownloadFeature implements Download {
 
     @Override
     public Download withReader(final Read reader) {
-        proxy.withReader(reader);
         return this;
     }
 }

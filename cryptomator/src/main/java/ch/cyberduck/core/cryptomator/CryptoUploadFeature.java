@@ -57,7 +57,6 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
 
     @Override
     public Upload<Reply> withWriter(final Write<Reply> writer) {
-        proxy.withWriter(writer);
         return this;
     }
 }
