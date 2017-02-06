@@ -67,7 +67,7 @@ public abstract class AbstractDriveListService implements ListService {
                 final FileList list = session.getClient().files().list()
                         .setQ(this.query(directory))
                         .setPageToken(page)
-                        .setFields("nextPageToken, files")
+                        .setFields("files(createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink),nextPageToken")
                         .setPageSize(pagesize).execute();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Chunk of %d retrieved", list.getFiles().size()));
