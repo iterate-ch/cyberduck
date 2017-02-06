@@ -91,7 +91,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add listener %s", listener));
         }
-        this.listener = listener;
+        if(null == listener) {
+            this.listener = new DisabledTranscriptListener();
+        }
+        else {
+            this.listener = listener;
+        }
         return this;
     }
 

@@ -155,22 +155,28 @@ public class LoginConnectionService implements ConnectionService {
 
         // The IP address could successfully be determined
         session.withListener(transcript).open(key);
-
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
-                bookmark.getProtocol().getName()));
-
-        // New connection opened
-        notification.notify("Connection opened", bookmark.getHostname());
-
-        // Update last accessed timestamp
-        bookmark.setTimestamp(new Date());
-
         try {
-            this.authenticate(session, cache, callback);
+
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
+                    bookmark.getProtocol().getName()));
+
+            // New connection opened
+            notification.notify("Connection opened", bookmark.getHostname());
+
+            // Update last accessed timestamp
+            bookmark.setTimestamp(new Date());
+
+            try {
+                this.authenticate(session, cache, callback);
+            }
+            catch(BackgroundException e) {
+                this.close(session);
+                throw e;
+            }
         }
-        catch(BackgroundException e) {
-            this.close(session);
-            throw e;
+        finally {
+            // Detach listener
+            session.withListener(null);
         }
     }
 
