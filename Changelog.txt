@@ -6,6 +6,9 @@ https://cyberduck.io/
 - [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
 
+5.3.6 [https://trac.cyberduck.io/milestone/5.3.6
+- [Bugfix] Crash for connections requiring TLS connection handshake (Windows CLI)
+
 5.3.5 [https://trac.cyberduck.io/milestone/5.3.5
 - [Bugfix] Freeze of browser after idle timeout (#9829)
 - [Bugfix] Crash for connections requiring TLS connection handshake (Windows Store)
