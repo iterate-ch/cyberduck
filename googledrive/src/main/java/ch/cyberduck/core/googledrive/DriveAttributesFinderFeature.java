@@ -65,8 +65,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         if(null != f.getExplicitlyTrashed()) {
             if(f.getExplicitlyTrashed()) {
-                log.warn(String.format("Skip file %s", f));
-                return null;
+                // Mark as hidden
+                attributes.setDuplicate(true);
             }
         }
         if(null != f.getSize()) {
