@@ -40,9 +40,6 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        if(file.getType().contains(Path.Type.volume)) {
-            return DriveHomeFinderService.ROOT_FOLDER_ID;
-        }
         final AttributedList<Path> list = session.list(
                 file.getParent(), new DisabledListProgressListener());
         for(Path f : list) {
