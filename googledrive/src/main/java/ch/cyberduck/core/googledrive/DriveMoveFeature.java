@@ -37,7 +37,7 @@ public class DriveMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !source.getType().contains(Path.Type.volume);
+        return !source.getType().contains(Path.Type.placeholder);
     }
 
     @Override
