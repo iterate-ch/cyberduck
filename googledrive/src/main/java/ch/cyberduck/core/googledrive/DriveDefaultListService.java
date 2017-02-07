@@ -15,8 +15,12 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+
+import java.util.EnumSet;
 
 public class DriveDefaultListService extends AbstractDriveListService {
 
@@ -34,5 +38,14 @@ public class DriveDefaultListService extends AbstractDriveListService {
 
     protected String query(final Path directory) throws BackgroundException {
         return String.format("'%s' in parents", new DriveFileidProvider(session).getFileid(directory));
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final AttributedList<Path> list = super.list(directory, listener);
+        if(directory.isRoot()) {
+            list.add(new Path(DriveHomeFinderService.SHARED_FOLDER_NAME, EnumSet.of(Path.Type.directory, Path.Type.placeholder, Path.Type.volume)));
+        }
+        return list;
     }
 }
