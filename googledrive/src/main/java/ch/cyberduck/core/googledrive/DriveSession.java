@@ -54,9 +54,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
@@ -149,22 +147,10 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            final AttributedList<Path> root = new AttributedList<Path>(Arrays.asList(
-                    new Path("Shared", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                    new Path("Starred", EnumSet.of(Path.Type.directory, Path.Type.volume))
-            ));
-            root.addAll(new DriveDefaultListService(this).list(directory, listener));
-            return root;
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
+            return new DriveSharedFolderListService(this).list(directory, listener);
         }
-        switch(directory.getName()) {
-            case "Shared":
-                return new DriveSharedFolderListService(this).list(directory, listener);
-            case "Starred":
-                return new DriveStarredFolderListService(this).list(directory, listener);
-            default:
-                return new DriveDefaultListService(this).list(directory, listener);
-        }
+        return new DriveDefaultListService(this).list(directory, listener);
     }
 
     public Credential getTokens() {
