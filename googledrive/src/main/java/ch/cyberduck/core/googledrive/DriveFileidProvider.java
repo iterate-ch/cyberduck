@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -28,8 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
-    private final PathContainerService containerService
-            = new PathContainerService();
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -43,7 +40,7 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        if(containerService.isContainer(file)) {
+        if(file.getType().contains(Path.Type.volume)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
         final AttributedList<Path> list = session.list(
