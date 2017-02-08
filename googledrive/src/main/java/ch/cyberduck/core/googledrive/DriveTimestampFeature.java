@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -39,8 +38,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
             final String fileid = new DriveFileidProvider(session).getFileid(file);
             final File properties = new File();
             properties.setModifiedTime(new DateTime(modified));
-            properties.setMimeType(new MappingMimeTypeService().getMime(file.getName()));
-            session.getClient().files().update(fileid, properties).execute();
+            session.getClient().files().update(fileid, properties).setFields("modifiedTime").execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
