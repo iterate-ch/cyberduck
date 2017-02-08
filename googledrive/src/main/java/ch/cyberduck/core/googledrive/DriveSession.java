@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
@@ -198,6 +199,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this);
+        }
+        if(type == Headers.class) {
+            return (T) new DriveMetadataFeature(this);
         }
         return super._getFeature(type);
     }
