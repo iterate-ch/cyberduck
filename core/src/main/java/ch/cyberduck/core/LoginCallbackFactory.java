@@ -30,6 +30,10 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
 
+    protected LoginCallbackFactory() {
+        super("factory.logincallback.class");
+    }
+
     public LoginCallback create(final Controller controller) {
         final String clazz = PreferencesFactory.get().getProperty("factory.logincallback.class");
         if(null == clazz) {
