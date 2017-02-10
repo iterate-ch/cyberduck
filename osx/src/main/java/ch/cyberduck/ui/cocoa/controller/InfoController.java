@@ -1168,7 +1168,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(identifier.equals(MetadataColumns.VALUE.name())) {
                         final String value = metadata.get(row.intValue()).getValue();
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : LocaleFactory.localizedString("Multiple files"));
+                        return NSAttributedString.attributedString(value != null ? value : LocaleFactory.localizedString("Multiple files"));
                     }
                 }
                 return null;
