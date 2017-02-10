@@ -129,7 +129,7 @@ public class MainController extends BundleController implements NSApplication.De
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PeriodicUpdateChecker updater
-            = PeriodicUpdateCheckerFactory.get();
+            = PeriodicUpdateCheckerFactory.get(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
