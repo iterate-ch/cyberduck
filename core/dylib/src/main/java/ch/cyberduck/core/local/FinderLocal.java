@@ -238,7 +238,7 @@ public class FinderLocal extends Local {
             }
             final NSEnumerator i = files.objectEnumerator();
             NSObject next;
-            while(((next = i.nextObject()) != null)) {
+            while((next = i.nextObject()) != null) {
                 children.add(new FinderLocal(this, next.toString()));
             }
             return children;
