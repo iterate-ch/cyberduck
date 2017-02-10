@@ -6,6 +6,11 @@ https://cyberduck.io/
 - [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
 
+5.3.7 [https://trac.cyberduck.io/milestone/5.3.7
+- [Bugfix] Include "Shared with me" files (Google Drive)
+- [Bugfix] Unable to add new item to metadata (S3) (#9844)
+- [Bugfix] Crash in periodic background update check (#9845)
+
 5.3.6 [https://trac.cyberduck.io/milestone/5.3.6
 - [Bugfix] Crash for connections requiring TLS connection handshake (Windows CLI)
 
