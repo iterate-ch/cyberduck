@@ -1,7 +1,7 @@
-package ch.cyberduck.core.sparkle;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,11 @@ package ch.cyberduck.core.sparkle;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.core.threading.MainAction;
 
-import org.junit.Test;
-
-public class SparklePeriodicUpdateCheckerTest {
-
-    @Test
-    public void testCheck() throws Exception {
-        final SparklePeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker(new ProxyController());
-        updater.check(false);
+public class SingleThreadController extends AbstractController {
+    @Override
+    public void invoke(final MainAction runnable, final boolean wait) {
+        runnable.run();
     }
 }
