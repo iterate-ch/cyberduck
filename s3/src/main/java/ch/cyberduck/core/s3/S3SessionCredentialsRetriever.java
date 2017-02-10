@@ -71,7 +71,14 @@ public class S3SessionCredentialsRetriever {
         final DAVSession connection = new DAVSession(address, trust, key);
         connection.withListener(transcript).open(new DisabledHostKeyCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus());
-        return this.parse(in);
+        try {
+            final AWSCredentials credentials = this.parse(in);
+            connection.close();
+            return credentials;
+        }
+        finally {
+            connection.removeListener(transcript);
+        }
     }
 
     protected AWSCredentials parse(final InputStream in) throws BackgroundException {

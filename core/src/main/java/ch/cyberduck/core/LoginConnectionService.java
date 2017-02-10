@@ -176,7 +176,7 @@ public class LoginConnectionService implements ConnectionService {
         }
         finally {
             // Detach listener
-            session.withListener(null);
+            session.removeListener(transcript);
         }
     }
 
