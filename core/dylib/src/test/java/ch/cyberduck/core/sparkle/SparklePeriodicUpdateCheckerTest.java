@@ -22,5 +22,6 @@ public class SparklePeriodicUpdateCheckerTest {
     @Test
     public void testCheck() throws Exception {
         final SparklePeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker();
+        updater.check(false);
     }
 }
