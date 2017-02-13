@@ -223,7 +223,7 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
             );
-            source = new StatefulSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
+            source = new StatefulSessionPool(connect, session, cache, transcript, VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -260,7 +260,7 @@ public class Terminal {
                                             new TerminalCertificateStore(reader)
                                     ),
                                     new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))
-                            ), cache, VaultRegistryFactory.create(new TerminalPasswordCallback()))
+                            ), cache, transcript, VaultRegistryFactory.create(new TerminalPasswordCallback()))
                     );
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),

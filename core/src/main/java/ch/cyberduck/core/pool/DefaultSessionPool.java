@@ -18,9 +18,9 @@ package ch.cyberduck.core.pool;
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -53,7 +53,7 @@ public class DefaultSessionPool implements SessionPool {
             = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
-    private final ProgressListener progress;
+    private final TranscriptListener transcript;
     private final PathCache cache;
     private final Host bookmark;
 
@@ -64,12 +64,14 @@ public class DefaultSessionPool implements SessionPool {
     private SessionPool features = SessionPool.DISCONNECTED;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final VaultRegistry registry, final PathCache cache, final ProgressListener progress, final Host bookmark) {
+                              final VaultRegistry registry, final PathCache cache,
+                              final TranscriptListener transcript,
+                              final Host bookmark) {
         this.connect = connect;
         this.registry = registry;
         this.cache = cache;
         this.bookmark = bookmark;
-        this.progress = progress;
+        this.transcript = transcript;
         final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
@@ -82,9 +84,9 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     public DefaultSessionPool(final ConnectionService connect, final VaultRegistry registry, final PathCache cache,
-                              final ProgressListener progress, final Host bookmark, final GenericObjectPool<Session> pool) {
+                              final TranscriptListener transcript, final Host bookmark, final GenericObjectPool<Session> pool) {
         this.connect = connect;
-        this.progress = progress;
+        this.transcript = transcript;
         this.cache = cache;
         this.bookmark = bookmark;
         this.registry = registry;
@@ -148,9 +150,9 @@ public class DefaultSessionPool implements SessionPool {
                         log.info(String.format("Borrowed session %s from pool %s", session, this));
                     }
                     if(DISCONNECTED == features) {
-                        features = new StatelessSessionPool(connect, session, cache, registry);
+                        features = new StatelessSessionPool(connect, session, cache, transcript, registry);
                     }
-                    return session;
+                    return session.withListener(transcript);
                 }
                 catch(IllegalStateException e) {
                     throw new ConnectionCanceledException(e);
@@ -210,7 +212,7 @@ public class DefaultSessionPool implements SessionPool {
                 finally {
                     try {
                         // Activation of this method decrements the active count and attempts to destroy the instance
-                        pool.invalidateObject(session);
+                        pool.invalidateObject(session.removeListener(transcript));
                     }
                     catch(Exception e) {
                         log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
