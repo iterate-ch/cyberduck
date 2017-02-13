@@ -31,29 +31,22 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
-    private Delete delete;
-    private ListService list;
-
     public DriveMoveFeature(DriveSession session) {
         this.session = session;
-        this.delete = new DriveDeleteFeature(session);
-        this.list = new DriveListService(session);
     }
 
     @Override
-    public boolean isSupported(Path source, final Path target) {
-        return true;
+    public boolean isSupported(final Path source, final Path target) {
+        return !source.getType().contains(Path.Type.placeholder);
     }
 
     @Override
     public Move withDelete(final Delete delete) {
-        this.delete = delete;
         return this;
     }
 
     @Override
     public Move withList(final ListService list) {
-        this.list = list;
         return this;
     }
 

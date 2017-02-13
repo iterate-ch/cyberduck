@@ -15,13 +15,16 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 public class DriveHomeFinderService extends DefaultHomeFinderService {
 
-    protected static final String ROOT_FOLDER_ID = "root";
+    public static final String ROOT_FOLDER_ID = "root";
+    public static final String SHARED_FOLDER_NAME
+            = LocaleFactory.localizedString("Shared with me", "Google Drive");
 
     public DriveHomeFinderService(final DriveSession session) {
         super(session);

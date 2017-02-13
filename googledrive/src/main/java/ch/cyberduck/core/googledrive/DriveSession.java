@@ -148,7 +148,10 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new DriveListService(this).list(directory, listener);
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
+            return new DriveSharedFolderListService(this).list(directory, listener);
+        }
+        return new DriveDefaultListService(this).list(directory, listener);
     }
 
     public Credential getTokens() {
