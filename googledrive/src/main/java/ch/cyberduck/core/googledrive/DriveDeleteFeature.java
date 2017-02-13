@@ -34,6 +34,9 @@ public class DriveDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
+            if(file.getType().contains(Path.Type.placeholder)) {
+                continue;
+            }
             callback.delete(file);
             try {
                 session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
