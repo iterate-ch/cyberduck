@@ -352,7 +352,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
-                        //todo attach transcript
                         final Session<?> source = borrow(Connection.source);
                         final Session<?> destination = borrow(Connection.destination);
                         try {
@@ -439,7 +438,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                         }
                         if(complete) {
-                            //todo attach transcript
                             final Session<?> source = borrow(Connection.source);
                             final Session<?> destination = borrow(Connection.destination);
                             try {
