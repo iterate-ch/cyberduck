@@ -65,6 +65,7 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
             log.debug(String.format("Run worker %s", worker));
         }
         final Session<?> target = destination.borrow(this);
+        //todo attach listener
         try {
             result = worker.run(source, target);
         }

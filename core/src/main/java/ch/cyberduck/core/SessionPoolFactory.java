@@ -94,7 +94,8 @@ public class SessionPoolFactory {
                                 controller,
                                 controller),
                         new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                        new KeychainX509KeyManager(bookmark), VaultRegistryFactory.create(keychain, password), cache, controller, bookmark
+                        new KeychainX509KeyManager(bookmark), VaultRegistryFactory.create(keychain, password), cache,
+                        controller, bookmark
                 )
                         .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                         .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
@@ -127,7 +128,7 @@ public class SessionPoolFactory {
                         keychain,
                         controller,
                         controller),
-                session, cache, VaultRegistryFactory.create(keychain, password)
+                session, cache, controller, VaultRegistryFactory.create(keychain, password)
         );
     }
 
@@ -156,7 +157,7 @@ public class SessionPoolFactory {
                         keychain,
                         controller,
                         controller),
-                session, cache, VaultRegistryFactory.create(keychain, password)
+                session, cache, controller, VaultRegistryFactory.create(keychain, password)
         );
     }
 }

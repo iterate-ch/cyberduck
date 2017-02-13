@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -34,6 +35,7 @@ public class StatelessSessionPool implements SessionPool {
 
     private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
+    private final TranscriptListener transcript;
     private final Session<?> session;
     private final PathCache cache;
     private final VaultRegistry registry;
@@ -41,8 +43,9 @@ public class StatelessSessionPool implements SessionPool {
     private final Object lock = new Object();
 
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final PathCache cache,
-                                final VaultRegistry registry) {
+                                final TranscriptListener transcript, final VaultRegistry registry) {
         this.connect = connect;
+        this.transcript = transcript;
         this.session = session.withRegistry(registry);
         this.registry = registry;
         this.cache = cache;
@@ -52,7 +55,7 @@ public class StatelessSessionPool implements SessionPool {
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         synchronized(lock) {
-            connect.check(session, cache, new CancelCallback() {
+            connect.check(session.withListener(transcript), cache, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
                     if(callback.isCanceled()) {
@@ -83,6 +86,7 @@ public class StatelessSessionPool implements SessionPool {
                 log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
             }
             finally {
+                session.removeListener(transcript);
                 registry.clear();
             }
         }
