@@ -89,6 +89,13 @@ public interface Protocol extends Comparable<Protocol> {
                 return false;
             }
         },
+        onedrive {
+            @Override
+            public boolean validate(final Credentials credentials, final LoginOptions options) {
+                // OAuth only requires the project token
+                return true;
+            }
+        },
         irods,
         b2;
 
