@@ -53,6 +53,7 @@
         <module>cli/windows</module>
         <module>cli/osx</module>
         <module>hubic</module>
+        <module>onedrive</module>
     </modules>
 
     <scm>
@@ -508,6 +509,28 @@
         <repository>
             <id>maven.cyberduck.io-snapshots</id>
             <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/snapshots</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven.nuxeo-release</id>
+            <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven.nuxeo-snapshots</id>
+            <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>
