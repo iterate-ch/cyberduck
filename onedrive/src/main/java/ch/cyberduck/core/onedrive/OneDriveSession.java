@@ -35,11 +35,10 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
-import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
@@ -67,7 +66,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 "https://login.live.com/oauth20_token.srf", "https://login.live.com/oauth20_authorize.srf",
                 "372770ba-bb24-436b-bbd4-19bc86310c0e",
                 "mJjWVkmfD9FVHNFTpbrdowv",
-                Collections.singletonList("onedrive.readwrite offline_access"))
+                Arrays.asList("onedrive.readwrite", "offline_access"))
                 .withRedirectUri("https://cyberduck.io/oauth");
 
         return new OneDriveAPI() {
