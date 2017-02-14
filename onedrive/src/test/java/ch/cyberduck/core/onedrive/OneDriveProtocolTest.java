@@ -19,9 +19,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by alive on 14.02.2017.
- */
 public class OneDriveProtocolTest {
     @Test
     public void testPrefix() {

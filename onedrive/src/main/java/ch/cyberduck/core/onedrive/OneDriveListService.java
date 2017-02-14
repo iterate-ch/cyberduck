@@ -27,9 +27,6 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.util.EnumSet;
 
-/**
- * Created by alive on 13.02.2017.
- */
 public class OneDriveListService implements ListService {
 
     private final OneDriveSession session;

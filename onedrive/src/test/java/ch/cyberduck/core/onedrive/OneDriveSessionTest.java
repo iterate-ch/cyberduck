@@ -37,9 +37,6 @@ import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by alive on 14.02.2017.
- */
 @Category(IntegrationTest.class)
 public class OneDriveSessionTest {
     @Test

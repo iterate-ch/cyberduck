@@ -20,9 +20,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
-/**
- * Created by alive on 13.02.2017.
- */
 public class OneDriveProtocol extends AbstractProtocol {
     @Override
     public String getIdentifier() {

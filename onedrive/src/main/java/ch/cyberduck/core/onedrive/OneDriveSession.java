@@ -44,9 +44,6 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 
-/**
- * Created by alive on 13.02.2017.
- */
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
