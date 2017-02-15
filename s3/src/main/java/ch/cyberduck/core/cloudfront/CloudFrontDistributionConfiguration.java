@@ -74,7 +74,9 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.services.cloudfront.AmazonCloudFrontClient;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.services.cloudfront.AmazonCloudFront;
+import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
 import com.amazonaws.services.cloudfront.model.*;
 
 /**
@@ -179,7 +181,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("List %s distributions", method));
                     }
-                    final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+                    final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                             new com.amazonaws.auth.AWSCredentials() {
                                 @Override
                                 public String getAWSAccessKeyId() {
@@ -190,8 +192,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                                 public String getAWSSecretKey() {
                                     return session.getHost().getCredentials().getPassword();
                                 }
-                            }, configuration
-                    );
+                            })
+                    ).withClientConfiguration(configuration).build();
                     if(method.equals(Distribution.STREAMING)) {
                         for(StreamingDistributionSummary d : client.listStreamingDistributions(
                                 new ListStreamingDistributionsRequest()).getStreamingDistributionList().getItems()) {
@@ -367,7 +369,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 log.warn("No keys selected for invalidation");
             }
             else {
-                final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+                final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                         new com.amazonaws.auth.AWSCredentials() {
                             @Override
                             public String getAWSAccessKeyId() {
@@ -378,8 +380,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                             public String getAWSSecretKey() {
                                 return session.getHost().getCredentials().getPassword();
                             }
-                        }, configuration
-                );
+                        })
+                ).withClientConfiguration(configuration).build();
                 client.createInvalidation(new CreateInvalidationRequest(d.getId(),
                         new InvalidationBatch(new Paths().withItems(keys).withQuantity(keys.size()), new AlphanumericRandomStringService().random())
                 ));
@@ -394,7 +396,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * @param distribution Configuration
      * @return Status message from service
      */
-    private String readInvalidationStatus(final AmazonCloudFrontClient client,
+    private String readInvalidationStatus(final AmazonCloudFront client,
                                           final Distribution distribution) throws BackgroundException {
         try {
             int pending = 0;
@@ -444,7 +446,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -455,8 +457,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final StreamingDistributionConfig config = new StreamingDistributionConfig(new AlphanumericRandomStringService().random(),
@@ -483,7 +485,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create new %s distribution", distribution.getMethod().toString()));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -494,8 +496,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         final URI origin = this.getOrigin(container, distribution.getMethod());
         final String originId = String.format("%s-%s", preferences.getProperty("application.name"), new AlphanumericRandomStringService().random());
         final DistributionConfig config = new DistributionConfig(new AlphanumericRandomStringService().random(), distribution.isEnabled())
@@ -533,7 +535,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     protected com.amazonaws.services.cloudfront.model.Distribution createCustomDistribution(final Path container, final Distribution distribution)
             throws ConnectionCanceledException {
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -544,8 +546,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         int httpPort = 80;
         int httpsPort = 443;
         final URI origin = this.getOrigin(container, distribution.getMethod());
@@ -608,7 +610,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -619,8 +621,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
                 .withEnabled(distribution.isEnabled())
@@ -649,7 +651,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -660,8 +662,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         final GetStreamingDistributionConfigResult response = client.getStreamingDistributionConfig(new GetStreamingDistributionConfigRequest(distribution.getId()));
         final StreamingDistributionConfig config = response.getStreamingDistributionConfig()
                 .withEnabled(distribution.isEnabled())
@@ -689,7 +691,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -700,8 +702,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         final GetDistributionConfigResult response = client.getDistributionConfig(new GetDistributionConfigRequest(distribution.getId()));
         final DistributionConfig config = response.getDistributionConfig()
                 .withEnabled(distribution.isEnabled())
@@ -728,7 +730,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -739,8 +741,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         client.deleteDistribution(new DeleteDistributionRequest(distribution.getId(), distribution.getEtag()));
     }
 
@@ -750,7 +752,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
         }
-        final AmazonCloudFrontClient client = new AmazonCloudFrontClient(
+        final AmazonCloudFront client = AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
                 new com.amazonaws.auth.AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
@@ -761,8 +763,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                     public String getAWSSecretKey() {
                         return session.getHost().getCredentials().getPassword();
                     }
-                }, configuration
-        );
+                })
+        ).withClientConfiguration(configuration).build();
         client.deleteStreamingDistribution(new DeleteStreamingDistributionRequest(distribution.getId(), distribution.getEtag()));
     }
 
@@ -774,7 +776,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         return OriginProtocolPolicy.MatchViewer;
     }
 
-    private Distribution readStreamingDistribution(final AmazonCloudFrontClient client,
+    private Distribution readStreamingDistribution(final AmazonCloudFront client,
                                                    final StreamingDistributionSummary summary,
                                                    final Path container,
                                                    final Distribution.Method method) throws BackgroundException {
@@ -814,7 +816,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         }
     }
 
-    private Distribution readDownloadDistribution(final AmazonCloudFrontClient client,
+    private Distribution readDownloadDistribution(final AmazonCloudFront client,
                                                   final DistributionSummary summary,
                                                   final Path container,
                                                   final Distribution.Method method) throws BackgroundException {
