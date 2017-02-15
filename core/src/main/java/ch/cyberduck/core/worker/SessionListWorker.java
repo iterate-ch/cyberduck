@@ -71,6 +71,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
             // Cache directory listing
             cache.put(directory, list);
         }
+        listener.finish(list);
     }
 
     @Override
@@ -82,6 +83,11 @@ public class SessionListWorker extends Worker<AttributedList<Path>> implements L
             throw new ConnectionCanceledException();
         }
         listener.chunk(directory, list);
+    }
+
+    @Override
+    public void finish(final AttributedList<Path> list) {
+        listener.finish(list);
     }
 
     @Override

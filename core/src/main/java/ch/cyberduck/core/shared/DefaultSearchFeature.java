@@ -76,6 +76,11 @@ public class DefaultSearchFeature implements Search {
         }
 
         @Override
+        public void finish(final AttributedList<Path> list) {
+            delegate.finish(list);
+        }
+
+        @Override
         public void message(final String message) {
             delegate.message(message);
         }
