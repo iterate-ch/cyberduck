@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -43,7 +44,7 @@ public class S3WriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -53,7 +54,7 @@ public class S3WriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         });
@@ -71,7 +72,7 @@ public class S3WriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -83,7 +84,7 @@ public class S3WriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         });

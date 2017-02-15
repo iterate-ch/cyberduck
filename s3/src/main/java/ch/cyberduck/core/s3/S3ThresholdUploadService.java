@@ -18,11 +18,11 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -75,7 +75,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }
 

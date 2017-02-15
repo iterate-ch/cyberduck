@@ -15,10 +15,10 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -79,7 +79,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(final PathCache cache) {
+    public AttributesFinder withCache(final Cache<Path> cache) {
         return this;
     }
 }

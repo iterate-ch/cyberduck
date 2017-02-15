@@ -1,10 +1,10 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class S3MultipartWriteFeature implements Write {
+public class S3MultipartWriteFeature implements Write<List<MultipartPart>> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
     private final Preferences preferences
@@ -94,7 +94,7 @@ public class S3MultipartWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());

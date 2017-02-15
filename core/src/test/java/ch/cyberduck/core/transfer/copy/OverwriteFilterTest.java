@@ -1,10 +1,10 @@
 package ch.cyberduck.core.transfer.copy;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,7 +48,7 @@ public class OverwriteFilterTest {
             }
 
             @Override
-            public Find withCache(PathCache cache) {
+            public Find withCache(Cache<Path> cache) {
                 return this;
             }
         };

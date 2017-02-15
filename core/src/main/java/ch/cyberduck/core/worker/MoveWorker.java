@@ -58,7 +58,7 @@ public class MoveWorker extends Worker<List<Path>> {
                 continue;
             }
             final boolean exists;
-            if(cache.containsKey(entry.getValue().getParent())) {
+            if(cache.isCached(entry.getValue().getParent())) {
                 exists = cache.get(entry.getValue().getParent()).contains(entry.getValue());
             }
             else {
