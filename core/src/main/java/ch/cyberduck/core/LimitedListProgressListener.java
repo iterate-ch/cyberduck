@@ -65,8 +65,13 @@ public class LimitedListProgressListener implements ListProgressListener {
         }
     }
 
+    @Override
+    public void finish(final AttributedList<Path> list) {
+        //
+    }
+
     protected void disable() {
-        PreferencesFactory.get().setProperty("browser.list.limit.directory", Integer.MAX_VALUE);
-        PreferencesFactory.get().setProperty("browser.list.limit.container", Integer.MAX_VALUE);
+        preferences.setProperty("browser.list.limit.directory", Integer.MAX_VALUE);
+        preferences.setProperty("browser.list.limit.container", Integer.MAX_VALUE);
     }
 }
