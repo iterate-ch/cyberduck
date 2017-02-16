@@ -63,8 +63,6 @@ public class OneDriveListServiceTest {
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
-            assertNotNull(f.attributes().getVersionId());
-            assertNotNull(f.attributes().getModificationDate());
         }
     }
 }
