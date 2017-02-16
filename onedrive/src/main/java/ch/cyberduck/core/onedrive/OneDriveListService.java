@@ -22,9 +22,9 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveItemIterator;
+import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -48,7 +48,15 @@ public class OneDriveListService implements ListService {
         catch(MalformedURLException e) {
             throw new BackgroundException(e);
         }
-        iterator.forEachRemaining(metadata -> {
+        while(iterator.hasNext()) {
+            final OneDriveItem.Metadata metadata;
+            try {
+                metadata = iterator.next();
+            }
+            catch(OneDriveRuntimeException e) {
+                continue;
+            }
+
             final EnumSet<AbstractPath.Type> type;
             if(metadata.isFile()) {
                 type = EnumSet.of(Path.Type.file);
@@ -57,13 +65,11 @@ public class OneDriveListService implements ListService {
                 type = EnumSet.of(Path.Type.directory);
             }
             else {
-                type = null;
+                continue; // ignore !file && !folder
             }
 
-            final Path child = new Path(directory, metadata.getName(), type);
-            children.add(child);
-        });
-
+            children.add(new Path(directory, metadata.getName(), type));
+        }
         return children;
     }
 }
