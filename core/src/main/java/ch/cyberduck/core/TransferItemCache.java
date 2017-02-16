@@ -19,7 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.transfer.TransferItem;
 
-public class TransferItemCache extends Cache<TransferItem> {
+public class TransferItemCache extends AbstractCache<TransferItem> {
 
     public static TransferItemCache empty() {
         return new TransferItemCache(0) {
@@ -37,5 +37,10 @@ public class TransferItemCache extends Cache<TransferItem> {
     @Override
     protected CacheReference key(final TransferItem object) {
         return new DefaultPathReference(object.remote);
+    }
+
+    @Override
+    public boolean isHidden(final TransferItem item) {
+        return false;
     }
 }

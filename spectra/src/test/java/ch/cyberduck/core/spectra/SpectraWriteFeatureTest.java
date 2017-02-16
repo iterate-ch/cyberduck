@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -142,7 +143,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -154,7 +155,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         });

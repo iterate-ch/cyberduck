@@ -62,7 +62,7 @@ public class PathCacheTest {
 
     @Test
     public void testDisabledCache() throws Exception {
-        Cache<Path> cache = PathCache.empty();
+        PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file, AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file));

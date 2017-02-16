@@ -18,10 +18,10 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
@@ -121,7 +121,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(final PathCache cache) {
+    public AttributesFinder withCache(final Cache<Path> cache) {
         return this;
     }
 }

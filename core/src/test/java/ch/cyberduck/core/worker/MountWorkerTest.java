@@ -1,7 +1,6 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -34,11 +33,11 @@ public class MountWorkerTest {
                 return new AttributedList<>(Collections.emptyList());
             }
         };
-        final Cache<Path> cache = new PathCache(2);
+        final PathCache cache = new PathCache(2);
         final MountWorker worker = new MountWorker(host, cache, new DisabledListProgressListener());
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), worker.run(session));
-        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertFalse(cache.containsKey(new Path("/notfound", EnumSet.of(Path.Type.directory))));
+        assertTrue(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(cache.isCached(new Path("/notfound", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 }
