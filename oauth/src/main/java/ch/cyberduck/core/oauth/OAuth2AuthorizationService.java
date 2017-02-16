@@ -336,6 +336,10 @@ public class OAuth2AuthorizationService {
     }
 
     public boolean isExpired(final Credential tokens) {
+        if(-1 == tokens.getExpirationTimeMilliseconds()) {
+            log.warn(String.format("Unknown expiration time for tokens %s", tokens));
+            return true;
+        }
         return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
     }
 }
