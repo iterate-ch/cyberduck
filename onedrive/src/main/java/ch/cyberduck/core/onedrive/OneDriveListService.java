@@ -23,10 +23,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -34,6 +37,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
 public class OneDriveListService implements ListService {
+    private static final Logger log = Logger.getLogger(OneDriveListService.class);
 
     private final OneDriveSession session;
     private final PathContainerService pathContainerService = new PathContainerService();
@@ -49,29 +53,40 @@ public class OneDriveListService implements ListService {
         // evaluating query
         StringBuilder builder = new StringBuilder();
         builder.append(session.getClient().getBaseURL());
-        builder.append("/drives"); // query drives
 
         if(!directory.isRoot()) {
+            builder.append("/drives"); // query single drive
             Path driveId = pathContainerService.getContainer(directory); // using pathContainerService for retrieving current drive id
-            builder.append(String.format("/%s", driveId.getName())); // append with format /drive-id
+            builder.append(String.format("/%s/root:/", driveId.getName()));
 
             if(!pathContainerService.isContainer(directory)) {
                 // append path to item via pathContainerService with format :/path:
-                builder.append(String.format(":/%s:", pathContainerService.getKey(directory)));
+                try {
+                    builder.append(URLEncoder.encode(pathContainerService.getKey(directory), "UTF-8"));
+                }
+                catch(UnsupportedEncodingException e) {
+                    throw new BackgroundException(e);
+                }
             }
 
-            builder.append("/children");
+            builder.append(":/children");
+        }
+        else {
+            builder.append("/drives"); // query all drives
         }
 
-        Iterator<JsonObject> iterator = null;
+        final URL apiUrl;
         try {
-            iterator = new JsonObjectIteratorPort(session.getClient(), new URL(builder.toString()));
+            apiUrl = new URL(builder.toString());
         }
         catch(MalformedURLException e) {
             throw new BackgroundException(e);
         }
 
+        Iterator<JsonObject> iterator = iterator = new JsonObjectIteratorPort(session.getClient(), apiUrl);
+
         try {
+            log.info(String.format("Querying OneDrive API with %s", apiUrl));
             while(iterator.hasNext()) {
                 try {
                     final String name;
