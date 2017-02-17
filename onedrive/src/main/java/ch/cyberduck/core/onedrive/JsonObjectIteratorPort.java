@@ -30,7 +30,7 @@ import java.util.NoSuchElementException;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
-public class JsonObjectIteratorPort implements Iterator<JsonValue> {
+public class JsonObjectIteratorPort implements Iterator<JsonObject> {
     private final OneDriveAPI api;
     private URL url;
     private boolean hasMorePages;
