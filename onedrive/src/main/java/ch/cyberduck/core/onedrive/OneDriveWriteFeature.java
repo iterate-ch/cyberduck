@@ -18,13 +18,12 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class OneDriveMultipartFeature implements MultipartWrite<Void> {
+public class OneDriveWriteFeature implements Write<Void> {
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         return null;
