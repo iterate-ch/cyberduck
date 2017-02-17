@@ -43,11 +43,6 @@ public class ActionListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public void finish(final AttributedList<Path> list) {
-        //
-    }
-
-    @Override
     public void message(final String message) {
         delegate.message(message);
     }

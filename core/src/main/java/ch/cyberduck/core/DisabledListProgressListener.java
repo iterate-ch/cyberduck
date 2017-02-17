@@ -30,9 +30,4 @@ public class DisabledListProgressListener implements ListProgressListener {
     public void message(final String message) {
         //
     }
-
-    @Override
-    public void finish(final AttributedList<Path> list) {
-        //
-    }
 }

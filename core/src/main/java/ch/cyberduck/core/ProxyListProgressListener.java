@@ -38,11 +38,4 @@ public class ProxyListProgressListener implements ListProgressListener {
             listener.chunk(folder, list);
         }
     }
-
-    @Override
-    public void finish(final AttributedList<Path> list) {
-        for(ListProgressListener listener : proxy) {
-            listener.finish(list);
-        }
-    }
 }

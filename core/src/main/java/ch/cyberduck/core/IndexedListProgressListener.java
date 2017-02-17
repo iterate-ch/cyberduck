@@ -42,10 +42,5 @@ public abstract class IndexedListProgressListener implements ListProgressListene
      * @throws ListCanceledException Interrupt list
      */
     public abstract void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException;
-
-    @Override
-    public void finish(final AttributedList<Path> list) {
-        //
-    }
 }
 
