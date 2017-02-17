@@ -23,12 +23,12 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryTouchFeature implements Touch {
+public class VaultRegistryTouchFeature<R> implements Touch<R> {
     private final DefaultVaultRegistry registry;
     private final Session<?> session;
-    private final Touch proxy;
+    private final Touch<R> proxy;
 
-    public VaultRegistryTouchFeature(final Session<?> session, final Touch proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryTouchFeature(final Session<?> session, final Touch<R> proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -51,7 +51,7 @@ public class VaultRegistryTouchFeature implements Touch {
     }
 
     @Override
-    public Touch withWriter(final Write writer) {
+    public Touch<R> withWriter(final Write<R> writer) {
         proxy.withWriter(writer);
         return this;
     }
