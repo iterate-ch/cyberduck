@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -53,7 +54,7 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                final PathAttributes attributes = new DefaultAttributesFinderFeature(sourceSession).withCache(sourceCache).find(source);
+                final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
                 final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
                 // Compare source with target attributes
                 if(append.size == attributes.getSize()) {

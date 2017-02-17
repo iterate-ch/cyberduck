@@ -16,10 +16,10 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
@@ -43,8 +43,8 @@ public class CryptoSearchFeature implements Search {
     }
 
     @Override
-    public Search withCache(final PathCache cache) {
-        delegate.withCache(cache);
+    public Search withCache(final Cache<Path> cache) {
+        delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
 }

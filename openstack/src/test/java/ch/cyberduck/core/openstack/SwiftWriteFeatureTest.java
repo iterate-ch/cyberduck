@@ -1,6 +1,7 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -158,7 +159,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -168,7 +169,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         }
@@ -205,7 +206,7 @@ public class SwiftWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }

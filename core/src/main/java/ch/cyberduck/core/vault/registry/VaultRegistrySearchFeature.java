@@ -16,10 +16,10 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
@@ -42,7 +42,7 @@ public class VaultRegistrySearchFeature implements Search {
     }
 
     @Override
-    public Search withCache(final PathCache cache) {
+    public Search withCache(final Cache<Path> cache) {
         proxy.withCache(cache);
         return this;
     }
