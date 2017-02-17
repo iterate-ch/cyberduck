@@ -21,15 +21,14 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -61,12 +60,7 @@ public class OneDriveListService implements ListService {
 
             if(!pathContainerService.isContainer(directory)) {
                 // append path to item via pathContainerService with format :/path:
-                try {
-                    builder.append(URLEncoder.encode(pathContainerService.getKey(directory), "UTF-8"));
-                }
-                catch(UnsupportedEncodingException e) {
-                    throw new BackgroundException(e);
-                }
+                builder.append(URIEncoder.encode(pathContainerService.getKey(directory));
             }
 
             builder.append(":/children");
