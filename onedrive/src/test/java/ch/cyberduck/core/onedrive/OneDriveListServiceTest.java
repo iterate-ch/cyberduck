@@ -1,9 +1,10 @@
 package ch.cyberduck.core.onedrive;
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.log4j.Logger;
@@ -12,7 +13,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -35,7 +37,7 @@ public class OneDriveListServiceTest extends OneDriveTest {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new OneDriveListService(getSession()).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
@@ -45,7 +47,7 @@ public class OneDriveListServiceTest extends OneDriveTest {
 
     @Test
     public void testListDriveChildren() throws Exception {
-        ListService listService = new OneDriveListService(getSession());
+        ListService listService = new OneDriveListService(session);
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {

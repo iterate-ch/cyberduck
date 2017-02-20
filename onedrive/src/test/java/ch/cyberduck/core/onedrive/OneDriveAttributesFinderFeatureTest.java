@@ -36,8 +36,8 @@ public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
     @Test
     public void testFind() throws Exception {
         final Path path = new Path("/", EnumSet.of(Path.Type.directory));
-        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(getSession());
-        final AttributedList<Path> list = new OneDriveListService(getSession()).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
+        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
@@ -48,8 +48,8 @@ public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
     @Test
     public void testFindHierarchy() throws Exception {
         final Path path = new Path("/", EnumSet.of(Path.Type.directory));
-        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(getSession());
-        OneDriveListService listService = new OneDriveListService(getSession());
+        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
+        OneDriveListService listService = new OneDriveListService(session);
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {

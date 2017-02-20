@@ -31,22 +31,24 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
 public abstract class OneDriveTest {
-    private OneDriveSession oneDriveSession;
 
-    public OneDriveSession getSession() {
-        return oneDriveSession;
+    protected OneDriveSession session;
+
+    @After
+    public void disconnect() throws Exception {
+        session.close();
     }
 
     @Before
     public void setup() throws Exception {
         final Host host = new Host(new OneDriveProtocol(), getHostname(), getCredentials());
-        oneDriveSession = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+        session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
@@ -70,7 +72,7 @@ public abstract class OneDriveTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(oneDriveSession, PathCache.empty(), new DisabledCancelCallback());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     protected abstract String getHostname();
