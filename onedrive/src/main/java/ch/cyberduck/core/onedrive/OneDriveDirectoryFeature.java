@@ -31,7 +31,7 @@ import java.net.URL;
 
 import com.eclipsesource.json.JsonObject;
 
-public class OneDriveDirectoryFeature implements Directory<Void> {
+public class OneDriveDirectoryFeature implements Directory {
     private static final Logger log = Logger.getLogger(OneDriveDirectoryFeature.class);
 
     private final OneDriveSession session;
@@ -77,7 +77,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Directory<Void> withWriter(final Write<Void> writer) {
+    public Directory withWriter(final Write writer) {
         return null;
     }
 }
