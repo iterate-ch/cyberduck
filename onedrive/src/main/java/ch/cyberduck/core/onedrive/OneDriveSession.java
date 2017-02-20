@@ -37,13 +37,17 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveJsonRequest;
+import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+import com.eclipsesource.json.JsonObject;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
@@ -161,6 +165,17 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return new URL(builder.toString());
         }
         catch(MalformedURLException e) {
+            throw new BackgroundException(e);
+        }
+    }
+
+    public JsonObject getSimpleResult(final URL url) throws BackgroundException {
+        try {
+            OneDriveJsonRequest request = new OneDriveJsonRequest(getClient(), url, "GET");
+            OneDriveJsonResponse response = request.send();
+            return response.getContent();
+        }
+        catch(OneDriveAPIException e) {
             throw new BackgroundException(e);
         }
     }

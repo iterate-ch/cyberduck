@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -28,7 +27,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
@@ -44,6 +42,22 @@ public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
         for(Path f : list) {
             log.info(f);
             attributesFinderFeature.find(f);
+        }
+    }
+
+    @Test
+    public void testFindHierarchy() throws Exception {
+        final Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(getSession());
+        OneDriveListService listService = new OneDriveListService(getSession());
+        final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        assertFalse(list.isEmpty());
+        for(Path f : list) {
+            log.info(f);
+            final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
+            for(Path c : children) {
+                attributesFinderFeature.find(c);
+            }
         }
     }
 
