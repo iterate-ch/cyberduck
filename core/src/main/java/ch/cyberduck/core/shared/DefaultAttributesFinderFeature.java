@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -71,26 +72,34 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        if(list.contains(file)) {
-            return list.get(file).attributes();
+        // List always contains decrypted files
+        final Path decrypted;
+        if(file.getType().contains(AbstractPath.Type.encrypted)) {
+            decrypted = file.attributes().getDecrypted();
+        }
+        else {
+            decrypted = file;
+        }
+        if(list.contains(decrypted)) {
+            return list.get(decrypted).attributes();
         }
         else {
             if(null == file.attributes().getVersionId()) {
                 // Try native implementation
                 final AttributesFinder feature = session.getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw new NotfoundException(file.getAbsolute());
+                    throw new NotfoundException(decrypted.getAbsolute());
                 }
                 final IdProvider id = session.getFeature(IdProvider.class);
                 final String version = id.getFileid(file);
                 if(version == null) {
-                    throw new NotfoundException(file.getAbsolute());
+                    throw new NotfoundException(decrypted.getAbsolute());
                 }
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setVersionId(version);
                 return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
             }
-            throw new NotfoundException(file.getAbsolute());
+            throw new NotfoundException(decrypted.getAbsolute());
         }
     }
 

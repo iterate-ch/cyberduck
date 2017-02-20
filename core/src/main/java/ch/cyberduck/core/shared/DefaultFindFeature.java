@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -59,7 +60,15 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final boolean found = list.contains(file);
+            // List always contains decrypted files
+            final Path decrypted;
+            if(file.getType().contains(AbstractPath.Type.encrypted)) {
+                decrypted = file.attributes().getDecrypted();
+            }
+            else {
+                decrypted = file;
+            }
+            final boolean found = list.contains(decrypted);
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:
@@ -68,7 +77,7 @@ public class DefaultFindFeature implements Find {
                             if(!f.getType().equals(file.getType())) {
                                 continue;
                             }
-                            if(StringUtils.equalsIgnoreCase(f.getName(), file.getName())) {
+                            if(StringUtils.equalsIgnoreCase(f.getName(), decrypted.getName())) {
                                 log.warn(String.format("Found matching file %s ignoring case", f));
                                 return true;
                             }
