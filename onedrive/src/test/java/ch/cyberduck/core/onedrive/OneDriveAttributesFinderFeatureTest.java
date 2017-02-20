@@ -1,19 +1,5 @@
 package ch.cyberduck.core.onedrive;
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
-import ch.cyberduck.test.IntegrationTest;
-
-import org.apache.log4j.Logger;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import java.util.EnumSet;
-
-import static org.junit.Assert.*;
-
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -29,38 +15,48 @@ import static org.junit.Assert.*;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import java.util.EnumSet;
+
+import static org.junit.Assert.assertFalse;
+
 @Category(IntegrationTest.class)
-public class OneDriveListServiceTest extends OneDriveTest {
+public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test
-    public void testList() throws Exception {
+    public void testFind() throws Exception {
+        final Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(getSession());
         final AttributedList<Path> list = new OneDriveListService(getSession()).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
-            assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
+            attributesFinderFeature.find(f);
         }
     }
 
     @Test
-    public void testListDriveChildren() throws Exception {
-        ListService listService = new OneDriveListService(getSession());
+    public void testFindHierarchy() throws Exception {
+        final Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(getSession());
+        OneDriveListService listService = new OneDriveListService(getSession());
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
             final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
             for(Path c : children) {
-                log.info(c);
-                assertEquals(f.getName(), c.getParent().getName());
-                if(c.isDirectory()) {
-                    final AttributedList<Path> subChildren = listService.list(c, new DisabledListProgressListener());
-                    for(Path s : subChildren) {
-                        log.info(s);
-                        assertEquals(c.getName(), s.getParent().getName());
-                    }
-                }
+                attributesFinderFeature.find(c);
             }
         }
     }

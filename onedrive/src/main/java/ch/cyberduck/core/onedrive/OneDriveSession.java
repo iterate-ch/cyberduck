@@ -24,6 +24,8 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpSession;
@@ -35,11 +37,17 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveJsonRequest;
+import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
+import com.eclipsesource.json.JsonObject;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
@@ -63,7 +71,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 "https://login.live.com/oauth20_token.srf", "https://login.live.com/oauth20_authorize.srf",
                 "372770ba-bb24-436b-bbd4-19bc86310c0e",
                 "mJjWVkmfD9FVHNFTpbrdowv",
-                Arrays.asList("onedrive.readwrite", "offline_access"))
+                Arrays.asList("onedrive.readwrite", "wl.offline_access"))
                 .withRedirectUri("https://cyberduck.io/oauth");
 
         return new OneDriveAPI() {
@@ -129,5 +137,55 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new OneDriveListService(this).list(directory, listener);
+    }
+
+    public StringBuilder getBaseUrlStringBuilder() {
+        // evaluating query
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClient().getBaseURL());
+        return builder;
+    }
+
+    public void resolveDriveQueryPath(final Path file, final StringBuilder builder, final PathContainerService pathContainerService) {
+        builder.append("/drives"); // query single drive
+
+        if(!file.isRoot()) {
+            Path driveId = pathContainerService.getContainer(file); // using pathContainerService for retrieving current drive id
+            builder.append(String.format("/%s", driveId.getName()));
+
+            if(!pathContainerService.isContainer(file)) {
+                // append path to item via pathContainerService with format :/path:
+                builder.append(String.format("/root:/%s:", URIEncoder.encode(pathContainerService.getKey(file))));
+            }
+        }
+    }
+
+    public void resolveChildrenPath(final Path directory, final StringBuilder builder, final PathContainerService pathContainerService) {
+        if(pathContainerService.isContainer(directory)) {
+            builder.append("/root/children");
+        }
+        else if(!directory.isRoot()) {
+            builder.append("/children");
+        }
+    }
+
+    public URL getUrl(final StringBuilder builder) throws BackgroundException {
+        try {
+            return new URL(builder.toString());
+        }
+        catch(MalformedURLException e) {
+            throw new BackgroundException(e);
+        }
+    }
+
+    public JsonObject getSimpleResult(final URL url) throws BackgroundException {
+        try {
+            OneDriveJsonRequest request = new OneDriveJsonRequest(getClient(), url, "GET");
+            OneDriveJsonResponse response = request.send();
+            return response.getContent();
+        }
+        catch(OneDriveAPIException e) {
+            throw new BackgroundException(e);
+        }
     }
 }
