@@ -61,24 +61,15 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     private final SwiftRegionService regionService;
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session) {
-        this(session,
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))
-        );
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this(session, regionService, new SwiftSegmentService(session, regionService),
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)))
-        ;
+        this(session, regionService, new SwiftSegmentService(session, regionService), new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final SwiftRegionService regionService, final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService,
-                session.getFeature(Find.class, new DefaultFindFeature(session)),
-                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))
-        );
+        this(session, regionService, segmentService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public SwiftLargeUploadWriteFeature(final SwiftSession session, final Find finder, final AttributesFinder attributes) {
