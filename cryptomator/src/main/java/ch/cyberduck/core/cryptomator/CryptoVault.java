@@ -321,7 +321,7 @@ public class CryptoVault implements Vault {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
-                if(file.isDirectory()) {
+                if(inflated.getName().startsWith(DIR_PREFIX)) {
                     final Permission permission = attributes.getPermission();
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
                     permission.setGroup(permission.getGroup().or(Permission.Action.execute));
