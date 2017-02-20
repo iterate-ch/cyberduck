@@ -57,19 +57,17 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
 
         PathContainerService pathContainerService = new PathContainerService();
         session.resolveDriveQueryPath(file, builder, pathContainerService);
-        /*if(pathContainerService.isContainer(file)) {
-            builder.append("/root");
-        }*/
 
         final URL apiUrl = session.getUrl(builder);
         final JsonObject jsonObject = session.getSimpleResult(apiUrl);
+
+        pathAttributes.setVersionId(jsonObject.get("id").asString());
 
         JsonValue driveType = jsonObject.get("driveType");
         if(driveType != null && !driveType.isNull()) {
             // this is drive object we are on /drives hierarchy
         }
         else {
-            pathAttributes.setVersionId(jsonObject.get("id").asString());
             pathAttributes.setETag(jsonObject.get("eTag").asString());
             pathAttributes.setSize(jsonObject.get("size").asLong());
             try {
