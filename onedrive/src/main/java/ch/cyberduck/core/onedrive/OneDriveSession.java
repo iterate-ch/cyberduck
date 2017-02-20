@@ -26,8 +26,15 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -187,5 +194,32 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         catch(OneDriveAPIException e) {
             throw new BackgroundException(e);
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == Directory.class) {
+            return (T) new OneDriveDirectoryFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new OneDriveReadFeature();
+        }
+        if(type == Write.class) {
+            return (T) new OneDriveWriteFeature();
+        }
+        if(type == Delete.class) {
+            return (T) new OneDriveDeleteFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new OneDriveTouchFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new OneDriveAttributesFinderFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new OneDriveUrlProvider();
+        }
+        return super._getFeature(type);
     }
 }

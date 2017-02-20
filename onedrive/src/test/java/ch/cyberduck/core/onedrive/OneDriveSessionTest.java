@@ -16,20 +16,16 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -39,11 +35,24 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveSessionTest extends OneDriveTest {
+
+    @Test
+    public void testFeatures() throws Exception {
+        final OneDriveSession session = new OneDriveSession(new Host(new OneDriveProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.getFeature(Read.class));
+        assertNotNull(session.getFeature(Write.class));
+        assertNotNull(session.getFeature(Directory.class));
+        assertNotNull(session.getFeature(Touch.class));
+        assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(UrlProvider.class));
+        assertNotNull(session.getFeature(AttributesFinder.class));
+    }
+
     @Test
     public void testConnect() throws Exception {
-        assertTrue(getSession().isConnected());
-        getSession().close();
-        assertFalse(getSession().isConnected());
+        assertTrue(session.isConnected());
+        session.close();
+        assertFalse(session.isConnected());
     }
 
     @Override
