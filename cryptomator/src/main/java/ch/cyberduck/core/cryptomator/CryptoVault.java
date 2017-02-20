@@ -261,9 +261,6 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        if(file.getType().contains(Path.Type.vault)) {
-            return false;
-        }
         if(this.isUnlocked()) {
             return file.equals(home) || file.isChild(home);
         }
@@ -280,12 +277,12 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
             return file;
         }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
-            return file;
-        }
         final Path encrypted;
         if(file.isFile() || metadata) {
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is already marked as an internal vault path", file));
+                return file;
+            }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
@@ -294,6 +291,9 @@ public class CryptoVault implements Vault {
             encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), attributes);
         }
         else {
+            if(file.getType().contains(Path.Type.vault)) {
+                return directoryProvider.toEncrypted(session, home);
+            }
             encrypted = directoryProvider.toEncrypted(session, file);
         }
         // Add reference to decrypted file
