@@ -67,7 +67,7 @@ public class OneDriveTouchFeature implements Touch {
             }
         }
         catch(OneDriveAPIException e) {
-            throw new BackgroundException(e);
+            throw new OneDriveExceptionMappingService().map(e);
         }
     }
 

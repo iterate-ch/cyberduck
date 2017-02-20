@@ -60,7 +60,7 @@ public class OneDriveDeleteFeature implements Delete {
                 }
             }
             catch(OneDriveAPIException e) {
-                throw new BackgroundException(e);
+                throw new OneDriveExceptionMappingService().map(e);
             }
         }
     }

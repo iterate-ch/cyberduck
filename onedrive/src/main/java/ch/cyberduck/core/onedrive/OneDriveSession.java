@@ -192,7 +192,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return response.getContent();
         }
         catch(OneDriveAPIException e) {
-            throw new BackgroundException(e);
+            throw new OneDriveExceptionMappingService().map(e);
         }
     }
 
