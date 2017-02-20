@@ -18,11 +18,9 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -54,21 +52,13 @@ public class DefaultFindFeature implements Find {
         try {
             final AttributedList<Path> list;
             if(!cache.isCached(file.getParent())) {
-                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             else {
                 list = cache.get(file.getParent());
             }
-            // List always contains decrypted files
-            final Path decrypted;
-            if(file.getType().contains(AbstractPath.Type.encrypted)) {
-                decrypted = file.attributes().getDecrypted();
-            }
-            else {
-                decrypted = file;
-            }
-            final boolean found = list.contains(decrypted);
+            final boolean found = list.contains(file);
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:
@@ -77,7 +67,7 @@ public class DefaultFindFeature implements Find {
                             if(!f.getType().equals(file.getType())) {
                                 continue;
                             }
-                            if(StringUtils.equalsIgnoreCase(f.getName(), decrypted.getName())) {
+                            if(StringUtils.equalsIgnoreCase(f.getName(), file.getName())) {
                                 log.warn(String.format("Found matching file %s ignoring case", f));
                                 return true;
                             }

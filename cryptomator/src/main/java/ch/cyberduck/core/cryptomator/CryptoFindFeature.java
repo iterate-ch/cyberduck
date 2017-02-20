@@ -47,7 +47,7 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        delegate.withCache(cache);
+        delegate.withCache(new CryptoPathCache(session, cache, vault));
         return this;
     }
 }

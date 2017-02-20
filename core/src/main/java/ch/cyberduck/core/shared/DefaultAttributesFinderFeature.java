@@ -18,11 +18,9 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -56,7 +54,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
             try {
-                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
@@ -72,34 +70,26 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        // List always contains decrypted files
-        final Path decrypted;
-        if(file.getType().contains(AbstractPath.Type.encrypted)) {
-            decrypted = file.attributes().getDecrypted();
-        }
-        else {
-            decrypted = file;
-        }
-        if(list.contains(decrypted)) {
-            return list.get(decrypted).attributes();
+        if(list.contains(file)) {
+            return list.get(file).attributes();
         }
         else {
             if(null == file.attributes().getVersionId()) {
                 // Try native implementation
                 final AttributesFinder feature = session.getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw new NotfoundException(decrypted.getAbsolute());
+                    throw new NotfoundException(file.getAbsolute());
                 }
                 final IdProvider id = session.getFeature(IdProvider.class);
                 final String version = id.getFileid(file);
                 if(version == null) {
-                    throw new NotfoundException(decrypted.getAbsolute());
+                    throw new NotfoundException(file.getAbsolute());
                 }
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setVersionId(version);
                 return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
             }
-            throw new NotfoundException(decrypted.getAbsolute());
+            throw new NotfoundException(file.getAbsolute());
         }
     }
 

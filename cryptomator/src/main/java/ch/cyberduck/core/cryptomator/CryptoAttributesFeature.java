@@ -50,7 +50,7 @@ public class CryptoAttributesFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        delegate.withCache(cache);
+        delegate.withCache(new CryptoPathCache(session, cache, vault));
         return this;
     }
 }
