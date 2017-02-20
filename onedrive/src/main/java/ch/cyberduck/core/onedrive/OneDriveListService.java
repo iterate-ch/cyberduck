@@ -51,9 +51,9 @@ public class OneDriveListService implements ListService {
         StringBuilder builder = new StringBuilder();
         builder.append(session.getClient().getBaseURL());
 
-        session.resolveDriveQueryPath(directory, builder);
-        PathContainerService containerService = new PathContainerService();
-        if(containerService.isContainer(directory)) {
+        PathContainerService pathContainerService = new PathContainerService();
+        session.resolveDriveQueryPath(directory, builder, pathContainerService);
+        if(pathContainerService.isContainer(directory)) {
             builder.append("/root/children");
         }
         else if(!directory.isRoot()) {

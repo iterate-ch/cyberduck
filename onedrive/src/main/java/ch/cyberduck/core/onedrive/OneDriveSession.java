@@ -133,9 +133,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         return new OneDriveListService(this).list(directory, listener);
     }
 
-    public void resolveDriveQueryPath(final Path file, final StringBuilder builder) {
-        PathContainerService pathContainerService = new PathContainerService();
-
+    public void resolveDriveQueryPath(final Path file, final StringBuilder builder, final PathContainerService pathContainerService) {
         builder.append("/drives"); // query single drive
 
         if(!file.isRoot()) {
