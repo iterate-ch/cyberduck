@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
 public class CryptoAttributesFeature implements AttributesFinder {
 
@@ -38,13 +39,18 @@ public class CryptoAttributesFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         final PathAttributes attributes = delegate.find(vault.encrypt(session, file));
-        attributes.setSize(vault.toCleartextSize(attributes.getSize()));
+        if(delegate instanceof DefaultAttributesFinderFeature) {
+            // Size is already decrypted from list service
+        }
+        else {
+            attributes.setSize(vault.toCleartextSize(attributes.getSize()));
+        }
         return attributes;
     }
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(cache));
+        delegate.withCache(new CryptoPathCache(session, cache, vault));
         return this;
     }
 }

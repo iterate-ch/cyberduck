@@ -81,7 +81,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(vault.encrypt(session, file))) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+            return new Append(false, true).withSize(vault.toCleartextSize(attributes.getSize())).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
     }

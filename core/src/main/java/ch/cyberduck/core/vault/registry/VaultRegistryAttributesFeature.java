@@ -29,6 +29,8 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
     private final DefaultVaultRegistry registry;
     private final AttributesFinder proxy;
 
+    private Cache<Path> cache;
+
     public VaultRegistryAttributesFeature(final Session<?> session, final AttributesFinder proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.registry = registry;
@@ -37,12 +39,14 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy).find(file);
+        return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy)
+                .withCache(cache)
+                .find(file);
     }
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        proxy.withCache(cache);
+        this.cache = cache;
         return this;
     }
 

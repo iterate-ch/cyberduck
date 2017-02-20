@@ -19,15 +19,21 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.features.Vault;
 
 import java.util.Set;
 
 public final class CryptoPathCache implements Cache<Path> {
 
+    private final Session<?> session;
     private final Cache<Path> delegate;
+    private final Vault vault;
 
-    public CryptoPathCache(final Cache<Path> delegate) {
+    public CryptoPathCache(final Session<?> session, final Cache<Path> delegate, final Vault vault) {
+        this.session = session;
         this.delegate = delegate;
+        this.vault = vault;
     }
 
     @Override
@@ -51,13 +57,36 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public AttributedList<Path> put(final Path folder, final AttributedList<Path> children) {
-        return delegate.put(folder.attributes().getDecrypted(), children);
+    public AttributedList<Path> put(final Path folder, final AttributedList<Path> encrypted) {
+        final AttributedList<Path> list = new AttributedList<>();
+        // Swap with decrypted paths
+        for(int i = 0; i < encrypted.size(); i++) {
+            final Path f = encrypted.get(i);
+            if(f.getType().contains(Path.Type.encrypted)) {
+                list.add(i, f.attributes().getDecrypted());
+            }
+            else {
+                list.add(i, f);
+            }
+        }
+        return delegate.put(folder.attributes().getDecrypted(), list);
     }
 
     @Override
     public AttributedList<Path> get(final Path folder) {
-        return delegate.get(folder.attributes().getDecrypted());
+        final AttributedList<Path> decrypted = delegate.get(folder.attributes().getDecrypted());
+        final AttributedList<Path> list = new AttributedList<>();
+        // Swap with encrypted paths
+        for(int i = 0; i < decrypted.size(); i++) {
+            final Path f = decrypted.get(i);
+            if(f.getType().contains(Path.Type.decrypted)) {
+                list.add(i, f.attributes().getEncrypted());
+            }
+            else {
+                list.add(i, f);
+            }
+        }
+        return list;
     }
 
     @Override
