@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.log4j.Logger;
@@ -26,18 +27,32 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
+    @Test(expected = NotfoundException.class)
+    public void testFindNotFound() throws Exception {
+        final OneDriveAttributesFinderFeature f = new OneDriveAttributesFinderFeature(session);
+        try {
+            f.find(new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file)));
+        }
+        catch(NotfoundException e) {
+            assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
+            throw e;
+        }
+    }
+
     @Test
     public void testFind() throws Exception {
-        final Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        final Path file = new Path("/", EnumSet.of(Path.Type.directory));
         OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session).list(file, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
