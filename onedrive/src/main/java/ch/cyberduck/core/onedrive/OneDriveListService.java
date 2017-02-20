@@ -60,7 +60,7 @@ public class OneDriveListService implements ListService {
 
             if(!pathContainerService.isContainer(directory)) {
                 // append path to item via pathContainerService with format :/path:
-                builder.append(URIEncoder.encode(pathContainerService.getKey(directory));
+                builder.append(URIEncoder.encode(pathContainerService.getKey(directory)));
             }
 
             builder.append(":/children");
