@@ -19,12 +19,14 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -101,15 +103,14 @@ public class CryptoDirectoryProvider {
             final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
-            final PathAttributes attributes = new PathAttributes();
+            final PathAttributes attributes = new PathAttributesDictionary().deserialize(directory.attributes().serialize(SerializerFactory.get()));
             // Save directory id for use in vault
             attributes.setDirectoryId(directoryId);
             attributes.setDecrypted(directory);
             // Add encrypted type
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
-            final Path encrypted = new Path(intermediate, dirHash.substring(2), type, attributes);
-            return encrypted;
+            return new Path(intermediate, dirHash.substring(2), type, attributes);
         }
         throw new NotfoundException(directory.getAbsolute());
     }
