@@ -22,6 +22,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 public class OneDriveAttributesFinderFeature implements AttributesFinder {
+    private final OneDriveSession session;
+
+    public OneDriveAttributesFinderFeature(final OneDriveSession session) {
+        this.session = session;
+    }
+
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         return null;
