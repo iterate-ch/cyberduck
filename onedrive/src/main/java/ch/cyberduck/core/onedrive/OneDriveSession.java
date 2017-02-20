@@ -40,6 +40,8 @@ import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -133,6 +135,13 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         return new OneDriveListService(this).list(directory, listener);
     }
 
+    public StringBuilder getBaseUrlStringBuilder() {
+        // evaluating query
+        StringBuilder builder = new StringBuilder();
+        builder.append(getClient().getBaseURL());
+        return builder;
+    }
+
     public void resolveDriveQueryPath(final Path file, final StringBuilder builder, final PathContainerService pathContainerService) {
         builder.append("/drives"); // query single drive
 
@@ -144,6 +153,15 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 // append path to item via pathContainerService with format :/path:
                 builder.append(String.format("/root:/%s:", URIEncoder.encode(pathContainerService.getKey(file))));
             }
+        }
+    }
+
+    public URL getUrl(final StringBuilder builder) throws BackgroundException {
+        try {
+            return new URL(builder.toString());
+        }
+        catch(MalformedURLException e) {
+            throw new BackgroundException(e);
         }
     }
 }

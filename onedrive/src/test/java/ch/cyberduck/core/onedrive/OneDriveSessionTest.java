@@ -38,35 +38,21 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveSessionTest {
+public class OneDriveSessionTest extends OneDriveTest {
     @Test
     public void testConnect() throws Exception {
-        final Host host = new Host(new OneDriveProtocol(), "api.onedrive.com", new Credentials("u"));
-        final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback(){
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(){
-            @Override
-            public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                if(user.equals("OneDrive (u) OAuth2 Access Token")) {
-                    return System.getProperties().getProperty("onedrive.accesstoken");
-                }
-                if(user.equals("OneDrive (u) OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("onedrive.refreshtoken");
-                }
-                return null;
-            }
+        assertTrue(getSession().isConnected());
+        getSession().close();
+        assertFalse(getSession().isConnected());
+    }
 
-            @Override
-            public String getPassword(String hostname, String user) {
-                return super.getPassword(hostname, user);
-            }
-        }, new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
+    @Override
+    protected String getHostname() {
+        return "api.onedrive.com";
+    }
+
+    @Override
+    protected Credentials getCredentials() {
+        return new Credentials("u");
     }
 }

@@ -48,8 +48,7 @@ public class OneDriveListService implements ListService {
         final AttributedList<Path> children = new AttributedList<>();
 
         // evaluating query
-        StringBuilder builder = new StringBuilder();
-        builder.append(session.getClient().getBaseURL());
+        StringBuilder builder = session.getBaseUrlStringBuilder();
 
         PathContainerService pathContainerService = new PathContainerService();
         session.resolveDriveQueryPath(directory, builder, pathContainerService);
@@ -60,14 +59,7 @@ public class OneDriveListService implements ListService {
             builder.append("/children");
         }
 
-        final URL apiUrl;
-        try {
-            apiUrl = new URL(builder.toString());
-        }
-        catch(MalformedURLException e) {
-            throw new BackgroundException(e);
-        }
-
+        final URL apiUrl = session.getUrl(builder);
         Iterator<JsonObject> iterator = iterator = new JsonObjectIteratorPort(session.getClient(), apiUrl);
 
         try {

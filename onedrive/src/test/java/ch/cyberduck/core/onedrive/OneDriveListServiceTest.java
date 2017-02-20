@@ -30,38 +30,12 @@ import static org.junit.Assert.*;
  */
 
 @Category(IntegrationTest.class)
-public class OneDriveListServiceTest {
+public class OneDriveListServiceTest extends OneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(new OneDriveProtocol(), "api.onedrive.com", new Credentials());
-        final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("OneDrive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("onedrive.accesstoken");
-                        }
-                        if(user.equals("OneDrive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("onedrive.refreshtoken");
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(getSession()).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             log.info(f);
@@ -71,33 +45,7 @@ public class OneDriveListServiceTest {
 
     @Test
     public void testListDriveChildren() throws Exception {
-        final Host host = new Host(new OneDriveProtocol(), "api.onedrive.com", new Credentials());
-        final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("OneDrive OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("onedrive.accesstoken");
-                        }
-                        if(user.equals("OneDrive OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("onedrive.refreshtoken");
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        ListService listService = new OneDriveListService(session);
+        ListService listService = new OneDriveListService(getSession());
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
@@ -115,5 +63,15 @@ public class OneDriveListServiceTest {
                 }
             }
         }
+    }
+
+    @Override
+    protected String getHostname() {
+        return "api.onedrive.com";
+    }
+
+    @Override
+    protected Credentials getCredentials() {
+        return new Credentials();
     }
 }
