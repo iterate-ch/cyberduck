@@ -57,7 +57,7 @@ public class JsonObjectIteratorPort implements Iterator<JsonObject> {
 
     public JsonObject next() throws OneDriveRuntimeException {
         if(this.hasNext()) {
-            return ((JsonValue) this.currentPage.next()).asObject();
+            return this.currentPage.next().asObject();
         }
         else {
             throw new NoSuchElementException();
@@ -67,7 +67,7 @@ public class JsonObjectIteratorPort implements Iterator<JsonObject> {
     private void loadNextPage() throws OneDriveRuntimeException {
         try {
             OneDriveJsonRequest e = new OneDriveJsonRequest(this.api, this.url, "GET");
-            OneDriveJsonResponse response = (OneDriveJsonResponse) e.send();
+            OneDriveJsonResponse response = e.send();
             JsonObject json = response.getContent();
             JsonValue values = json.get("value");
             if(values.isNull()) {
