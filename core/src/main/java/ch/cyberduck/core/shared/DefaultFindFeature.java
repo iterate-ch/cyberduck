@@ -21,6 +21,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -52,12 +53,10 @@ public class DefaultFindFeature implements Find {
         try {
             final AttributedList<Path> list;
             if(!cache.isCached(file.getParent())) {
-                list = session.list(file.getParent(), new DisabledListProgressListener());
-                cache.put(file.getParent(), list);
+                cache.put(file.getParent(),
+                        session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener()));
             }
-            else {
-                list = cache.get(file.getParent());
-            }
+            list = cache.get(file.getParent());
             final boolean found = list.contains(file);
             if(!found) {
                 switch(session.getCase()) {
