@@ -68,7 +68,7 @@ public class OneDriveDirectoryFeature implements Directory<Void> {
             OneDriveJsonResponse response = request.send();
             final int responseCode = response.getResponseCode();
             if(responseCode != 201) {
-                log.error(String.format("Folder could not be created. API answered %d", responseCode));
+                log.error(String.format("Folder could not be created %s. API answered %d", file.getAbsolute(), responseCode));
             }
         }
         catch(OneDriveAPIException e) {
