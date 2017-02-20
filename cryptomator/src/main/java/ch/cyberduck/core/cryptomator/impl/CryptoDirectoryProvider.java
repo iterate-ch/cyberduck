@@ -50,6 +50,9 @@ public class CryptoDirectoryProvider {
     }
 
     /**
+     * Get encrypted filename for given clear text filename with id of parent encrypted directory.
+     *
+     * @param session     Connection
      * @param directoryId Directory id
      * @param filename    Clear text filename
      * @param type        File type
@@ -66,6 +69,9 @@ public class CryptoDirectoryProvider {
     }
 
     /**
+     * Get encrypted reference for clear text directory path.
+     *
+     * @param session   Connection
      * @param directory Clear text
      */
     public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
@@ -98,10 +104,12 @@ public class CryptoDirectoryProvider {
             final PathAttributes attributes = new PathAttributes();
             // Save directory id for use in vault
             attributes.setDirectoryId(directoryId);
+            attributes.setDecrypted(directory);
             // Add encrypted type
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
-            return new Path(intermediate, dirHash.substring(2), type, attributes);
+            final Path encrypted = new Path(intermediate, dirHash.substring(2), type, attributes);
+            return encrypted;
         }
         throw new NotfoundException(directory.getAbsolute());
     }
