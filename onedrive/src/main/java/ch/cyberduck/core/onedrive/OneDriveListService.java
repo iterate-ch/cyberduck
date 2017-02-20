@@ -21,7 +21,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
@@ -39,7 +38,6 @@ public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
 
     private final OneDriveSession session;
-    private final PathContainerService pathContainerService = new PathContainerService();
 
     public OneDriveListService(final OneDriveSession session) {
         this.session = session;
@@ -53,20 +51,13 @@ public class OneDriveListService implements ListService {
         StringBuilder builder = new StringBuilder();
         builder.append(session.getClient().getBaseURL());
 
-        if(!directory.isRoot()) {
-            builder.append("/drives"); // query single drive
-            Path driveId = pathContainerService.getContainer(directory); // using pathContainerService for retrieving current drive id
-            builder.append(String.format("/%s/root:/", driveId.getName()));
-
-            if(!pathContainerService.isContainer(directory)) {
-                // append path to item via pathContainerService with format :/path:
-                builder.append(URIEncoder.encode(pathContainerService.getKey(directory)));
-            }
-
-            builder.append(":/children");
+        session.resolveDriveQueryPath(directory, builder);
+        PathContainerService containerService = new PathContainerService();
+        if(containerService.isContainer(directory)) {
+            builder.append("/root/children");
         }
-        else {
-            builder.append("/drives"); // query all drives
+        else if(!directory.isRoot()) {
+            builder.append("/children");
         }
 
         final URL apiUrl;

@@ -24,6 +24,8 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.HttpSession;
@@ -129,5 +131,21 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new OneDriveListService(this).list(directory, listener);
+    }
+
+    public void resolveDriveQueryPath(final Path file, final StringBuilder builder) {
+        PathContainerService pathContainerService = new PathContainerService();
+
+        builder.append("/drives"); // query single drive
+
+        if(!file.isRoot()) {
+            Path driveId = pathContainerService.getContainer(file); // using pathContainerService for retrieving current drive id
+            builder.append(String.format("/%s", driveId.getName()));
+
+            if(!pathContainerService.isContainer(file)) {
+                // append path to item via pathContainerService with format :/path:
+                builder.append(String.format("/root:/%s:", URIEncoder.encode(pathContainerService.getKey(file))));
+            }
+        }
     }
 }
