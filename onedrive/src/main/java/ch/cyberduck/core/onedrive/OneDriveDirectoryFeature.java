@@ -78,6 +78,6 @@ public class OneDriveDirectoryFeature implements Directory {
 
     @Override
     public Directory withWriter(final Write writer) {
-        return null;
+        return this;
     }
 }
