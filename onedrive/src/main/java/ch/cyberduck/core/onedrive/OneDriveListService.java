@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -52,12 +51,7 @@ public class OneDriveListService implements ListService {
 
         PathContainerService pathContainerService = new PathContainerService();
         session.resolveDriveQueryPath(directory, builder, pathContainerService);
-        if(pathContainerService.isContainer(directory)) {
-            builder.append("/root/children");
-        }
-        else if(!directory.isRoot()) {
-            builder.append("/children");
-        }
+        session.resolveChildrenPath(directory, builder, pathContainerService);
 
         final URL apiUrl = session.getUrl(builder);
         Iterator<JsonObject> iterator = iterator = new JsonObjectIteratorPort(session.getClient(), apiUrl);
