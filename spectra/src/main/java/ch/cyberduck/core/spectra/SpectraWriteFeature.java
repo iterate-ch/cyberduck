@@ -31,7 +31,10 @@ import org.jets3t.service.model.S3Object;
 public class SpectraWriteFeature extends S3WriteFeature {
 
     public SpectraWriteFeature(final SpectraSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session,
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))
+        );
     }
 
     public SpectraWriteFeature(final SpectraSession session, final Find finder, final AttributesFinder attributes) {
