@@ -160,6 +160,15 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
     }
 
+    public void resolveChildrenPath(final Path directory, final StringBuilder builder, final PathContainerService pathContainerService) {
+        if(pathContainerService.isContainer(directory)) {
+            builder.append("/root/children");
+        }
+        else if(!directory.isRoot()) {
+            builder.append("/children");
+        }
+    }
+
     public URL getUrl(final StringBuilder builder) throws BackgroundException {
         try {
             return new URL(builder.toString());
