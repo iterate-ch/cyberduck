@@ -69,7 +69,10 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     public B2WriteFeature(final B2Session session, final Long threshold) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), threshold);
+        this(session,
+                session.getFeature(Find.class, new DefaultFindFeature(session)),
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)),
+                threshold);
     }
 
     public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes, final Long threshold) {
