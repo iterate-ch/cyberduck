@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -24,14 +23,14 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
+import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveItemIterator;
+import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.net.URL;
 import java.util.EnumSet;
-import java.util.Iterator;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
@@ -54,50 +53,21 @@ public class OneDriveListService implements ListService {
         session.resolveChildrenPath(directory, builder, pathContainerService);
 
         final URL apiUrl = session.getUrl(builder);
-        Iterator<JsonObject> iterator = iterator = new JsonObjectIteratorPort(session.getClient(), apiUrl);
-
         try {
             log.info(String.format("Querying OneDrive API with %s", apiUrl));
-            while(iterator.hasNext()) {
-                try {
-                    final String name;
-                    final EnumSet<AbstractPath.Type> type;
-
-                    JsonObject jsonObject = iterator.next();
-
-                    JsonValue driveType = jsonObject.get("driveType");
-                    if(driveType != null && !driveType.isNull()) {
-                        // this is drive object we are on /drives hierarchy
-                        name = jsonObject.get("id").asString(); // this may not fail
-                        type = EnumSet.of(AbstractPath.Type.volume, AbstractPath.Type.directory);
-                    }
-                    else {
-                        // try evaluating
-                        JsonValue nameValue = jsonObject.get("name");
-                        if(nameValue == null || nameValue.isNull() || !nameValue.isString()) {
-                            // got null name (not found) or empty name (should not happen)
-                            continue;
-                        }
-                        name = nameValue.asString();
-
-                        JsonValue fileValue = jsonObject.get("file");
-                        JsonValue folderValue = jsonObject.get("folder");
-                        if(fileValue != null && !fileValue.isNull()) {
-                            type = EnumSet.of(AbstractPath.Type.file);
-                        }
-                        else if(folderValue != null && !folderValue.isNull()) {
-                            type = EnumSet.of(AbstractPath.Type.directory);
-                        }
-                        else {
-                            // if everything else fails: ignore and continue
-                            continue;
-                        }
-                    }
-
-                    children.add(new Path(directory, name, type));
+            if(directory.isRoot()) {
+                final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient(), apiUrl);
+                while(iter.hasNext()) {
+                    final OneDriveResource.Metadata metadata = iter.next();
+                    children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume)));
                 }
-                catch(OneDriveRuntimeException e) { // this catches iterator.next() whicht may not cause hasNext() to fail
-                    continue; // silent ignore any OneDriveRuntimeException in next(). Might redirect to log!
+            }
+            else {
+                final OneDriveItemIterator iter = new OneDriveItemIterator(session.getClient(), apiUrl);
+                while(iter.hasNext()) {
+                    final OneDriveItem.Metadata metadata = iter.next();
+                    children.add(new Path(directory, metadata.getName(),
+                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)));
                 }
             }
         }

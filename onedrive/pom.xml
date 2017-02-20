@@ -37,9 +37,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.onedrive</groupId>
+            <groupId>ch.iterate.onedrive</groupId>
             <artifactId>onedrive-java-client</artifactId>
-            <version>1.0</version>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

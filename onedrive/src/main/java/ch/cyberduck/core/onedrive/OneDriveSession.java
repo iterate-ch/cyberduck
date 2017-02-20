@@ -88,6 +88,11 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             }
 
             @Override
+            public boolean isGraphConnection() {
+                return false;
+            }
+
+            @Override
             public String getBaseURL() {
                 return "https://api.onedrive.com/v1.0";
             }
