@@ -45,10 +45,12 @@ public class DefaultSearchFeature implements Search {
     public AttributedList<Path> search(final Path workdir, final Filter<Path> filter, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.isCached(workdir)) {
-            cache.put(workdir,
-                    session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter));
+            list = session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
+            cache.put(workdir, list);
         }
-        list = cache.get(workdir).filter(filter);
+        else {
+            list = cache.get(workdir).filter(filter);
+        }
         listener.chunk(workdir, list);
         return list;
     }

@@ -55,8 +55,8 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
             try {
-                cache.put(file.getParent(),
-                        session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener()));
+                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent(), list);
             }
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
                 log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
@@ -68,7 +68,9 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
                 return feature.withCache(cache).find(file);
             }
         }
-        list = cache.get(file.getParent());
+        else {
+            list = cache.get(file.getParent());
+        }
         if(list.contains(file)) {
             return list.get(file).attributes();
         }

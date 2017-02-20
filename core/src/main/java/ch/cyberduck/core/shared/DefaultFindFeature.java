@@ -53,10 +53,12 @@ public class DefaultFindFeature implements Find {
         try {
             final AttributedList<Path> list;
             if(!cache.isCached(file.getParent())) {
-                cache.put(file.getParent(),
-                        session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener()));
+                list = session.getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+                cache.put(file.getParent(), list);
             }
-            list = cache.get(file.getParent());
+            else {
+                list = cache.get(file.getParent());
+            }
             final boolean found = list.contains(file);
             if(!found) {
                 switch(session.getCase()) {
