@@ -48,14 +48,6 @@ public class HubicSession extends SwiftSession {
 
     public final Preferences preferences = PreferencesFactory.get();
 
-    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
-            "https://api.hubic.com/oauth/token",
-            "https://api.hubic.com/oauth/auth",
-            preferences.getProperty("hubic.oauth.clientid"),
-            preferences.getProperty("hubic.oauth.secret"),
-            Collections.singletonList("credentials.r")
-    ).withRedirectUri(preferences.getProperty("hubic.oauth.redirecturi"));
-
     public HubicSession(final Host host) {
         super(host);
     }
@@ -75,12 +67,20 @@ public class HubicSession extends SwiftSession {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(keychain, prompt, cancel, cache, tokens);
+        final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(client.getClient(),
+                "https://api.hubic.com/oauth/token",
+                "https://api.hubic.com/oauth/auth",
+                preferences.getProperty("hubic.oauth.clientid"),
+                preferences.getProperty("hubic.oauth.secret"),
+                Collections.singletonList("credentials.r")
+        ).withRedirectUri(preferences.getProperty("hubic.oauth.redirecturi"));
+        final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
+        this.login(auth, keychain, prompt, cancel, cache, tokens);
     }
 
-    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        final Credential credentials = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
+    private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
+                       final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+        final Credential credentials = auth.authorize(host, keychain, prompt, cancel, tokens);
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Attempt authentication with %s", credentials));
@@ -93,7 +93,7 @@ public class HubicSession extends SwiftSession {
                 throw new SwiftExceptionMappingService().map(e);
             }
             catch(LoginFailureException f) {
-                this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+                this.login(auth, keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
             }
         }
         catch(IOException e) {
