@@ -124,6 +124,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getClientId() {
+        return null;
+    }
+
+    @Override
+    public String getClientSecret() {
+        return null;
+    }
+
+    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");

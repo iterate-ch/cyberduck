@@ -253,4 +253,14 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Password label
      */
     String getPasswordPlaceholder();
+
+    /**
+     * @return Default OAuth 2.0 client id
+     */
+    String getClientId();
+
+    /**
+     * @return Default OAuth 2.0 client secret
+     */
+    String getClientSecret();
 }
