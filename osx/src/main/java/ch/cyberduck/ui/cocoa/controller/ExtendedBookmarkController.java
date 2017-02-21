@@ -109,7 +109,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.update();
     }
 
-    public void setConnectmodePopup(NSPopUpButton button) {
+    public void setConnectmodePopup(final NSPopUpButton button) {
         this.connectmodePopup = button;
         this.connectmodePopup.setTarget(this.id());
         this.connectmodePopup.setAction(Foundation.selector("connectmodePopupClicked:"));
@@ -201,8 +201,8 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     }
 
     @Action
-    public void downloadPathPopupClicked(final NSMenuItem sender) {
-        if(null == sender.representedObject()) {
+    public void downloadPathPopupClicked(final NSPopUpButton sender) {
+        if(null == sender.selectedItem().representedObject()) {
             downloadFolderOpenPanel = NSOpenPanel.openPanel();
             downloadFolderOpenPanel.setCanChooseFiles(false);
             downloadFolderOpenPanel.setCanChooseDirectories(true);
@@ -212,7 +212,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            final Local folder = LocalFactory.get(sender.representedObject());
+            final Local folder = LocalFactory.get(sender.selectedItem().representedObject());
             bookmark.setDownloadFolder(folder);
             this.update();
         }
