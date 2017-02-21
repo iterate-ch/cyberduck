@@ -93,14 +93,6 @@ public class GoogleStorageSession extends S3Session {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(this,
-            OAuthConstants.GSOAuth2_10.Endpoints.Token,
-            OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-            preferences.getProperty("googlestorage.oauth.clientid"),
-            preferences.getProperty("googlestorage.oauth.secret"),
-            Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
-    ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
-
     public GoogleStorageSession(final Host h) {
         super(h);
     }
@@ -143,13 +135,20 @@ public class GoogleStorageSession extends S3Session {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt,
                       final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-
-        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(keychain, prompt, cancel, cache, tokens);
+        final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(client.getHttpClient(),
+                OAuthConstants.GSOAuth2_10.Endpoints.Token,
+                OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
+                preferences.getProperty("googlestorage.oauth.clientid"),
+                preferences.getProperty("googlestorage.oauth.secret"),
+                Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
+        ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
+        final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
+        this.login(auth, keychain, prompt, cancel, cache, tokens);
     }
 
-    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        final Credential credentials = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
+    private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
+                       final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+        final Credential credentials = auth.authorize(host, keychain, prompt, cancel, tokens);
 
         client.setProviderCredentials(new OAuth2ProviderCredentials(credentials, preferences.getProperty("googlestorage.oauth.clientid"),
                 preferences.getProperty("googlestorage.oauth.secret")));
@@ -174,7 +173,7 @@ public class GoogleStorageSession extends S3Session {
             }));
         }
         catch(LoginFailureException | InteroperabilityException e) {
-            this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+            this.login(auth, keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
         }
     }
 
