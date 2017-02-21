@@ -40,6 +40,8 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
 
     private final OneDriveSession session;
 
+    private final ISO8601DateParser dateParser = new ISO8601DateParser();
+
     public OneDriveAttributesFinderFeature(final OneDriveSession session) {
         this.session = session;
     }
@@ -49,8 +51,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-
-        PathAttributes pathAttributes = new PathAttributes();
+        PathAttributes attributes = new PathAttributes();
 
         // evaluating query
         StringBuilder builder = session.getBaseUrlStringBuilder();
@@ -61,33 +62,31 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         final URL apiUrl = session.getUrl(builder);
         final JsonObject jsonObject = session.getSimpleResult(apiUrl);
 
-        pathAttributes.setVersionId(jsonObject.get("id").asString());
+        attributes.setVersionId(jsonObject.get("id").asString());
 
         JsonValue driveType = jsonObject.get("driveType");
         if(driveType != null && !driveType.isNull()) {
             // this is drive object we are on /drives hierarchy
         }
         else {
-            pathAttributes.setETag(jsonObject.get("eTag").asString());
-            pathAttributes.setSize(jsonObject.get("size").asLong());
+            attributes.setETag(jsonObject.get("eTag").asString());
+            attributes.setSize(jsonObject.get("size").asLong());
             try {
-                pathAttributes.setLink(new DescriptiveUrl(new URI(jsonObject.get("webUrl").asString()), DescriptiveUrl.Type.http));
+                attributes.setLink(new DescriptiveUrl(new URI(jsonObject.get("webUrl").asString()), DescriptiveUrl.Type.http));
             }
             catch(URISyntaxException e) {
                 log.warn(String.format("Cannot set link. Web URL returned %s", jsonObject.get("webUrl")), e);
             }
-
-            ISO8601DateParser dateParser = new ISO8601DateParser();
             try {
                 final Date createdDateTimeValue = dateParser.parse(jsonObject.get("createdDateTime").asString());
-                pathAttributes.setCreationDate(createdDateTimeValue.getTime());
+                attributes.setCreationDate(createdDateTimeValue.getTime());
             }
             catch(InvalidDateException e) {
                 log.warn(String.format("Cannot parse Created Date Time. createdDateTime on Item returned %s", jsonObject.get("createdDateTime")), e);
             }
             try {
                 final Date lastModifiedDateTime = dateParser.parse(jsonObject.get("lastModifiedDateTime").asString());
-                pathAttributes.setCreationDate(lastModifiedDateTime.getTime());
+                attributes.setCreationDate(lastModifiedDateTime.getTime());
             }
             catch(InvalidDateException e) {
                 log.warn(String.format("Cannot parse Last Modified Date Time. lastModifiedDateTime on Item returned %s", jsonObject.get("lastModifiedDateTime")), e);
@@ -110,13 +109,13 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
                 String lastModifiedDateTimeValue = filesystemObject.get("lastModifiedDateTime").asString();
 
                 try {
-                    pathAttributes.setCreationDate(dateParser.parse(createdDateTimeValue).getTime());
+                    attributes.setCreationDate(dateParser.parse(createdDateTimeValue).getTime());
                 }
                 catch(InvalidDateException e) {
                     log.warn(String.format("Cannot parse Created Date Time. createdDateTime on FilesystemInfo Facet returned %s", jsonObject.get("createdDateTime")), e);
                 }
                 try {
-                    pathAttributes.setModificationDate(dateParser.parse(lastModifiedDateTimeValue).getTime());
+                    attributes.setModificationDate(dateParser.parse(lastModifiedDateTimeValue).getTime());
                 }
                 catch(InvalidDateException e) {
                     log.warn(String.format("Cannot parse Last Modified Date Time. lastModifiedDateTime on FilesystemInfo Facet returned %s", jsonObject.get("lastModifiedDateTime")), e);
@@ -124,7 +123,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             }
         }
 
-        return pathAttributes;
+        return attributes;
     }
 
     @Override
