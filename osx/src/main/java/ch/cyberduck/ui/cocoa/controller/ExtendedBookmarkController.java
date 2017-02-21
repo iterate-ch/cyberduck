@@ -190,13 +190,11 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     }
 
     private void addDownloadPath(final Local f) {
-        if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
-            downloadPathPopup.addItemWithTitle(f.getDisplayName());
-            downloadPathPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(f, 16));
-            downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
-            if(new DownloadDirectoryFinder().find(bookmark).equals(f)) {
-                downloadPathPopup.selectItem(downloadPathPopup.lastItem());
-            }
+        downloadPathPopup.addItemWithTitle(f.getDisplayName());
+        downloadPathPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().fileIcon(f, 16));
+        downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
+        if(new DownloadDirectoryFinder().find(bookmark).equals(f)) {
+            downloadPathPopup.selectItem(downloadPathPopup.lastItem());
         }
     }
 
