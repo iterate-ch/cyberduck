@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -22,17 +23,15 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
-import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 
+import java.io.IOException;
 import java.net.URL;
 
 import com.eclipsesource.json.JsonObject;
 
 public class OneDriveTouchFeature implements Touch {
-    private static final Logger log = Logger.getLogger(OneDriveTouchFeature.class);
 
     private final OneDriveSession session;
 
@@ -56,18 +55,17 @@ public class OneDriveTouchFeature implements Touch {
         final URL apiUrl = session.getUrl(builder);
 
         try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(session.getClient(), apiUrl, "POST");
+            OneDriveJsonRequest request = new OneDriveJsonRequest(apiUrl, "POST");
             JsonObject requestObject = new JsonObject();
             requestObject.add("name", file.getName());
             requestObject.add("file", new JsonObject());
-            OneDriveJsonResponse response = request.send();
-            final int responseCode = response.getResponseCode();
-            if(responseCode != 201) {
-                log.error(String.format("File could not be created %s. API answered %d", file.getAbsolute(), responseCode));
-            }
+            request.sendRequest(session.getClient().getExecutor()).close();
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

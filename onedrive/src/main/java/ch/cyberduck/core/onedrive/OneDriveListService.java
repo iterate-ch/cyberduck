@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -59,22 +60,23 @@ public class OneDriveListService implements ListService {
                 final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient(), apiUrl);
                 while(iter.hasNext()) {
                     final OneDriveResource.Metadata metadata = iter.next();
-                    children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume)));
+                    final PathAttributes attributes = new PathAttributes();
+                    children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
                 }
             }
             else {
                 final OneDriveItemIterator iter = new OneDriveItemIterator(session.getClient(), apiUrl);
                 while(iter.hasNext()) {
                     final OneDriveItem.Metadata metadata = iter.next();
+                    final PathAttributes attributes = new PathAttributes();
                     children.add(new Path(directory, metadata.getName(),
-                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)));
+                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
                 }
             }
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext() which in return should fail fast
-            throw new BackgroundException(e);
+            throw new OneDriveExceptionMappingService().map(e.getCause());
         }
-
         return children;
     }
 }

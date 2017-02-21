@@ -15,22 +15,21 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveRequest;
-import org.nuxeo.onedrive.client.OneDriveResponse;
+import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
 public class OneDriveDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(OneDriveDeleteFeature.class);
 
     private final OneDriveSession session;
 
@@ -52,15 +51,14 @@ public class OneDriveDeleteFeature implements Delete {
             final URL apiUrl = session.getUrl(builder);
 
             try {
-                OneDriveRequest request = new OneDriveRequest(session.getClient(), apiUrl, "DELETE");
-                OneDriveResponse response = request.send();
-                final int responseCode = response.getResponseCode();
-                if(responseCode != 204) {
-                    log.error(String.format("Could not delete %s. API reponse %d", file.getAbsolute(), responseCode));
-                }
+                OneDriveJsonRequest request = new OneDriveJsonRequest(apiUrl, "DELETE");
+                request.sendRequest(session.getClient().getExecutor()).close();
             }
             catch(OneDriveAPIException e) {
                 throw new OneDriveExceptionMappingService().map(e);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
     }

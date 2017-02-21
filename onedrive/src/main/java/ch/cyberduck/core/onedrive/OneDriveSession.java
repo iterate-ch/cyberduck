@@ -42,12 +42,15 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
+import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -56,16 +59,14 @@ import java.util.Arrays;
 
 import com.eclipsesource.json.JsonObject;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
-    private HttpTransport transport;
     private Credential credential;
-
     private OAuth2AuthorizationService authorizationService;
+    private OneDriveCommonsHttpRequestExecutor httpRequestExecutor;
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -73,15 +74,26 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     @Override
     protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
-        this.transport = new ApacheHttpTransport(builder.build(this).build());
-        this.authorizationService = new OAuth2AuthorizationService(transport,
+        final CloseableHttpClient client = builder.build(this).build();
+        this.authorizationService = new OAuth2AuthorizationService(
+                new ApacheHttpTransport(client),
                 "https://login.live.com/oauth20_token.srf", "https://login.live.com/oauth20_authorize.srf",
                 "372770ba-bb24-436b-bbd4-19bc86310c0e",
                 "mJjWVkmfD9FVHNFTpbrdowv",
                 Arrays.asList("onedrive.readwrite", "wl.offline_access"))
                 .withRedirectUri("https://cyberduck.io/oauth");
-
+        this.httpRequestExecutor = new OneDriveCommonsHttpRequestExecutor(client) {
+            @Override
+            protected void authenticate(final HttpRequestBase request) {
+                request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
+            }
+        };
         return new OneDriveAPI() {
+            @Override
+            public RequestExecutor getExecutor() {
+                return httpRequestExecutor;
+            }
+
             @Override
             public boolean isBusinessConnection() {
                 return false;
@@ -100,11 +112,6 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             @Override
             public String getEmailURL() {
                 return "https://apis.live.net/v5.0/me";
-            }
-
-            @Override
-            public String getAccessToken() {
-                return credential.getAccessToken();
             }
         };
     }
@@ -139,7 +146,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            transport.shutdown();
+            httpRequestExecutor.shutdown();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -186,18 +193,21 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return new URL(builder.toString());
         }
         catch(MalformedURLException e) {
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
     public JsonObject getSimpleResult(final URL url) throws BackgroundException {
         try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(getClient(), url, "GET");
-            OneDriveJsonResponse response = request.send();
+            OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
+            OneDriveJsonResponse response = request.sendRequest(client.getExecutor());
             return response.getContent();
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -208,10 +218,10 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return (T) new OneDriveDirectoryFeature(this);
         }
         if(type == Read.class) {
-            return (T) new OneDriveReadFeature();
+            return (T) new OneDriveReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new OneDriveWriteFeature();
+            return (T) new OneDriveWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new OneDriveDeleteFeature(this);

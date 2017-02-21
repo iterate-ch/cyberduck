@@ -32,7 +32,7 @@ public class OneDriveExceptionMappingServiceTest {
         assertTrue(new OneDriveExceptionMappingService().map(
                 new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
         assertTrue(new OneDriveExceptionMappingService().map(
-                new OneDriveAPIException("The API returned an error code: " + 404, 404, "m")) instanceof NotfoundException);
+                new OneDriveAPIException("m", 404)) instanceof NotfoundException);
         assertTrue(new OneDriveExceptionMappingService().map(
                 new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
     }

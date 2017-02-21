@@ -15,17 +15,40 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveRequest;
+import org.nuxeo.onedrive.client.OneDriveResponse;
+
+import java.io.IOException;
 import java.io.InputStream;
 
 public class OneDriveReadFeature implements Read {
+
+    private final OneDriveSession session;
+
+    public OneDriveReadFeature(final OneDriveSession session) {
+        this.session = session;
+    }
+
     @Override
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
-        return null;
+        try {
+            OneDriveRequest request = new OneDriveRequest(null, "GET");
+            OneDriveResponse response = request.sendRequest(session.getClient().getExecutor());
+            return response.getContent();
+        }
+        catch(OneDriveAPIException e) {
+            throw new OneDriveExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

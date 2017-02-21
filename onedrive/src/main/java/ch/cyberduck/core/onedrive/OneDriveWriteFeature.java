@@ -16,21 +16,24 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class OneDriveWriteFeature implements Write<Void> {
-    @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return null;
+public class OneDriveWriteFeature extends AbstractHttpWriteFeature<Void> {
+
+    private final OneDriveSession session;
+
+    public OneDriveWriteFeature(final OneDriveSession session) {
+        super(session);
+        this.session = session;
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
         return null;
     }
 
@@ -46,6 +49,6 @@ public class OneDriveWriteFeature implements Write<Void> {
 
     @Override
     public ChecksumCompute checksum() {
-        return null;
+        return new DisabledChecksumCompute();
     }
 }
