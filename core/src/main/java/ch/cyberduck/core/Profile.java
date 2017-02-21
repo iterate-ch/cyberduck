@@ -320,7 +320,7 @@ public class Profile implements Protocol, Serializable {
     public String getClientId() {
         final String v = this.value("OAuth Client ID");
         if(StringUtils.isBlank(v)) {
-            return parent.getAuthorization();
+            return parent.getClientId();
         }
         return v;
     }
@@ -329,7 +329,7 @@ public class Profile implements Protocol, Serializable {
     public String getClientSecret() {
         final String v = this.value("OAuth Client Secret");
         if(StringUtils.isBlank(v)) {
-            return parent.getAuthorization();
+            return parent.getClientSecret();
         }
         return v;
     }
