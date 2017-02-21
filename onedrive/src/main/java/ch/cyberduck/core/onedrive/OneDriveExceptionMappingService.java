@@ -16,15 +16,27 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpResponseException;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
+import java.io.IOException;
+
 public class OneDriveExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
     @Override
-    public BackgroundException map(final OneDriveAPIException exception) {
-        return new HttpResponseExceptionMappingService().map(new HttpResponseException(exception.getResponseCode(), exception.getResponse()));
+    public BackgroundException map(final OneDriveAPIException failure) {
+        if(StringUtils.isNotBlank(failure.getResponse())) {
+            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), failure.getResponse()));
+        }
+        if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
+            return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
+        }
+        return new InteroperabilityException(failure.getMessage(), failure);
     }
 }
