@@ -92,8 +92,8 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         this.authorizationService = new OAuth2AuthorizationService(client,
                 "https://api.dropboxapi.com/1/oauth2/token",
                 "https://www.dropbox.com/1/oauth2/authorize",
-                preferences.getProperty("dropbox.oauth.clientid"),
-                preferences.getProperty("dropbox.oauth.clientsecret"),
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
                 Collections.emptyList())
                 .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())

@@ -138,8 +138,8 @@ public class GoogleStorageSession extends S3Session {
         final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(client.getHttpClient(),
                 OAuthConstants.GSOAuth2_10.Endpoints.Token,
                 OAuthConstants.GSOAuth2_10.Endpoints.Authorization,
-                preferences.getProperty("googlestorage.oauth.clientid"),
-                preferences.getProperty("googlestorage.oauth.secret"),
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
                 Collections.singletonList(OAuthConstants.GSOAuth2_10.Scopes.FullControl.toString())
         ).withRedirectUri(preferences.getProperty("googlestorage.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
@@ -150,8 +150,8 @@ public class GoogleStorageSession extends S3Session {
                        final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
         final Credential credentials = auth.authorize(host, keychain, prompt, cancel, tokens);
 
-        client.setProviderCredentials(new OAuth2ProviderCredentials(credentials, preferences.getProperty("googlestorage.oauth.clientid"),
-                preferences.getProperty("googlestorage.oauth.secret")));
+        client.setProviderCredentials(new OAuth2ProviderCredentials(
+                credentials, host.getProtocol().getClientId(), host.getProtocol().getClientSecret()));
 
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));

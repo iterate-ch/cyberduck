@@ -107,8 +107,8 @@ public class DriveSession extends HttpSession<Drive> {
                       final Cache<Path> cache) throws BackgroundException {
         final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(transport,
                 GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-                preferences.getProperty("googledrive.oauth.clientid"),
-                preferences.getProperty("googledrive.oauth.clientsecret"),
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
                 Collections.singletonList(DriveScopes.DRIVE))
                 .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);

@@ -70,8 +70,8 @@ public class HubicSession extends SwiftSession {
         final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(client.getClient(),
                 "https://api.hubic.com/oauth/token",
                 "https://api.hubic.com/oauth/auth",
-                preferences.getProperty("hubic.oauth.clientid"),
-                preferences.getProperty("hubic.oauth.secret"),
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
                 Collections.singletonList("credentials.r")
         ).withRedirectUri(preferences.getProperty("hubic.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
