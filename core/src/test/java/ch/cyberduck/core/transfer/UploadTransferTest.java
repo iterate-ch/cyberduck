@@ -375,7 +375,7 @@ public class UploadTransferTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }

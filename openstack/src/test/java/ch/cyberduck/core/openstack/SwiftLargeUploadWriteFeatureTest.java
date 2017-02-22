@@ -16,6 +16,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -59,7 +60,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = feature.write(file, status);
+        final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
@@ -93,7 +94,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = feature.write(file, status);
+        final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed

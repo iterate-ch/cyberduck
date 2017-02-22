@@ -3,6 +3,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -125,7 +126,7 @@ public class S3WriteFeatureTest {
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         try {
-            feature.write(file, status);
+            feature.write(file, status, new DisabledConnectionCallback());
         }
         finally {
             session.close();
@@ -150,7 +151,7 @@ public class S3WriteFeatureTest {
         final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
-            feature.write(file, status);
+            feature.write(file, status, new DisabledConnectionCallback());
         }
         catch(InteroperabilityException e) {
             assertEquals("A header you provided implies functionality that is not implemented. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -179,7 +180,7 @@ public class S3WriteFeatureTest {
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
-            feature.write(file, status);
+            feature.write(file, status, new DisabledConnectionCallback());
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
         finally {

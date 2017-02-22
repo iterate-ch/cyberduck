@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -67,7 +68,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
             status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);
-        new DefaultStreamCloser().close(writer.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
     }
 
     @Override

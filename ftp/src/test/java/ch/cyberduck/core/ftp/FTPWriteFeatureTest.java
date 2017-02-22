@@ -2,6 +2,7 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -50,7 +51,7 @@ public class FTPWriteFeatureTest {
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new FTPWriteFeature(session).write(test, status);
+        final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -91,7 +92,7 @@ public class FTPWriteFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(1024L);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             // Write first 1024
             new StreamCopier(status, status).withOffset(0L).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -104,7 +105,7 @@ public class FTPWriteFeatureTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -132,7 +133,7 @@ public class FTPWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -145,7 +146,7 @@ public class FTPWriteFeatureTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -167,7 +168,7 @@ public class FTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new FTPWorkdirService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new FTPWriteFeature(session).write(test, new TransferStatus());
+        new FTPWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
     }
 
     @Test

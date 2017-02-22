@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -57,9 +58,9 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     @Override
     public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                  final StreamListener listener, final TransferStatus status,
-                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+                                 final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+        return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
     }
 
     @Override

@@ -133,7 +133,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             else {
                 // Submit to queue
-                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length));
+                segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
                             segment, length, offset));
@@ -197,7 +197,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
 
     private Future<StorageObject> submit(final ThreadPool<StorageObject> pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
-                                         final TransferStatus overall, final Long offset, final Long length) {
+                                         final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
         return pool.execute(new AbstractRetryCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
@@ -221,7 +221,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 public void setComplete() {
                                     status.setComplete();
                                 }
-                            });
+                            }, callback);
                 }
                 catch(BackgroundException e) {
                     if(this.retry(e, new DisabledProgressListener(), overall)) {

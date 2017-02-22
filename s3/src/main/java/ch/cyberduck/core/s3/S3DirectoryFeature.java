@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -76,7 +77,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             // Add placeholder object
             status.setMime(MIMETYPE);
             file.getType().add(Path.Type.placeholder);
-            new DefaultStreamCloser().close(writer.write(file, status));
+            new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
         }
     }
 

@@ -147,7 +147,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 if(!skip) {
                     final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / B2LargeUploadService.MAXIMUM_UPLOAD_PARTS), partSize), remaining);
                     // Submit to queue
-                    parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length));
+                    parts.add(this.submit(pool, file, local, throttle, listener, status, partNumber, offset, length, callback));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Part %s submitted with size %d and offset %d",
                                 partNumber, length, offset));
@@ -207,7 +207,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                                 final BandwidthThrottle throttle, final StreamListener listener,
                                                 final TransferStatus overall,
                                                 final int partNumber,
-                                                final Long offset, final Long length) {
+                                                final Long offset, final Long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
@@ -238,7 +238,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                         public void setComplete() {
                             status.setComplete();
                         }
-                    });
+                    }, callback);
                 }
                 catch(BackgroundException e) {
                     if(this.retry(e, new DisabledProgressListener(), overall)) {

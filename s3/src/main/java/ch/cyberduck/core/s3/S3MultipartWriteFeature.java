@@ -1,6 +1,7 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -75,7 +76,7 @@ public class S3MultipartWriteFeature implements Write<List<MultipartPart>> {
     }
 
     @Override
-    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService(), accelerateTransferOption)
                 .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.

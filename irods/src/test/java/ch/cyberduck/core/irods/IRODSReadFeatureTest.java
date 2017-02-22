@@ -84,7 +84,7 @@ public class IRODSReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(false);
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status);
+        final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

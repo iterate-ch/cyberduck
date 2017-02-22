@@ -4,6 +4,7 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -54,7 +55,7 @@ public class SFTPWriteFeatureTest {
         new Random().nextBytes(content);
         status.setLength(content.length);
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status),
+        final OutputStream out = new ThrottledOutputStream(new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback()),
                 new BandwidthThrottle(102400f));
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -101,7 +102,7 @@ public class SFTPWriteFeatureTest {
         new Random().nextBytes(content);
         status.setLength(content.length);
         status.setExists(true);
-        final OutputStream out = new SFTPWriteFeature(session).write(symlink, status);
+        final OutputStream out = new SFTPWriteFeature(session).write(symlink, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         {
@@ -132,7 +133,7 @@ public class SFTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SFTPWriteFeature(session).write(test, new TransferStatus());
+        new SFTPWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
     }
 
     @Test
@@ -166,7 +167,7 @@ public class SFTPWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1024L);
             status.setOffset(0L);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
@@ -180,7 +181,7 @@ public class SFTPWriteFeatureTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
@@ -208,7 +209,7 @@ public class SFTPWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();
@@ -221,7 +222,7 @@ public class SFTPWriteFeatureTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final OutputStream out = feature.write(test, status);
+            final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.flush();
             out.close();

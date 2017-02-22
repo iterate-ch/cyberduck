@@ -290,7 +290,7 @@ public class UDTProxyConfiguratorTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(tunneled).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length));
+        final OutputStream out = new S3WriteFeature(tunneled).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

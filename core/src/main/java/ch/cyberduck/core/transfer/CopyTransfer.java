@@ -264,7 +264,7 @@ public class CopyTransfer extends Transfer {
             if(file.isFile()) {
                 in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status), throttle);
                 // Make sure to use S3MultipartWriteFeature, see #9362
-                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
+                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status, new DisabledConnectionCallback()), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())
                         .withListener(new DelegateStreamListener(streamListener) {
