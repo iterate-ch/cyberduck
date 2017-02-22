@@ -70,7 +70,7 @@ public class SpectraReadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        new SpectraReadFeature(session).read(test, status);
+        new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class SpectraReadFeatureTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        final InputStream in = new SpectraReadFeature(session).read(test, status);
+        final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);

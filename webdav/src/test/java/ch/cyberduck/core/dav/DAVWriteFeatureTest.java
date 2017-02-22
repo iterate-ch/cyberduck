@@ -71,12 +71,12 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
+            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length - 1L).append(true).skip(1L));
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length - 1L).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -121,7 +121,7 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -161,12 +161,12 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DAVFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -203,7 +203,7 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(source, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -238,7 +238,7 @@ public class DAVWriteFeatureTest {
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(source, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

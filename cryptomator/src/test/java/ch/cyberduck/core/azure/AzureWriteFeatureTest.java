@@ -97,7 +97,7 @@ public class AzureWriteFeatureTest {
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context, new AzureFindFeature(session, context), new AzureAttributesFinderFeature(session, context)), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, context), cryptomator).read(test, new TransferStatus().length(content.length));
+        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, context), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new AzureDeleteFeature(session, context), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

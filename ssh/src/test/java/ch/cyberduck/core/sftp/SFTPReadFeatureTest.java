@@ -59,7 +59,7 @@ public class SFTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class SFTPReadFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -121,7 +121,7 @@ public class SFTPReadFeatureTest {
             status.setLength(content.length);
             status.setAppend(true);
             status.setOffset(100L);
-            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
             new StreamCopier(status, status).withLimit(new Long(content.length - 100)).transfer(in, buffer);

@@ -84,7 +84,7 @@ public class SpectraUploadFeatureTest {
         final byte[] buffer = new byte[content.length];
         final TransferStatus readStatus = new TransferStatus().length(content.length);
         bulk.pre(Transfer.Type.download, Collections.singletonMap(test, readStatus));
-        final InputStream in = new SpectraReadFeature(session).read(test, readStatus);
+        final InputStream in = new SpectraReadFeature(session).read(test, readStatus, new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

@@ -19,7 +19,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -68,10 +67,10 @@ public class S3ReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             try {
-                if(this.accelerate(file, status, new DisabledConnectionCallback(), session.getHost())) {
+                if(this.accelerate(file, status, callback, session.getHost())) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, accelerateTransferOption));
                     }

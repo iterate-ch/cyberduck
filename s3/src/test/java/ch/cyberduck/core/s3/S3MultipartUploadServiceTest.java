@@ -261,7 +261,7 @@ public class S3MultipartUploadServiceTest {
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
@@ -333,7 +333,7 @@ public class S3MultipartUploadServiceTest {
         assertEquals(random.length, session.list(container,
                 new DisabledListProgressListener()).get(test).attributes().getSize());
         final byte[] buffer = new byte[random.length];
-        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new S3ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);

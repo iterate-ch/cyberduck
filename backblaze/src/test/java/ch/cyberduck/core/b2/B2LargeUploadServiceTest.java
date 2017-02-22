@@ -89,7 +89,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new DefaultFindFeature(session).find(test));
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
@@ -149,7 +149,7 @@ public class B2LargeUploadServiceTest {
         assertEquals(random.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[random.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);
@@ -207,7 +207,7 @@ public class B2LargeUploadServiceTest {
         assertTrue(new B2FindFeature(session).find(test));
         assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[random.length];
-        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus());
+        final InputStream in = new B2ReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(random, buffer);

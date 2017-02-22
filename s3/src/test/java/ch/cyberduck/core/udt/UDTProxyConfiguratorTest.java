@@ -250,12 +250,12 @@ public class UDTProxyConfiguratorTest {
         assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];
-            IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus()), buffer);
+            IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
             assertArrayEquals(random.getBytes(), buffer);
         }
         {
             final byte[] buffer = new byte[random.getBytes().length - 1];
-            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L));
+            final InputStream in = new S3ReadFeature(tunneled).read(test, new TransferStatus().length(random.getBytes().length).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[random.getBytes().length - 1];
@@ -298,7 +298,7 @@ public class UDTProxyConfiguratorTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new S3ReadFeature(tunneled).read(test, status);
+        final InputStream in = new S3ReadFeature(tunneled).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

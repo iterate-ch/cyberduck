@@ -55,7 +55,7 @@ public class DAVReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         try {
-            new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+            new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
             assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -102,12 +102,12 @@ public class DAVReadFeatureTest {
         final TransferStatus status = new TransferStatus();
         // Read a single byte
         {
-            final InputStream in = new DAVReadFeature(session).read(test, status);
+            final InputStream in = new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new DAVReadFeature(session).read(test, status);
+            final InputStream in = new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -140,7 +140,7 @@ public class DAVReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DAVReadFeature(session).read(test, status.length(content.length - 100));
+        final InputStream in = new DAVReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -178,7 +178,7 @@ public class DAVReadFeatureTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new DAVReadFeature(session).read(test, status);
+        final InputStream in = new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);
@@ -200,7 +200,7 @@ public class DAVReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
-        final CountingInputStream in = new CountingInputStream(new DAVReadFeature(session).read(test, status));
+        final CountingInputStream in = new CountingInputStream(new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         session.close();
