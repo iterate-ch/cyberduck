@@ -10,6 +10,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -56,20 +57,27 @@ public class S3MultipartWriteFeature implements Write<List<MultipartPart>> {
     private final S3Session session;
     private final Find finder;
     private final AttributesFinder attributes;
+    private final TransferAcceleration accelerateTransferOption;
 
     public S3MultipartWriteFeature(final S3Session session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, session.getFeature(TransferAcceleration.class));
     }
 
-    public S3MultipartWriteFeature(final S3Session session, final Find finder, final AttributesFinder attributes) {
+    public S3MultipartWriteFeature(final S3Session session, final TransferAcceleration accelerateTransferOption) {
+        this(session, accelerateTransferOption, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    }
+
+    public S3MultipartWriteFeature(final S3Session session, final TransferAcceleration accelerateTransferOption, final Find finder, final AttributesFinder attributes) {
         this.session = session;
+        this.accelerateTransferOption = accelerateTransferOption;
         this.finder = finder;
         this.attributes = attributes;
     }
 
     @Override
     public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+        final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService(), accelerateTransferOption)
+                .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
@@ -158,7 +166,8 @@ public class S3MultipartWriteFeature implements Write<List<MultipartPart>> {
                                     );
                                     break;
                             }
-                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService(), accelerateTransferOption)
+                                    .getDetails(containerService.getKey(file), status);
                             try {
                                 session.getClient().putObjectWithRequestEntityImpl(
                                         containerService.getContainer(file).getName(), part,

@@ -20,22 +20,17 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -52,25 +47,15 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private Long multipartThreshold
             = preferences.getLong("s3.upload.multipart.threshold");
 
-    private final TransferAcceleration<S3Session> accelerateTransferOption;
-
-    private final X509TrustManager trust;
-    private final X509KeyManager key;
-
     private Write<StorageObject> writer;
 
-    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final TransferAcceleration<S3Session> accelerateTransferOption) {
-        this(session, trust, key, accelerateTransferOption, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
+    public S3ThresholdUploadService(final S3Session session) {
+        this(session, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
     }
 
-    public S3ThresholdUploadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                    final TransferAcceleration<S3Session> accelerateTransferOption, final Long multipartThreshold) {
+    public S3ThresholdUploadService(final S3Session session, final Long multipartThreshold) {
         this.session = session;
-        this.trust = trust;
-        this.key = key;
         this.multipartThreshold = multipartThreshold;
-        this.accelerateTransferOption = accelerateTransferOption;
         this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
     }
 
@@ -82,21 +67,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        final Host bookmark = session.getHost();
-        try {
-            if(this.accelerate(file, status, prompt, bookmark)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, accelerateTransferOption));
-                }
-                accelerateTransferOption.configure(true, file, trust, key);
-            }
-            else {
-                log.warn(String.format("Transfer acceleration disabled for %s", file));
-            }
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
-        }
         if(status.getLength() > multipartThreshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
                 log.warn("Multipart upload is disabled with property s3.upload.multipart");
@@ -115,24 +85,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
-    }
-
-    protected boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
-        switch(session.getSignatureVersion()) {
-            case AWS2:
-                return false;
-        }
-        if(accelerateTransferOption.getStatus(file)) {
-            log.info(String.format("S3 transfer acceleration enabled for file %s", file));
-            return true;
-        }
-        if(preferences.getBoolean("s3.accelerate.prompt")) {
-            if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
-                log.info(String.format("S3 transfer acceleration enabled for file %s", file));
-                return true;
-            }
-        }
-        return false;
     }
 
     public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {

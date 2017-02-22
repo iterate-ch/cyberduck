@@ -32,8 +32,9 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.udt.UDTProxyConfigurator;
 import ch.cyberduck.core.udt.UDTProxyProvider;
@@ -129,12 +130,13 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
     }
 
     @Override
-    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+    public void configure(final boolean enable, final Path file) throws BackgroundException {
         final Location.Name location = session.getFeature(Location.class).getLocation(file);
         if(Location.unknown.equals(location)) {
             throw new AccessDeniedException("Cannot read bucket location");
         }
-        final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
+        final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(),
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost())), new KeychainX509KeyManager(session.getHost()));
         configurator.configure(session);
     }
 

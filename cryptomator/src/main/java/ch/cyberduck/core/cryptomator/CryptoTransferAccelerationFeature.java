@@ -23,17 +23,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class CryptoTransferAccelerationFeature<C extends HttpSession<?>> implements TransferAcceleration<C> {
+public class CryptoTransferAccelerationFeature<C extends HttpSession<?>> implements TransferAcceleration {
 
     private final Session<?> session;
-    private final TransferAcceleration<C> delegate;
+    private final TransferAcceleration delegate;
     private final Vault vault;
 
-    public CryptoTransferAccelerationFeature(final Session<?> session, final TransferAcceleration<C> delegate, final Vault vault) {
+    public CryptoTransferAccelerationFeature(final Session<?> session, final TransferAcceleration delegate, final Vault vault) {
         this.session = session;
         this.delegate = delegate;
         this.vault = vault;
@@ -55,7 +53,7 @@ public class CryptoTransferAccelerationFeature<C extends HttpSession<?>> impleme
     }
 
     @Override
-    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
-        delegate.configure(enable, vault.encrypt(session, file), trust, key);
+    public void configure(final boolean enable, final Path file) throws BackgroundException {
+        delegate.configure(enable, vault.encrypt(session, file));
     }
 }

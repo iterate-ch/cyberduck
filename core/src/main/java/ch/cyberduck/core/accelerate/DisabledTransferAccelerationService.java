@@ -22,11 +22,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class DisabledTransferAccelerationService<C extends HttpSession<?>> implements TransferAcceleration<C> {
+public class DisabledTransferAccelerationService<C extends HttpSession<?>> implements TransferAcceleration {
     @Override
     public boolean getStatus(final Path file) {
         return false;
@@ -43,7 +41,7 @@ public class DisabledTransferAccelerationService<C extends HttpSession<?>> imple
     }
 
     @Override
-    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+    public void configure(final boolean enable, final Path file) throws BackgroundException {
         throw new ConnectionCanceledException();
     }
 }
