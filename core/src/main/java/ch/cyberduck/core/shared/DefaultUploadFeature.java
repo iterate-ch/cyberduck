@@ -47,7 +47,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                         final StreamListener listener, final TransferStatus status,
                         final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = local.getInputStream();
-        final StatusOutputStream<Reply> out = writer.write(file, status);
+        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
         new StreamCopier(status, status)
                 .withOffset(status.getOffset())
                 .withLimit(status.getLength())

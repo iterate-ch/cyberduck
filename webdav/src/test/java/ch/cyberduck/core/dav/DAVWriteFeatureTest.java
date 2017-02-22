@@ -71,12 +71,12 @@ public class DAVWriteFeatureTest {
         assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
-            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus()), buffer);
+            IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
             assertArrayEquals(content, buffer);
         }
         {
             final byte[] buffer = new byte[content.length - 1];
-            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length - 1L).append(true).skip(1L));
+            final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length - 1L).append(true).skip(1L), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             final byte[] reference = new byte[content.length - 1];
@@ -103,7 +103,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setOffset(0L);
             status.setLength(1024L);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             // Write first 1024
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -116,12 +116,12 @@ public class DAVWriteFeatureTest {
             status.setLength(content.length - 1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -144,7 +144,7 @@ public class DAVWriteFeatureTest {
             status.setLength(1024L);
             status.setOffset(1024L);
             status.setAppend(true);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -156,17 +156,17 @@ public class DAVWriteFeatureTest {
             status.setOffset(0L);
             status.setLength(1024L);
             status.setAppend(true);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
         assertTrue(new DAVFindFeature(session).find(test));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length));
+        final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -189,7 +189,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -198,12 +198,12 @@ public class DAVWriteFeatureTest {
             status.setLength(1L);
             status.setOffset(1L);
             status.setAppend(true);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(source, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -224,7 +224,7 @@ public class DAVWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(1L);
             status.setOffset(0L);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
@@ -233,12 +233,12 @@ public class DAVWriteFeatureTest {
             status.setLength(2L);
             status.setOffset(1L);
             status.setAppend(true);
-            final HttpResponseOutputStream<String> out = feature.write(test, status);
+            final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(source), out);
             out.close();
         }
         final ByteArrayOutputStream out = new ByteArrayOutputStream(source.length);
-        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length)), out);
+        IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(source.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(source, out.toByteArray());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -253,7 +253,7 @@ public class DAVWriteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus());
+        final HttpResponseOutputStream<String> write = new DAVWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
         try {
             write.close();
             write.getStatus();
@@ -274,7 +274,7 @@ public class DAVWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new DefaultHomeFinderService(session).find().getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         // With Expect: Continue header
-        new DAVWriteFeature(session).write(test, new TransferStatus().length(1L));
+        new DAVWriteFeature(session).write(test, new TransferStatus().length(1L), new DisabledConnectionCallback());
     }
 
     @Test
@@ -319,7 +319,7 @@ public class DAVWriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(1024);
         status.setLength(content.length);
-        final HttpResponseOutputStream<String> out = feature.write(test, status);
+        final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();

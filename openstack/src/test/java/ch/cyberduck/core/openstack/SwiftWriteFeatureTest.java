@@ -4,6 +4,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -58,7 +59,7 @@ public class SwiftWriteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));
-        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status);
+        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -70,7 +71,7 @@ public class SwiftWriteFeatureTest {
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus());
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

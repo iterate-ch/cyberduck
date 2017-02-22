@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -24,19 +23,15 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.TransferAcceleration;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.model.AccelerateConfig;
 import org.jets3t.service.utils.ServiceUtils;
 
-public class S3TransferAccelerationService implements TransferAcceleration<S3Session> {
+public class S3TransferAccelerationService implements TransferAcceleration {
 
     private final PathContainerService containerService
             = new S3PathContainerService();
@@ -103,23 +98,25 @@ public class S3TransferAccelerationService implements TransferAcceleration<S3Ses
     }
 
     @Override
-    public S3Session open(final Host bookmark, final Path file, final X509TrustManager trust,
-                          final X509KeyManager key) throws BackgroundException {
-        final S3Session proxy = new S3Session(new Host(bookmark.getProtocol(), hostname, bookmark.getCredentials()), trust, key) {
-            @Override
-            protected Jets3tProperties configure() {
-                final Jets3tProperties options = super.configure();
-                options.setProperty("s3service.disable-dns-buckets", String.valueOf(false));
-                options.setProperty("s3service.disable-expect-continue", String.valueOf(true));
-                return options;
-            }
-        };
-        final RequestEntityRestStorageService client = proxy.open(new DisabledHostKeyCallback());
-        // Swap credentials. No login required
-        client.setProviderCredentials(session.getClient().getProviderCredentials());
-        final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
-        cache.putRegionForBucketName(containerService.getContainer(file).getName(), session.getFeature(Location.class).getLocation(file).getIdentifier());
-        client.setRegionEndpointCache(cache);
-        return proxy;
+    public void configure(final boolean enable, final Path file) throws BackgroundException {
+        final Jets3tProperties options = session.getClient().getJetS3tProperties();
+        if(enable) {
+            // Set accelerated endpoint
+            options.setProperty("s3service.s3-endpoint", hostname);
+            options.setProperty("s3service.disable-dns-buckets", String.valueOf(false));
+            options.setProperty("s3service.disable-expect-continue", String.valueOf(true));
+        }
+        else {
+            // Revert default configuration
+            options.loadAndReplaceProperties(session.configure(), this.toString());
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("S3TransferAccelerationService{");
+        sb.append("hostname='").append(hostname).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

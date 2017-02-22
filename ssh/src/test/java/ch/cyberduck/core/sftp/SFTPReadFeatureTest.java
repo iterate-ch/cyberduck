@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -58,7 +59,7 @@ public class SFTPReadFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final TransferStatus status = new TransferStatus();
-        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new SFTPReadFeature(session).read(new Path(new SFTPHomeDirectoryService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -76,7 +77,7 @@ public class SFTPReadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -84,7 +85,7 @@ public class SFTPReadFeatureTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(in, buffer);
@@ -110,7 +111,7 @@ public class SFTPReadFeatureTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().length(content.length);
-            final OutputStream out = new SFTPWriteFeature(session).write(test, status);
+            final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -120,7 +121,7 @@ public class SFTPReadFeatureTest {
             status.setLength(content.length);
             status.setAppend(true);
             status.setOffset(100L);
-            final InputStream in = new SFTPReadFeature(session).read(test, status);
+            final InputStream in = new SFTPReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
             new StreamCopier(status, status).withLimit(new Long(content.length - 100)).transfer(in, buffer);

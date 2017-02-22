@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -89,7 +90,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             @Override
             public Void call(final AbstractHttpEntity entity) throws BackgroundException {

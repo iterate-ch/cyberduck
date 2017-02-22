@@ -18,9 +18,11 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
@@ -44,7 +46,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
 
     public S3TouchFeature(final S3Session session) {
         this.session = session;
-        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService());
+        this.writer = new S3WriteFeature(session, new S3DisabledMultipartService(), new DisabledTransferAccelerationService());
     }
 
     @Override
@@ -66,7 +68,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
             status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);
-        new DefaultStreamCloser().close(writer.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
     }
 
     @Override

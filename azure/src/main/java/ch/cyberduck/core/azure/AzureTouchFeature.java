@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -46,7 +47,7 @@ public class AzureTouchFeature implements Touch<Void> {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        new DefaultStreamCloser().close(writer.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
     }
 
     @Override

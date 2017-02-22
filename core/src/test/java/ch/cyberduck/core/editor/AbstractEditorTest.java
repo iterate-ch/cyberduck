@@ -17,6 +17,7 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.DisabledTranscriptListener;
@@ -80,7 +81,7 @@ public class AbstractEditorTest {
                 if(type.equals(Read.class)) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             t.set(true);
                             return IOUtils.toInputStream("content", Charset.defaultCharset());
                         }

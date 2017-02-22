@@ -16,6 +16,7 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -81,7 +82,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public HttpResponseOutputStream<BaseB2Response> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>() {
             /**

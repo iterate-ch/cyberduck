@@ -15,6 +15,7 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
@@ -86,7 +87,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     }
 
     @Override
-    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {

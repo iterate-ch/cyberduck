@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -77,7 +78,7 @@ public class SpectraWriteFeatureTest {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -86,7 +87,7 @@ public class SpectraWriteFeatureTest {
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true));
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -119,7 +120,7 @@ public class SpectraWriteFeatureTest {
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
-        final OutputStream out = new SpectraWriteFeature(session).write(test, status);
+        final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();

@@ -265,31 +265,32 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
-            return (T) new S3ReadFeature(this);
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3ReadFeature(this, new S3TransferAccelerationService(this));
+            }
+            return (T) new S3ReadFeature(this, new DisabledTransferAccelerationService());
         }
         if(type == MultipartWrite.class) {
-            return (T) new S3MultipartWriteFeature(this);
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3MultipartWriteFeature(this, new S3TransferAccelerationService(this));
+            }
+            return (T) new S3MultipartWriteFeature(this, new DisabledTransferAccelerationService());
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this);
-        }
-        if(type == Download.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ThresholdDownloadService(this, trust, key, new S3TransferAccelerationService(this));
+                return (T) new S3WriteFeature(this, new S3TransferAccelerationService(this));
             }
-            return (T) new S3ThresholdDownloadService(this, trust, key, new DisabledTransferAccelerationService());
+            return (T) new S3WriteFeature(this, new DisabledTransferAccelerationService());
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 // With S3 Transfer Acceleration enabled
-                return (T) new S3ThresholdUploadService(this, trust, key, new S3TransferAccelerationService(this)
-                );
+                return (T) new S3ThresholdUploadService(this);
             }
-            return (T) new S3ThresholdUploadService(this, trust, key, new DisabledTransferAccelerationService()
-            );
+            return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
+            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService(), new DisabledTransferAccelerationService()));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, new S3AccessControlListFeature(this));

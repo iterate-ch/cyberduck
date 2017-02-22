@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -85,7 +86,7 @@ public class SFTPWriteFeatureTest {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = writer.write(test, status);
+        final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -93,7 +94,7 @@ public class SFTPWriteFeatureTest {
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length));
+        final InputStream in = new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

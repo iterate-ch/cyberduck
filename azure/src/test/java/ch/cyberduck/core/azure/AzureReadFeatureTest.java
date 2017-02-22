@@ -2,6 +2,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -45,7 +46,7 @@ public class AzureReadFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new AzureReadFeature(session, null).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -60,14 +61,14 @@ public class AzureReadFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
-        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().length(content.length));
+        final OutputStream out = new AzureWriteFeature(session, null).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new AzureReadFeature(session, null).read(test, status);
+        final InputStream in = new AzureReadFeature(session, null).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

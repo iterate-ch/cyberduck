@@ -16,6 +16,7 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,8 +38,8 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public StatusOutputStream<T> write(final Path file, final TransferStatus status) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Write.class, proxy).write(file, status);
+    public StatusOutputStream<T> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Write.class, proxy).write(file, status, callback);
     }
 
     @Override

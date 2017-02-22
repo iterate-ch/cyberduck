@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -174,7 +175,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }
@@ -285,7 +286,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }

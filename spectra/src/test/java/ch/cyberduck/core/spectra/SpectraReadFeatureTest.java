@@ -16,6 +16,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -69,7 +70,7 @@ public class SpectraReadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        new SpectraReadFeature(session).read(test, status);
+        new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -91,12 +92,12 @@ public class SpectraReadFeatureTest {
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session).write(test, status);
+        final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(test, status));
-        final InputStream in = new SpectraReadFeature(session).read(test, status);
+        final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);

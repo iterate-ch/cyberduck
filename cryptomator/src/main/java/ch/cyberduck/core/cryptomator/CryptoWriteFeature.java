@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -59,14 +60,14 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public StatusOutputStream<Reply> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(vault.contains(file)) {
             try {
                 final Path encrypted = vault.encrypt(session, file);
                 final Cryptor cryptor = vault.getCryptor();
                 // Header
                 final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
-                final StatusOutputStream<Reply> proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())));
+                final StatusOutputStream<Reply> proxy = delegate.write(encrypted, status.length(vault.toCiphertextSize(status.getLength())), callback);
                 proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
                 return new CryptoOutputStream<Reply>(proxy, cryptor, header);
             }
@@ -74,7 +75,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
         }
-        return delegate.write(file, status);
+        return delegate.write(file, status, callback);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -53,7 +54,7 @@ public class AzureWriteFeatureTest {
         status.setMetadata(Collections.singletonMap("Cache-Control", "public,max-age=86400"));
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final OutputStream out = new AzureWriteFeature(session, context).write(test, status);
+        final OutputStream out = new AzureWriteFeature(session, context).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertTrue(new AzureFindFeature(session, context).find(test));
@@ -64,12 +65,12 @@ public class AzureWriteFeatureTest {
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
         assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus());
+        final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus()
-                .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")));
+                .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
         overwrite.close();
