@@ -47,10 +47,6 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
-    public S3ThresholdDownloadService(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        this(session, trust, key, new S3TransferAccelerationService(session));
-    }
-
     public S3ThresholdDownloadService(final S3Session session,
                                       final X509TrustManager trust,
                                       final X509KeyManager key,
@@ -68,12 +64,10 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
         final Host bookmark = session.getHost();
         try {
             if(this.accelerate(file, status, prompt, bookmark)) {
-                final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tunnel download for file %s through accelerated endpoint %s", file, tunneled));
+                    log.info(String.format("Tunnel download for file %s through accelerated endpoint %s", file, accelerateTransferOption));
                 }
-                new DefaultDownloadFeature(new S3ReadFeature(tunneled)).download(file, local, throttle, listener, status, prompt);
-                return;
+                accelerateTransferOption.configure(true, file, trust, key);
             }
             else {
                 log.warn(String.format("Transfer acceleration disabled for %s", file));
@@ -89,9 +83,6 @@ public class S3ThresholdDownloadService extends DefaultDownloadFeature {
         switch(session.getSignatureVersion()) {
             case AWS2:
                 return false;
-        }
-        if(file.getType().contains(Path.Type.encrypted)) {
-            return false;
         }
         if(accelerateTransferOption.getStatus(file)) {
             log.info(String.format("S3 transfer acceleration enabled for file %s", file));

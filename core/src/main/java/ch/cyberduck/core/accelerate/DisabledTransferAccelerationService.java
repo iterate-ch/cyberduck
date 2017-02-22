@@ -43,7 +43,7 @@ public class DisabledTransferAccelerationService<C extends HttpSession<?>> imple
     }
 
     @Override
-    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
         throw new ConnectionCanceledException();
     }
 }

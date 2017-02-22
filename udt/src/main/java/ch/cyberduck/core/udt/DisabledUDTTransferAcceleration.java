@@ -44,7 +44,7 @@ public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implement
     }
 
     @Override
-    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
         throw new ConnectionCanceledException();
     }
 

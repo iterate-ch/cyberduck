@@ -22,8 +22,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,15 +48,15 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
 
     private final QloudsonicVoucherFinder voucher;
 
-    private final Session<?> session;
+    private final HttpSession<?> session;
 
     private Long udtThreshold = Long.MAX_VALUE;
 
-    public QloudsonicTransferAcceleration(final Session session) {
+    public QloudsonicTransferAcceleration(final HttpSession<?> session) {
         this(session, new QloudsonicVoucherFinder());
     }
 
-    public QloudsonicTransferAcceleration(final Session session, final QloudsonicVoucherFinder voucher) {
+    public QloudsonicTransferAcceleration(final HttpSession<?> session, final QloudsonicVoucherFinder voucher) {
         this.session = session;
         this.voucher = voucher;
     }
@@ -131,17 +129,25 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
     }
 
     @Override
-    public HttpSession<?> open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
         final Location.Name location = session.getFeature(Location.class).getLocation(file);
         if(Location.unknown.equals(location)) {
             throw new AccessDeniedException("Cannot read bucket location");
         }
         final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(), trust, key);
-        return configurator.configure((HttpSession) SessionFactory.create(session.getHost(), trust, key));
+        configurator.configure(session);
     }
 
     public QloudsonicTransferAcceleration withUdtThreshold(final Long threshold) {
         this.udtThreshold = threshold;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("QloudsonicTransferAcceleration{");
+        sb.append("session=").append(session);
+        sb.append('}');
+        return sb.toString();
     }
 }

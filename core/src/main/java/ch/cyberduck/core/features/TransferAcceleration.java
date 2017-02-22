@@ -47,5 +47,5 @@ public interface TransferAcceleration<C extends HttpSession<?>> {
     boolean prompt(Host bookmark, Path file, TransferStatus status, ConnectionCallback prompt)
             throws BackgroundException;
 
-    C open(Host bookmark, Path file, X509TrustManager trust, X509KeyManager key) throws BackgroundException;
+    void configure(boolean enable, Path file, X509TrustManager trust, X509KeyManager key) throws BackgroundException;
 }

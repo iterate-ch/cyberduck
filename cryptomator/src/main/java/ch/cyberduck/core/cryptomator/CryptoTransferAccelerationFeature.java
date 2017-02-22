@@ -55,7 +55,7 @@ public class CryptoTransferAccelerationFeature<C extends HttpSession<?>> impleme
     }
 
     @Override
-    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
-        return delegate.open(bookmark, vault.encrypt(session, file), trust, key);
+    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+        delegate.configure(enable, vault.encrypt(session, file), trust, key);
     }
 }

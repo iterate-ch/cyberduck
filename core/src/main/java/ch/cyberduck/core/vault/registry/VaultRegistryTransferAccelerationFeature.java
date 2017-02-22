@@ -54,8 +54,7 @@ public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
-        return (C) registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).open(bookmark, file, trust, key);
+    public void configure(final boolean enable, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
+        registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).configure(enable, file, trust, key);
     }
 }

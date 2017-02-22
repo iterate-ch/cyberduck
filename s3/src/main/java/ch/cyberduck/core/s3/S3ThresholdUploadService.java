@@ -85,27 +85,10 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         final Host bookmark = session.getHost();
         try {
             if(this.accelerate(file, status, prompt, bookmark)) {
-                final S3Session tunneled = accelerateTransferOption.open(bookmark, file, trust, key);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, tunneled));
+                    log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, accelerateTransferOption));
                 }
-                if(status.getLength() > multipartThreshold) {
-                    if(!preferences.getBoolean("s3.upload.multipart")) {
-                        log.warn("Multipart upload is disabled with property s3.upload.multipart");
-                        // Disabled by user
-                        if(status.getLength() < preferences.getLong("s3.upload.multipart.required.threshold")) {
-                            // Use single upload service with accelerate proxy
-                            final S3SingleUploadService single = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
-                            return single.upload(file, local, throttle, listener, status, prompt);
-                        }
-                    }
-                    // Use multipart upload service with accelerate proxy
-                    final Upload<StorageObject> service = new S3MultipartUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
-                    return service.upload(file, local, throttle, listener, status, prompt);
-                }
-                // Use single upload service with accelerate proxy
-                final S3SingleUploadService service = new S3SingleUploadService(tunneled, new S3WriteFeature(tunneled, new S3DisabledMultipartService()));
-                return service.upload(file, local, throttle, listener, status, prompt);
+                accelerateTransferOption.configure(true, file, trust, key);
             }
             else {
                 log.warn(String.format("Transfer acceleration disabled for %s", file));
@@ -138,9 +121,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         switch(session.getSignatureVersion()) {
             case AWS2:
                 return false;
-        }
-        if(file.getType().contains(Path.Type.encrypted)) {
-            return false;
         }
         if(accelerateTransferOption.getStatus(file)) {
             log.info(String.format("S3 transfer acceleration enabled for file %s", file));
