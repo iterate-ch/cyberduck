@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
@@ -45,7 +46,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
@@ -63,7 +64,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             }
         }
-        return proxy.pre(type, encrypted);
+        return proxy.pre(type, encrypted, callback);
     }
 
     @Override

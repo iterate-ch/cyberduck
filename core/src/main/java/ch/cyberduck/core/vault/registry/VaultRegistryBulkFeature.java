@@ -15,6 +15,7 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -40,11 +41,11 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Path file : files.keySet()) {
-            return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files);
+            return (R) registry.find(session, file).getFeature(session, Bulk.class, proxy).pre(type, files, callback);
         }
-        return proxy.pre(type, files);
+        return proxy.pre(type, files, callback);
     }
 
     @Override

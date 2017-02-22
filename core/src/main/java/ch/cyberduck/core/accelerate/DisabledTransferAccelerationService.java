@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DisabledTransferAccelerationService<C extends HttpSession<?>> implements TransferAcceleration {
     @Override
@@ -36,7 +35,7 @@ public class DisabledTransferAccelerationService<C extends HttpSession<?>> imple
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
         return false;
     }
 

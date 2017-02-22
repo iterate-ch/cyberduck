@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface TransferAcceleration {
     /**
@@ -37,11 +36,10 @@ public interface TransferAcceleration {
     /**
      * @param bookmark Connection
      * @param file     File to transfer
-     * @param status   File transfer status
      * @param prompt   Prompt
      * @return True if the connection should be proxied
      */
-    boolean prompt(Host bookmark, Path file, TransferStatus status, ConnectionCallback prompt)
+    boolean prompt(Host bookmark, Path file, ConnectionCallback prompt)
             throws BackgroundException;
 
     /**

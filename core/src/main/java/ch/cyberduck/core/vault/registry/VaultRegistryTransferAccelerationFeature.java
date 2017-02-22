@@ -22,7 +22,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> implements TransferAcceleration {
@@ -47,8 +46,8 @@ public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> 
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).prompt(bookmark, file, status, prompt);
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).prompt(bookmark, file, prompt);
     }
 
     @Override
