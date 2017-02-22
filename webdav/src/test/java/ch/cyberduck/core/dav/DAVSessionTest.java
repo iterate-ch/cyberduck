@@ -374,6 +374,7 @@ public class DAVSessionTest {
         session.close();
     }
 
+    @Test
     public void testLoginChangeUsername() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav/basic");
