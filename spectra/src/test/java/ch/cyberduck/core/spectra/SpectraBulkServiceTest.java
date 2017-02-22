@@ -15,6 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
@@ -66,7 +67,7 @@ public class SpectraBulkServiceTest {
                 status.length(1L)
         );
         final SpectraBulkService service = new SpectraBulkService(session);
-        service.pre(Transfer.Type.upload, files);
+        service.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         service.query(Transfer.Type.upload, file, status);
@@ -94,7 +95,7 @@ public class SpectraBulkServiceTest {
         final TransferStatus fileStatus = new TransferStatus().length(1L);
         files.put(new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), fileStatus);
         final SpectraBulkService service = new SpectraBulkService(session);
-        final Set<UUID> set = service.pre(Transfer.Type.upload, files);
+        final Set<UUID> set = service.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertEquals(1, set.size());
         assertEquals(1, service.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, service.query(Transfer.Type.upload, directory, fileStatus).size());
@@ -117,7 +118,7 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus().length(1L)
-        ));
+        ), new DisabledConnectionCallback());
         session.close();
     }
 
@@ -136,7 +137,7 @@ public class SpectraBulkServiceTest {
         session.open(new DisabledHostKeyCallback());
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
                 new Path(String.format("/test.cyberduck.ch/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus()
-        ));
+        ), new DisabledConnectionCallback());
         assertTrue(keys.isEmpty());
         session.close();
     }
@@ -162,7 +163,7 @@ public class SpectraBulkServiceTest {
                 status.length(112640000000L)
         );
         final SpectraBulkService service = new SpectraBulkService(session);
-        service.pre(Transfer.Type.upload, files);
+        service.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         final List<TransferStatus> list = service.query(Transfer.Type.upload, file, status);
@@ -174,7 +175,7 @@ public class SpectraBulkServiceTest {
             offset += s.getLength();
         }
         try {
-            service.pre(Transfer.Type.download, files);
+            service.pre(Transfer.Type.download, files, new DisabledConnectionCallback());
             fail();
         }
         catch(BackgroundException e) {
@@ -208,7 +209,7 @@ public class SpectraBulkServiceTest {
                 status.length(118111600640L)
         );
         final SpectraBulkService service = new SpectraBulkService(session);
-        service.pre(Transfer.Type.upload, files);
+        service.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         for(Path file : files.keySet()) {

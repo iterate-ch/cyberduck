@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -90,12 +91,13 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      * Deletes the file if it already exists for upload type. Create a job to stream PUT object requests. Clients should use this before
      * putting objects to physical data stores.
      *
-     * @param type  Transfer type
-     * @param files Files and status
+     * @param type     Transfer type
+     * @param files    Files and status
+     * @param callback Prompt
      * @return Job status identifier list
      */
     @Override
-    public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {

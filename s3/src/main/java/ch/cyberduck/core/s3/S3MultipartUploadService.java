@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -111,7 +110,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService(), new DisabledTransferAccelerationService())
+                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
                         .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);

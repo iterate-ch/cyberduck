@@ -19,16 +19,13 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -69,55 +66,26 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final S3MultipartService multipartService;
     private final Find finder;
     private final AttributesFinder attributes;
-    private final TransferAcceleration accelerateTransferOption;
 
     public S3WriteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session), session.getFeature(TransferAcceleration.class));
-    }
-
-    public S3WriteFeature(final S3Session session, final TransferAcceleration accelerateTransferOption) {
-        this(session, new S3DefaultMultipartService(session), accelerateTransferOption);
+        this(session, new S3DefaultMultipartService(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService) {
-        this(session, multipartService, session.getFeature(TransferAcceleration.class));
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final TransferAcceleration accelerateTransferOption) {
-        this(session, multipartService, accelerateTransferOption, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+        this(session, multipartService, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
     public S3WriteFeature(final S3Session session, final S3MultipartService multipartService,
                           final Find finder, final AttributesFinder attributes) {
-        this(session, multipartService, session.getFeature(TransferAcceleration.class), finder, attributes);
-    }
-
-    public S3WriteFeature(final S3Session session, final S3MultipartService multipartService, final TransferAcceleration accelerateTransferOption,
-                          final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.multipartService = multipartService;
-        this.accelerateTransferOption = accelerateTransferOption;
         this.finder = finder;
         this.attributes = attributes;
     }
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            if(this.accelerate(file, status, callback, session.getHost())) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", file, accelerateTransferOption));
-                }
-                accelerateTransferOption.configure(true, file);
-            }
-            else {
-                log.warn(String.format("Transfer acceleration disabled for %s", file));
-            }
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
-        }
         final S3Object object = this.getDetails(containerService.getKey(file), status);
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
@@ -218,23 +186,5 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public ChecksumCompute checksum() {
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
-    }
-
-    protected boolean accelerate(final Path file, final TransferStatus status, final ConnectionCallback prompt, final Host bookmark) throws BackgroundException {
-        switch(session.getSignatureVersion()) {
-            case AWS2:
-                return false;
-        }
-        if(accelerateTransferOption.getStatus(file)) {
-            log.info(String.format("S3 transfer acceleration enabled for file %s", file));
-            return true;
-        }
-        if(preferences.getBoolean("s3.accelerate.prompt")) {
-            if(accelerateTransferOption.prompt(bookmark, file, status, prompt)) {
-                log.info(String.format("S3 transfer acceleration enabled for file %s", file));
-                return true;
-            }
-        }
-        return false;
     }
 }

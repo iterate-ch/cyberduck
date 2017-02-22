@@ -33,7 +33,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.accelerate.DisabledTransferAccelerationService;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -266,21 +265,21 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public <T> T _getFeature(final Class<T> type) {
         if(type == Read.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3ReadFeature(this, new S3TransferAccelerationService(this));
+                return (T) new S3ReadFeature(this);
             }
-            return (T) new S3ReadFeature(this, new DisabledTransferAccelerationService());
+            return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3MultipartWriteFeature(this, new S3TransferAccelerationService(this));
+                return (T) new S3MultipartWriteFeature(this);
             }
-            return (T) new S3MultipartWriteFeature(this, new DisabledTransferAccelerationService());
+            return (T) new S3MultipartWriteFeature(this);
         }
         if(type == Write.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                return (T) new S3WriteFeature(this, new S3TransferAccelerationService(this));
+                return (T) new S3WriteFeature(this);
             }
-            return (T) new S3WriteFeature(this, new DisabledTransferAccelerationService());
+            return (T) new S3WriteFeature(this);
         }
         if(type == Upload.class) {
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
@@ -290,7 +289,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ThresholdUploadService(this);
         }
         if(type == Directory.class) {
-            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService(), new DisabledTransferAccelerationService()));
+            return (T) new S3DirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
         }
         if(type == Move.class) {
             return (T) new S3MoveFeature(this, new S3AccessControlListFeature(this));
@@ -380,6 +379,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Only for AWS
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
+            }
+        }
+        if(type == Bulk.class) {
+            // Only for AWS
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }
         }
         return super._getFeature(type);

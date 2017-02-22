@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implements UDTTransferAcceleration<C> {
     @Override
@@ -37,7 +36,7 @@ public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implement
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
         return false;
     }
 
