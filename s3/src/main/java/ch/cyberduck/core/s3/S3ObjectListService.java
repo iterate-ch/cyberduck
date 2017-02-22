@@ -93,24 +93,22 @@ public class S3ObjectListService implements ListService {
             final AttributedList<Path> objects = new AttributedList<Path>();
             final Path container = containerService.getContainer(directory);
             objects.addAll(this.listObjects(container, directory, prefix, String.valueOf(Path.DELIMITER), listener));
-            if(preferences.getBoolean("s3.revisions.enable")) {
-                final Versioning feature = session.getFeature(Versioning.class);
-                if(feature != null && feature.getConfiguration(container).isEnabled()) {
-                    String priorLastKey = null;
-                    String priorLastVersionId = null;
-                    do {
-                        final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                                container.getName(), prefix, String.valueOf(Path.DELIMITER),
-                                preferences.getInteger("s3.listing.chunksize"),
-                                priorLastKey, priorLastVersionId, true);
-                        objects.addAll(this.listVersions(container, directory,
-                                Arrays.asList(chunk.getItems())));
-                        priorLastKey = chunk.getNextKeyMarker();
-                        priorLastVersionId = chunk.getNextVersionIdMarker();
-                        listener.chunk(directory, objects);
-                    }
-                    while(priorLastKey != null);
+            final Versioning feature = session.getFeature(Versioning.class);
+            if(feature != null && feature.getConfiguration(container).isEnabled()) {
+                String priorLastKey = null;
+                String priorLastVersionId = null;
+                do {
+                    final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
+                            container.getName(), prefix, String.valueOf(Path.DELIMITER),
+                            preferences.getInteger("s3.listing.chunksize"),
+                            priorLastKey, priorLastVersionId, true);
+                    objects.addAll(this.listVersions(container, directory,
+                            Arrays.asList(chunk.getItems())));
+                    priorLastKey = chunk.getNextKeyMarker();
+                    priorLastVersionId = chunk.getNextVersionIdMarker();
+                    listener.chunk(directory, objects);
                 }
+                while(priorLastKey != null);
             }
             return objects;
         }

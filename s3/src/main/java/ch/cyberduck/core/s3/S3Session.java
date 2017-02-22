@@ -330,13 +330,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Versioning.class) {
             if(preferences.getBoolean("s3.revisions.enable")) {
-                // Only for AWS
-                if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-                    if(null == versioning) {
-                        versioning = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
-                    }
-                    return (T) versioning;
+                if(null == versioning) {
+                    versioning = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
                 }
+                return (T) versioning;
             }
             return null;
         }
