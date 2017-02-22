@@ -129,7 +129,7 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file1, new ByteArrayInputStream(content), status));
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status);
             IOUtils.write(content, out);
             out.close();
@@ -146,7 +146,7 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file2, new ByteArrayInputStream(content), status));
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status);
             IOUtils.write(content, out);
             out.close();

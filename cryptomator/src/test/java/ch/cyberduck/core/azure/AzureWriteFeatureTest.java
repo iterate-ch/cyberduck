@@ -85,7 +85,7 @@ public class AzureWriteFeatureTest {
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-        status.setChecksum(writer.checksum().compute(test, new ByteArrayInputStream(content), status));
+        status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status);
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

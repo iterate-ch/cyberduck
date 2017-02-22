@@ -44,7 +44,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
             super.mkdir(file, region, status);
         }
         else {
-            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
             super.mkdir(file, region, status);
         }
     }

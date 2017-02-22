@@ -154,7 +154,7 @@ public class S3MultipartWriteFeature implements Write<List<MultipartPart>> {
                             switch(session.getSignatureVersion()) {
                                 case AWS4HMACSHA256:
                                     status.setChecksum(S3MultipartWriteFeature.this.checksum()
-                                            .compute(file, new ByteArrayInputStream(content, off, len), status)
+                                            .compute(new ByteArrayInputStream(content, off, len), status)
                                     );
                                     break;
                             }

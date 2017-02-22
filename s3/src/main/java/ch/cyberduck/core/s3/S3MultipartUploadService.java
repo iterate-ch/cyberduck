@@ -237,7 +237,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
                             status.setChecksum(writer.checksum()
-                                    .compute(file, StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                                    .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
                             );
                             break;
                     }

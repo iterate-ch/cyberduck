@@ -72,7 +72,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
                     status.setStorageClass(redundancy.getDefault());
                 }
             }
-            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
             file.getType().add(Path.Type.placeholder);

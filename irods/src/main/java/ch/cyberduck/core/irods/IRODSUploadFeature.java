@@ -92,7 +92,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
                     else {
-                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(file, local.getInputStream(), status);
+                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), status);
                         if(!expected.equals(fingerprint)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",

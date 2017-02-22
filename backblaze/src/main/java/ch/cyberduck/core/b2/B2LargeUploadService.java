@@ -222,7 +222,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                         throw new ConnectionCanceledException();
                     }
                     status.setChecksum(writer.checksum().compute(
-                            file, StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
+                            StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
                             status));
                     status.setSegment(true);
                     status.setPart(partNumber);

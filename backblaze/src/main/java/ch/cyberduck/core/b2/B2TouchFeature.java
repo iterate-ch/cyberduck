@@ -41,7 +41,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
+        status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))

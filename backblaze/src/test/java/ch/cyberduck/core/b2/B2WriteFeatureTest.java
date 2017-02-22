@@ -98,7 +98,7 @@ public class B2WriteFeatureTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = "test".getBytes("UTF-8");
         status.setLength(content.length);
-        status.setChecksum(new SHA1ChecksumCompute().compute(test, new ByteArrayInputStream(content), status));
+        status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new B2WriteFeature(session).write(test, status);
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
