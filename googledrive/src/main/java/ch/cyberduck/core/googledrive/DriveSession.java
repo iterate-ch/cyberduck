@@ -112,11 +112,11 @@ public class DriveSession extends HttpSession<Drive> {
                 Collections.singletonList(DriveScopes.DRIVE))
                 .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
-        this.login(auth, keychain, prompt, cancel, cache, tokens);
+        this.login(auth, keychain, prompt, cancel, tokens);
     }
 
     private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
-                       final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+                       final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
         credential = auth.authorize(host, keychain, prompt, cancel, tokens);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
@@ -130,7 +130,7 @@ public class DriveSession extends HttpSession<Drive> {
                 throw new DriveExceptionMappingService().map(e);
             }
             catch(LoginFailureException f) {
-                this.login(auth, keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+                this.login(auth, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
             }
         }
     }
