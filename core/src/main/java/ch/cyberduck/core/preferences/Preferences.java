@@ -708,6 +708,10 @@ public abstract class Preferences {
         defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
 
+        defaults.put("onedrive.oauth.clientid", "372770ba-bb24-436b-bbd4-19bc86310c0e");
+        defaults.put("onedrive.oauth.secret", "mJjWVkmfD9FVHNFTpbrdowv");
+        defaults.put("onedrive.oauth.redirecturi", "https://cyberduck.io/oauth");
+
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
 
