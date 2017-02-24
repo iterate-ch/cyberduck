@@ -33,6 +33,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -89,7 +90,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final BaseB2Response response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(((B2FileResponse) response).getContentSha1()));
+        this.verify(file, digest, Checksum.parse(StringUtils.removeStart(((B2FileResponse) response).getContentSha1(), "unverified:")));
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {
