@@ -132,13 +132,16 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             OneDriveFolder folder = OneDriveFolder.getRoot(client);
             OneDriveFolder.Metadata metadata = folder.getMetadata();
         }
-        catch(IOException e) {
+        catch(OneDriveAPIException e) {
             try {
-                throw new OneDriveExceptionMappingService().map((OneDriveAPIException)e);
+                throw new OneDriveExceptionMappingService().map(e);
             }
             catch(LoginFailureException f) {
                 this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
             }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
