@@ -22,6 +22,6 @@ import static org.junit.Assert.assertEquals;
 public class OneDriveProtocolTest {
     @Test
     public void testPrefix() {
-        assertEquals("ch.cyberduck.core.onedrive.Drive", new OneDriveProtocol().getPrefix());
+        assertEquals("ch.cyberduck.core.onedrive.OneDrive", new OneDriveProtocol().getPrefix());
     }
 }
