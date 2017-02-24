@@ -18,6 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -28,6 +29,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
@@ -41,7 +43,7 @@ import java.util.concurrent.Future;
 
 import com.dropbox.core.http.HttpRequestor;
 
-public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
+public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
     private static final Logger log = Logger.getLogger(DropboxCommonsHttpRequestExecutor.class);
 
     private final CloseableHttpClient client;
@@ -168,7 +170,12 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
         };
     }
 
-    public void shutdown() throws IOException {
+    public HttpClient getClient() {
+        return client;
+    }
+
+    @Override
+    public void close() throws IOException {
         client.close();
     }
 }
