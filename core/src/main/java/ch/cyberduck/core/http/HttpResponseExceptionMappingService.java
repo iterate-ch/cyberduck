@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -68,6 +69,9 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new ConnectionRefusedException(buffer.toString(), failure);
             case HttpStatus.SC_REQUEST_TIMEOUT:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
+            case 429:
+                // Rate limiting
+                return new RetriableAccessDeniedException(buffer.toString(), failure);
         }
         return this.wrap(failure, buffer);
     }
