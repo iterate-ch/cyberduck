@@ -28,7 +28,7 @@ public interface Write<Reply> {
 
     /**
      * @param status   Transfer status
-     * @param callback
+     * @param callback Prompt
      * @return Stream to write to for upload
      */
     StatusOutputStream<Reply> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
