@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -37,7 +38,7 @@ public class OneDriveReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             OneDriveRequest request = new OneDriveRequest(null, "GET");
             OneDriveResponse response = request.sendRequest(session.getClient().getExecutor());

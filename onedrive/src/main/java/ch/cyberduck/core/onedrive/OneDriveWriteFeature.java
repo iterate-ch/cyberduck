@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -33,7 +34,7 @@ public class OneDriveWriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         return null;
     }
 
