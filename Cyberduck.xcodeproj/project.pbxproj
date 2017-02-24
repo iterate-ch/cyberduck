@@ -798,7 +798,7 @@
 		474D86381DEF6017002D101F /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = i18n/src/main/resources/cs.lproj/Cryptomator.strings; sourceTree = "<group>"; };
 		474D863B1DEF6017002D101F /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fi; path = i18n/src/main/resources/fi.lproj/Cryptomator.strings; sourceTree = "<group>"; };
 		474D863C1DEF6017002D101F /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = i18n/src/main/resources/de.lproj/Cryptomator.strings; sourceTree = "<group>"; };
-		474D863D1DEF6017002D101F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = i18n/src/main/resources/en.lproj/Cryptomator.strings; sourceTree = "<group>"; };
+		474D863D1DEF6017002D101F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = i18n/src/main/resources/en.lproj/Cryptomator.strings; sourceTree = "<group>"; };
 		474ECFBD116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ka; path = i18n/src/main/resources/ka.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		474ECFBE116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ka; path = i18n/src/main/resources/ka.lproj/Browser.xib; sourceTree = "<group>"; };
 		474ECFBF116F7A970068A4DB /* ka */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = ka; path = i18n/src/main/resources/ka.lproj/Command.xib; sourceTree = "<group>"; };
@@ -3772,6 +3772,7 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
 					"$(PROJECT_DIR)/osx/target",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Quartz.framework/Versions/A/Frameworks",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
@@ -3876,6 +3877,7 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
 					"$(PROJECT_DIR)/osx/target",
+					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Quartz.framework/Versions/A/Frameworks",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
