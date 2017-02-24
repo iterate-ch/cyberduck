@@ -1,5 +1,7 @@
+package ch.cyberduck.core.pool;
+
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -12,8 +14,6 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
-package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.ConnectionService;
 import ch.cyberduck.core.Host;
@@ -64,8 +64,7 @@ public class DefaultSessionPool implements SessionPool {
     private SessionPool features = SessionPool.DISCONNECTED;
 
     public DefaultSessionPool(final ConnectionService connect, final X509TrustManager trust, final X509KeyManager key,
-                              final VaultRegistry registry, final PathCache cache,
-                              final TranscriptListener transcript,
+                              final VaultRegistry registry, final PathCache cache, final TranscriptListener transcript,
                               final Host bookmark) {
         this.connect = connect;
         this.registry = registry;
