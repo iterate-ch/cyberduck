@@ -74,7 +74,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      */
     private final TransferErrorCallback error;
 
-    private final ConnectionCallback connectionCallback;
+    private final ConnectionCallback callback;
 
     private final TransferOptions options;
 
@@ -99,8 +99,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, new TransferItemCache(Integer.MAX_VALUE));
+                                  final ConnectionCallback callback) {
+        this(transfer, options, prompt, meter, error, progress, stream, callback, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -108,9 +108,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback,
+                                  final ConnectionCallback callback,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, cache, new HashMap<Path, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, callback, cache, new HashMap<Path, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -118,7 +118,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback,
+                                  final ConnectionCallback callback,
                                   final Cache<TransferItem> cache,
                                   final Map<Path, TransferStatus> table) {
         this.transfer = transfer;
@@ -128,7 +128,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.error = error;
         this.progress = progress;
         this.stream = stream;
-        this.connectionCallback = connectionCallback;
+        this.callback = callback;
         this.cache = cache;
         this.table = table;
     }
@@ -199,7 +199,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             this.await();
             meter.reset();
-            transfer.pre(source, destination, table);
+            transfer.pre(source, destination, table, callback);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
@@ -359,7 +359,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 transfer.transfer(source, destination,
                                         segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                         segment.getRename().local != null ? segment.getRename().local : item.local,
-                                        options, segment, connectionCallback, progress, stream);
+                                        options, segment, callback, progress, stream);
 
                                 // Recursive
                                 if(item.remote.isDirectory()) {

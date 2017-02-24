@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -59,7 +60,7 @@ public class CryptoDirectoryProviderTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +

@@ -18,6 +18,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class DropboxProtocol extends AbstractProtocol {
 
@@ -75,5 +76,15 @@ public class DropboxProtocol extends AbstractProtocol {
     @Override
     public Scheme getScheme() {
         return Scheme.https;
+    }
+
+    @Override
+    public String getClientId() {
+        return PreferencesFactory.get().getProperty("dropbox.oauth.clientid");
+    }
+
+    @Override
+    public String getClientSecret() {
+        return PreferencesFactory.get().getProperty("dropbox.oauth.clientsecret");
     }
 }

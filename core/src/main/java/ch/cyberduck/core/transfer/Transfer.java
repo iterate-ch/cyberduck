@@ -265,17 +265,17 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param source   Connection to source server of transfer. May be null.
-     * @param destination   Connection to target server of transfer
-     * @param action   Transfer action for duplicate files
-     * @param listener Progress listener
+     * @param source      Connection to source server of transfer. May be null.
+     * @param destination Connection to target server of transfer
+     * @param action      Transfer action for duplicate files
+     * @param listener    Progress listener
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
     public abstract TransferPathFilter filter(Session<?> source, Session<?> destination, TransferAction action, ProgressListener listener);
 
     /**
      * @param source          Connection to source server of transfer. May be null.
-     * @param destination          Connection to target server of transfer
+     * @param destination     Connection to target server of transfer
      * @param resumeRequested Requested resume
      * @param reloadRequested Requested overwrite
      * @param prompt          Callback
@@ -288,11 +288,11 @@ public abstract class Transfer implements Serializable {
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
-     * @param source    Connection to source server of transfer. May be null.
-     * @param destination    Connection to target server of transfer
-     * @param directory The directory to list the children
-     * @param local     Local directory
-     * @param listener  Listener
+     * @param source      Connection to source server of transfer. May be null.
+     * @param destination Connection to target server of transfer
+     * @param directory   The directory to list the children
+     * @param local       Local directory
+     * @param listener    Listener
      * @return A list of child items
      */
     public abstract List<TransferItem> list(Session<?> source, Session<?> destination, Path directory, Local local,
@@ -301,8 +301,9 @@ public abstract class Transfer implements Serializable {
     /**
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
+     * @param callback    Prompt
      */
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         //
     }
 
@@ -310,7 +311,7 @@ public abstract class Transfer implements Serializable {
      * The actual transfer implementation
      *
      * @param source           Connection to source server of transfer. May be null.
-     * @param destination           Connection to target server of transfer
+     * @param destination      Connection to target server of transfer
      * @param file             Remote
      * @param local            Local
      * @param options          Quarantine option

@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,7 +68,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
             else {
                 // Add placeholder object
                 file.getType().add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(file, status));
+                new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
             }
         }
         catch(URISyntaxException e) {

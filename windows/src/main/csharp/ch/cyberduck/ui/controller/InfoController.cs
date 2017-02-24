@@ -157,6 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case InfoTab.General:
                     InitGeneral();
+                    InitPermissions();
                     break;
                 case InfoTab.Permissions:
                     InitPermissions();

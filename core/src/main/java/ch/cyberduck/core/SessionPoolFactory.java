@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 
 import org.apache.log4j.Logger;
@@ -35,43 +38,24 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
-        return create(controller, cache, bookmark,
-                PasswordStoreFactory.get(),
-                LoginCallbackFactory.get(controller),
-                PasswordCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
-        );
+        final HostPasswordStore keychain = PasswordStoreFactory.get();
+        final LoginConnectionService connect = new LoginConnectionService(LoginCallbackFactory.get(controller),
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller, controller);
+        return create(connect, controller, cache, bookmark,
+                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
+                new KeychainX509KeyManager(bookmark),
+                VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)));
     }
 
-    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final HostPasswordStore keychain, final LoginCallback login,
-                                     final PasswordCallback password, final HostKeyCallback key) {
+    public static SessionPool create(final LoginConnectionService connect, final TranscriptListener transcript,
+                                        final PathCache cache, final Host bookmark,
+                                        final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
+                                        final VaultRegistry vault) {
         switch(bookmark.getProtocol().getType()) {
             case ftp:
             case irods:
                 // Stateful
-                return stateful(controller, cache, bookmark, keychain, login, password, key);
-            default:
-                return pooled(controller, cache, bookmark, keychain, login, password, key);
-        }
-    }
-
-    public static SessionPool pooled(final Controller controller, final PathCache cache, final Host bookmark) {
-        return pooled(controller, cache, bookmark,
-                PasswordStoreFactory.get(),
-                LoginCallbackFactory.get(controller),
-                PasswordCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
-        );
-    }
-
-    public static SessionPool pooled(final Controller controller, final PathCache cache, final Host bookmark,
-                                     final HostPasswordStore keychain, final LoginCallback login,
-                                     final PasswordCallback password, final HostKeyCallback key) {
-        switch(bookmark.getProtocol().getType()) {
-            case sftp:
-                // Statless
-                return stateless(controller, cache, bookmark, keychain, login, password, key);
+                return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
             case s3:
             case googlestorage:
             case dropbox:
@@ -80,83 +64,44 @@ public class SessionPoolFactory {
             case dav:
             case azure:
             case b2:
-                // HTTP connection pool
-                return stateless(controller, cache, bookmark, keychain, login, password, key);
+                // Statless protocol
+                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
             default:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
-                return new DefaultSessionPool(
-                        new LoginConnectionService(
-                                login,
-                                key,
-                                keychain,
-                                controller,
-                                controller),
-                        new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                        new KeychainX509KeyManager(bookmark), VaultRegistryFactory.create(keychain, password), cache, controller, bookmark
-                )
+                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, vault, cache, transcript, bookmark)
                         .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
                         .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
                         .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
         }
     }
 
-    public static SessionPool stateless(final Controller controller, final PathCache cache, final Host bookmark) {
-        return stateless(controller, cache, bookmark,
-                PasswordStoreFactory.get(),
-                LoginCallbackFactory.get(controller),
-                PasswordCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
-        );
-    }
-
-    public static SessionPool stateless(final Controller controller, final PathCache cache, final Host bookmark,
-                                        final HostPasswordStore keychain, final LoginCallback login,
-                                        final PasswordCallback password, final HostKeyCallback key) {
+    /**
+     * @return Single stateless session
+     */
+    protected static SessionPool stateless(final LoginConnectionService connect, final TranscriptListener transcript,
+                                           final PathCache cache, final Host bookmark,
+                                           final X509TrustManager trust, final X509KeyManager key,
+                                           final VaultRegistry vault) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create new stateless connection pool for %s", bookmark));
         }
-        final Session<?> session = SessionFactory.create(bookmark,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark));
-        return new StatelessSessionPool(
-                new LoginConnectionService(
-                        login,
-                        key,
-                        keychain,
-                        controller,
-                        controller),
-                session, cache, VaultRegistryFactory.create(keychain, password)
-        );
+        final Session<?> session = SessionFactory.create(bookmark, trust, key);
+        return new StatelessSessionPool(connect, session, cache, transcript, vault);
     }
 
-    public static SessionPool stateful(final Controller controller, final PathCache cache, final Host bookmark) {
-        return stateful(controller, cache, bookmark,
-                PasswordStoreFactory.get(),
-                LoginCallbackFactory.get(controller),
-                PasswordCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol())
-        );
-    }
-
-    public static SessionPool stateful(final Controller controller, final PathCache cache, final Host bookmark,
-                                       final HostPasswordStore keychain, final LoginCallback login,
-                                       final PasswordCallback password, final HostKeyCallback key) {
+    /**
+     * @return Single stateful session
+     */
+    protected static SessionPool stateful(final LoginConnectionService connect, final TranscriptListener transcript,
+                                          final PathCache cache, final Host bookmark,
+                                          final X509TrustManager trust, final X509KeyManager key,
+                                          final VaultRegistry vault) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Create new stateful connection pool for %s", bookmark));
         }
-        final Session<?> session = SessionFactory.create(bookmark,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-                new KeychainX509KeyManager(bookmark));
-        return new StatefulSessionPool(
-                new LoginConnectionService(
-                        login,
-                        key,
-                        keychain,
-                        controller,
-                        controller),
-                session, cache, VaultRegistryFactory.create(keychain, password)
-        );
+        final Session<?> session = SessionFactory.create(bookmark, trust, key);
+        return new StatefulSessionPool(connect, session, cache, transcript, vault);
     }
 }

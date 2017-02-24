@@ -18,10 +18,10 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -47,7 +47,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
                         final StreamListener listener, final TransferStatus status,
                         final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = local.getInputStream();
-        final StatusOutputStream<Reply> out = writer.write(file, status);
+        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
         new StreamCopier(status, status)
                 .withOffset(status.getOffset())
                 .withLimit(status.getLength())
@@ -57,7 +57,7 @@ public class DefaultUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }
 

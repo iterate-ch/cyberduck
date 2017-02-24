@@ -1,12 +1,12 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -143,7 +143,7 @@ public class OverwriteFilterTest {
                     }
 
                     @Override
-                    public Find withCache(final PathCache cache) {
+                    public Find withCache(final Cache<Path> cache) {
                         return this;
                     }
                 }
@@ -164,7 +164,7 @@ public class OverwriteFilterTest {
                     }
 
                     @Override
-                    public Find withCache(final PathCache cache) {
+                    public Find withCache(final Cache<Path> cache) {
                         return this;
                     }
                 }

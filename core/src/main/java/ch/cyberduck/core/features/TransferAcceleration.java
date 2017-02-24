@@ -19,12 +19,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.transfer.TransferStatus;
 
-public interface TransferAcceleration<C extends HttpSession<?>> {
+public interface TransferAcceleration {
     /**
      * @param file File
      * @return True if enabled
@@ -40,12 +36,14 @@ public interface TransferAcceleration<C extends HttpSession<?>> {
     /**
      * @param bookmark Connection
      * @param file     File to transfer
-     * @param status   File transfer status
      * @param prompt   Prompt
      * @return True if the connection should be proxied
      */
-    boolean prompt(Host bookmark, Path file, TransferStatus status, ConnectionCallback prompt)
+    boolean prompt(Host bookmark, Path file, ConnectionCallback prompt)
             throws BackgroundException;
 
-    C open(Host bookmark, Path file, X509TrustManager trust, X509KeyManager key) throws BackgroundException;
+    /**
+     * Configure connectino to use transfer accelerated endpoint
+     */
+    void configure(boolean enable, Path file) throws BackgroundException;
 }

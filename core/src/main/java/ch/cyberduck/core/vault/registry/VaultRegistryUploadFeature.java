@@ -15,10 +15,10 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
@@ -46,7 +46,7 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length, cache);
     }
 

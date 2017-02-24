@@ -40,7 +40,7 @@ public class DefaultFindFeature implements Find {
     private Cache<Path> cache
             = PathCache.empty();
 
-    public DefaultFindFeature(final Session session) {
+    public DefaultFindFeature(final Session<?> session) {
         this.session = session;
     }
 
@@ -51,7 +51,7 @@ public class DefaultFindFeature implements Find {
         }
         try {
             final AttributedList<Path> list;
-            if(!cache.containsKey(file.getParent())) {
+            if(!cache.isCached(file.getParent())) {
                 list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
             }
@@ -89,7 +89,7 @@ public class DefaultFindFeature implements Find {
     }
 
     @Override
-    public DefaultFindFeature withCache(final PathCache cache) {
+    public DefaultFindFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

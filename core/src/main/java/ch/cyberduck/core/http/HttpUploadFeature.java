@@ -17,11 +17,11 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Upload;
@@ -56,25 +56,25 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         return writer.append(file, length, cache);
     }
 
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.upload(file, local, throttle, listener, status, status, status);
+        return this.upload(file, local, throttle, listener, status, status, status, callback);
     }
 
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status,
-                        final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
+                        final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             InputStream in;
             final Digest digest = this.digest();
             // Wrap with digest stream if available
             in = this.decorate(local.getInputStream(), digest);
-            final StatusOutputStream<Reply> out = writer.write(file, status);
+            final StatusOutputStream<Reply> out = writer.write(file, status, callback);
             new StreamCopier(cancel, progress)
                     .withOffset(status.getOffset())
                     .withLimit(status.getLength())

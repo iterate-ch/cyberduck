@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -41,12 +42,12 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public void touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
+        status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
-        new DefaultStreamCloser().close(writer.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
     }
 
     @Override

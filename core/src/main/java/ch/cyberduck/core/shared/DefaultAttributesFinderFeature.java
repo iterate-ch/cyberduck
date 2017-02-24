@@ -19,6 +19,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -38,10 +39,10 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
 
     private final Session<?> session;
 
-    private PathCache cache
+    private Cache<Path> cache
             = PathCache.empty();
 
-    public DefaultAttributesFinderFeature(final Session session) {
+    public DefaultAttributesFinderFeature(final Session<?> session) {
         this.session = session;
     }
 
@@ -51,7 +52,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         final AttributedList<Path> list;
-        if(!cache.containsKey(file.getParent())) {
+        if(!cache.isCached(file.getParent())) {
             try {
                 list = session.list(file.getParent(), new DisabledListProgressListener());
                 cache.put(file.getParent(), list);
@@ -93,7 +94,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public DefaultAttributesFinderFeature withCache(final PathCache cache) {
+    public DefaultAttributesFinderFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
     }

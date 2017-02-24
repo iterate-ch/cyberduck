@@ -51,6 +51,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -65,7 +66,6 @@ import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.javanet.NetHttpTransport;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
@@ -76,13 +76,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(new NetHttpTransport(),
-            "https://api.dropboxapi.com/1/oauth2/token",
-            "https://www.dropbox.com/1/oauth2/authorize",
-            preferences.getProperty("dropbox.oauth.clientid"),
-            preferences.getProperty("dropbox.oauth.clientsecret"),
-            Collections.emptyList())
-            .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
+    private OAuth2AuthorizationService authorizationService;
 
     private Credential credentials;
 
@@ -94,9 +88,17 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     @Override
     protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
+        final CloseableHttpClient client = builder.build(this).build();
+        this.authorizationService = new OAuth2AuthorizationService(client,
+                "https://api.dropboxapi.com/1/oauth2/token",
+                "https://www.dropbox.com/1/oauth2/authorize",
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
+                Collections.emptyList())
+                .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
-                .withHttpRequestor(httpRequestExecutor = new DropboxCommonsHttpRequestExecutor(this, this.getBuilder().build(this).build())).build(), DbxHost.DEFAULT) {
+                .withHttpRequestor(httpRequestExecutor = new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 if(null == credentials) {

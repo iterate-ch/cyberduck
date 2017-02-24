@@ -18,7 +18,7 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
@@ -72,10 +72,12 @@ public class TransferBackgroundActionTest {
         final Host host = new Host(new TestProtocol(), "l");
         host.setTransfer(Host.TransferType.concurrent);
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), SessionPool.DISCONNECTED,
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new UploadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
         assertEquals(ConcurrentTransferWorker.class, new TransferBackgroundAction(controller, new StatelessSessionPool(
-                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), SessionPool.DISCONNECTED,
+                new TestLoginConnectionService(), new NullSession(host), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), SessionPool.DISCONNECTED,
                 new TransferAdapter(), new DownloadTransfer(host, Collections.emptyList()), new TransferOptions()).worker.getClass());
     }
 
@@ -118,9 +120,11 @@ public class TransferBackgroundActionTest {
         final Session destination = new NullSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new StatelessSessionPool(
-                        new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
+                        new TestLoginConnectionService(), session, PathCache.empty(),
+                        new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
                 new StatelessSessionPool(
-                        new TestLoginConnectionService(), destination, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
+                        new TestLoginConnectionService(), destination, PathCache.empty(),
+                        new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
                 new TransferListener() {
                     @Override
                     public void transferDidStart(final Transfer transfer) {
@@ -177,9 +181,11 @@ public class TransferBackgroundActionTest {
         final AtomicBoolean stop = new AtomicBoolean();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new StatelessSessionPool(
-                        new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
+                        new TestLoginConnectionService(), session, PathCache.empty(),
+                        new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
                 new StatelessSessionPool(
-                        new TestLoginConnectionService(), destination, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new TransferListener() {
+                        new TestLoginConnectionService(), destination, PathCache.empty(),
+                        new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new TransferListener() {
             @Override
             public void transferDidStart(final Transfer transfer) {
                 assertEquals(t, transfer);
@@ -220,7 +226,7 @@ public class TransferBackgroundActionTest {
         final TransferOptions options = new TransferOptions();
         final TransferBackgroundAction action = new TransferBackgroundAction(controller, new DefaultSessionPool(
                 new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), host) {
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), host) {
             @Override
             public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
                 throw new ConnectionRefusedException("d", new SocketException());

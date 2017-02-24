@@ -22,17 +22,14 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> implements TransferAcceleration<C> {
+public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> implements TransferAcceleration {
     private final Session<?> session;
-    private final TransferAcceleration<C> proxy;
+    private final TransferAcceleration proxy;
     private final DefaultVaultRegistry registry;
 
-    public VaultRegistryTransferAccelerationFeature(final Session<?> session, final TransferAcceleration<C> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryTransferAccelerationFeature(final Session<?> session, final TransferAcceleration proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -49,13 +46,12 @@ public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> 
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).prompt(bookmark, file, status, prompt);
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).prompt(bookmark, file, prompt);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public C open(final Host bookmark, final Path file, final X509TrustManager trust, final X509KeyManager key) throws BackgroundException {
-        return (C) registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).open(bookmark, file, trust, key);
+    public void configure(final boolean enable, final Path file) throws BackgroundException {
+        registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).configure(enable, file);
     }
 }

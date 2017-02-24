@@ -110,7 +110,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 if(log.isInfoEnabled()) {
                     log.info("No pending multipart upload found");
                 }
-                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+                final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
+                        .getDetails(containerService.getKey(file), status);
                 // ID for the initiated multipart upload.
                 multipart = session.getClient().multipartStartUpload(containerService.getContainer(file).getName(), object);
                 if(log.isDebugEnabled()) {
@@ -148,7 +149,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         // Last part can be less than 5 MB. Adjust part size.
                         final Long length = Math.min(Math.max(((status.getLength() + status.getOffset()) / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                         // Submit to queue
-                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length));
+                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
                         remaining -= length;
                         offset += length;
                     }
@@ -216,7 +217,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private Future<MultipartPart> submit(final ThreadPool<MultipartPart> pool, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
-                                         final int partNumber, final long offset, final long length) throws BackgroundException {
+                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
@@ -237,7 +238,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     switch(session.getSignatureVersion()) {
                         case AWS4HMACSHA256:
                             status.setChecksum(writer.checksum()
-                                    .compute(file, StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                                    .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
                             );
                             break;
                     }
@@ -255,7 +256,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                                 public void setComplete() {
                                     status.setComplete();
                                 }
-                            });
+                            }, callback);
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }

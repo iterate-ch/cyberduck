@@ -15,8 +15,8 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -46,8 +46,8 @@ public class CryptoFindFeature implements Find {
     }
 
     @Override
-    public Find withCache(final PathCache cache) {
-        delegate.withCache(cache);
+    public Find withCache(final Cache<Path> cache) {
+        delegate.withCache(new CryptoPathCache(session, cache, vault));
         return this;
     }
 }

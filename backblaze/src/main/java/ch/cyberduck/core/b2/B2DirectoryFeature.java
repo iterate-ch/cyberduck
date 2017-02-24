@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -72,9 +73,9 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 }
             }
             else {
-                status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
+                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
                 status.setMime(MIMETYPE);
-                new DefaultStreamCloser().close(writer.write(file, status));
+                new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
             }
         }
         catch(B2ApiException e) {

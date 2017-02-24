@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.Session;
@@ -260,9 +261,6 @@ public class CryptoVault implements Vault {
 
     @Override
     public boolean contains(final Path file) {
-        if(file.getType().contains(Path.Type.vault)) {
-            return false;
-        }
         if(this.isUnlocked()) {
             return file.equals(home) || file.isChild(home);
         }
@@ -279,20 +277,28 @@ public class CryptoVault implements Vault {
             log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
             return file;
         }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
-            return file;
-        }
         final Path encrypted;
         if(file.isFile() || metadata) {
+            if(file.getType().contains(Path.Type.vault)) {
+                log.warn(String.format("Skip file %s because it is already marked as an internal vault path", file));
+                return file;
+            }
             final Path parent = directoryProvider.toEncrypted(session, file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
-            encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), file.attributes());
+            final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+            // Translate file size
+            attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
+            encrypted = new Path(parent, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted), attributes);
         }
         else {
+            if(file.getType().contains(Path.Type.vault)) {
+                return directoryProvider.toEncrypted(session, home);
+            }
             encrypted = directoryProvider.toEncrypted(session, file);
         }
+        // Add reference to decrypted file
         encrypted.attributes().setDecrypted(file);
+        // Add reference for vault
         encrypted.attributes().setVault(home);
         return encrypted;
     }
@@ -314,20 +320,23 @@ public class CryptoVault implements Vault {
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
                         ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
-                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename,
-                        EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted),
-                        file.attributes());
-                if(decrypted.isDirectory()) {
-                    final Permission permission = decrypted.attributes().getPermission();
+                final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
+                if(inflated.getName().startsWith(DIR_PREFIX)) {
+                    final Permission permission = attributes.getPermission();
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
                     permission.setGroup(permission.getGroup().or(Permission.Action.execute));
                     permission.setOther(permission.getOther().or(Permission.Action.execute));
                 }
                 else {
-                    decrypted.attributes().setSize(this.toCleartextSize(file.attributes().getSize()));
+                    // Translate file size
+                    attributes.setSize(this.toCleartextSize(file.attributes().getSize()));
                 }
-                decrypted.attributes().setVault(home);
-                return decrypted;
+                // Add reference to encrypted file
+                attributes.setEncrypted(file);
+                // Add reference for vault
+                attributes.setVault(home);
+                return new Path(file.getParent().attributes().getDecrypted(), cleartextFilename,
+                        EnumSet.of(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file, Path.Type.decrypted), attributes);
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(

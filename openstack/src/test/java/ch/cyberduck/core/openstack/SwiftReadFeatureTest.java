@@ -2,6 +2,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -48,7 +49,7 @@ public class SwiftReadFeatureTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        new SwiftReadFeature(session, regionService).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status);
+        new SwiftReadFeature(session, regionService).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
     @Test
@@ -65,7 +66,7 @@ public class SwiftReadFeatureTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
+        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -74,7 +75,7 @@ public class SwiftReadFeatureTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status);
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);
         assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
@@ -103,7 +104,7 @@ public class SwiftReadFeatureTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length));
+        final HttpResponseOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -113,7 +114,7 @@ public class SwiftReadFeatureTest {
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status);
+        final InputStream in = new SwiftReadFeature(session, regionService).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         assertTrue(in instanceof ContentLengthInputStream);
         assertEquals(content.length - 100, ((ContentLengthInputStream) in).getLength(), 0L);
@@ -142,7 +143,7 @@ public class SwiftReadFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final InputStream in = new SwiftReadFeature(session, regionService).read(new Path(container,
                 "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
-                EnumSet.of(Path.Type.file)), status);
+                EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         assertNotNull(in);
         new StreamCopier(status, status).transfer(in, new NullOutputStream());
         assertEquals(182L, status.getOffset());
@@ -165,7 +166,7 @@ public class SwiftReadFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final CountingInputStream in = new CountingInputStream(new SwiftReadFeature(session, regionService).read(new Path(container,
                 "/cdn.cyberduck.ch/2015/03/01/10/3b1d6998c430d58dace0c16e58aaf925.log.gz",
-                EnumSet.of(Path.Type.file)), status));
+                EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         session.close();

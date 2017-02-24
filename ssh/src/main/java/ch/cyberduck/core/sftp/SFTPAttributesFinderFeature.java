@@ -17,9 +17,9 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -69,7 +69,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public AttributesFinder withCache(final PathCache cache) {
+    public AttributesFinder withCache(final Cache<Path> cache) {
         return this;
     }
 

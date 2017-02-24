@@ -18,7 +18,6 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -29,7 +28,7 @@ import java.io.InputStream;
 public class MD5ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5", in)));
     }
 }

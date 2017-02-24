@@ -157,11 +157,11 @@ public class SwiftSegmentService {
      * @param objects  Files
      * @return Concatenated checksum
      */
-    public Checksum checksum(final ChecksumCompute checksum, final Path file, final List<StorageObject> objects) throws ChecksumException {
+    public Checksum checksum(final ChecksumCompute checksum, final List<StorageObject> objects) throws ChecksumException {
         final StringBuilder concatenated = new StringBuilder();
         for(StorageObject s : objects) {
             concatenated.append(s.getMd5sum());
         }
-        return checksum.compute(file, IOUtils.toInputStream(concatenated.toString(), Charset.defaultCharset()), new TransferStatus());
+        return checksum.compute(IOUtils.toInputStream(concatenated.toString(), Charset.defaultCharset()), new TransferStatus());
     }
 }

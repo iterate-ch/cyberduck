@@ -15,6 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class DisabledBulkFeature implements Bulk<Void> {
     @Override
-    public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         return null;
     }
 

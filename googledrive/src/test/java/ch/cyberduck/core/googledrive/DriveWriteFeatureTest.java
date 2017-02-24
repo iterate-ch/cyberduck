@@ -76,7 +76,7 @@ public class DriveWriteFeatureTest {
             final TransferStatus status = new TransferStatus();
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -88,7 +88,7 @@ public class DriveWriteFeatureTest {
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];
-            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus());
+            final InputStream in = new DriveReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
             IOUtils.readFully(in, buffer);
             in.close();
             assertArrayEquals(content, buffer);
@@ -98,7 +98,7 @@ public class DriveWriteFeatureTest {
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final OutputStream out = new DriveWriteFeature(session).write(test, status);
+            final OutputStream out = new DriveWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();

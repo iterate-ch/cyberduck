@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -67,7 +68,7 @@ public class B2ObjectListServiceTest {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(new byte[0], out);
         out.close();
         final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
@@ -129,8 +130,8 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file1, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
@@ -146,8 +147,8 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file2, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = (B2FileResponse) out.getStatus();

@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -32,6 +33,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -57,9 +59,9 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     @Override
     public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
                                  final StreamListener listener, final TransferStatus status,
-                                 final StreamCancelation cancel, final StreamProgress progress) throws BackgroundException {
-        status.setChecksum(writer.checksum().compute(file, local.getInputStream(), status));
-        return super.upload(file, local, throttle, listener, status, cancel, progress);
+                                 final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
+        status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
+        return super.upload(file, local, throttle, listener, status, cancel, progress, callback);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
 
     @Override
     protected void post(final Path file, final MessageDigest digest, final BaseB2Response response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(((B2FileResponse) response).getContentSha1()));
+        this.verify(file, digest, Checksum.parse(StringUtils.removeStart(((B2FileResponse) response).getContentSha1(), "unverified:")));
     }
 
     protected void verify(final Path file, final MessageDigest digest, final Checksum checksum) throws ChecksumException {

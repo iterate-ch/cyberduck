@@ -77,8 +77,8 @@ public class SwiftSegmentServiceTest {
         final StorageObject b = new StorageObject("b");
         b.setMd5sum("m2");
         b.setSize(1L);
-        final Checksum checksum = service.checksum(new MD5ChecksumCompute(), file, Arrays.asList(a, b));
-        assertEquals(new MD5ChecksumCompute().compute(file, IOUtils.toInputStream("m1m2", Charset.defaultCharset()), new TransferStatus()), checksum);
+        final Checksum checksum = service.checksum(new MD5ChecksumCompute(), Arrays.asList(a, b));
+        assertEquals(new MD5ChecksumCompute().compute(IOUtils.toInputStream("m1m2", Charset.defaultCharset()), new TransferStatus()), checksum);
     }
 
     @Test

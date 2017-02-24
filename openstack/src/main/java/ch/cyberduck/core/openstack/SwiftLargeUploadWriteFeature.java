@@ -14,11 +14,12 @@
 
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -86,7 +87,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     }
 
     @Override
-    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
@@ -98,7 +99,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());

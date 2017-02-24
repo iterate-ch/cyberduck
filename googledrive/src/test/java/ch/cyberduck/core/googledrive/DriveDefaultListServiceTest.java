@@ -35,7 +35,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveListServiceTest {
+public class DriveDefaultListServiceTest {
 
     @Test
     public void testList() throws Exception {
@@ -65,7 +65,7 @@ public class DriveListServiceTest {
                     }
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new DriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DriveDefaultListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
@@ -108,7 +108,7 @@ public class DriveListServiceTest {
         new DriveDirectoryFeature(session).mkdir(folder);
         file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
         folder.attributes().setVersionId(new DriveFileidProvider(session).getFileid(folder));
-        final AttributedList<Path> list = new DriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DriveDefaultListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(file));

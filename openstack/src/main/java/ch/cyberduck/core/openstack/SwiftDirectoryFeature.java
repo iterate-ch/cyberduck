@@ -19,6 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -72,7 +73,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
             else {
                 status.setMime("application/directory");
                 status.setLength(0L);
-                new DefaultStreamCloser().close(writer.write(file, status));
+                new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
             }
         }
         catch(GenericException e) {

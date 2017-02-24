@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -54,16 +53,16 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
     }
 
     @Override
-    public Checksum compute(final Path file, final InputStream in, final TransferStatus status) throws ChecksumException {
-        if(Checksum.NONE == delegate.compute(file, new NullInputStream(0L), status)) {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+        if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        return this.compute(file, in, status.getHeader());
+        return this.compute(in, status.getHeader());
     }
 
-    protected Checksum compute(final Path file, final InputStream in, final ByteBuffer header) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final ByteBuffer header) throws ChecksumException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Calculate checksum for %s with header %s", file, header));
+            log.debug(String.format("Calculate checksum with header %s", header));
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
@@ -82,7 +81,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
                     }
                 });
                 try {
-                    return delegate.compute(file, sink, new TransferStatus());
+                    return delegate.compute(sink, new TransferStatus());
                 }
                 finally {
                     try {

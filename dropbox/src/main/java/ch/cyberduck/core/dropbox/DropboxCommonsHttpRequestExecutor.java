@@ -46,7 +46,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor {
 
     private final CloseableHttpClient client;
 
-    public DropboxCommonsHttpRequestExecutor(final DropboxSession session, final CloseableHttpClient client) {
+    public DropboxCommonsHttpRequestExecutor(final CloseableHttpClient client) {
         this.client = client;
     }
 

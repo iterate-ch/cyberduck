@@ -71,7 +71,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public CryptoDirectoryFeature<Reply> withWriter(final Write writer) {
+    public CryptoDirectoryFeature<Reply> withWriter(final Write<Reply> writer) {
         return this;
     }
 }
