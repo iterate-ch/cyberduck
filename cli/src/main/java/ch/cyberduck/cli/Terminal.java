@@ -1,8 +1,8 @@
 package ch.cyberduck.cli;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.io/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,9 +13,6 @@ package ch.cyberduck.cli;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * feedback@cyberduck.io
  */
 
 import ch.cyberduck.core.*;
@@ -43,7 +40,6 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -216,14 +212,10 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
                     new TerminalLoginCallback(reader)), new TerminalHostKeyVerifier(reader), progress, transcript);
-            final Session<?> session = SessionFactory.create(host,
-                    new CertificateStoreX509TrustManager(
-                            new DefaultTrustManagerHostnameCallback(host),
-                            new TerminalCertificateStore(reader)
-                    ),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
-            );
-            source = new StatefulSessionPool(connect, session, cache, transcript, VaultRegistryFactory.create(new TerminalPasswordCallback()));
+            source = SessionPoolFactory.create(connect, transcript, cache, host,
+                    new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
+                    VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -252,16 +244,13 @@ public class Terminal {
                             source, SessionPool.DISCONNECTED);
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
+                    destination = SessionPoolFactory.create(connect, transcript, cache, target,
+                            new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
+                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
+                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
-                            source, destination = new StatefulSessionPool(connect, SessionFactory.create(target,
-                                    new CertificateStoreX509TrustManager(
-                                            new DefaultTrustManagerHostnameCallback(target),
-                                            new TerminalCertificateStore(reader)
-                                    ),
-                                    new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader))
-                            ), cache, transcript, VaultRegistryFactory.create(new TerminalPasswordCallback()))
-                    );
+                            source, destination);
                 default:
                     throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                             String.format("Unknown transfer type %s", action.name()));
