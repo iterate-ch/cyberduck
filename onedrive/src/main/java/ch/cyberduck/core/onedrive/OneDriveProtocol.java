@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 
 public class OneDriveProtocol extends AbstractProtocol {
@@ -33,7 +32,7 @@ public class OneDriveProtocol extends AbstractProtocol {
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", OneDriveProtocol.class.getPackage().getName(), "Drive");
+        return String.format("%s.%s", OneDriveProtocol.class.getPackage().getName(), "OneDrive");
     }
 
     @Override
