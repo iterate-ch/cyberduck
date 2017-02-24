@@ -134,8 +134,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         catch(IOException e) {
             try {
-                throw new LoginFailureException("Fail");
-                // throw new DriveExceptionMappingService().map(e);
+                throw new OneDriveExceptionMappingService().map((OneDriveAPIException)e);
             }
             catch(LoginFailureException f) {
                 this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);

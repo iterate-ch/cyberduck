@@ -24,7 +24,10 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveItemIterator;
 import org.nuxeo.onedrive.client.OneDriveResource;
@@ -32,6 +35,7 @@ import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.net.URL;
 import java.util.EnumSet;
+import java.util.Iterator;
 
 public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
@@ -57,20 +61,36 @@ public class OneDriveListService implements ListService {
         try {
             log.info(String.format("Querying OneDrive API with %s", apiUrl));
             if(directory.isRoot()) {
-                final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient(), apiUrl);
+                final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient());
                 while(iter.hasNext()) {
-                    final OneDriveResource.Metadata metadata = iter.next();
-                    final PathAttributes attributes = new PathAttributes();
-                    children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+                    try {
+                        final OneDriveResource.Metadata metadata = iter.next();
+                        final PathAttributes attributes = new PathAttributes();
+                        children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+                    }
+                    catch(OneDriveRuntimeException ignored) {
+                        log.warn(ignored);
+                    }
                 }
             }
             else {
-                final OneDriveItemIterator iter = new OneDriveItemIterator(session.getClient(), apiUrl);
+                final OneDriveDrive drive = new OneDriveDrive(session.getClient(), pathContainerService.getContainer(directory).getName());
+                final OneDriveFolder oneDriveFolder;
+                if (pathContainerService.isContainer(directory))
+                    oneDriveFolder = drive.getRoot();
+                else
+                    oneDriveFolder = new OneDriveFolder(session.getClient(), drive, pathContainerService.getKey(directory));
+                final Iterator<OneDriveItem.Metadata> iter = oneDriveFolder.iterator();
                 while(iter.hasNext()) {
-                    final OneDriveItem.Metadata metadata = iter.next();
-                    final PathAttributes attributes = new PathAttributes();
-                    children.add(new Path(directory, metadata.getName(),
-                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                    try {
+                        final OneDriveItem.Metadata metadata = iter.next();
+                        final PathAttributes attributes = new PathAttributes();
+                        children.add(new Path(directory, metadata.getName(),
+                                metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                    }
+                    catch(OneDriveRuntimeException ignored) {
+                        log.warn(ignored);
+                    }
                 }
             }
         }
