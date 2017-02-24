@@ -65,7 +65,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final B2FileResponse info) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(info.getContentLength());
-        attributes.setChecksum(Checksum.parse(info.getContentSha1()));
+        attributes.setChecksum(Checksum.parse(StringUtils.removeStart(info.getContentSha1(), "unverified:")));
         final Map<String, String> metadata = new HashMap<>();
         for(Map.Entry<String, String> entry : info.getFileInfo().entrySet()) {
             metadata.put(entry.getKey(), entry.getValue());
