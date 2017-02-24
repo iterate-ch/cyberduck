@@ -54,6 +54,7 @@
         <module>cli/windows</module>
         <module>cli/osx</module>
         <module>hubic</module>
+        <module>onedrive</module>
     </modules>
 
     <scm>
