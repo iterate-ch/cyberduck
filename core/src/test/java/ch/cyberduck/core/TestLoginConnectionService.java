@@ -20,7 +20,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 public class TestLoginConnectionService extends LoginConnectionService {
     public TestLoginConnectionService() {
-        super(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        super(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
     }
 
     @Override

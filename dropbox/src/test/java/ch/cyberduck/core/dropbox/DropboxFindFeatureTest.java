@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -69,7 +68,7 @@ public class DropboxFindFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertFalse(new DropboxFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         session.close();
@@ -95,7 +94,7 @@ public class DropboxFindFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -125,7 +124,7 @@ public class DropboxFindFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());

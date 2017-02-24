@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -70,7 +69,7 @@ public class DropboxUrlProviderTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final DropboxUrlProvider provider = new DropboxUrlProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

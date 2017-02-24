@@ -40,7 +40,7 @@ public class SessionPoolFactory {
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
         final HostPasswordStore keychain = PasswordStoreFactory.get();
         final LoginConnectionService connect = new LoginConnectionService(LoginCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller, controller);
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller);
         return create(connect, controller, cache, bookmark,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark),
