@@ -47,10 +47,10 @@ public class SessionPoolFactory {
                 VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)));
     }
 
-    public static SessionPool create(final LoginConnectionService connect, final TranscriptListener transcript,
-                                        final PathCache cache, final Host bookmark,
-                                        final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
-                                        final VaultRegistry vault) {
+    public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
+                                     final PathCache cache, final Host bookmark,
+                                     final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
+                                     final VaultRegistry vault) {
         switch(bookmark.getProtocol().getType()) {
             case ftp:
             case irods:
@@ -80,7 +80,7 @@ public class SessionPoolFactory {
     /**
      * @return Single stateless session
      */
-    protected static SessionPool stateless(final LoginConnectionService connect, final TranscriptListener transcript,
+    protected static SessionPool stateless(final ConnectionService connect, final TranscriptListener transcript,
                                            final PathCache cache, final Host bookmark,
                                            final X509TrustManager trust, final X509KeyManager key,
                                            final VaultRegistry vault) {
@@ -94,7 +94,7 @@ public class SessionPoolFactory {
     /**
      * @return Single stateful session
      */
-    protected static SessionPool stateful(final LoginConnectionService connect, final TranscriptListener transcript,
+    protected static SessionPool stateful(final ConnectionService connect, final TranscriptListener transcript,
                                           final PathCache cache, final Host bookmark,
                                           final X509TrustManager trust, final X509KeyManager key,
                                           final VaultRegistry vault) {
