@@ -118,9 +118,8 @@ public class Terminal {
                 new SpectraProtocol(),
                 new B2Protocol(),
                 new DriveProtocol(),
-                new HubicProtocol(),
-                new DriveProtocol(),
-                new DropboxProtocol()
+                new DropboxProtocol(),
+                new HubicProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

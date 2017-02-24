@@ -82,7 +82,6 @@ public final class MainApplication {
                     new IRODSProtocol(),
                     new SpectraProtocol(),
                     new B2Protocol(),
-                    new DriveProtocol(),
                     new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol()
