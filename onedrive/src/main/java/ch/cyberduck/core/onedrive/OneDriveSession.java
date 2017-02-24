@@ -37,6 +37,8 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -59,14 +61,14 @@ import java.util.Arrays;
 
 import com.eclipsesource.json.JsonObject;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.apache.ApacheHttpTransport;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
+    private final Preferences preferences
+            = PreferencesFactory.get();
+
     private Credential credential;
-    private OAuth2AuthorizationService authorizationService;
-    private OneDriveCommonsHttpRequestExecutor httpRequestExecutor;
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -75,14 +77,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
         final CloseableHttpClient client = builder.build(this).build();
-        this.authorizationService = new OAuth2AuthorizationService(
-                new ApacheHttpTransport(client),
-                "https://login.live.com/oauth20_token.srf", "https://login.live.com/oauth20_authorize.srf",
-                "372770ba-bb24-436b-bbd4-19bc86310c0e",
-                "mJjWVkmfD9FVHNFTpbrdowv",
-                Arrays.asList("onedrive.readwrite", "wl.offline_access"))
-                .withRedirectUri("https://cyberduck.io/oauth");
-        this.httpRequestExecutor = new OneDriveCommonsHttpRequestExecutor(client) {
+        final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(client) {
             @Override
             protected void authenticate(final HttpRequestBase request) {
                 request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
@@ -91,7 +86,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         return new OneDriveAPI() {
             @Override
             public RequestExecutor getExecutor() {
-                return httpRequestExecutor;
+                return executor;
             }
 
             @Override
@@ -118,11 +113,19 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+        final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(
+                ((OneDriveCommonsHttpRequestExecutor) client.getExecutor()).getClient(),
+                "https://login.live.com/oauth20_token.srf", "https://login.live.com/oauth20_authorize.srf",
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
+                Arrays.asList("onedrive.readwrite", "wl.offline_access"))
+                .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(keychain, prompt, cancel, cache, tokens);
+        this.login(authorizationService, keychain, prompt, cancel, tokens);
     }
 
-    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+    protected void login(final OAuth2AuthorizationService authorizationService, final HostPasswordStore keychain, final LoginCallback prompt,
+                         final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
         credential = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
@@ -137,7 +140,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 throw new OneDriveExceptionMappingService().map(e);
             }
             catch(LoginFailureException f) {
-                this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+                this.login(authorizationService, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
             }
         }
         catch(IOException e) {
@@ -148,7 +151,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     protected void logout() throws BackgroundException {
         try {
-            httpRequestExecutor.shutdown();
+            client.getExecutor().close();
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

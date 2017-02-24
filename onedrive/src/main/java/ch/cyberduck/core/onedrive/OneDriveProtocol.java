@@ -57,12 +57,7 @@ public class OneDriveProtocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return "";
-    }
-
-    @Override
-    public String getUsernamePlaceholder() {
-        return "me@contoso.com";
+        return "api.onedrive.com";
     }
 
     @Override

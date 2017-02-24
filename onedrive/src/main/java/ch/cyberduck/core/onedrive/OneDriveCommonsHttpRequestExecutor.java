@@ -19,6 +19,7 @@ import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -135,6 +136,10 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
         //
     }
 
+    public HttpClient getClient() {
+        return client;
+    }
+
     private final class CommonsHttpResponse extends Response {
         private HttpResponse response;
 
@@ -154,7 +159,8 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
         }
     }
 
-    public void shutdown() throws IOException {
+    @Override
+    public void close() throws IOException {
         client.close();
     }
 }
