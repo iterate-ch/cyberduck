@@ -70,11 +70,6 @@ public final class QuartzQuickLook implements QuickLook {
     };
 
     @Override
-    public boolean isAvailable() {
-        return null != panel;
-    }
-
-    @Override
     public boolean isOpen() {
         return QLPreviewPanel.sharedPreviewPanelExists() && panel.isVisible();
     }
@@ -97,11 +92,17 @@ public final class QuartzQuickLook implements QuickLook {
 
     @Override
     public void close() {
-        panel.close();
+        if(panel != null) {
+            panel.close();
+        }
+        else {
+            previews.clear();
+        }
     }
 
     @Override
     public void didEndQuickLook() {
         panel.setDataSource(null);
+        previews.clear();
     }
 }
