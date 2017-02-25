@@ -576,20 +576,18 @@ public class BrowserController extends WindowController
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
-        if(quicklook.isAvailable()) {
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
-            for(Path path : selected) {
-                if(!path.isFile()) {
-                    continue;
-                }
-                downloads.add(new TransferItem(
-                        path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+        final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        for(Path path : selected) {
+            if(!path.isFile()) {
+                continue;
             }
-            if(downloads.size() > 0) {
-                final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-                final TransferOptions options = new TransferOptions();
-                this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
-            }
+            downloads.add(new TransferItem(
+                    path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+        }
+        if(downloads.size() > 0) {
+            final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
+            final TransferOptions options = new TransferOptions();
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
         }
     }
 
@@ -3276,11 +3274,8 @@ public class BrowserController extends WindowController
      */
     @Override
     public void invalidate() {
-        if(quicklook.isAvailable()) {
-            if(quicklook.isOpen()) {
-                quicklook.close();
-            }
-        }
+        quicklook.close();
+
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();
