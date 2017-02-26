@@ -452,8 +452,8 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     @Action
-    public void privateKeyPopupClicked(final NSMenuItem sender) {
-        final String selected = sender.representedObject();
+    public void privateKeyPopupClicked(final NSPopUpButton sender) {
+        final String selected = sender.selectedItem().representedObject();
         if(null == selected) {
             privateKeyOpenPanel = NSOpenPanel.openPanel();
             privateKeyOpenPanel.setCanChooseDirectories(false);
