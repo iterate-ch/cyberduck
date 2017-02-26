@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.VaultFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,20 +36,27 @@ public class CreateVaultWorker extends Worker<Boolean> {
 
     private final Path directory;
     private final String region;
-    private final PasswordStore keychain;
     private final String passphrase;
+    private final Vault vault;
 
     public CreateVaultWorker(final Path directory, final String region, final PasswordStore keychain, final String passphrase) {
         this.directory = directory;
         this.region = region;
-        this.keychain = keychain;
         this.passphrase = passphrase;
+        this.vault = VaultFactory.get(directory, keychain);
+    }
+
+    public CreateVaultWorker(final Path directory, final String region, final String passphrase, final Vault vault) {
+        this.directory = directory;
+        this.region = region;
+        this.passphrase = passphrase;
+        this.vault = vault;
     }
 
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         try {
-            VaultFactory.get(directory, keychain).create(session, region, new StaticPasswordCallback(passphrase)).close();
+            vault.create(session, region, new StaticPasswordCallback(passphrase)).close();
         }
         catch(LoginCanceledException e) {
             return false;
