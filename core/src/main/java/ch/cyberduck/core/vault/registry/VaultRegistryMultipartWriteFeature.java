@@ -20,7 +20,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-public class VaultRegistryMultipartWriteFeature extends VaultRegistryWriteFeature implements MultipartWrite {
+public class VaultRegistryMultipartWriteFeature<Reply> extends VaultRegistryWriteFeature<Reply> implements MultipartWrite<Reply> {
     public VaultRegistryMultipartWriteFeature(final Session<?> session, final Write proxy, final DefaultVaultRegistry registry) {
         super(session, proxy, registry);
     }
