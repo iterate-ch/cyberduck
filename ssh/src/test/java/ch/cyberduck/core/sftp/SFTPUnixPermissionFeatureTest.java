@@ -102,7 +102,7 @@ public class SFTPUnixPermissionFeatureTest {
         }
         {
             final Path directory = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-            new SFTPDirectoryFeature(session).mkdir(directory);
+            new SFTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
             new SFTPUnixPermissionFeature(session).setUnixPermission(directory, new Permission(666));
             assertEquals("666", session.list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());

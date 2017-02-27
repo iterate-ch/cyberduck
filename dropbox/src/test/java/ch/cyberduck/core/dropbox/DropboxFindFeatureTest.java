@@ -98,7 +98,7 @@ public class DropboxFindFeatureTest {
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(folder);
+        new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(folder));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

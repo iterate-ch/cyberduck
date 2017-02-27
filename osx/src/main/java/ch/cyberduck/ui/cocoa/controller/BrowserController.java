@@ -2234,10 +2234,10 @@ public class BrowserController extends WindowController
         final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new TouchWorker(file) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path folder) {
                                 reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
                                 if(edit) {
                                     file.attributes().setSize(0L);
@@ -2290,10 +2290,10 @@ public class BrowserController extends WindowController
 
             @Override
             public void callback(final Path folder, final String region) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new CreateDirectoryWorker(folder, region) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path folder) {
                                 reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
@@ -2309,10 +2309,10 @@ public class BrowserController extends WindowController
                 feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final String passphrase) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), passphrase) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path vault) {
                                 reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })

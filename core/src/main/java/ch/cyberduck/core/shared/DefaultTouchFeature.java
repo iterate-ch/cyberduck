@@ -40,7 +40,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
         try {
@@ -51,6 +51,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         finally {
             temp.delete();
         }
+        return file;
     }
 
     @Override

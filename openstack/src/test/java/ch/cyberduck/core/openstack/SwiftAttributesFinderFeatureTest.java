@@ -101,7 +101,7 @@ public class SwiftAttributesFinderFeatureTest {
         container.attributes().setRegion("DFW");
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(file);
+        new SwiftDirectoryFeature(session).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file);
         // Test wrong type
         try {
