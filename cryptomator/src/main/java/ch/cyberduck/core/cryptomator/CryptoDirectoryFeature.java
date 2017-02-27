@@ -63,7 +63,9 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
         proxy.mkdir(target, region, status);
-        return target;
+        folder.getType().add(Path.Type.decrypted);
+        folder.attributes().setEncrypted(target);
+        return folder;
     }
 
     @Override
