@@ -15,6 +15,8 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import java.time.Duration;
 
 public class RetriableAccessDeniedException extends AccessDeniedException {
@@ -23,12 +25,12 @@ public class RetriableAccessDeniedException extends AccessDeniedException {
 
     public RetriableAccessDeniedException(final String detail) {
         super(detail);
-        this.retry = Duration.ZERO;
+        this.retry = Duration.ofSeconds(PreferencesFactory.get().getInteger("connection.retry.delay"));
     }
 
     public RetriableAccessDeniedException(final String detail, final Throwable cause) {
         super(detail, cause);
-        this.retry = Duration.ZERO;
+        this.retry = Duration.ofSeconds(PreferencesFactory.get().getInteger("connection.retry.delay"));
     }
 
     public RetriableAccessDeniedException(final String detail, final Duration seconds) {
