@@ -62,14 +62,16 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
         int toWrite = len;
+        int position = off;
         while(toWrite > 0) {
             final int write = Math.min(toWrite, buffer.remaining());
-            buffer.put(b, buffer.position(), write);
+            buffer.put(b, position, write);
             if(buffer.remaining() == 0) {
                 this.encryptAndWriteBuffer();
                 buffer.clear();
             }
             toWrite -= write;
+            position += write;
         }
     }
 
