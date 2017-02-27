@@ -36,10 +36,9 @@ import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
@@ -88,7 +87,7 @@ public class CryptoOutputStreamTest {
     @Test
     public void testSmallChunksToWrite() throws Exception {
         final CryptoVault vault = this.getVault();
-        final ByteOutputStream cipherText = new ByteOutputStream();
+        final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
@@ -105,7 +104,7 @@ public class CryptoOutputStreamTest {
 
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.getBytes()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
         cryptoInputStream.read(read);
         cryptoInputStream.close();
 
@@ -115,7 +114,7 @@ public class CryptoOutputStreamTest {
     @Test
     public void testWriteWithChunkSize() throws Exception {
         final CryptoVault vault = this.getVault();
-        final ByteOutputStream cipherText = new ByteOutputStream();
+        final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
@@ -129,7 +128,7 @@ public class CryptoOutputStreamTest {
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.getBytes()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
         cryptoInputStream.read(read);
         cryptoInputStream.close();
 
@@ -139,7 +138,7 @@ public class CryptoOutputStreamTest {
     @Test
     public void testWriteLargeChunk() throws Exception {
         final CryptoVault vault = this.getVault();
-        final ByteOutputStream cipherText = new ByteOutputStream();
+        final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
@@ -153,7 +152,7 @@ public class CryptoOutputStreamTest {
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.getBytes()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
         IOUtils.readFully(cryptoInputStream, read);
         cryptoInputStream.close();
 
