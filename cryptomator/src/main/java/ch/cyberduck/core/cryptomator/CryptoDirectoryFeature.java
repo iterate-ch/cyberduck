@@ -45,19 +45,14 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public void mkdir(final Path directory) throws BackgroundException {
-        this.mkdir(directory, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         if(!status.isExists()) {
-            directory.attributes().setDirectoryId(random.random());
+            folder.attributes().setDirectoryId(random.random());
         }
-        final Path target = vault.encrypt(session, directory);
-        if(vault.contains(directory)) {
-            final Path directoryMetafile = vault.encrypt(session, directory, true);
-            new ContentWriter(session).write(directoryMetafile, directory.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
+        final Path target = vault.encrypt(session, folder);
+        if(vault.contains(folder)) {
+            final Path directoryMetafile = vault.encrypt(session, folder, true);
+            new ContentWriter(session).write(directoryMetafile, folder.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
             final Path intermediate = target.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
                 session._getFeature(Directory.class).mkdir(intermediate, region, status);
@@ -68,6 +63,12 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
         proxy.mkdir(target, region, status);
+        return target;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return proxy.isSupported(workdir);
     }
 
     @Override

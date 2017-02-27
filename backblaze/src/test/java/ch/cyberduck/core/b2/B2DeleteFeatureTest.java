@@ -83,7 +83,7 @@ public class B2DeleteFeatureTest {
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, String.format("%s %s", UUID.randomUUID().toString(), "1"), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-        new B2DirectoryFeature(session).mkdir(file);
+        new B2DirectoryFeature(session).mkdir(file, null, new TransferStatus());
         new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

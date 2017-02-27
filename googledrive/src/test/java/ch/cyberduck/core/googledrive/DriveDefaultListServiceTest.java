@@ -118,7 +118,7 @@ public class DriveDefaultListServiceTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
-        new DriveDirectoryFeature(session).mkdir(folder);
+        new DriveDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
         folder.attributes().setVersionId(new DriveFileidProvider(session).getFileid(folder));
         final AttributedList<Path> list = new DriveDefaultListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());

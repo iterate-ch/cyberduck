@@ -68,8 +68,8 @@ public class IRODSMoveFeatureTest {
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new IRODSDirectoryFeature(session).mkdir(source);
-        new IRODSDirectoryFeature(session).mkdir(destination);
+        new IRODSDirectoryFeature(session).mkdir(source, null, new TransferStatus());
+        new IRODSDirectoryFeature(session).mkdir(destination, null, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, true, new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(source));
         assertTrue(session.getFeature(Find.class).find(destination));

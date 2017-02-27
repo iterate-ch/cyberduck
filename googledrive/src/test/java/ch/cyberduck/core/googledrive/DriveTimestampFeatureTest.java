@@ -119,7 +119,7 @@ public class DriveTimestampFeatureTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DriveDirectoryFeature(session).mkdir(test);
+        new DriveDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         test.attributes().setVersionId(new DriveFileidProvider(session).getFileid(test));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session).setTimestamp(test, modified);

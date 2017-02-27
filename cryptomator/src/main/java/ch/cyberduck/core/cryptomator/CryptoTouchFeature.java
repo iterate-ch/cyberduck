@@ -38,14 +38,16 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(vault.contains(file)) {
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
-        proxy.touch(vault.encrypt(session, file), status);
+        final Path target = vault.encrypt(session, file);
+        proxy.touch(target, status);
+        return target;
     }
 
     @Override

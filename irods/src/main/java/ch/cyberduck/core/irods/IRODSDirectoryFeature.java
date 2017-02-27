@@ -36,20 +36,21 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
-            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
+            final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(folder.getAbsolute());
             fs.mkdir(f, false);
         }
         catch(JargonException e) {
-            throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

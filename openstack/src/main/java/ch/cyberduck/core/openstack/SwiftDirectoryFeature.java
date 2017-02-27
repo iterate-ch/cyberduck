@@ -58,30 +58,31 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            if(containerService.isContainer(file)) {
+            if(containerService.isContainer(folder)) {
                 // Create container at top level
                 session.getClient().createContainer(regionService.lookup(
-                        new SwiftLocationFeature.SwiftRegion(region)), file.getName());
+                        new SwiftLocationFeature.SwiftRegion(region)), folder.getName());
             }
             else {
                 status.setMime("application/directory");
                 status.setLength(0L);
-                new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
             }
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new SwiftExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

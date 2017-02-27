@@ -38,7 +38,7 @@ public class SFTPTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile()) {
             try {
                 final RemoteFile handle = session.sftp().open(file.getAbsolute(), EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC));
@@ -48,6 +48,7 @@ public class SFTPTouchFeature implements Touch<Void> {
                 throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
             }
         }
+        return file;
     }
 
     @Override
