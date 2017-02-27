@@ -40,8 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CryptoOutputStreamTest {
 
@@ -105,7 +104,7 @@ public class CryptoOutputStreamTest {
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
         final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
-        cryptoInputStream.read(read);
+        assertEquals(expected.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
         assertArrayEquals(expected, read);
@@ -129,7 +128,7 @@ public class CryptoOutputStreamTest {
 
         final byte[] read = new byte[cleartext.length];
         final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
-        cryptoInputStream.read(read);
+        assertEquals(cleartext.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
         assertArrayEquals(cleartext, read);
