@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-public class CreateVaultWorker extends Worker<Boolean> {
+public class CreateVaultWorker extends Worker<Path> {
 
     private final Path directory;
     private final String region;
@@ -54,14 +54,9 @@ public class CreateVaultWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
-        try {
-            vault.create(session, region, new StaticPasswordCallback(passphrase)).close();
-        }
-        catch(LoginCanceledException e) {
-            return false;
-        }
-        return true;
+    public Path run(final Session<?> session) throws BackgroundException {
+        vault.create(session, region, new StaticPasswordCallback(passphrase)).close();
+        return directory;
     }
 
     @Override
