@@ -47,7 +47,9 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         }
         final Path target = vault.encrypt(session, file);
         proxy.touch(target, status);
-        return target;
+        file.getType().add(Path.Type.decrypted);
+        file.attributes().setEncrypted(target);
+        return file;
     }
 
     @Override
