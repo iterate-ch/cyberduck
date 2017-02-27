@@ -64,7 +64,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
         int toWrite = len;
         while(toWrite > 0) {
             final int write = Math.min(toWrite, buffer.remaining());
-            buffer.put(b, buffer.position(), write);
+            buffer.put(b, off, write);
             if(buffer.remaining() == 0) {
                 this.encryptAndWriteBuffer();
                 buffer.clear();
