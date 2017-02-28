@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,7 +44,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path path, final TransferStatus status) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path path, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final java.nio.file.Path p = Paths.get(path.getAbsolute());
             final Set<OpenOption> options = new HashSet<>();

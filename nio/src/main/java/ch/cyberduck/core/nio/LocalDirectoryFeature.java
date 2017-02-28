@@ -33,18 +33,19 @@ public class LocalDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+        try {
+            Files.createDirectory(session.getClient().getPath(folder.getAbsolute()));
+        }
+        catch(IOException e) {
+            throw new LocalExceptionMappingService().map("Cannot create folder {0}", e, folder);
+        }
+        return folder;
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        try {
-            Files.createDirectory(session.getClient().getPath(file.getAbsolute()));
-        }
-        catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Cannot create folder {0}", e, file);
-        }
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

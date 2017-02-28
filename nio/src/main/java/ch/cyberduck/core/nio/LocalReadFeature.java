@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -35,7 +36,7 @@ public class LocalReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path path, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path path, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final FileChannel channel = FileChannel.open(session.getClient().getPath(path.getAbsolute()), StandardOpenOption.READ);
             channel.position(status.getOffset());
