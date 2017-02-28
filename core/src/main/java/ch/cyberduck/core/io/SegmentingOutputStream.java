@@ -15,8 +15,6 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import org.apache.commons.io.output.ThresholdingOutputStream;
 
 import java.io.ByteArrayOutputStream;
@@ -25,12 +23,12 @@ import java.io.OutputStream;
 
 public class SegmentingOutputStream extends ThresholdingOutputStream {
 
-    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream(
-            PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"));
+    private final ByteArrayOutputStream buffer;
     private final OutputStream proxy;
 
     public SegmentingOutputStream(final OutputStream proxy, final int threshold) {
         super(threshold);
+        this.buffer = new ByteArrayOutputStream(threshold);
         this.proxy = proxy;
     }
 
