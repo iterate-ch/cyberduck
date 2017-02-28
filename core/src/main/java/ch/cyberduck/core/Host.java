@@ -676,6 +676,9 @@ public class Host implements Serializable, Comparable<Host> {
                 return LocaleFactory.localizedString("Use browser connection", "Transfer");
             }
         },
+        /**
+         * Single connnection in Transfer window
+         */
         newconnection {
             @Override
             public String toString() {

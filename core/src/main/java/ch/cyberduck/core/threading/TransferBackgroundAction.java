@@ -22,7 +22,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
@@ -33,8 +32,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.worker.ConcurrentTransferWorker;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -133,16 +130,16 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         super.prepare();
         transfer.start();
-        listener.start(transfer);
+        listener.transferDidStart(transfer);
         timerPool = new ScheduledThreadPool();
         progressTimer = timerPool.repeat(new Runnable() {
             @Override
             public void run() {
                 if(transfer.isReset()) {
-                    listener.progress(meter.getStatus());
+                    listener.transferDidProgress(transfer, meter.getStatus());
                 }
             }
         }, 100L, TimeUnit.MILLISECONDS);
@@ -169,13 +166,13 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
         super.finish();
         progressTimer.cancel(false);
         transfer.stop();
-        listener.stop(transfer);
+        listener.transferDidStop(transfer);
         timerPool.shutdown();
     }
 
     @Override
     public String getActivity() {
-        return StringUtils.EMPTY;
+        return transfer.getName();
     }
 
     public TransferSpeedometer getMeter() {

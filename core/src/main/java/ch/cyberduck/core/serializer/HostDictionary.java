@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
 
@@ -135,7 +136,10 @@ public class HostDictionary {
             }
             final Object transferObj = dict.stringForKey("Transfer Connection");
             if(transferObj != null) {
-                bookmark.setTransfer(Host.TransferType.valueOf(transferObj.toString()));
+                final Host.TransferType transfer = Host.TransferType.valueOf(transferObj.toString());
+                if(PreferencesFactory.get().getList("queue.transfer.type.enabled").contains(transfer.name())) {
+                    bookmark.setTransfer(transfer);
+                }
             }
             else {
                 // Legacy

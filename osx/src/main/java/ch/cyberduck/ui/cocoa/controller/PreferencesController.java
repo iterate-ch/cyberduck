@@ -1935,7 +1935,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultEncryptionPopup.lastItem().setRepresentedObject(KMSEncryptionFeature.SSE_KMS_DEFAULT.toString());
         this.defaultEncryptionPopup.setTarget(this.id());
         this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
-        this.defaultEncryptionPopup.selectItemAtIndex(this.defaultEncryptionPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.encryption.algorithm")));
+        if(StringUtils.isEmpty(preferences.getProperty("s3.encryption.algorithm"))) {
+            this.defaultEncryptionPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
+        }
+        else {
+            this.defaultEncryptionPopup.selectItemAtIndex(this.defaultEncryptionPopup.indexOfItemWithRepresentedObject(preferences.getProperty("s3.encryption.algorithm")));
+        }
     }
 
     @Action

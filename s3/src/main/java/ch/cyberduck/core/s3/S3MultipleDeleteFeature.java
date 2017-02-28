@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -73,8 +74,13 @@ public class S3MultipleDeleteFeature implements Delete {
             callback.delete(file);
             if(file.getType().contains(Path.Type.upload)) {
                 // In-progress multipart upload
-                multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                try {
+                    multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
+                            containerService.getContainer(file).getName(), containerService.getKey(file)));
+                }
+                catch(NotfoundException ignored) {
+                    log.warn(String.format("Ignore failure deleting multipart upload %s", file));
+                }
                 continue;
             }
             final Path container = containerService.getContainer(file);

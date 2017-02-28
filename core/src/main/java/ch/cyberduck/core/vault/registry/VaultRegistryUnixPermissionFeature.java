@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 public class VaultRegistryUnixPermissionFeature implements UnixPermission {
-
     private final Session<?> session;
     private final DefaultVaultRegistry registry;
     private final UnixPermission proxy;

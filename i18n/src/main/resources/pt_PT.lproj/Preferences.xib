@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
@@ -158,13 +158,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Google Drive" identifier="google" id="20">
+                            <tabViewItem label="Google Docs" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Largura banda" identifier="bandwidth" id="22">
+                            <tabViewItem label="Largura de banda" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -176,13 +176,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Actualizações" identifier="update" id="26">
+                            <tabViewItem label="Atualizações" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Língua" identifier="language" id="28">
+                            <tabViewItem label="Idioma" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask"/>
@@ -210,7 +210,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="34">
+                                    <menu key="menu" title="Outras vistas" id="34">
                                         <items>
                                             <menuItem title=" " state="on" id="35"/>
                                         </items>
@@ -228,7 +228,7 @@
                             <textField verticalHuggingPriority="750" id="38">
                                 <rect key="frame" x="9" y="48" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Ligar ao marcador:" id="39">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Estabelecer ligação ao marcador:" id="39">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -237,7 +237,7 @@
                             <button id="40">
                                 <rect key="frame" x="10" y="130" width="209" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Guardar o espaço de trabalho" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
+                                <buttonCell key="cell" type="check" title="Guardar área de trabalho" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -245,7 +245,7 @@
                             <textField verticalHuggingPriority="750" id="42">
                                 <rect key="frame" x="9" y="96" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ao sair serão guardadas todas as janelas abertas e posteriormente serão restauradas as ligações ao reiniciar." id="43">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Guardar todas as janelas abertas ao sair e restaurar ligações ao reiniciar." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -254,7 +254,7 @@
                             <textField verticalHuggingPriority="750" id="44">
                                 <rect key="frame" x="9" y="12" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Abrir uma janela em branco ao abrir a aplicação. Uma ligação ao marcador seleccionado é aberta para uma nova janela." id="45">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Abrir uma janela vazia ao abrir a aplicação. Uma ligação ao marcador selecionado é aberta em uma nova janela." id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -273,7 +273,7 @@
                             <textField verticalHuggingPriority="750" id="47">
                                 <rect key="frame" x="17" y="39" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Protocolo predefinido:" id="48">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Protocolo padrão:" id="48">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -285,7 +285,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="51">
+                                    <menu key="menu" title="Outras vistas" id="51">
                                         <items>
                                             <menuItem title=" " state="on" id="52"/>
                                         </items>
@@ -295,7 +295,7 @@
                             <button id="53">
                                 <rect key="frame" x="10" y="157" width="140" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Usar Porta-Chaves" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
+                                <buttonCell key="cell" type="check" title="Utilizar chaveiro" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -311,9 +311,8 @@
                             <textField verticalHuggingPriority="750" id="57">
                                 <rect key="frame" x="9" y="123" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Procurar palavras-passe no chaveiros. Por definição, guardar palavras-passe no chaveiro após iniciar sessão com sucesso." id="58">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Procurar por palavras-passe no Porta-Chaves. Por predefinição, guardar palavras-passe no Porta-Chaves após conseguir estabelecer acesso.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -321,7 +320,7 @@
                             <textField verticalHuggingPriority="750" id="59">
                                 <rect key="frame" x="9" y="65" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Perguntar antes de fechar uma janela com ligação activa." id="60">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Perguntar antes de fechar uma janela com ligação ativa." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -346,14 +345,14 @@
                             <popUpButton verticalHuggingPriority="750" id="63">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Usar ícones pequenos" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
+                                <popUpButtonCell key="cell" type="push" title="Ícones pequenos" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="65">
+                                    <menu key="menu" title="Outras vistas" id="65">
                                         <items>
-                                            <menuItem title="Usar ícones pequenos" state="on" id="66"/>
-                                            <menuItem title="Usar ícones médios" tag="1" id="67"/>
-                                            <menuItem title="Usar ícones grandes" tag="2" id="68"/>
+                                            <menuItem title="Ícones pequenos" state="on" id="66"/>
+                                            <menuItem title="Ícones normais" tag="1" id="67"/>
+                                            <menuItem title="Ícones grandes" tag="2" id="68"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
@@ -361,7 +360,7 @@
                             <textField verticalHuggingPriority="750" id="69">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ao usar ícones pequenos, apenas o nome do marcador é mostrado." id="70">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Se usar ícones pequenos, apenas o nome do marcador é mostrado." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -370,7 +369,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Apresentação" id="71">
+                <box title="Aparência" id="71">
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
@@ -380,7 +379,7 @@
                             <button id="72">
                                 <rect key="frame" x="10" y="50" width="227" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Usar fundo de linhas alternantes" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Utilizar fundo alternado nas linhas" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -414,7 +413,7 @@
                             <button id="79">
                                 <rect key="frame" x="10" y="141" width="190" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Mostrar ficheiros invisíveis" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
+                                <buttonCell key="cell" type="check" title="Mostrar ficheiros ocultos" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -430,7 +429,7 @@
                             <button id="83">
                                 <rect key="frame" x="10" y="81" width="358" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Janela Informações mostra sempre a seleccção actual" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
+                                <buttonCell key="cell" type="check" title="Janela de informações mostra sempre a seleção atual" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -499,7 +498,7 @@
                             <button id="97">
                                 <rect key="frame" x="10" y="101" width="364" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Tecla Retorno selecciona pasta ou ficheiro a renomear" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Tecla Return seleciona a pasta ou ficheiro a renomear" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -526,7 +525,7 @@
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Abrir ficheiros recebidos com aplicação predefinida" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
+                                        <buttonCell key="cell" type="check" title="Abrir ficheiros recebidos com a aplicação padrão" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -534,7 +533,7 @@
                                     <button id="105">
                                         <rect key="frame" x="10" y="214" width="406" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Remover da janela Transferências ao concluir a transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
+                                        <buttonCell key="cell" type="check" title="Remover ao terminar a transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -542,7 +541,7 @@
                                     <textField verticalHuggingPriority="750" id="107">
                                         <rect key="frame" x="9" y="120" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Se o ficheiro existir:" id="108">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Ficheiros existentes:" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -563,7 +562,7 @@
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="114" id="112">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
-                                            <menu key="menu" title="OtherViews" id="113">
+                                            <menu key="menu" title="Outras vistas" id="113">
                                                 <items>
                                                     <menuItem title=" " state="on" id="114"/>
                                                 </items>
@@ -573,7 +572,7 @@
                                     <button id="115">
                                         <rect key="frame" x="10" y="254" width="476" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Passar a janela Transferências para a frente ao iniciar uma transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
+                                        <buttonCell key="cell" type="check" title="Trazer janela para a frente ao iniciar a transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -581,7 +580,7 @@
                                     <button id="117">
                                         <rect key="frame" x="10" y="234" width="384" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Fechar a janela Transferências ao concluir a transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
+                                        <buttonCell key="cell" type="check" title="Fechar a janela ao terminar a transferência" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -615,7 +614,7 @@
                                     <textField verticalHuggingPriority="750" id="125">
                                         <rect key="frame" x="9" y="28" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Se o ficheiro existir:" id="126">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Ficheiros existentes:" id="126">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -627,7 +626,7 @@
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="130" id="128">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
-                                            <menu key="menu" title="OtherViews" id="129">
+                                            <menu key="menu" title="Outras vistas" id="129">
                                                 <items>
                                                     <menuItem title=" " state="on" id="130"/>
                                                 </items>
@@ -637,7 +636,7 @@
                                     <button id="131">
                                         <rect key="frame" x="165" y="96" width="300" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Reescrever sempre os ficheiros ao transferir" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Substituir sempre ao recarregar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -645,8 +644,10 @@
                                     <button id="133">
                                         <rect key="frame" x="165" y="4" width="300" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Reescrever sempre os ficheiros ao transferir" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <string key="title">Substituir sempre ao recarregar
+</string>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
                                     </button>
@@ -656,7 +657,9 @@
                                         <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="138" id="136">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
-                                            <menu key="menu" title="OtherViews" id="137">
+                                            <menu key="menu" id="137">
+                                                <string key="title">Outras vistas
+</string>
                                                 <items>
                                                     <menuItem title=" " state="on" id="138"/>
                                                 </items>
@@ -666,7 +669,7 @@
                                     <textField verticalHuggingPriority="750" id="139">
                                         <rect key="frame" x="9" y="278" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Ao transferir ficheiros:" id="140">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Ficheiros transferidos:" id="140">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -678,10 +681,10 @@
                                         <popUpButtonCell key="cell" type="push" title="Abrir nova ligação" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="144" id="142">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="menu"/>
-                                            <menu key="menu" title="OtherViews" id="143">
+                                            <menu key="menu" title="Outras vistas" id="143">
                                                 <items>
                                                     <menuItem title="Abrir nova ligação" state="on" id="144"/>
-                                                    <menuItem title="Usar a ligação activa" id="145"/>
+                                                    <menuItem title="Utilizar ligação ativa" id="145"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -689,7 +692,7 @@
                                     <button id="146">
                                         <rect key="frame" x="10" y="52" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Enviar com nome de ficheiro temporário" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
+                                        <buttonCell key="cell" type="check" title="Enviar com nome temporário" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -980,7 +983,7 @@
                                         <popUpButtonCell key="cell" type="push" title="para ficheiros" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="219" id="217">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
-                                            <menu key="menu" title="OtherViews" id="218">
+                                            <menu key="menu" title="Outras vistas" id="218">
                                                 <items>
                                                     <menuItem title="para ficheiros" state="on" id="219"/>
                                                     <menuItem title="para pastas" tag="1" id="220"/>
@@ -994,7 +997,7 @@
                                         <popUpButtonCell key="cell" type="push" title="para ficheiros" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
-                                            <menu key="menu" title="OtherViews" id="223">
+                                            <menu key="menu" title="Outras vistas" id="223">
                                                 <items>
                                                     <menuItem title="para ficheiros" state="on" id="224"/>
                                                     <menuItem title="para pastas" tag="1" id="225"/>
@@ -1005,7 +1008,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Marcas temporais" identifier="3" id="226">
+                        <tabViewItem label="Data/Hora" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="494" height="308"/>
                                 <autoresizingMask key="autoresizingMask"/>
@@ -1013,7 +1016,7 @@
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="212" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preservar data de modificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="Manter data de modificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1021,7 +1024,7 @@
                                     <button id="230">
                                         <rect key="frame" x="10" y="257" width="212" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preservar data de modificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="Manter data de modificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1046,7 +1049,7 @@
                                     <textField verticalHuggingPriority="750" id="236">
                                         <rect key="frame" x="9" y="225" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Envios" id="237">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Carregamentos" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1143,7 +1146,7 @@
                                     <button id="256">
                                         <rect key="frame" x="9" y="257" width="327" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Ignorar ficheiros que correspondam à expressão regular:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
+                                        <buttonCell key="cell" type="check" title="Ignorar ficheiros coincidentes com a expressão regular:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1151,7 +1154,7 @@
                                     <button id="258">
                                         <rect key="frame" x="9" y="130" width="327" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Ignorar ficheiros que correspondam à expressão regular:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
+                                        <buttonCell key="cell" type="check" title="Ignorar ficheiros coincidentes com a expressão regular:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1159,7 +1162,7 @@
                                     <button verticalHuggingPriority="750" id="260">
                                         <rect key="frame" x="410" y="257" width="74" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <buttonCell key="cell" type="push" title="Predefinido" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
+                                        <buttonCell key="cell" type="push" title="Padrão" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1167,7 +1170,7 @@
                                     <button verticalHuggingPriority="750" id="262">
                                         <rect key="frame" x="410" y="130" width="74" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
-                                        <buttonCell key="cell" type="push" title="Predefinido" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
+                                        <buttonCell key="cell" type="push" title="Padrão" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1183,7 +1186,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Gestor predefinido do protocolo" id="265">
+                <box title="Gestor padrão do protocolo" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
@@ -1196,7 +1199,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="269" id="267">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="268">
+                                    <menu key="menu" title="Outras vistas" id="268">
                                         <items>
                                             <menuItem title=" " state="on" id="269"/>
                                         </items>
@@ -1206,7 +1209,7 @@
                             <textField verticalHuggingPriority="750" id="270">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Seleccione a aplicação predefinida para ser iniciada por ficheiros ou ligações para um endereço FTP." id="271">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Selecione a aplicação padrão para ficheiros ou ligações que apontem para um endereço FTP." id="271">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1221,7 +1224,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Gestor predefinido do protocolo" id="273">
+                <box title="Gestor padrão do protocolo" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
@@ -1234,7 +1237,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="277" id="275">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="276">
+                                    <menu key="menu" title="Outras vistas" id="276">
                                         <items>
                                             <menuItem title=" " state="on" id="277"/>
                                         </items>
@@ -1244,7 +1247,7 @@
                             <textField verticalHuggingPriority="750" id="278">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Seleccione a aplicação predefinida para ser iniciada por ficheiros ou ligações para um endereço SFTP." id="279">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Selecione a aplicação padrão para ficheiros ou ligações que apontem para um endereço SFTP." id="279">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1259,7 +1262,7 @@
             <rect key="frame" x="0.0" y="0.0" width="508" height="383"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
-                <box title="Codificação do texto" id="281">
+                <box title="Codificação de texto" id="281">
                     <rect key="frame" x="17" y="252" width="472" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="N8s-vX-pXb">
@@ -1272,7 +1275,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="284">
+                                    <menu key="menu" title="Outras vistas" id="284">
                                         <items>
                                             <menuItem title=" " state="on" id="285"/>
                                         </items>
@@ -1284,7 +1287,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">A codificação de texto predefinida seleccionada é usada para converter caracteres nos nomes dos ficheiros exibidos no navegador. Esta deve corresponder com a codificação de texto definida no servidor.</string>
+                                    <string key="title">A codificação de texto padrão é utilizada para converter os caracteres nos nomes dos ficheiros mostrados no navegador. Deve corresponder com a codificação de texto definida no servidor.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1292,7 +1295,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Proxies" id="288">
+                <box title="Proxy" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
@@ -1310,7 +1313,7 @@
                             <button id="291">
                                 <rect key="frame" x="10" y="49" width="251" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Usar definições de proxy do sistema" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
+                                <buttonCell key="cell" type="check" title="Utilizar proxy do sistema" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1318,7 +1321,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Intervalos de tempo excedidos" id="293">
+                <box title="Tempo limite" id="293">
                     <rect key="frame" x="17" y="114" width="473" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
@@ -1433,7 +1436,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="165"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Actualizações" id="316">
+                <box title="Atualizações" id="316">
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="V20-wh-cwb">
@@ -1443,7 +1446,7 @@
                             <button id="317">
                                 <rect key="frame" x="10" y="84" width="297" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Procurar automaticamente actualizações de" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                <buttonCell key="cell" type="check" title="Procurar automaticamente atualizações" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1451,7 +1454,7 @@
                             <button verticalHuggingPriority="750" id="319">
                                 <rect key="frame" x="123" y="38" width="222" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Procurar actualizações agora" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                <buttonCell key="cell" type="push" title="Procurar atualizações agora" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1475,7 +1478,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="326"/>
+                                    <menu key="menu" title="Outras vistas" id="326"/>
                                 </popUpButtonCell>
                             </popUpButton>
                         </subviews>
@@ -1526,7 +1529,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="339" id="336">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="337">
+                                    <menu key="menu" title="Outras vistas" id="337">
                                         <items>
                                             <menuItem title="Largura de banda ilimitada" tag="-1" id="338"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="339">
@@ -1551,7 +1554,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="346" id="343">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="344">
+                                    <menu key="menu" title="Outras vistas" id="344">
                                         <items>
                                             <menuItem title="Largura de banda ilimitada" tag="-1" id="345"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="346">
@@ -1579,7 +1582,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="350"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Cifra" id="350">
+                <box title="Encriptação" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
@@ -1592,13 +1595,13 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="352">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="353"/>
+                                    <menu key="menu" title="Outras vistas" id="353"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="354">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Escolha o algoritmo para cifrar ficheiros ao enviar." id="355">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Escolha o algoritmo para encriptar ficheiros ao carregar." id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1607,7 +1610,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Localização predefinida do bucket" id="356">
+                <box title="Localização padrão do 'bucket'" id="356">
                     <rect key="frame" x="17" y="233" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
@@ -1620,13 +1623,13 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="358">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="359"/>
+                                    <menu key="menu" title="Outras vistas" id="359"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="360">
                                 <rect key="frame" x="9" y="40" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="A localização geográfica em que os buckets serão criados por predefinição." id="361">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="A localização geográfica em que os 'buckets' serão criados por definição." id="361">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1635,7 +1638,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Classe de armazenamento predefinida" id="362">
+                <box title="Classe de armazenamento padrão" id="362">
                     <rect key="frame" x="17" y="117" width="473" height="112"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
@@ -1648,7 +1651,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="364">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="365"/>
+                                    <menu key="menu" title="Outras vistas" id="365"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
@@ -1656,7 +1659,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Escolha a opção de Armazenamento de Redundância Reduzida (Reduced Redundancy Storage/RRS) para reduzir os seus custos ao armazenar dados não críticos e reproduzíveis a níveis inferiores de redundância.</string>
+                                    <string key="title">Escolha a opção RSS (Reduced Redundancy Storage) para reduzir os seus custos ao armazenar dados não críticos e reproduzíveis a níveis inferiores de redundância.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1683,7 +1686,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="373" id="371">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="372">
+                                    <menu key="menu" title="Outras vistas" id="372">
                                         <items>
                                             <menuItem title=" " state="on" id="373"/>
                                         </items>
@@ -1695,7 +1698,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="375">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Seleccione um editor de texto predefinido para abrir ficheiros se nenhuma outra aplicação for encontrada para editar um determinado tipo de ficheiro.</string>
+                                    <string key="title">Selecione o editor de texto padrão para abrir ficheiros se nenhuma outra aplicação for encontrada para editar um determinado tipo de ficheiro.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1703,7 +1706,7 @@
                             <button id="376">
                                 <rect key="frame" x="10" y="11" width="235" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Usar sempre o editor predefenido" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
+                                <buttonCell key="cell" type="check" title="Utilizar sempre esta aplicação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1717,7 +1720,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Língua" id="409">
+                <box title="Idioma" id="409">
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="mcs-pM-Cfr">
@@ -1727,7 +1730,7 @@
                             <textField verticalHuggingPriority="750" id="410">
                                 <rect key="frame" x="9" y="41" width="451" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="As alterações entram em efeito na próxima vez que iniciar a aplicação." id="411">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="As alterações produzirão  efeito na próxima vez que iniciar a aplicação." id="411">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1739,7 +1742,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="414"/>
+                                    <menu key="menu" title="Outras vistas" id="414"/>
                                 </popUpButtonCell>
                             </popUpButton>
                         </subviews>

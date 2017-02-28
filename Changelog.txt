@@ -6,6 +6,21 @@ https://cyberduck.io/
 - [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
 
+5.3.4 [https://trac.cyberduck.io/milestone/5.3.4
+- [Bugfix] Error duplicating folders (FTP) (#9818)
+- [Bugfix] Cannot read distribution details (CloudFront) (#9823)
+- [Bugfix] Failure setting attributes for uploaded files with temporary filename option enabled (#9819)
+
+5.3.3 [https://trac.cyberduck.io/milestone/5.3.3
+- [Bugfix] Downloads fail with exception after completion (OpenStack Swift) (#9814)
+
+5.3.2 [https://trac.cyberduck.io/milestone/5.3.2
+- [Bugfix] Synchronize transfers fail with exception
+- [Bugfix] Repeat transfer failures due to HTTP request timeout (Backblaze B2)
+
+5.3.1 [https://trac.cyberduck.io/milestone/5.3.1
+- [Feature] Availability in Windows App Store
+
 5.3 [https://trac.cyberduck.io/milestone/5.3]
 - [Feature] Use multiple connections in browser for parallel background task executions
 - [Feature] Choose certificate in bookmark panel for mutual authentication with TLS (WebDAV)

@@ -15,6 +15,7 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -157,7 +159,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             return jobs;
         }
         catch(XmlProcessingException | SignatureException e) {
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);
@@ -245,7 +247,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(SignatureException e) {
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 
@@ -269,7 +271,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     if(StringUtils.equals(node.getEndpoint(), host.getHostname())) {
                         break;
                     }
-                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname()).getHostAddress())) {
+                    if(StringUtils.equals(node.getEndpoint(), new Resolver().resolve(host.getHostname(),
+                            new DisabledCancelCallback()).getHostAddress())) {
                         break;
                     }
                     log.warn(String.format("Redirect to %s for file %s", node.getEndpoint(), file));

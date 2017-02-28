@@ -19,6 +19,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
@@ -54,12 +55,22 @@ import java.util.Enumeration;
 public class ReceiptVerifier implements LicenseVerifier {
     private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
 
-    private Local file;
+    public final Preferences preferences = PreferencesFactory.get();
 
+    private final Local file;
+    private final String application;
+    private final String version;
     private String guid;
 
     public ReceiptVerifier(final Local file) {
+        this(file, PreferencesFactory.get().getDefault("application.identifier"),
+                PreferencesFactory.get().getDefault("application.version"));
+    }
+
+    public ReceiptVerifier(final Local file, final String application, final String version) {
         this.file = file;
+        this.application = application;
+        this.version = version;
     }
 
     static {
@@ -141,11 +152,11 @@ public class ReceiptVerifier implements LicenseVerifier {
                 log.error(String.format("Expected set of attributes for %s", asn));
                 return false;
             }
-            if(!StringUtils.equals(PreferencesFactory.get().getDefault("application.identifier"), StringUtils.trim(bundleIdentifier))) {
+            if(!StringUtils.equals(application, StringUtils.trim(bundleIdentifier))) {
                 log.error(String.format("Bundle identifier %s in ASN set does not match", bundleIdentifier));
                 return false;
             }
-            if(!StringUtils.equals(PreferencesFactory.get().getDefault("application.version"), StringUtils.trim(bundleVersion))) {
+            if(!StringUtils.equals(version, StringUtils.trim(bundleVersion))) {
                 log.warn(String.format("Bundle version %s in ASN set does not match", bundleVersion));
             }
             final NetworkInterface en0 = NetworkInterface.getByName("en0");
@@ -192,22 +203,7 @@ public class ReceiptVerifier implements LicenseVerifier {
                 }
             }
         }
-        catch(IOException e) {
-            log.error("Receipt validation error", e);
-            // Shutdown if receipt is not valid
-            return false;
-        }
-        catch(GeneralSecurityException e) {
-            log.error("Receipt validation error", e);
-            // Shutdown if receipt is not valid
-            return false;
-        }
-        catch(SecurityException e) {
-            log.error("Receipt validation error", e);
-            // Shutdown if receipt is not valid
-            return false;
-        }
-        catch(CMSException e) {
+        catch(IOException | GeneralSecurityException | CMSException | SecurityException e) {
             log.error("Receipt validation error", e);
             // Shutdown if receipt is not valid
             return false;

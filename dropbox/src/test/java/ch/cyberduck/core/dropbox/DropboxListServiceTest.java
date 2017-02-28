@@ -15,24 +15,11 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -71,7 +58,7 @@ public class DropboxListServiceTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
@@ -99,11 +86,11 @@ public class DropboxListServiceTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        new DefaultTouchFeature(session).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         new DropboxDirectoryFeature(session).mkdir(folder);
         file.attributes().setVersionId(new DropboxIdProvider(session).getFileid(file));
         folder.attributes().setVersionId(new DropboxIdProvider(session).getFileid(folder));

@@ -19,12 +19,11 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.ThreadedDeleteFeature;
 
 import java.io.IOException;
 import java.util.List;
 
-public class DriveDeleteFeature extends ThreadedDeleteFeature implements Delete {
+public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
 
@@ -35,19 +34,13 @@ public class DriveDeleteFeature extends ThreadedDeleteFeature implements Delete 
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            this.submit(file, new Implementation() {
-                @Override
-                public void delete(final Path file) throws BackgroundException {
-                    callback.delete(file);
-                    try {
-                        session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
-                    }
-                    catch(IOException e) {
-                        throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
-                }
-            });
+            callback.delete(file);
+            try {
+                session.getClient().files().delete(new DriveFileidProvider(session).getFileid(file)).execute();
+            }
+            catch(IOException e) {
+                throw new DriveExceptionMappingService().map("Cannot delete {0}", e, file);
+            }
         }
-        this.await();
     }
 }

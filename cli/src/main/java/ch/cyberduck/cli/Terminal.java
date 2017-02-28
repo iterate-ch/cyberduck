@@ -43,7 +43,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -91,15 +91,10 @@ public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
 
     private final Preferences preferences;
-
     private final TerminalController controller;
-
     private final TerminalPromptReader reader;
-
     private final PathCache cache;
-
     private final ProgressListener progress;
-
     private final TranscriptListener transcript;
 
     private enum Exit {
@@ -228,7 +223,7 @@ public class Terminal {
                     ),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader))
             );
-            source = new SingleSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
+            source = new StatefulSessionPool(connect, session, cache, VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
             if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
@@ -259,7 +254,7 @@ public class Terminal {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     return this.transfer(new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input).parse(input.getOptionValues(action.name())[1]))),
-                            source, destination = new SingleSessionPool(connect, SessionFactory.create(target,
+                            source, destination = new StatefulSessionPool(connect, SessionFactory.create(target,
                                     new CertificateStoreX509TrustManager(
                                             new DefaultTrustManagerHostnameCallback(target),
                                             new TerminalCertificateStore(reader)
@@ -355,18 +350,16 @@ public class Terminal {
                 input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                         ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
     }
 
     protected Exit mount(final SessionPool session) {
-        final SessionBackgroundAction action = new WorkerBackgroundAction<Path>(
+        final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
                 controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -378,8 +371,7 @@ public class Terminal {
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
                 controller,
                 session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -398,8 +390,7 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         return Exit.success;
@@ -432,8 +423,7 @@ public class Terminal {
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
-        this.execute(action);
-        if(action.hasFailed()) {
+        if(!this.execute(action)) {
             return Exit.failure;
         }
         try {

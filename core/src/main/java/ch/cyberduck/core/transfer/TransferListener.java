@@ -23,15 +23,15 @@ public interface TransferListener {
     /**
      * The transfers are about to start transferring
      */
-    void start(Transfer transfer);
+    void transferDidStart(Transfer transfer);
 
     /**
      * All transfers did end
      */
-    void stop(Transfer transfer);
+    void transferDidStop(Transfer transfer);
 
     /**
      * @param status Progress text
      */
-    void progress(TransferProgress status);
+    void transferDidProgress(final Transfer transfer, TransferProgress status);
 }

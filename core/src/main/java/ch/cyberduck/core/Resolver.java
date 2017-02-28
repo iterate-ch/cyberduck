@@ -18,8 +18,10 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
@@ -29,103 +31,83 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class Resolver {
+public final class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("resolver");
-
-    private final CountDownLatch signal = new CountDownLatch(1);
-
-    /**
-     * The IP address resolved for this hostname
-     */
-    private InetAddress resolved;
-
-    /**
-     * @return True if hostname is resolved to IP address
-     */
-    public boolean isResolved() {
-        return resolved != null;
-    }
-
-    private UnknownHostException exception;
-
-    /**
-     * @return True if the lookup has failed and the host is unkown
-     */
-    public boolean hasFailed() {
-        return exception != null;
-    }
 
     /**
      * This method is blocking until the hostname has been resolved or the lookup
      * has been canceled using #cancel
      *
      * @return The resolved IP address for this hostname
-     * @throws ResolveFailedException                               If the hostname cannot be resolved
-     * @throws ch.cyberduck.core.exception.ResolveCanceledException If the lookup has been interrupted
-     * @see #cancel
+     * @throws ResolveFailedException   If the hostname cannot be resolved
+     * @throws ResolveCanceledException If the lookup has been interrupted
      */
-    public InetAddress resolve(final String hostname) throws ResolveFailedException, ResolveCanceledException {
-        final Thread t = threadFactory.newThread(new Runnable() {
+    public InetAddress resolve(final String hostname, final CancelCallback callback) throws ResolveFailedException, ResolveCanceledException {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final AtomicReference<InetAddress> resolved = new AtomicReference<>();
+        final AtomicReference<UnknownHostException> failure = new AtomicReference<>();
+        final Thread resolver = threadFactory.newThread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    resolved = InetAddress.getByName(hostname);
+                    final InetAddress address = InetAddress.getByName(hostname);
+                    resolved.set(address);
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Resolved %s to %s", hostname, resolved.getHostAddress()));
+                        log.info(String.format("Resolved %s to %s", hostname, address.getHostAddress()));
                     }
                 }
                 catch(UnknownHostException e) {
                     log.warn(String.format("Failed resolving %s", hostname));
-                    exception = e;
+                    failure.set(e);
                 }
                 finally {
                     signal.countDown();
                 }
             }
         });
-        t.start();
-        if(!this.isResolved() && !this.hasFailed()) {
-            // The lookup has not finished yet
-            try {
-                log.debug(String.format("Waiting for resolving of %s", hostname));
-                // Wait for #run to finish
-                signal.await();
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Waiting for resolving of %s", hostname), e);
-                throw new ResolveCanceledException(e);
+        resolver.start();
+        log.debug(String.format("Waiting for resolving of %s", hostname));
+        // Wait for #run to finish
+        try {
+            while(!signal.await(500, TimeUnit.MILLISECONDS)) {
+                try {
+                    callback.verify();
+                }
+                catch(ConnectionCanceledException c) {
+                    throw new ResolveCanceledException(c);
+                }
             }
         }
-        if(!this.isResolved()) {
-            if(this.hasFailed()) {
-                throw new ResolveFailedException(
-                        MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), exception);
-            }
-            log.warn(String.format("Canceled resolving %s", hostname));
-            throw new ResolveCanceledException();
+        catch(InterruptedException e) {
+            log.error(String.format("Waiting for resolving of %s", hostname), e);
+            throw new ResolveCanceledException(e);
         }
-        return resolved;
-    }
-
-    /**
-     * Unblocks the #resolve method for the hostname lookup to finish. #resolve will
-     * throw a ResolveCanceledException
-     *
-     * @see #resolve
-     * @see ResolveCanceledException
-     */
-    public void cancel() {
-        signal.countDown();
+        try {
+            callback.verify();
+        }
+        catch(ConnectionCanceledException c) {
+            throw new ResolveCanceledException(c);
+        }
+        if(null == resolved.get()) {
+            if(null == failure.get()) {
+                log.warn(String.format("Canceled resolving %s", hostname));
+                throw new ResolveCanceledException();
+            }
+            throw new ResolveFailedException(
+                    MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), failure.get());
+        }
+        return resolved.get();
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Resolver{");
-        sb.append("resolved=").append(resolved);
         sb.append('}');
         return sb.toString();
     }

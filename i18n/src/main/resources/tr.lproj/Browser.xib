@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDBrowserController">
@@ -20,12 +20,10 @@
                 <outlet property="donateButton" destination="124" id="140"/>
                 <outlet property="editBookmarkButton" destination="9" id="141"/>
                 <outlet property="editMenu" destination="71" id="142"/>
-                <outlet property="encodingPopup" destination="120" id="143"/>
                 <outlet property="logDrawer" destination="113" id="145"/>
                 <outlet property="navigationButton" destination="63" id="146"/>
                 <outlet property="openUrlMenu" destination="95" id="147"/>
                 <outlet property="pathPopup" destination="59" id="148"/>
-                <outlet property="quickConnectPopup" destination="118" id="149"/>
                 <outlet property="searchField" destination="55" id="150"/>
                 <outlet property="securityLabel" destination="47" id="151"/>
                 <outlet property="statusLabel" destination="49" id="152"/>
@@ -224,7 +222,9 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="2549D6AB-5C5D-4CB4-B899-F5002F4D27A7" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare"
+                                            image="265768E9-5F6D-492C-9BEF-D7F5C8B6C252" imagePosition="only"
+                                            alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -465,15 +465,6 @@ CA
             </items>
             <point key="canvasLocation" x="-184.5" y="588.5"/>
         </menu>
-        <comboBox verticalHuggingPriority="750" id="118">
-            <rect key="frame" x="0.0" y="0.0" width="167" height="26"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-            <comboBoxCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" numberOfVisibleItems="5" id="119">
-                <font key="font" metaFont="system"/>
-                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-            </comboBoxCell>
-        </comboBox>
         <menu title="Menü" id="99">
             <items>
                 <menuItem title="Sunucuya bağlan" id="100">
@@ -537,20 +528,6 @@ DQ
                 </menuItem>
             </items>
         </menu>
-        <popUpButton verticalHuggingPriority="750" id="120">
-            <rect key="frame" x="0.0" y="0.0" width="119" height="25"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <popUpButtonCell key="cell" type="roundTextured" title=" " bezelStyle="texturedRounded" alignment="center" lineBreakMode="clipping" state="on" borderStyle="border" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="123" id="121">
-                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                <font key="font" metaFont="menu"/>
-                <menu key="menu" title="DiğerGörünüm" id="122">
-                    <items>
-                        <menuItem title=" " state="on" id="123"/>
-                    </items>
-                </menu>
-            </popUpButtonCell>
-            <point key="canvasLocation" x="382" y="785.5"/>
-        </popUpButton>
         <drawer preferredEdge="minY" leadingOffset="10" trailingOffset="15" id="113">
             <size key="contentSize" width="200" height="200"/>
             <size key="minContentSize" width="50" height="50"/>
@@ -569,7 +546,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="2549D6AB-5C5D-4CB4-B899-F5002F4D27A7" width="1" height="1">
+        <image name="265768E9-5F6D-492C-9BEF-D7F5C8B6C252" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

@@ -24,6 +24,7 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
@@ -56,7 +57,7 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
                 if(e.getCause() instanceof JargonException) {
                     throw (JargonException) e.getCause();
                 }
-                throw new BackgroundException(e);
+                throw new DefaultExceptionMappingService().map(e);
             }
         }
         catch(JargonException e) {

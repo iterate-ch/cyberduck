@@ -424,8 +424,7 @@ public abstract class Preferences {
         /*
           Default transfer connection handling
          */
-        defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
-                String.valueOf(Host.TransferType.newconnection.name()),
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
                 String.valueOf(Host.TransferType.browser.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
@@ -847,7 +846,6 @@ public abstract class Preferences {
         /*
          * Session pool
          */
-        defaults.put("connection.pool.enable", String.valueOf(true));
         defaults.put("connection.pool.minidle", String.valueOf(1));
         defaults.put("connection.pool.maxidle", String.valueOf(5));
         defaults.put("connection.pool.maxtotal", String.valueOf(Integer.MAX_VALUE));
@@ -890,6 +888,7 @@ public abstract class Preferences {
           In seconds
          */
         defaults.put("connection.retry.delay", String.valueOf(0));
+        defaults.put("connection.retry.backoff.enable", String.valueOf(false));
 
         defaults.put("connection.hostname.default", StringUtils.EMPTY);
         /*

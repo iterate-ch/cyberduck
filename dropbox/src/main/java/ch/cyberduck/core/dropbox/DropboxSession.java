@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -37,13 +38,14 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -51,6 +53,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,9 +76,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private final CustomTrustSSLProtocolSocketFactory sslSocketFactory
-            = new CustomTrustSSLProtocolSocketFactory(trust, key);
-
     private final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(new NetHttpTransport(),
             "https://api.dropboxapi.com/1/oauth2/token",
             "https://www.dropbox.com/1/oauth2/authorize",
@@ -86,6 +86,8 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     private Credential credentials;
 
+    private DropboxCommonsHttpRequestExecutor httpRequestExecutor;
+
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -94,7 +96,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
-                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(this, this.getBuilder().build(this).build())).build(), DbxHost.DEFAULT) {
+                .withHttpRequestor(httpRequestExecutor = new DropboxCommonsHttpRequestExecutor(this, this.getBuilder().build(this).build())).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
                 if(null == credentials) {
@@ -129,6 +131,16 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             catch(LoginFailureException f) {
                 this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
             }
+        }
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            httpRequestExecutor.shutdown();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -175,6 +187,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == Quota.class) {
             return (T) new DropboxQuotaFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
         }
         return super._getFeature(type);
     }

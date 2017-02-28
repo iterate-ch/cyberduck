@@ -1,6 +1,7 @@
 package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -10,7 +11,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -22,13 +28,23 @@ import static org.junit.Assert.*;
 public class AzureSessionTest {
 
     @Test
+    public void testFeatures() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "test.cyberduck.ch");
+        final Session session = new AzureSession(host);
+        assertNotNull(session.getFeature(AclPermission.class));
+        assertNotNull(session.getFeature(Directory.class));
+        assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(Touch.class));
+    }
+
+    @Test
     public void testConnect() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -48,7 +64,7 @@ public class AzureSessionTest {
                 super.prompt(bookmark, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -65,6 +81,6 @@ public class AzureSessionTest {
                 super.prompt(bookmark, credentials, title, reason, options);
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }

@@ -139,7 +139,7 @@ public class ProgressController extends BundleController implements TransferList
     }
 
     @Override
-    public void start(final Transfer transfer) {
+    public void transferDidStart(final Transfer transfer) {
         invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -154,7 +154,7 @@ public class ProgressController extends BundleController implements TransferList
     }
 
     @Override
-    public void stop(final Transfer transfer) {
+    public void transferDidStop(final Transfer transfer) {
         invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -173,7 +173,7 @@ public class ProgressController extends BundleController implements TransferList
     }
 
     @Override
-    public void progress(final TransferProgress progress) {
+    public void transferDidProgress(final Transfer transfer, final TransferProgress progress) {
         this.progress(progress.getProgress());
         final double transferred = progress.getTransferred();
         final double size = progress.getSize();

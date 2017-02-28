@@ -39,7 +39,7 @@ public final class Checksum {
 
     public static Checksum parse(final String hash) {
         if(StringUtils.isBlank(hash)) {
-            return null;
+            return Checksum.NONE;
         }
         if(hash.matches("[a-fA-F0-9]{32}")) {
             return new Checksum(HashAlgorithm.md5, hash);

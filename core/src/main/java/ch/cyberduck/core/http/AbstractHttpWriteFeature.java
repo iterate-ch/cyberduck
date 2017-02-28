@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
@@ -112,7 +113,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
                 if(target.getException() instanceof BackgroundException) {
                     throw (BackgroundException) target.getException();
                 }
-                throw new BackgroundException(target.getException());
+                throw new DefaultExceptionMappingService().map(target.getException());
             }
             final OutputStream stream = entity.getStream();
             return new HttpResponseOutputStream<T>(stream) {
@@ -136,13 +137,13 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
                         exit.await();
                     }
                     catch(InterruptedException e) {
-                        throw new BackgroundException(e);
+                        throw new DefaultExceptionMappingService().map(e);
                     }
                     if(null != target.getException()) {
                         if(target.getException() instanceof BackgroundException) {
                             throw (BackgroundException) target.getException();
                         }
-                        throw new BackgroundException(target.getException());
+                        throw new DefaultExceptionMappingService().map(target.getException());
                     }
                     return target.getResponse();
                 }
@@ -150,7 +151,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
         }
         catch(InterruptedException e) {
             log.warn(String.format("Error waiting for output stream for %s", file));
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 

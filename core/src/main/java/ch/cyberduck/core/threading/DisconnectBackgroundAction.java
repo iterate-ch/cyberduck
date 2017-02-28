@@ -35,16 +35,16 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
-        if(session == SessionPool.DISCONNECTED) {
-            throw new ConnectionCanceledException();
-        }
+    public void prepare() {
         super.prepare();
     }
 
     @Override
     public Void run() throws BackgroundException {
         session.evict();
+        if(session == SessionPool.DISCONNECTED) {
+            throw new ConnectionCanceledException();
+        }
         PathPasteboardFactory.delete(session.getHost());
         return null;
     }

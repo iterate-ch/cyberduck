@@ -54,7 +54,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final Preferences preferences
             = PreferencesFactory.get();

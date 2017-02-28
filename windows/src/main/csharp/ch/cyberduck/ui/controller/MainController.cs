@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
@@ -350,6 +351,14 @@ namespace Ch.Cyberduck.Ui.Controller
             Run(CommandLineArgs);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void InitStoreContext()
+        {
+            var storeContext = StoreContext.GetDefault();
+            var initWindow = (IInitializeWithWindow)(object)storeContext;
+            initWindow.Initialize(MainForm.Handle);
+        }
+
         /// <summary>
         /// A normal (non-single-instance) application raises the Startup event every time it starts. 
         /// A single-instance application raises the Startup  event when it starts only if the application
@@ -363,11 +372,9 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
 
             /* UWP Registration, initialize as soon as possible */
-            if (Utils.IsUWPSupported)
+            if (Utils.IsRunningAsUWP)
             {
-                var storeContext = StoreContext.GetDefault();
-                var initWindow = (IInitializeWithWindow) (object) storeContext;
-                initWindow.Initialize(MainForm.Handle);
+                InitStoreContext();
             }
 
             _controller.Background(delegate

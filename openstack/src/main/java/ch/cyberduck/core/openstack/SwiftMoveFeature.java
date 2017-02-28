@@ -40,7 +40,7 @@ public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
@@ -62,7 +62,7 @@ public class SwiftMoveFeature implements Move {
     @Override
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
-            if(source.isFile() || source.isPlaceholder()) {
+            if(source.isFile()) {
                 new SwiftCopyFeature(session, regionService).copy(source, renamed);
                 session.getClient().deleteObject(regionService.lookup(source),
                         containerService.getContainer(source).getName(), containerService.getKey(source));

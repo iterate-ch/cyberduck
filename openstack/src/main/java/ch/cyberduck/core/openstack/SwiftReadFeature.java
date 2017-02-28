@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -38,7 +39,7 @@ public class SwiftReadFeature implements Read {
     private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
 
@@ -53,7 +54,7 @@ public class SwiftReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
-            status.setChecksum(null);
+            status.setChecksum(Checksum.NONE);
 
             final ContentLengthInputStream stream;
             if(status.isAppend()) {

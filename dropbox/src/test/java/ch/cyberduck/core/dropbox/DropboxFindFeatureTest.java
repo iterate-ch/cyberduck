@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -29,8 +30,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -69,7 +70,7 @@ public class DropboxFindFeatureTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertFalse(new DropboxFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         session.close();
     }
@@ -95,7 +96,7 @@ public class DropboxFindFeatureTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DropboxDirectoryFeature(session).mkdir(folder);
@@ -125,9 +126,9 @@ public class DropboxFindFeatureTest {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
                 }, new DisabledProgressListener(), new DisabledTranscriptListener())
-                .connect(session, PathCache.empty());
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -62,7 +62,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
                 status.setStorageClass(redundancy.getDefault());
             }
         }
-        if(Checksum.NONE.equals(status.getChecksum())) {
+        if(Checksum.NONE == status.getChecksum()) {
             status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);

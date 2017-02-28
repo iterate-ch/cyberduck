@@ -34,7 +34,7 @@ import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -56,16 +56,16 @@ public class AbstractEditorTest {
     public void testEquals() throws Exception {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         assertEquals(
-                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/g", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/g", EnumSet.of(Path.Type.file)))
         );
         assertNotEquals(
-                new DisabledEditor(new Application("a"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-                new DisabledEditor(new Application("i"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
+                new DisabledEditor(new Application("a"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
+                new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
         );
     }
 
@@ -97,7 +97,7 @@ public class AbstractEditorTest {
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new SingleSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
             @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
                 e.set(true);

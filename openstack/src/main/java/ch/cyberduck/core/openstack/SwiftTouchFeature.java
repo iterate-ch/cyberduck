@@ -33,7 +33,7 @@ import ch.iterate.openstack.swift.model.StorageObject;
 public class SwiftTouchFeature implements Touch<StorageObject> {
 
     final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final MimeTypeService mapping
             = new MappingMimeTypeService();

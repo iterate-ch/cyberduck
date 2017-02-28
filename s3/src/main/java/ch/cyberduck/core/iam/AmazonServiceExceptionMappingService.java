@@ -20,10 +20,11 @@ package ch.cyberduck.core.iam;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 
 import org.apache.http.HttpStatus;
 
@@ -41,6 +42,8 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
             switch(failure.getStatusCode()) {
                 case HttpStatus.SC_BAD_REQUEST:
                     switch(failure.getErrorCode()) {
+                        case "Throttling":
+                            return new RetriableAccessDeniedException(buffer.toString(), e);
                         case "AccessDeniedException":
                             return new AccessDeniedException(buffer.toString(), e);
                         case "UnrecognizedClientException":
@@ -70,7 +73,10 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                 case HttpStatus.SC_NOT_FOUND:
                     return new NotfoundException(buffer.toString(), e);
                 case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                    return new ConnectionRefusedException(buffer.toString(), e);
+                    // ServiceUnavailable
+                    return new RetriableAccessDeniedException(buffer.toString(), e);
+                case HttpStatus.SC_REQUEST_TIMEOUT:
+                    return new ConnectionTimeoutException(buffer.toString(), failure);
             }
         }
         this.append(buffer, e.getMessage());

@@ -99,7 +99,8 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                certificatePopup.setEnabled(bookmark.getProtocol().getScheme() == Scheme.https);
+                certificatePopup.setEnabled(bookmark.getProtocol().getScheme() == Scheme.https ||
+                        bookmark.getProtocol().getScheme() == Scheme.ftps);
                 if(bookmark.getCredentials().isCertificateAuthentication()) {
                     certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
                 }

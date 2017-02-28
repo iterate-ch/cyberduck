@@ -1,165 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets"/>
+  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets"/>
+  <PropertyGroup>
+    <Platform Condition="'$(Platform)' == ''">x86</Platform>
+
+    <PackageName>iterate.37637C3DE32E5</PackageName>
+    <Publisher>CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4</Publisher>
+
+    <AppId>Cyberduck</AppId>
+    <AppDisplayName>Cyberduck</AppDisplayName>
+    <AppDescription>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure ^^^&amp; OpenStack Swift browser for Mac and Windows.</AppDescription>
+
+    <PackageDisplayName>Cyberduck</PackageDisplayName>
+    <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
+
+    <OutputPath>windows/target/</OutputPath>
+    <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
+    <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
+    <VFS>$(PackageFiles)VFS/</VFS>
+    <PackageLayout>$(PackageFiles)</PackageLayout>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <AppxDirectory>$(OutputPath)debug\</AppxDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <AppxDirectory>$(OutputPath)release\</AppxDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputFilename>$(AppxDirectory)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LayoutFile Include="windows\src\resources\AppxManifest.xml">
+      <PackagePath>$(PackageLayout)\AppxManifest.xml</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="windows\src\resources\CyberduckAppx.44x44.png">
+      <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.44x44.png</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="windows\src\resources\CyberduckAppx.50x50.png">
+      <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.50x50.png</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="windows\src\resources\CyberduckAppx.150x150.png">
+      <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.150x150.png</PackagePath>
+    </LayoutFile>
+
+    <LayoutFile Include="$(OutputPath)\Cyberduck.exe">
+      <PackagePath>$(PackageLayout)\Cyberduck.exe</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.exe.config">
+      <PackagePath>$(PackageLayout)\Cyberduck.exe.config</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ExceptionReporter.WinForms.dll">
+      <PackagePath>$(PackageLayout)\ExceptionReporter.WinForms.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ActiveButtons.dll">
+      <PackagePath>$(PackageLayout)\ActiveButtons.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\CustomOpenFileFolderDialog.dll">
+      <PackagePath>$(PackageLayout)\CustomOpenFileFolderDialog.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Core.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Core.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Core.Native.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Core.Native.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Protocols.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Protocols.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Bonjour.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Bonjour.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Bonjour.Native.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Bonjour.Native.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Importer.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Importer.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Cryptomator.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Cryptomator.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\WinSparkle.dll">
+      <PackagePath>$(PackageLayout)\WinSparkle.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Beans.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Beans.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Core.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Core.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Charsets.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Charsets.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Localedata.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Localedata.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Security.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Security.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Text.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Text.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Util.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Util.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Management.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Management.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.XML.API.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.XML.API.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.XML.Bind.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.XML.Bind.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.XML.Parse.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.XML.Parse.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.XML.Transform.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.XML.Transform.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.XML.XPath.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.XML.XPath.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.SwingAWT.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.SwingAWT.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Naming.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Naming.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Remoting.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Remoting.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.Runtime.dll">
+      <PackagePath>$(PackageLayout)\IKVM.Runtime.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.Runtime.JNI.dll">
+      <PackagePath>$(PackageLayout)\IKVM.Runtime.JNI.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Jdbc.dll">
+      <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Jdbc.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Interop.Bonjour.dll">
+      <PackagePath>$(PackageLayout)\Interop.Bonjour.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ObjectListView.dll">
+      <PackagePath>$(PackageLayout)\ObjectListView.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\StructureMap.dll">
+      <PackagePath>$(PackageLayout)\StructureMap.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\VistaBridgeLibrary.dll">
+      <PackagePath>$(PackageLayout)\VistaBridgeLibrary.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Windows7.DesktopIntegration.dll">
+      <PackagePath>$(PackageLayout)\Windows7.DesktopIntegration.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x86.dll">
+      <PackagePath>$(PackageLayout)\ikvm-native-win32-x86.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\jnidispatch.dll">
+      <PackagePath>$(PackageLayout)\jnidispatch.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\sunmscapi.dll">
+      <PackagePath>$(PackageLayout)\sunmscapi.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\sunec.dll">
+      <PackagePath>$(PackageLayout)\sunec.dll</PackagePath>
+    </LayoutFile>
+
+    <LayoutFile Include="$(OutputPath)Acknowledgments.rtf">
+      <PackagePath>$(PackageLayout)\Acknowledgments.rtf</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)License.txt">
+      <PackagePath>$(PackageLayout)\License.txt</PackagePath>
+    </LayoutFile>
+
+    <LayoutFile Include="$(OutputPath)profiles/Rackspace US.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles/B2.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\B2.cyberduckprofile</PackagePath>
+    </LayoutFile>
+
+  </ItemGroup>
+
+  <Target Name="UsesFrameworkSdk">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="FrameworkSdkPath"/>
+    </GetFrameworkSdkPath>
     <PropertyGroup>
-        <Platform Condition="'$(Platform)' == ''">x86</Platform>
-
-        <PackageName>iterate.37637C3DE32E5</PackageName>
-        <Publisher>CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4</Publisher>
-
-        <AppId>Cyberduck</AppId>
-        <AppDisplayName>Cyberduck</AppDisplayName>
-        <AppDescription>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure ^^^&amp; OpenStack Swift browser for Mac and Windows.</AppDescription>
-
-        <PackageDisplayName>Cyberduck</PackageDisplayName>
-        <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
-
-        <OutputPath>windows/target/</OutputPath>
-        <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
-        <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
-        <VFS>$(PackageFiles)VFS/</VFS>
+      <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
+      <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
     </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <AppxDirectory>$(OutputPath)debug\</AppxDirectory>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <AppxDirectory>$(OutputPath)release\</AppxDirectory>
-    </PropertyGroup>
-
+  </Target>
+  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
     <PropertyGroup>
-        <OutputFilename>$(AppxDirectory)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
+      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
     </PropertyGroup>
+  </Target>
 
+  <PropertyGroup>
+    <BuildDependsOn>
+      _CopyAppXFilesToPackageLayout;UpdateAppxManifest;MakeAppx;SignAppx
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="_CopyAppXFilesToPackageLayout">
+    <Error Condition="!Exists(%(LayoutFile.FullPath))" Text="LayoutFile does not exist [%(LayoutFile.FullPath)]" />
+    <Copy Condition="Exists(%(LayoutFile.Identity))" SourceFiles="@(LayoutFile)" DestinationFiles="@(LayoutFile->'%(PackagePath)')" SkipUnchangedFiles="true" />
     <ItemGroup>
-        <AppxManifest Include="windows\src\resources\AppxManifest.xml"/>
-
-        <AssetFiles Include="windows\src\resources\CyberduckAppx.44x44.png"/>
-        <AssetFiles Include="windows\src\resources\CyberduckAppx.50x50.png"/>
-        <AssetFiles Include="windows\src\resources\CyberduckAppx.150x150.png"/>
-
-        <AppFiles Include="$(OutputPath)Cyberduck.exe" />
-        <AppFiles Include="$(OutputPath)Cyberduck.exe.config" />
-        <AppFiles Include="$(OutputPath)ExceptionReporter.WinForms.dll" />
-        <AppFiles Include="$(OutputPath)ActiveButtons.dll" />
-        <AppFiles Include="$(OutputPath)CustomOpenFileFolderDialog.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Core.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Core.Native.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Protocols.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Bonjour.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Bonjour.Native.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Importer.dll" />
-        <AppFiles Include="$(OutputPath)Cyberduck.Cryptomator.dll" />
-        <AppFiles Include="$(OutputPath)WinSparkle.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Beans.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Core.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Charsets.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Localedata.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Security.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Text.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Util.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Management.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.API.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Bind.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Parse.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.Transform.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.XML.XPath.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.SwingAWT.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Naming.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Remoting.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.Runtime.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.Runtime.JNI.dll" />
-        <AppFiles Include="$(OutputPath)IKVM.OpenJDK.Jdbc.dll" />
-        <AppFiles Include="$(OutputPath)Interop.Bonjour.dll" />
-        <AppFiles Include="$(OutputPath)ObjectListView.dll" />
-        <AppFiles Include="$(OutputPath)StructureMap.dll" />
-        <AppFiles Include="$(OutputPath)VistaBridgeLibrary.dll" />
-        <AppFiles Include="$(OutputPath)Windows7.DesktopIntegration.dll" />
-        <AppFiles Include="$(OutputPath)ikvm-native-win32-x86.dll" />
-        <AppFiles Include="$(OutputPath)jnidispatch.dll" />
-        <AppFiles Include="$(OutputPath)sunmscapi.dll" />
-        <AppFiles Include="$(OutputPath)sunec.dll" />
-
-        <AdditionalFiles Include="$(OutputPath)Acknowledgments.rtf" />
-        <AdditionalFiles Include="$(OutputPath)License.txt" />
-
-        <Profiles Include="$(OutputPath)profiles/Rackspace US.cyberduckprofile" />
-        <Profiles Include="$(OutputPath)profiles/B2.cyberduckprofile" />
+      <PdbToCopy Condition="Exists(%(LayoutFile.Identity))" Include="$([System.String]::Copy('%(LayoutFile.FullPath)').Replace('%(LayoutFile.Extension)','.pdb'))">
+        <PackagePath>$([System.String]::Copy('%(LayoutFile.PackagePath)').Replace('%(LayoutFile.Extension)','.pdb'))</PackagePath>
+      </PdbToCopy>
     </ItemGroup>
+    <Copy Condition="Exists(%(PdbToCopy.Identity))" SourceFiles="@(PdbToCopy)" DestinationFiles="@(PdbToCopy->'%(PackagePath)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+  <Target Name="Rebuild" DependsOnTargets="Build" />
+  <Target Name="Clean" />
 
-    <Target Name="UsesFrameworkSdk">
-        <GetFrameworkSdkPath>
-            <Output TaskParameter="Path" PropertyName="FrameworkSdkPath"/>
-        </GetFrameworkSdkPath>
-        <PropertyGroup>
-            <WinSDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</WinSDK>
-            <WinSDK Condition="('@(WinSDK)'=='')">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots@KitsRoot10)</WinSDK>
-        </PropertyGroup>
-    </Target>
-    <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
-        <PropertyGroup>
-            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
-            <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
-        </PropertyGroup>
-    </Target>
-
-    <Target Name="Build">
-        <CallTarget Targets="CopyFiles" />
-        <CallTarget Targets="MakeAppx"/>
-        <CallTarget Targets="SignAppx"/>
-    </Target>
-
-    <Target Name="CopyFiles">
-        <CallTarget Targets="CopyAppxManifest" />
-        <CallTarget Targets="CopyAppFiles" />
-        <CallTarget Targets="CopyAdditionalFiles" />
-        <CallTarget Targets="CopyProfiles" />
-        <CallTarget Targets="CopyAssetFiles" />
-    </Target>
-
-    <Target Name="CopyAppxManifest">
-        <MakeDir Directories="$(PackageFiles)" />
-        <Copy SourceFiles="@(AppxManifest)" DestinationFolder="$(PackageFiles)" />
-        <ItemGroup>
-            <TargetAppxManifest Include="$(PackageFiles)AppxManifest.xml" />
-        </ItemGroup>
-
-        <FileUpdate Files="@(TargetAppxManifest)"
+  <Target Name="UpdateAppxManifest">
+    <FileUpdate Files="$(PackageLayout)\AppxManifest.xml"
             Regex="\$\(Version\)"
             ReplacementText="$(Version)">
-        </FileUpdate>
-    </Target>
+    </FileUpdate>
+  </Target>
 
-    <Target Name="CopyAppFiles">
-        <MakeDir Directories="$(PackageFiles)" />
-        <Copy SourceFiles="@(AppFiles)" DestinationFolder="$(PackageFiles)" />
-    </Target>
-
-    <Target Name="CopyAdditionalFiles">
-        <MakeDir Directories="$(PackageFiles)" />
-        <Copy SourceFiles="@(AdditionalFiles)" DestinationFolder="$(PackageFiles)" />
-    </Target>
-
-    <Target Name="CopyProfiles">
-        <MakeDir Directories="$(PackageFiles)profiles" />
-        <Copy SourceFiles="@(Profiles)" DestinationFolder="$(PackageFiles)profiles" />
-    </Target>
-
-    <Target Name="CopyAssetFiles">
-        <MakeDir Directories="$(PackageFiles)Assets" />
-        <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(PackageFiles)Assets" />
-
-        <ItemGroup>
-            <AppxIcons Include="$(PackageFiles)Assets\Cyberduck*.png"/>
-        </ItemGroup>
-        <Attrib ReadOnly="True" Archive="True" Files="@(AppxIcons)" />
-    </Target>
-
-    <Target Name="MakeAppx">
-        <MakeDir Directories="$(AppxDirectory)" />
-        <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
-    </Target>
-    <Target Name="SignAppx" DependsOnTargets="UsesSignTool">
-        <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
-    </Target>
+  <Target Name="MakeAppx">
+    <MakeDir Directories="$(AppxDirectory)" />
+    <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v"/>
+  </Target>
+  
+  <Target Name="SignAppx" DependsOnTargets="UsesSignTool">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
+  </Target>
 </Project>

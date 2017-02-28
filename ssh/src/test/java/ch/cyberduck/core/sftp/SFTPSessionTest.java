@@ -112,7 +112,7 @@ public class SFTPSessionTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            login.connect(session, PathCache.empty());
+            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(fail.get());
@@ -182,7 +182,7 @@ public class SFTPSessionTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            login.connect(session, PathCache.empty());
+            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
@@ -209,7 +209,7 @@ public class SFTPSessionTest {
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            login.check(session, PathCache.empty());
+            login.check(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(LoginCanceledException e) {
             assertTrue(change.get());
@@ -253,7 +253,7 @@ public class SFTPSessionTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        login.connect(session, PathCache.empty());
+        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(change.get());
         session.close();
     }
@@ -279,7 +279,7 @@ public class SFTPSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            c.connect(session, PathCache.empty());
+            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(ConnectionRefusedException e) {
             assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());

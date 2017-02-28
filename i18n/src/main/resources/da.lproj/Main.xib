@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -80,7 +80,7 @@
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Vis Alle" id="240">
+                            <menuItem title="Vis alle" id="240">
                                 <connections>
                                     <action selector="unhideAllApplications:" target="224" id="372"/>
                                 </connections>
@@ -105,15 +105,15 @@
                             </attributes>
                         </fragment>
                     </attributedString>
-                    <menu key="submenu" title="Fil" id="244">
+                    <menu key="submenu" title="Arkiv" id="244">
                         <items>
-                            <menuItem title="Ny Browser" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Ny browser" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Åben Forbindelse…" keyEquivalent="o" id="246">
+                            <menuItem title="Åben forbindelse…" keyEquivalent="o" id="246">
                                 <connections>
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
@@ -121,7 +121,7 @@
                             <menuItem isSeparatorItem="YES" id="247">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Ny Download" keyEquivalent="" id="248">
+                            <menuItem title="Ny download" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
@@ -130,7 +130,7 @@
                             <menuItem isSeparatorItem="YES" id="249">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Ny Mappe…" keyEquivalent="N" id="250">
+                            <menuItem title="Ny mappe…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
@@ -141,12 +141,12 @@
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Ny Fil…" keyEquivalent="f" id="251">
+                            <menuItem title="Nyt arkiv…" keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nyt Symbolsk Link…" id="252">
+                            <menuItem title="Nyt symbolsk link…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
@@ -157,7 +157,7 @@
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Duplikér Fil…" keyEquivalent="d" id="254">
+                            <menuItem title="Duplikér…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -165,9 +165,9 @@
                             <menuItem isSeparatorItem="YES" id="255">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Åben internet URL" id="256">
+                            <menuItem title="Åben henvisning" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Åben internet URL" id="257"/>
+                                <menu key="submenu" title="Åben henvisning" id="257"/>
                             </menuItem>
                             <menuItem title="Rediger med" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -286,16 +286,16 @@ CA
                                     <action selector="copy:" target="-1" id="397"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Kopier URL" id="286">
+                            <menuItem title="Kopier henvisning" id="286">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Kopier URL" id="287"/>
+                                <menu key="submenu" title="Kopier henvisning" id="287"/>
                             </menuItem>
                             <menuItem title="Sæt ind" keyEquivalent="v" id="288">
                                 <connections>
                                     <action selector="paste:" target="-1" id="398"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Vælg Alt" keyEquivalent="a" id="289">
+                            <menuItem title="Vælg alt" keyEquivalent="a" id="289">
                                 <connections>
                                     <action selector="selectAll:" target="-1" id="399"/>
                                 </connections>
@@ -306,7 +306,7 @@ CA
                 <menuItem title="Vis" id="290">
                     <menu key="submenu" title="Vis" id="291">
                         <items>
-                            <menuItem title="som Liste" keyEquivalent="1" id="292">
+                            <menuItem title="som liste" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
@@ -325,7 +325,7 @@ CA
                             <menuItem isSeparatorItem="YES" id="297">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Skjul Værktøjslinie" id="298">
+                            <menuItem title="Skjul værktøjslinie" id="298">
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
@@ -338,18 +338,18 @@ CA
                             <menuItem isSeparatorItem="YES" id="300">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Vis skjulte Filer" keyEquivalent="R" id="301">
+                            <menuItem title="Vis skjulte filer" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Tekst kodning" id="302">
-                                <menu key="submenu" title="Tekst kodning" id="303"/>
+                            <menuItem title="Tekstkodning" id="302">
+                                <menu key="submenu" title="Tekstkodning" id="303"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" tag="2" id="304">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Vis/skjul log skuffe" keyEquivalent="l" id="305">
+                            <menuItem title="Vis/skjul logskuffe" keyEquivalent="l" id="305">
                                 <connections>
                                     <action selector="toggleLogDrawer:" target="-1" id="405"/>
                                 </connections>
@@ -432,7 +432,7 @@ CA
                 <menuItem title="Bogmærke" id="322">
                     <menu key="submenu" title="Bogmærke" id="323">
                         <items>
-                            <menuItem title="Vis/Skjul bogmærker" keyEquivalent="b" id="324">
+                            <menuItem title="Vis/skjul bogmærker" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
@@ -465,18 +465,18 @@ CA
                             <menuItem isSeparatorItem="YES" id="330">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Nyt Bogmærke" keyEquivalent="B" id="331">
+                            <menuItem title="Nyt bogmærke" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Slet Bogmærke" id="332">
+                            <menuItem title="Slet bogmærke" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Rediger Bogmærke" keyEquivalent="e" id="333">
+                            <menuItem title="Rediger bogmærke" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
@@ -561,7 +561,7 @@ CA
         </menu>
         <menu title="Menu" id="351">
             <items>
-                <menuItem title="Ny Browser" keyEquivalent="n" id="352">
+                <menuItem title="Ny browser" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>

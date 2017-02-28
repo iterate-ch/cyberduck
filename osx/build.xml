@@ -26,7 +26,7 @@
     <property name="app.name" value="Cyberduck"/>
     <property name="app.bundle" value="${build}/${app.name}.app"/>
 
-    <property name="spotlight" value="${home}/Spotlight Importer"/>
+    <property name="spotlight" value="${module}/spotlight"/>
 
     <property name="app.runtime.system.min" value="10.7.3"/>
     <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>

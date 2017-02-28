@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -73,7 +74,7 @@ public class DriveUrlProviderTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final DriveUrlProvider provider = new DriveUrlProvider();
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertNotNull(provider.toUrl(test));

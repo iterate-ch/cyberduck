@@ -64,6 +64,7 @@ import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
@@ -807,7 +808,7 @@ public class MainController extends BundleController implements NSApplication.De
                     file.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), file));
         }
         final TransferController t = TransferControllerFactory.get();
-        t.start(new UploadTransfer(bookmark, roots));
+        t.start(new UploadTransfer(bookmark, roots), new TransferOptions());
     }
 
     /**
@@ -1263,60 +1264,11 @@ public class MainController extends BundleController implements NSApplication.De
             }
             // Make sure prompt is not loaded twice upon next quit event
             displayDonationPrompt = false;
-            final int uses = preferences.getInteger("uses");
-            donationController = new WindowController() {
-                @Override
-                protected String getBundleName() {
-                    return "Donate";
-                }
-
-                @Outlet
-                private NSButton neverShowDonationCheckbox;
-
-                public void setNeverShowDonationCheckbox(NSButton neverShowDonationCheckbox) {
-                    this.neverShowDonationCheckbox = neverShowDonationCheckbox;
-                    this.neverShowDonationCheckbox.setTarget(this.id());
-                    this.neverShowDonationCheckbox.setState(
-                            preferences.getProperty("donate.reminder").equals(
-                                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString())
-                                    ? NSCell.NSOnState : NSCell.NSOffState
-                    );
-                }
-
-                @Override
-                public void awakeFromNib() {
-                    this.window().setTitle(this.window().title() + " (" + uses + ")");
-                    this.window().center();
-                    this.window().makeKeyAndOrderFront(null);
-
-                    super.awakeFromNib();
-                }
-
-                public void closeDonationSheet(final NSButton sender) {
-                    if(sender.tag() == SheetCallback.DEFAULT_OPTION) {
-                        BrowserLauncherFactory.get().open(preferences.getProperty("website.donate"));
-                    }
-                    this.terminate();
-                }
-
-                @Override
-                public void windowWillClose(NSNotification notification) {
-                    this.terminate();
-                    super.windowWillClose(notification);
-                }
-
-                private void terminate() {
-                    if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
-                        preferences.setProperty("donate.reminder",
-                                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
-                    }
-                    // Remember this reminder date
-                    preferences.setProperty("donate.reminder.date", System.currentTimeMillis());
-                    // Quit again
-                    app.replyToApplicationShouldTerminate(true);
-                }
-            };
-            donationController.loadBundle();
+            final AlertController controller = new DonateAlertController(app);
+            controller.setCallback(controller);
+            controller.loadBundle();
+            controller.window().center();
+            controller.window().makeKeyAndOrderFront(null);
             // Delay application termination. Dismissing the donation dialog will reply to quit.
             return NSApplication.NSTerminateLater;
         }
@@ -1400,7 +1352,7 @@ public class MainController extends BundleController implements NSApplication.De
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                 final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())));
+                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
             }
             else {
                 for(BrowserController browser : MainController.getBrowsers()) {

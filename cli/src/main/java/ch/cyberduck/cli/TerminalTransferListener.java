@@ -18,24 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferListener;
-import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferAdapter;
 
-public class TerminalTransferListener implements TransferListener {
-
-    @Override
-    public void start(final Transfer transfer) {
-        //
-    }
-
-    @Override
-    public void stop(final Transfer transfer) {
-        //
-    }
-
-    @Override
-    public void progress(final TransferProgress status) {
-        //
-    }
+public class TerminalTransferListener extends TransferAdapter {
 }

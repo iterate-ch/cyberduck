@@ -108,7 +108,7 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class DAVSessionTest {
                 }
             }
         });
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(proxied.get());
         assertTrue(session.isConnected());
         session.close();
@@ -176,7 +176,7 @@ public class DAVSessionTest {
                 }
             }
         });
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertFalse(proxied.get());
         assertFalse(session.isConnected());
         session.close();
@@ -358,6 +358,7 @@ public class DAVSessionTest {
         assertNotNull(session.getFeature(Copy.class));
         assertNotNull(session.getFeature(Headers.class));
         assertNull(session.getFeature(DistributionConfiguration.class));
+        assertNotNull(session.getFeature(Touch.class));
     }
 
     @Test(expected = LoginFailureException.class)
@@ -397,7 +398,7 @@ public class DAVSessionTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(prompt.get());
         assertTrue(session.isConnected());
         session.close();
@@ -438,7 +439,7 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
         try {
-            c.connect(session, PathCache.empty());
+            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(InteroperabilityException e) {
             throw e;
@@ -467,7 +468,7 @@ public class DAVSessionTest {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         try {
-            c.connect(session, PathCache.empty());
+            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -503,7 +504,7 @@ public class DAVSessionTest {
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
         try {
-            c.connect(session, PathCache.empty());
+            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
         catch(InteroperabilityException e) {
             assertEquals("Handshake failure. Unable to negotiate an acceptable set of security parameters. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -534,7 +535,7 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(verified.get());
         session.close();
     }
@@ -557,7 +558,7 @@ public class DAVSessionTest {
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                 new DisabledProgressListener(), new DisabledTranscriptListener());
-        s.check(session, PathCache.empty());
+        s.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test
@@ -580,7 +581,7 @@ public class DAVSessionTest {
                 new DisabledPasswordStore(),
                 new DisabledProgressListener(),
                 new DisabledTranscriptListener());
-        c.connect(session, PathCache.empty());
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(warning.get());
         session.close();
     }

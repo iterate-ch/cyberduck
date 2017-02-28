@@ -41,7 +41,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     protected static final String PLACEHOLDER = "/.bzEmpty";
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
     private Write<BaseB2Response> writer;

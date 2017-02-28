@@ -23,14 +23,12 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
@@ -38,10 +36,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHeadersFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -192,10 +188,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
     }
 
-    protected void logout() throws BackgroundException {
-        // Nullify password on disconnect. Some implementations that do not swap credentials with a token require the password while connected.
-        host.getCredentials().setPassword(null);
-    }
+    protected abstract void logout() throws BackgroundException;
 
     /**
      * Close the connection to the remote host. Subsequent calls to #getClient() must return null.
@@ -203,6 +196,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected void disconnect() {
         state = State.closed;
         listener = null;
+        client = null;
     }
 
     /**
@@ -280,9 +274,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(type == Bulk.class) {
             return (T) new DisabledBulkFeature();
         }
-        if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(this);
-        }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
         }
@@ -309,9 +300,6 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == ListService.class) {
             return (T) this;
-        }
-        if(type == Headers.class) {
-            return (T) new DefaultHeadersFeature();
         }
         return null;
     }

@@ -72,7 +72,7 @@ public class DriveUploadFeatureTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes("UTF-8");

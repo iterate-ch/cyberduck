@@ -47,6 +47,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -57,6 +58,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -167,9 +169,6 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
-        }
-        finally {
-            super.logout();
         }
     }
 
@@ -343,6 +342,9 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         if(type == Lock.class) {
             return (T) new DAVLockFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new DefaultTouchFeature(new DAVUploadFeature(new DAVWriteFeature(this)));
         }
         return super._getFeature(type);
     }

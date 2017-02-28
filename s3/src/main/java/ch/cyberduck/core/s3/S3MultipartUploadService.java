@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,8 +35,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -69,7 +70,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
 
     private final S3DefaultMultipartService multipartService;
 
-    private final Write<StorageObject> writer;
+    private Write<StorageObject> writer;
     /**
      * A split smaller than 5M is not allowed
      */
@@ -167,7 +168,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         if(e.getCause() instanceof BackgroundException) {
                             throw (BackgroundException) e.getCause();
                         }
-                        throw new BackgroundException(e);
+                        throw new BackgroundException(e.getCause());
                     }
                 }
                 // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
@@ -219,7 +220,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new RetryCallable<MultipartPart>() {
+        return pool.execute(new AbstractRetryCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 final Map<String, String> requestParameters = new HashMap<String, String>();
@@ -274,5 +275,11 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
         });
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }

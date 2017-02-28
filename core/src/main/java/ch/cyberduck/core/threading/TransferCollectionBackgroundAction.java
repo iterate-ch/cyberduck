@@ -20,7 +20,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
@@ -56,7 +55,7 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
     }
 
     @Override
-    public void prepare() throws ConnectionCanceledException {
+    public void prepare() {
         // Update status to running
         super.prepare();
         // Wait for slot in queue

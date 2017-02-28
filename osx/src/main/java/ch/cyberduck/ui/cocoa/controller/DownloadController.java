@@ -31,6 +31,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferOptions;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSRect;
@@ -86,7 +87,7 @@ public class DownloadController extends AlertController {
                 host.setDefaultPath(file.getParent().getAbsolute());
                 final Transfer transfer = new DownloadTransfer(host, file,
                         LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
-                TransferControllerFactory.get().start(transfer);
+                TransferControllerFactory.get().start(transfer, new TransferOptions());
                 break;
         }
     }

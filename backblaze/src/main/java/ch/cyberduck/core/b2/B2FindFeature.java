@@ -34,7 +34,7 @@ import synapticloop.b2.response.B2BucketResponse;
 public class B2FindFeature implements Find {
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 

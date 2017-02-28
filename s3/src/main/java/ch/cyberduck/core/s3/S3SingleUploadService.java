@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -43,7 +44,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
 
     private final S3Session session;
-    private final Write<StorageObject> writer;
+    private Write<StorageObject> writer;
 
     public S3SingleUploadService(final S3Session session, final Write<StorageObject> writer) {
         super(writer);
@@ -105,5 +106,11 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             return;
         }
         this.verify(file, digest, Checksum.parse(part.getETag()));
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }

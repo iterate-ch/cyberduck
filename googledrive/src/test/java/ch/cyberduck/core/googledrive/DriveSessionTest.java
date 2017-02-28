@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -26,9 +27,14 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -38,6 +44,15 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveSessionTest {
+
+    @Test
+    public void testFeatures() throws Exception {
+        final Host host = new Host(new DriveProtocol(), "test.cyberduck.ch");
+        final Session session = new DriveSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.getFeature(Directory.class));
+        assertNotNull(session.getFeature(Delete.class));
+        assertNotNull(session.getFeature(Touch.class));
+    }
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
@@ -54,7 +69,7 @@ public class DriveSessionTest {
             }
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -87,7 +102,7 @@ public class DriveSessionTest {
                         return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty());
+                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());

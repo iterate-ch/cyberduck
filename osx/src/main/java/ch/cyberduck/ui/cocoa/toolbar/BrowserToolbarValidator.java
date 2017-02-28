@@ -38,6 +38,8 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 
+import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
+
 public class BrowserToolbarValidator implements ToolbarValidator {
 
     private final QuickLook quicklook = QuickLookFactory.get();
@@ -51,36 +53,39 @@ public class BrowserToolbarValidator implements ToolbarValidator {
     @Override
     public boolean validate(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
-        switch(BrowserToolbarFactory.BrowserToolbarItem.valueOf(identifier)) {
+        switch(valueOf(identifier)) {
             case disconnect:
                 if(controller.isActivityRunning()) {
-                    item.setLabel(BrowserToolbarFactory.BrowserToolbarItem.stop.label());
-                    item.setPaletteLabel(BrowserToolbarFactory.BrowserToolbarItem.stop.label());
-                    item.setToolTip(BrowserToolbarFactory.BrowserToolbarItem.stop.tooltip());
-                    item.setImage(BrowserToolbarFactory.BrowserToolbarItem.stop.image());
+                    item.setLabel(stop.label());
+                    item.setPaletteLabel(stop.label());
+                    item.setToolTip(stop.tooltip());
+                    item.setImage(stop.image());
                 }
                 else {
-                    item.setLabel(BrowserToolbarFactory.BrowserToolbarItem.disconnect.label());
-                    item.setPaletteLabel(BrowserToolbarFactory.BrowserToolbarItem.disconnect.label());
-                    item.setToolTip(BrowserToolbarFactory.BrowserToolbarItem.disconnect.tooltip());
-                    item.setImage(BrowserToolbarFactory.BrowserToolbarItem.disconnect.image());
+                    item.setLabel(disconnect.label());
+                    item.setPaletteLabel(disconnect.label());
+                    item.setToolTip(disconnect.tooltip());
+                    item.setImage(disconnect.image());
                 }
                 break;
             case archive: {
                 final Path selected = controller.getSelectedPath();
                 if(null != selected) {
                     if(Archive.isArchive(selected.getName())) {
-                        item.setLabel(BrowserToolbarFactory.BrowserToolbarItem.unarchive.label());
-                        item.setPaletteLabel(BrowserToolbarFactory.BrowserToolbarItem.unarchive.label());
-                        item.setAction(BrowserToolbarFactory.BrowserToolbarItem.unarchive.action());
+                        item.setLabel(unarchive.label());
+                        item.setPaletteLabel(unarchive.label());
+                        item.setAction(unarchive.action());
                     }
                     else {
-                        item.setLabel(BrowserToolbarFactory.BrowserToolbarItem.archive.label());
-                        item.setPaletteLabel(BrowserToolbarFactory.BrowserToolbarItem.archive.label());
-                        item.setAction(BrowserToolbarFactory.BrowserToolbarItem.archive.action());
+                        item.setLabel(archive.label());
+                        item.setPaletteLabel(archive.label());
+                        item.setAction(archive.action());
                     }
                 }
                 break;
+            }
+            case encoding: {
+//                controller.getSession().getHost().getEncoding()
             }
         }
         return this.validate(item.action());
@@ -114,8 +119,8 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.encoding.action())) {
-            return this.isBrowser() && !controller.isActivityRunning();
+        else if(action.equals(encoding.action())) {
+            return this.isBrowser();
         }
         else if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
@@ -123,7 +128,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.addbookmark.action())) {
+        else if(action.equals(addbookmark.action())) {
             if(this.isBookmarks()) {
                 return controller.getBookmarkModel().getSource().allowsAdd();
             }
@@ -150,7 +155,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.edit.action())) {
+        else if(action.equals(edit.action())) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
                 final EditorFactory factory = EditorFactory.instance();
                 for(Path s : controller.getSelectedPaths()) {
@@ -192,7 +197,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.webbrowser.action())) {
+        else if(action.equals(webbrowser.action())) {
             return controller.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
@@ -201,10 +206,10 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted();
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.info.action())) {
+        else if(action.equals(info.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.newfolder.action())) {
+        else if(action.equals(newfolder.action())) {
             return this.isBrowser() && controller.isMounted();
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
@@ -215,7 +220,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
             );
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.upload.action())) {
+        else if(action.equals(upload.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
                     new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
             );
@@ -237,7 +242,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.delete.action())) {
+        else if(action.equals(delete.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
@@ -246,19 +251,19 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.reload.action())) {
+        else if(action.equals(reload.action())) {
             return this.isBrowser() && controller.isMounted();
         }
         else if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return controller.isMounted();
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.synchronize.action())) {
+        else if(action.equals(synchronize.action())) {
             return this.isBrowser() && controller.isMounted();
         }
         else if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1;
         }
-        else if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(BrowserToolbarFactory.BrowserToolbarItem.download.action())) {
+        else if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(download.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("insideButtonClicked:"))) {
@@ -276,7 +281,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(Foundation.selector("printDocument:"))) {
             return this.isBrowser() && controller.isMounted();
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.disconnect.action())) {
+        else if(action.equals(disconnect.action())) {
             if(this.isBrowser()) {
                 if(!controller.isConnected()) {
                     return controller.isActivityRunning();
@@ -288,12 +293,12 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted();
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.terminal.action())) {
+        else if(action.equals(terminal.action())) {
             return this.isBrowser() && controller.isMounted()
                     && controller.getSession().getHost().getProtocol().getType() == Protocol.Type.sftp
                     && TerminalServiceFactory.get() != null;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.archive.action()) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
+        else if(action.equals(archive.action()) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
             if(this.isBrowser() && controller.isMounted()) {
                 if(controller.getSession().getFeature(Compress.class) == null) {
                     return false;
@@ -310,7 +315,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
-        else if(action.equals(BrowserToolbarFactory.BrowserToolbarItem.unarchive.action())) {
+        else if(action.equals(unarchive.action())) {
             if(this.isBrowser() && controller.isMounted()) {
                 if(controller.getSession().getFeature(Compress.class) == null) {
                     return false;

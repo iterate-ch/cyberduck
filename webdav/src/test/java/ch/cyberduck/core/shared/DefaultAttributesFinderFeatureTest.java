@@ -24,10 +24,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -35,6 +33,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -84,7 +83,7 @@ public class DefaultAttributesFinderFeatureTest {
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature(session).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test cache
@@ -121,15 +120,5 @@ public class DefaultAttributesFinderFeatureTest {
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
         session.close();
-    }
-
-    @Test
-    public void testFindPlaceholder() throws Exception {
-        assertNotNull(new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
-            @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-            }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
     }
 }

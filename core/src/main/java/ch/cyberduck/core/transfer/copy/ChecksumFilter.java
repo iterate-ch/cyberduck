@@ -57,7 +57,7 @@ public class ChecksumFilter extends AbstractCopyFilter {
                 final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
                 // Compare source with target attributes
                 if(append.size == attributes.getSize()) {
-                    if(!Checksum.NONE.equals(append.checksum)) {
+                    if(Checksum.NONE != append.checksum) {
                         if(Objects.equals(attributes.getChecksum(), append.checksum)) {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Skip file %s with checksum %s", source, append.checksum));

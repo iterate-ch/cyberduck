@@ -57,6 +57,7 @@ public class DriveReadFeature implements Read {
                     log.warn(String.format("Missing web link for file %s", file));
                     return new NullInputStream(file.attributes().getSize());
                 }
+                // Write web link file
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {

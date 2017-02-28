@@ -147,9 +147,9 @@ public class SwiftObjectListServiceTest {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
             assertTrue(list.contains(base));
             assertEquals(EnumSet.of(Path.Type.file), list.get(base).getType());
-            final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+            final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory));
             assertTrue(list.contains(placeholder));
-            assertEquals(EnumSet.of(Path.Type.directory, Path.Type.placeholder), list.get(placeholder).getType());
+            assertEquals(EnumSet.of(Path.Type.directory), list.get(placeholder).getType());
         }
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
@@ -157,7 +157,7 @@ public class SwiftObjectListServiceTest {
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
         {
-            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
+            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }

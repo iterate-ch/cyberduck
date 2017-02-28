@@ -188,13 +188,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     protected void logout() throws BackgroundException {
         try {
             client.getIRODSSession().closeSession();
-            client = null;
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map(e);
-        }
-        finally {
-            super.logout();
         }
     }
 

@@ -47,4 +47,17 @@ public final class DownloadFilterOptions {
         icon = preferences.getBoolean("queue.download.icon.update");
         checksum = preferences.getBoolean("queue.download.checksum");
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DownloadFilterOptions{");
+        sb.append("segments=").append(segments);
+        sb.append(", permissions=").append(permissions);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", wherefrom=").append(wherefrom);
+        sb.append(", icon=").append(icon);
+        sb.append(", checksum=").append(checksum);
+        sb.append('}');
+        return sb.toString();
+    }
 }

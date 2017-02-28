@@ -362,8 +362,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return mime;
     }
 
-    public void setMime(final String mime) {
-        this.mime = mime;
+    public void setMime(final String type) {
+        this.mime = type;
+    }
+
+    public TransferStatus mime(final String type) {
+        this.mime = type;
+        return this;
     }
 
     public Checksum getChecksum() {

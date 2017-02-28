@@ -28,6 +28,8 @@ import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.jets3t.service.security.AWSCredentials;
@@ -45,16 +47,18 @@ import com.google.gson.stream.MalformedJsonException;
 public class S3SessionCredentialsRetriever {
 
     private final TranscriptListener transcript;
-
     private final ProtocolFactory factory;
-
     private final String url;
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
 
-    public S3SessionCredentialsRetriever(final TranscriptListener transcript, final String url) {
-        this(ProtocolFactory.global, transcript, url);
+    public S3SessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
+        this(trust, key, ProtocolFactory.global, transcript, url);
     }
 
-    public S3SessionCredentialsRetriever(final ProtocolFactory factory, final TranscriptListener transcript, final String url) {
+    public S3SessionCredentialsRetriever(final X509TrustManager trust, final X509KeyManager key, final ProtocolFactory factory, final TranscriptListener transcript, final String url) {
+        this.trust = trust;
+        this.key = key;
         this.factory = factory;
         this.transcript = transcript;
         this.url = url;
@@ -64,8 +68,8 @@ public class S3SessionCredentialsRetriever {
         final Host address = new HostParser(factory).get(url);
         final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
-        final DAVSession connection = new DAVSession(address);
-        connection.open(new DisabledHostKeyCallback());
+        final DAVSession connection = new DAVSession(address, trust, key);
+        connection.withListener(transcript).open(new DisabledHostKeyCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus());
         return this.parse(in);
     }
@@ -96,7 +100,7 @@ public class S3SessionCredentialsRetriever {
             return new AWSSessionCredentials(key, secret, token);
         }
         catch(UnsupportedEncodingException e) {
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);

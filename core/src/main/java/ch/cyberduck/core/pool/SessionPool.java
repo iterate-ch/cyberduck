@@ -18,8 +18,11 @@ package ch.cyberduck.core.pool;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.VaultRegistry;
 
@@ -50,6 +53,8 @@ public interface SessionPool {
      */
     Host getHost();
 
+    PathCache getCache();
+
     /**
      * @return Shared vaults for sessions
      */
@@ -75,6 +80,10 @@ public interface SessionPool {
     }
 
     final class DisconnectedSessionPool implements SessionPool {
+        private static final Host DISCONNECTED = new Host(ProtocolFactory.forName(PreferencesFactory.get().getProperty("connection.protocol.default")),
+                PreferencesFactory.get().getProperty("connection.hostname.default"),
+                PreferencesFactory.get().getInteger("connection.port.default"));
+
         @Override
         public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
             return null;
@@ -92,7 +101,12 @@ public interface SessionPool {
 
         @Override
         public Host getHost() {
-            return null;
+            return DISCONNECTED;
+        }
+
+        @Override
+        public PathCache getCache() {
+            return PathCache.empty();
         }
 
         @Override

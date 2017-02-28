@@ -16,7 +16,7 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.pool.SingleSessionPool;
+import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -65,7 +65,7 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
                 new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertTrue(task.get().isEmpty());
         assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
@@ -92,7 +92,7 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new SingleSessionPool(
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
                 new TestLoginConnectionService(), session, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertNotNull(task.get());
         assertTrue(cache.containsKey(directory));

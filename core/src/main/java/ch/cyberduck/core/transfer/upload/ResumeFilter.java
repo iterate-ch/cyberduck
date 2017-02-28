@@ -67,7 +67,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                 if(parent.isExists()) {
                     final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
                     if(append.size == local.attributes().getSize()) {
-                        if(!Checksum.NONE.equals(append.checksum)) {
+                        if(Checksum.NONE != append.checksum) {
                             final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
                             if(compute.compute(file, local.getInputStream(), parent).equals(append.checksum)) {
                                 if(log.isInfoEnabled()) {

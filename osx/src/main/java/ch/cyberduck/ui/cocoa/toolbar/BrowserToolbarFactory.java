@@ -15,14 +15,22 @@ package ch.cyberduck.ui.cocoa.toolbar;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSButtonCell;
+import ch.cyberduck.binding.application.NSComboBox;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSSegmentedControl;
 import ch.cyberduck.binding.application.NSToolbarItem;
+import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.Application;
@@ -38,6 +46,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.HashMap;
@@ -48,6 +57,25 @@ import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbar
 public class BrowserToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
 
     private final ApplicationFinder applicationFinder = ApplicationFinderFactory.get();
+
+    private final ProxyController quickConnectPopupModel = new QuickConnectModel();
+
+    private final BookmarkCollection bookmarks
+            = BookmarkCollection.defaultCollection();
+
+    private final class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
+        @Override
+        public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
+            return new NSInteger(bookmarks.size());
+        }
+
+        @Override
+        public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
+            return NSString.stringWithString(
+                    BookmarkNameProvider.toString(bookmarks.get(row.intValue()))
+            );
+        }
+    }
 
     public enum BrowserToolbarItem {
         browserview {
@@ -106,7 +134,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
             @Override
             public Selector action() {
-                return null;
+                return Foundation.selector("quickConnectSelectionChanged:");
             }
 
             @Override
@@ -464,30 +492,47 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     item.setMenuFormRepresentation(toolbarMenu);
                     return item;
                 }
-                case quickconnect:
+                case quickconnect: {
                     item.setLabel(quickconnect.label());
                     item.setPaletteLabel(quickconnect.label());
                     item.setToolTip(quickconnect.tooltip());
-                    item.setView(controller.getQuickConnectPopup());
+                    final NSComboBox button = NSComboBox.textfieldWithFrame(new NSRect(170, 26));
+                    button.setTarget(controller.id());
+                    button.setAction(quickconnect.action());
+                    button.setCompletes(true);
+                    // Make sure action is not sent twice.
+                    button.cell().setSendsActionOnEndEditing(false);
+                    button.setUsesDataSource(true);
+                    button.setDataSource(quickConnectPopupModel.id());
+                    button.setFocusRingType(NSView.NSFocusRingType.NSFocusRingTypeNone.ordinal());
+                    button.setNumberOfVisibleItems(bookmarks.size() > 10 ? new NSInteger(10) : new NSInteger(bookmarks.size()));
+                    item.setView(button);
                     return item;
-                case encoding:
+                }
+                case encoding: {
                     item.setLabel(encoding.label());
                     item.setPaletteLabel(encoding.label());
                     item.setToolTip(encoding.tooltip());
-                    item.setView(controller.getEncodingPopup());
                     // Add a menu representation for text mode of toolbar
-                    NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(encoding.label()),
+                    NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(LocaleFactory.localizedString(encoding.label()),
                             encoding.action(), StringUtils.EMPTY);
                     final String[] charsets = new DefaultCharsetProvider().availableCharsets();
                     NSMenu charsetMenu = NSMenu.menu();
                     for(String charset : charsets) {
-                        charsetMenu.addItemWithTitle_action_keyEquivalent(charset, encoding.action(), StringUtils.EMPTY);
+                        final NSMenuItem m = charsetMenu.addItemWithTitle_action_keyEquivalent(charset, encoding.action(), StringUtils.EMPTY);
+                        m.setRepresentedObject(charset);
                     }
-                    encodingMenu.setSubmenu(charsetMenu);
-                    item.setMenuFormRepresentation(encodingMenu);
-                    item.setMinSize(controller.getEncodingPopup().frame().size);
-                    item.setMaxSize(controller.getEncodingPopup().frame().size);
+                    toolbarMenu.setSubmenu(charsetMenu);
+                    item.setMenuFormRepresentation(toolbarMenu);
+                    final NSPopUpButton button = NSPopUpButton.buttonWithFrame(new NSRect(120, 26));
+                    button.setImage(encoding.image());
+                    button.setMenu(charsetMenu);
+                    button.setTarget(controller.id());
+                    button.setAction(encoding.action());
+                    button.selectItemWithTitle(preferences.getProperty("browser.charset.encoding"));
+                    item.setView(button);
                     return item;
+                }
                 case edit: {
                     item.setLabel(edit.label());
                     item.setPaletteLabel(edit.label());

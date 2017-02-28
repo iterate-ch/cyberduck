@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -30,10 +31,11 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
@@ -61,14 +63,15 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+            = new PathContainerService();
 
     private final B2Session session;
 
     private final Long partSize;
 
     private final Integer concurrency;
-    private final Write<BaseB2Response> writer;
+
+    private Write<BaseB2Response> writer;
 
     public B2LargeUploadService(final B2Session session) {
         this(session, new B2WriteFeature(session), PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
@@ -169,7 +172,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 if(e.getCause() instanceof BackgroundException) {
                     throw (BackgroundException) e.getCause();
                 }
-                throw new BackgroundException(e);
+                throw new DefaultExceptionMappingService().map(e.getCause());
             }
             finally {
                 pool.shutdown(false);
@@ -208,7 +211,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new RetryCallable<B2UploadPartResponse>() {
+        return pool.execute(new AbstractRetryCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
                 final TransferStatus status = new TransferStatus()
@@ -247,5 +250,11 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
         });
+    }
+
+    @Override
+    public Upload<BaseB2Response> withWriter(final Write<BaseB2Response> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }

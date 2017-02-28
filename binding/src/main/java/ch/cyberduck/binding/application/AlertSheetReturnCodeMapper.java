@@ -31,7 +31,10 @@ public final class AlertSheetReturnCodeMapper {
      * @see SheetCallback#CANCEL_OPTION
      */
     public int getOption(final NSButton sender) {
-        final int option = sender.tag();
+        return this.getOption(sender.tag());
+    }
+
+    public int getOption(final int option) {
         switch(option) {
             case NSAlert.NSAlertFirstButtonReturn:
                 return SheetCallback.DEFAULT_OPTION;

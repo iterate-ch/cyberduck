@@ -47,6 +47,9 @@ public class PasswordController extends AlertController {
     @Outlet
     private NSButton keychainCheckbox;
 
+    private final NSNotificationCenter notificationCenter
+            = NSNotificationCenter.defaultCenter();
+
     private final Credentials credentials;
     private final String title;
     private final String reason;
@@ -86,7 +89,7 @@ public class PasswordController extends AlertController {
         view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         if(options.keychain) {
             keychainCheckbox = NSButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 18));
-            keychainCheckbox.setTitle(LocaleFactory.localizedString("Add to Keychain", "Login"));
+            keychainCheckbox.setTitle(LocaleFactory.localizedString("Save Password", "Keychain"));
             keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
             keychainCheckbox.setTarget(this.id());
             keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
@@ -107,7 +110,7 @@ public class PasswordController extends AlertController {
     protected void focus(final NSAlert alert) {
         super.focus(alert);
         inputField.selectText(null);
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+        notificationCenter.addObserver(this.id(),
                 Foundation.selector("passwordFieldTextDidChange:"),
                 NSControl.NSControlTextDidChangeNotification,
                 inputField);

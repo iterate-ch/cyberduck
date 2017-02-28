@@ -30,7 +30,7 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.RetryCallable;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -52,7 +52,7 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final SwiftSession session;
     private final Find finder;
@@ -134,13 +134,13 @@ public class SwiftLargeUploadWriteFeature implements Write<List<StorageObject>> 
 
         @Override
         public void write(final int value) throws IOException {
-            throw new UnsupportedOperationException();
+            throw new IOException(new UnsupportedOperationException());
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                completed.add(new RetryCallable<StorageObject>() {
+                completed.add(new AbstractRetryCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
                         try {

@@ -33,10 +33,11 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
-import ch.cyberduck.core.threading.RetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.log4j.Logger;
 
@@ -58,7 +59,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new SwiftPathContainerService();
+            = new PathContainerService();
 
     private final Long segmentSize;
 
@@ -157,7 +158,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             if(e.getCause() instanceof BackgroundException) {
                 throw (BackgroundException) e.getCause();
             }
-            throw new BackgroundException(e);
+            throw new DefaultExceptionMappingService().map(e.getCause());
         }
         finally {
             pool.shutdown(false);
@@ -197,7 +198,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool<StorageObject> pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length) {
-        return pool.execute(new RetryCallable<StorageObject>() {
+        return pool.execute(new AbstractRetryCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 final TransferStatus status = new TransferStatus()

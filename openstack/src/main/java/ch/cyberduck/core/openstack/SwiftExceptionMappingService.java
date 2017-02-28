@@ -21,8 +21,9 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -52,9 +53,11 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
             case HttpStatus.SC_NOT_IMPLEMENTED:
             case HttpStatus.SC_CONFLICT:
-                return new InteroperabilityException(buffer.toString(), e);
+                return new ConflictException(buffer.toString(), e);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
                 return new ConnectionRefusedException(buffer.toString(), e);
+            case HttpStatus.SC_REQUEST_TIMEOUT:
+                return new ConnectionTimeoutException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

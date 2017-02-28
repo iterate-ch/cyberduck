@@ -89,7 +89,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             defaults.put("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             defaults.put("factory.schemehandler.class", typeof(URLSchemeHandlerConfiguration).AssemblyQualifiedName);
 
-            if (Cyberduck.Core.Utils.IsUWPSupported)
+            if (Cyberduck.Core.Utils.IsRunningAsUWP)
             {
                 defaults.put("factory.licensefactory.class", typeof(WindowsStoreLicenseFactory).AssemblyQualifiedName);
             }

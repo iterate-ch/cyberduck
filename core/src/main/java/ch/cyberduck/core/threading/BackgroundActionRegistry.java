@@ -22,6 +22,11 @@ import ch.cyberduck.core.Collection;
 
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
+
 public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
     private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
@@ -40,7 +45,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         }
     }
 
-    private BackgroundAction current;
+    private final Set<BackgroundAction> running = new LinkedHashSet<>();
 
     public BackgroundActionRegistry() {
         //
@@ -51,22 +56,26 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
     /**
      * @return The currently running background action. Null if none is currently running.
      */
-    public BackgroundAction getCurrent() {
-        return current;
+    public synchronized BackgroundAction getCurrent() {
+        final Iterator<BackgroundAction> iter = running.iterator();
+        if(iter.hasNext()) {
+            return iter.next();
+        }
+        return null;
     }
 
     @Override
-    public void start(final BackgroundAction action) {
-        current = action;
+    public synchronized void start(final BackgroundAction action) {
+        running.add(action);
     }
 
     @Override
-    public void stop(final BackgroundAction action) {
-        current = null;
+    public synchronized void stop(final BackgroundAction action) {
+        running.remove(action);
     }
 
     @Override
-    public void cancel(final BackgroundAction action) {
+    public synchronized void cancel(final BackgroundAction action) {
         if(action.isRunning()) {
             log.debug(String.format("Skip removing action %s currently running", action));
         }
@@ -82,13 +91,13 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
      * @return True
      */
     @Override
-    public boolean add(final BackgroundAction action) {
+    public synchronized boolean add(final BackgroundAction action) {
         action.addListener(this);
         return super.add(action);
     }
 
     @Override
-    public boolean remove(final Object action) {
+    public synchronized boolean remove(final Object action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove action %s", action));
         }
@@ -97,6 +106,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         }
         return true;
     }
+
 
     @Override
     public boolean equals(final Object o) {
@@ -110,14 +120,11 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
             return false;
         }
         final BackgroundActionRegistry that = (BackgroundActionRegistry) o;
-        if(identity != null ? !identity.equals(that.identity) : that.identity != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(identity, that.identity);
     }
 
     @Override
     public int hashCode() {
-        return identity.hashCode();
+        return Objects.hash(super.hashCode(), identity);
     }
 }

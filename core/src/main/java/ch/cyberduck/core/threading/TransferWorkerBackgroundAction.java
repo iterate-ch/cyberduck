@@ -26,8 +26,10 @@ import ch.cyberduck.core.worker.TransferWorker;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
+
 public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
-    private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
+    private static final Logger log = Logger.getLogger(TransferWorkerBackgroundAction.class);
 
     protected final SessionPool destination;
     protected final TransferWorker<T> worker;
@@ -123,16 +125,13 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        final WorkerBackgroundAction that = (WorkerBackgroundAction) o;
-        if(worker != null ? !worker.equals(that.worker) : that.worker != null) {
-            return false;
-        }
-        return true;
+        final TransferWorkerBackgroundAction<?> that = (TransferWorkerBackgroundAction<?>) o;
+        return Objects.equals(worker, that.worker);
     }
 
     @Override
     public int hashCode() {
-        return worker != null ? worker.hashCode() : 0;
+        return Objects.hash(worker);
     }
 
     @Override

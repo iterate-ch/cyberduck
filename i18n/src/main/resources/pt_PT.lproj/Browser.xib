@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11542"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDBrowserController">
@@ -20,12 +20,10 @@
                 <outlet property="donateButton" destination="124" id="140"/>
                 <outlet property="editBookmarkButton" destination="9" id="141"/>
                 <outlet property="editMenu" destination="71" id="142"/>
-                <outlet property="encodingPopup" destination="120" id="143"/>
                 <outlet property="logDrawer" destination="113" id="145"/>
                 <outlet property="navigationButton" destination="63" id="146"/>
                 <outlet property="openUrlMenu" destination="95" id="147"/>
                 <outlet property="pathPopup" destination="59" id="148"/>
-                <outlet property="quickConnectPopup" destination="118" id="149"/>
                 <outlet property="searchField" destination="55" id="150"/>
                 <outlet property="securityLabel" destination="47" id="151"/>
                 <outlet property="statusLabel" destination="49" id="152"/>
@@ -224,7 +222,9 @@
                             <button id="47">
                                 <rect key="frame" x="562" y="2" width="18" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare" image="B7939F18-7A4E-4F24-BE2D-AE23BED78A98" imagePosition="only" alignment="left" id="48">
+                                <buttonCell key="cell" type="squareTextured" bezelStyle="texturedSquare"
+                                            image="2CAB3A98-24AA-4090-96E8-91A340B7F9FE" imagePosition="only"
+                                            alignment="left" id="48">
                                     <behavior key="behavior" lightByContents="YES"/>
                                     <font key="font" metaFont="label"/>
                                 </buttonCell>
@@ -290,7 +290,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="61">
+                                    <menu key="menu" title="Outras vistas" id="61">
                                         <items>
                                             <menuItem title=" " state="on" id="62"/>
                                         </items>
@@ -325,7 +325,7 @@
         </window>
         <menu title="Menu" id="65">
             <items>
-                <menuItem title="Actualizar" keyEquivalent="r" id="66">
+                <menuItem title="Atualizar" keyEquivalent="r" id="66">
                     <connections>
                         <action selector="reloadButtonClicked:" target="-1" id="167"/>
                     </connections>
@@ -338,7 +338,7 @@
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Vista Rápida" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Vista rápida" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -379,7 +379,7 @@
                 <menuItem isSeparatorItem="YES" id="78">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Enviar…" keyEquivalent="" id="79">
+                <menuItem title="Carregar..." keyEquivalent="" id="79">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="uploadButtonClicked:" target="-1" id="174"/>
@@ -406,14 +406,14 @@
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Novo symbolic link…" id="83">
+                <menuItem title="Nova ligação simbólica..." id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
-                <menuItem title="Eliminar" id="85">
+                <menuItem title="Apagar" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
@@ -465,15 +465,6 @@ CA
             </items>
             <point key="canvasLocation" x="-184.5" y="588.5"/>
         </menu>
-        <comboBox verticalHuggingPriority="750" id="118">
-            <rect key="frame" x="0.0" y="0.0" width="167" height="26"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-            <comboBoxCell key="cell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" numberOfVisibleItems="5" id="119">
-                <font key="font" metaFont="system"/>
-                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-            </comboBoxCell>
-        </comboBox>
         <menu title="Menu" id="99">
             <items>
                 <menuItem title="Ligar ao servidor" id="100">
@@ -493,7 +484,7 @@ DQ
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Eliminar marcador" id="103">
+                <menuItem title="Apagar marcador" id="103">
                     <connections>
                         <action selector="deleteBookmarkButtonClicked:" target="-1" id="170"/>
                     </connections>
@@ -514,13 +505,13 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Ordenar por" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Alcunha" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nome anfitrião" keyEquivalent="2" id="110">
+                            <menuItem title="Nome do servidor" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
@@ -537,20 +528,6 @@ DQ
                 </menuItem>
             </items>
         </menu>
-        <popUpButton verticalHuggingPriority="750" id="120">
-            <rect key="frame" x="0.0" y="0.0" width="119" height="25"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <popUpButtonCell key="cell" type="roundTextured" title=" " bezelStyle="texturedRounded" alignment="center" lineBreakMode="clipping" state="on" borderStyle="border" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="123" id="121">
-                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                <font key="font" metaFont="menu"/>
-                <menu key="menu" title="OtherViews" id="122">
-                    <items>
-                        <menuItem title=" " state="on" id="123"/>
-                    </items>
-                </menu>
-            </popUpButtonCell>
-            <point key="canvasLocation" x="382" y="785.5"/>
-        </popUpButton>
         <drawer preferredEdge="minY" leadingOffset="10" trailingOffset="15" id="113">
             <size key="contentSize" width="200" height="200"/>
             <size key="minContentSize" width="50" height="50"/>
@@ -569,7 +546,7 @@ DQ
         </button>
     </objects>
     <resources>
-        <image name="B7939F18-7A4E-4F24-BE2D-AE23BED78A98" width="1" height="1">
+        <image name="2CAB3A98-24AA-4090-96E8-91A340B7F9FE" width="1" height="1">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGPT5YJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK4HCBMU
 GR4fIyQrLjE3OlUkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5TUmVw

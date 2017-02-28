@@ -199,3 +199,9 @@ source_file = en.lproj/Sftp.strings
 source_lang = en
 type = STRINGS
 
+[cyberduck.Cryptomator]
+file_filter = <lang>.lproj/Cryptomator.strings
+source_file = en.lproj/Cryptomator.strings
+source_lang = en
+type = STRINGS
+

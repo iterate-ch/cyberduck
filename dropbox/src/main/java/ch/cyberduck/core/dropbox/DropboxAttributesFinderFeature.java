@@ -63,6 +63,6 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final PathCache cache) {
-        throw new UnsupportedOperationException();
+        return this;
     }
 }
