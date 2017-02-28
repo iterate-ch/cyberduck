@@ -28,8 +28,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Symlink;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -39,8 +43,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 
 public class LocalSession extends Session<FileSystem> {
-
-    private LocalListService listService;
 
     protected LocalSession(final Host h) {
         super(h);
@@ -70,9 +72,19 @@ public class LocalSession extends Session<FileSystem> {
         //
     }
 
+    protected boolean isPosixFilesystem() {
+        return FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Touch.class) {
+            return (T) new LocalTouchFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new LocalFindFeature(this);
+        }
         if(type == Attributes.class) {
             return (T) new LocalAttributesFinderFeature(this);
         }
@@ -90,6 +102,16 @@ public class LocalSession extends Session<FileSystem> {
         }
         if(type == Directory.class) {
             return (T) new LocalDirectoryFeature(this);
+        }
+        if(type == Symlink.class) {
+            if(this.isPosixFilesystem()) {
+                return (T) new LocalSymlinkFeature(this);
+            }
+        }
+        if(type == UnixPermission.class) {
+            if(this.isPosixFilesystem()) {
+                return (T) new LocalUnixPermissionFeature(this);
+            }
         }
         return super._getFeature(type);
     }

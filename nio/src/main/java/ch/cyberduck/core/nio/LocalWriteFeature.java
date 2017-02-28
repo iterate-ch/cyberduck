@@ -50,10 +50,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
             if(status.isAppend()) {
-                if(status.isExists()) {
-                    options.add(StandardOpenOption.APPEND);
-                }
-                else {
+                if(!status.isExists()) {
                     options.add(StandardOpenOption.CREATE);
                 }
             }

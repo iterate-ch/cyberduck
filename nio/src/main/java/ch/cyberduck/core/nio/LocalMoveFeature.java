@@ -33,6 +33,7 @@ public class LocalMoveFeature implements Move {
 
     public LocalMoveFeature(final LocalSession session) {
         this.session = session;
+        this.delete = new LocalDeleteFeature(session);
     }
 
     @Override

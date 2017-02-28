@@ -22,12 +22,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.util.EnumSet;
 
 public class LocalListService implements ListService {
+
+    private static final Logger log = Logger.getLogger(LocalListService.class);
 
     private final LocalSession session;
     private final LocalAttributesFinderFeature feature;
@@ -53,13 +57,40 @@ public class LocalListService implements ListService {
                 if(Files.isSymbolicLink(path)) {
                     type.add(Path.Type.symboliclink);
                 }
-                paths.add(new Path(directory, path.getFileName().toString(), type, attributes));
-                listener.chunk(directory, paths);
+                final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
+                if(this.post(path, file)) {
+                    paths.add(file);
+                    listener.chunk(directory, paths);
+                }
             }
         }
         catch(IOException ex) {
             throw new LocalExceptionMappingService().map("Listing directory {0} failed", ex, directory);
         }
         return paths;
+    }
+
+    protected boolean post(final java.nio.file.Path path, final Path file) {
+        if(Files.isSymbolicLink(path)) {
+            final Path target;
+            Path.Type type;
+            try {
+                target = new Path(path.toRealPath().toString(), EnumSet.of(Path.Type.file));
+                if(Files.isDirectory(path.toRealPath())) {
+                    type = Path.Type.directory;
+                }
+                else {
+                    type = Path.Type.file;
+                }
+                file.setType(EnumSet.of(Path.Type.symboliclink, type));
+                target.setType(EnumSet.of(type));
+                file.setSymlinkTarget(target);
+            }
+            catch(IOException e) {
+                log.warn(String.format("Failure to read symbolic link of %s. %s", file, e.getMessage()));
+                return false;
+            }
+        }
+        return true;
     }
 }
