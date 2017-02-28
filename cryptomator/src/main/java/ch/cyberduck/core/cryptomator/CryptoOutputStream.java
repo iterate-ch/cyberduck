@@ -26,6 +26,7 @@ import org.cryptomator.cryptolib.api.FileHeader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
@@ -54,6 +55,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
     private static final class EncrpytingOutputStream extends ProxyOutputStream {
         private final Cryptor cryptor;
         private final FileHeader header;
+        private final int chunksize;
 
         /**
          * Position proxy content cryptor
@@ -64,6 +66,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
             super(proxy);
             this.cryptor = cryptor;
             this.header = header;
+            this.chunksize = cryptor.fileContentCryptor().cleartextChunkSize();
         }
 
         @Override
@@ -73,7 +76,13 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            super.write(cryptor.fileContentCryptor().encryptChunk(ByteBuffer.wrap(b, off, len), chunkIndex++, header).array());
+            for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
+                int chunkLen = Math.min(chunksize, len - chunkOffset);
+                final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
+                        ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
+                        chunkIndex++, header);
+                super.write(encryptedChunk.array());
+            }
         }
     }
 }

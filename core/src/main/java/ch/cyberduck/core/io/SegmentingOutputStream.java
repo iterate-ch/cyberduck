@@ -22,18 +22,16 @@ import org.apache.commons.io.output.ThresholdingOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 
 public class SegmentingOutputStream extends ThresholdingOutputStream {
+
     private final ByteArrayOutputStream buffer = new ByteArrayOutputStream(
             PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"));
     private final OutputStream proxy;
-    private int threshold;
 
     public SegmentingOutputStream(final OutputStream proxy, final int threshold) {
         super(threshold);
         this.proxy = proxy;
-        this.threshold = threshold;
     }
 
     @Override
@@ -57,11 +55,7 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
     }
 
     private void copy() throws IOException {
-        final byte[] content = buffer.toByteArray();
-        for(int off = 0; off < content.length; off += threshold) {
-            int len = Math.min(threshold, content.length - off);
-            proxy.write(Arrays.copyOfRange(content, off, off + len));
-        }
+        buffer.writeTo(proxy);
         // Re-use buffer
         buffer.reset();
         // Wait for trigger of next threshold
