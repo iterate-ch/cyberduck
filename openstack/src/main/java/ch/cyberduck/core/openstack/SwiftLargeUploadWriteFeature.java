@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -38,7 +39,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -89,12 +89,12 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
 
     @Override
     public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final LargeUploadOutputStream stream = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<StorageObject>>(new BufferedOutputStream(stream,
+        final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
+        return new HttpResponseOutputStream<List<StorageObject>>(new SegmentingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() throws BackgroundException {
-                return stream.getCompleted();
+                return proxy.getCompleted();
             }
         };
     }

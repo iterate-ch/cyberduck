@@ -18,6 +18,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -34,7 +35,6 @@ import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -86,12 +86,12 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
-        final MultipartOutputStream stream = new MultipartOutputStream(multipart, file, status);
-        return new HttpResponseOutputStream<List<MultipartPart>>(new BufferedOutputStream(stream,
+        final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
+        return new HttpResponseOutputStream<List<MultipartPart>>(new SegmentingOutputStream(proxy,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getStatus() throws BackgroundException {
-                return stream.getCompleted();
+                return proxy.getCompleted();
             }
         };
     }
@@ -140,7 +140,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
         @Override
         public void write(final int value) throws IOException {
-            throw new UnsupportedOperationException();
+            throw new IOException(new UnsupportedOperationException());
         }
 
         @Override
