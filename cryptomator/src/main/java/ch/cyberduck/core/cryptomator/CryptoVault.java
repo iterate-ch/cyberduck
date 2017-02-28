@@ -274,7 +274,7 @@ public class CryptoVault implements Vault {
 
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
-            log.warn(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+            log.debug(String.format("Skip file %s because it is already marked as an ecrypted path", file));
             return file;
         }
         final Path encrypted;
@@ -306,7 +306,7 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+            log.debug(String.format("Skip file %s because it is already marked as an decrypted path", file));
             return file;
         }
         if(file.getType().contains(Path.Type.vault)) {
