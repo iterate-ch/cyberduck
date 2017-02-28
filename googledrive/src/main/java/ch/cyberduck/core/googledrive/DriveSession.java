@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
@@ -82,8 +83,6 @@ public class DriveSession extends HttpSession<Drive> {
 
     private Credential credential;
 
-    private OAuth2AuthorizationService authorizationService;
-
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -91,12 +90,6 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
         this.transport = new ApacheHttpTransport(builder.build(this).build());
-        this.authorizationService = new OAuth2AuthorizationService(transport,
-                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-                preferences.getProperty("googledrive.oauth.clientid"),
-                preferences.getProperty("googledrive.oauth.clientsecret"),
-                Collections.singletonList(DriveScopes.DRIVE))
-                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) throws IOException {
@@ -112,12 +105,19 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
                       final Cache<Path> cache) throws BackgroundException {
-        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(keychain, prompt, cancel, cache, tokens);
+        final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(transport,
+                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+                host.getProtocol().getClientId(),
+                host.getProtocol().getClientSecret(),
+                Collections.singletonList(DriveScopes.DRIVE))
+                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
+        final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
+        this.login(auth, keychain, prompt, cancel, tokens);
     }
 
-    private void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        credential = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
+    private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
+                       final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
+        credential = auth.authorize(host, keychain, prompt, cancel, tokens);
         if(host.getCredentials().isPassed()) {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
@@ -130,7 +130,7 @@ public class DriveSession extends HttpSession<Drive> {
                 throw new DriveExceptionMappingService().map(e);
             }
             catch(LoginFailureException f) {
-                this.login(keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
+                this.login(auth, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
             }
         }
     }
@@ -147,7 +147,10 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return new DriveListService(this).list(directory, listener);
+        if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory.getName())) {
+            return new DriveSharedFolderListService(this).list(directory, listener);
+        }
+        return new DriveDefaultListService(this).list(directory, listener);
     }
 
     public Credential getTokens() {
@@ -198,6 +201,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this);
+        }
+        if(type == Headers.class) {
+            return (T) new DriveMetadataFeature(this);
         }
         return super._getFeature(type);
     }

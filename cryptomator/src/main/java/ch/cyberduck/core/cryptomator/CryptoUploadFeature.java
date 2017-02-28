@@ -15,12 +15,13 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -45,8 +46,13 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
-        return proxy.append(vault.encrypt(session, file), length, cache);
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        try {
+            return proxy.append(vault.encrypt(session, file), length, cache);
+        }
+        catch(NotfoundException e) {
+            return Write.notfound;
+        }
     }
 
     @Override

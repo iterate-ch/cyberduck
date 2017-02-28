@@ -15,12 +15,15 @@ package ch.cyberduck.core.sparkle;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.ProxyController;
+
 import org.junit.Test;
 
 public class SparklePeriodicUpdateCheckerTest {
 
     @Test
     public void testCheck() throws Exception {
-        final SparklePeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker();
+        final SparklePeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker(new ProxyController());
+        updater.check(false);
     }
 }

@@ -40,7 +40,6 @@ public class LoginConnectionService implements ConnectionService {
     private final Resolver resolver = new Resolver();
     private final HostKeyCallback key;
     private final ProgressListener listener;
-    private final TranscriptListener transcript;
     private final ProxyFinder proxy;
     private final LoginService login;
     private final NotificationService notification;
@@ -48,46 +47,40 @@ public class LoginConnectionService implements ConnectionService {
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
-                                  final ProgressListener listener,
-                                  final TranscriptListener transcript) {
-        this(new KeychainLoginService(prompt, keychain), key, listener, transcript);
+                                  final ProgressListener listener) {
+        this(new KeychainLoginService(prompt, keychain), key, listener);
     }
 
     public LoginConnectionService(final LoginCallback prompt,
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy) {
-        this(new KeychainLoginService(prompt, keychain), key, listener, transcript, proxy);
+        this(new KeychainLoginService(prompt, keychain), key, listener, proxy);
+    }
+
+    public LoginConnectionService(final LoginService login,
+                                  final HostKeyCallback key,
+                                  final ProgressListener listener) {
+        this(login, key, listener, ProxyFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript) {
-        this(login, key, listener, transcript, ProxyFactory.get());
-    }
-
-    public LoginConnectionService(final LoginService login,
-                                  final HostKeyCallback key,
-                                  final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy) {
-        this(login, key, listener, transcript, proxy, NotificationServiceFactory.get());
+        this(login, key, listener, proxy, NotificationServiceFactory.get());
     }
 
     public LoginConnectionService(final LoginService login,
                                   final HostKeyCallback key,
                                   final ProgressListener listener,
-                                  final TranscriptListener transcript,
                                   final ProxyFinder proxy,
                                   final NotificationService notification) {
         this.login = login;
         this.proxy = proxy;
         this.key = key;
         this.listener = listener;
-        this.transcript = transcript;
         this.notification = notification;
     }
 
@@ -154,7 +147,7 @@ public class LoginConnectionService implements ConnectionService {
                 bookmark.getProtocol().getName(), hostname));
 
         // The IP address could successfully be determined
-        session.withListener(transcript).open(key);
+        session.open(key);
 
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
                 bookmark.getProtocol().getName()));

@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8121.17" systemVersion="15A204h" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <deployment version="1060" identifier="macosx"/>
-        <development version="6300" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8121.17"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ch.cyberduck.ui.cocoa.CDProgressController">
@@ -28,20 +29,18 @@
                 <imageView id="4">
                     <rect key="frame" x="0.0" y="44" width="38" height="38"/>
                     <autoresizingMask key="autoresizingMask"/>
-                    <animations/>
                     <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="NSApplicationIcon" id="5"/>
                 </imageView>
-                <box title="Title" boxType="oldStyle" borderType="none" titlePosition="noTitle" id="6">
+                <box boxType="oldStyle" borderType="none" title="Title" titlePosition="noTitle" id="6">
                     <rect key="frame" x="40" y="0.0" width="293" height="82"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView">
+                    <view key="contentView" id="qh3-aM-KOn">
                         <rect key="frame" x="0.0" y="0.0" width="293" height="82"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="7">
                                 <rect key="frame" x="28" y="22" width="259" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="8">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -51,12 +50,10 @@
                             <progressIndicator wantsLayer="YES" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="bar" id="9">
                                 <rect key="frame" x="8" y="42" width="277" height="12"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                             </progressIndicator>
                             <popUpButton id="10">
                                 <rect key="frame" x="-3" y="56" width="290" height="22"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <popUpButtonCell key="cell" type="bevel" title=" " bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="bezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="13" id="11">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
@@ -70,7 +67,6 @@
                             <textField verticalHuggingPriority="750" id="14">
                                 <rect key="frame" x="28" y="5" width="259" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="15">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -80,13 +76,11 @@
                             <imageView id="16">
                                 <rect key="frame" x="7" y="21" width="16" height="16"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <animations/>
                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageAlignment="topRight" imageScaling="proportionallyDown" image="statusGreen" id="17"/>
                             </imageView>
                             <textField verticalHuggingPriority="750" id="18">
                                 <rect key="frame" x="6" y="42" width="281" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <animations/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="19">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -94,14 +88,9 @@
                                 </textFieldCell>
                             </textField>
                         </subviews>
-                        <animations/>
                     </view>
-                    <animations/>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <animations/>
         </customView>
     </objects>
     <resources>

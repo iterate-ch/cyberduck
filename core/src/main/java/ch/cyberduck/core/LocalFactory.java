@@ -27,6 +27,10 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
 
+    protected LocalFactory() {
+        super("factory.local.class");
+    }
+
     @Override
     protected Local create() {
         return this.create(PreferencesFactory.get().getProperty("local.user.home"));

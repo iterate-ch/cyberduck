@@ -1,15 +1,17 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -44,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class S3MultipartWriteFeature implements Write {
+public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPart>> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
     private final Preferences preferences
@@ -68,8 +70,9 @@ public class S3MultipartWriteFeature implements Write {
     }
 
     @Override
-    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
+                .getDetails(containerService.getKey(file), status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
@@ -94,7 +97,7 @@ public class S3MultipartWriteFeature implements Write {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
@@ -141,7 +144,7 @@ public class S3MultipartWriteFeature implements Write {
         }
 
         @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
+        public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
                 completed.add(new AbstractRetryCallable<MultipartPart>() {
                     @Override
@@ -154,15 +157,16 @@ public class S3MultipartWriteFeature implements Write {
                             switch(session.getSignatureVersion()) {
                                 case AWS4HMACSHA256:
                                     status.setChecksum(S3MultipartWriteFeature.this.checksum()
-                                            .compute(file, new ByteArrayInputStream(b, off, len), status)
+                                            .compute(new ByteArrayInputStream(content, off, len), status)
                                     );
                                     break;
                             }
-                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService()).getDetails(containerService.getKey(file), status);
+                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService())
+                                    .getDetails(containerService.getKey(file), status);
                             try {
                                 session.getClient().putObjectWithRequestEntityImpl(
                                         containerService.getContainer(file).getName(), part,
-                                        new ByteArrayEntity(b, off, len), parameters);
+                                        new ByteArrayEntity(content, off, len), parameters);
                             }
                             catch(ServiceException e) {
                                 throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);

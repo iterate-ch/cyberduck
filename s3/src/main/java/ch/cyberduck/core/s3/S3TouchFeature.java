@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -48,7 +49,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setMime(mapping.getMime(file.getName()));
         if(Encryption.Algorithm.NONE == status.getEncryption()) {
             final Encryption encryption = session.getFeature(Encryption.class);
@@ -63,10 +64,11 @@ public class S3TouchFeature implements Touch<StorageObject> {
             }
         }
         if(Checksum.NONE == status.getChecksum()) {
-            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status.length(0L)));
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
         }
         status.setLength(0L);
-        new DefaultStreamCloser().close(writer.write(file, status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        return file;
     }
 
     @Override

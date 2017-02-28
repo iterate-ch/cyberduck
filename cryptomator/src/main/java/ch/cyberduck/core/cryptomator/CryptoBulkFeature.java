@@ -15,8 +15,11 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -33,6 +36,8 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Session<?> session;
     private final Bulk<R> proxy;
     private final CryptoVault cryptomator;
+    private final RandomStringService random
+            = new UUIDRandomStringService();
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
@@ -41,11 +46,16 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public R pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
+            if(!status.isExists()) {
+                if(file.isDirectory()) {
+                    file.attributes().setDirectoryId(random.random());
+                }
+            }
             encrypted.put(cryptomator.encrypt(session, file), status);
             if(cryptomator.contains(file)) {
                 // Write header
@@ -54,7 +64,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             }
         }
-        return proxy.pre(type, encrypted);
+        return proxy.pre(type, encrypted, callback);
     }
 
     @Override

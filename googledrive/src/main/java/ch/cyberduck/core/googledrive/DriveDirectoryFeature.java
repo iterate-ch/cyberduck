@@ -36,23 +36,24 @@ public class DriveDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
             // Identified by the special folder MIME type application/vnd.google-apps.folder
             final Drive.Files.Create insert = session.getClient().files().create(new File()
-                    .setName(file.getName())
+                    .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
+                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
             insert.execute();
         }
         catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

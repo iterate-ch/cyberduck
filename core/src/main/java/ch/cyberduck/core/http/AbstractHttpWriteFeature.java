@@ -17,6 +17,7 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -156,5 +157,5 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
     }
 
     @Override
-    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status) throws BackgroundException;
+    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
 }

@@ -29,10 +29,6 @@ namespace Ch.Cyberduck.Core.Diagnostics
     {
         public bool isReachable(Host h)
         {
-            if (!PreferencesFactory.get().getBoolean("connection.hostname.check"))
-            {
-                return true;
-            }
             try
             {
                 TcpClient c = new TcpClient(h.getHostname(), h.getPort());

@@ -85,7 +85,7 @@ public class DefaultUploadFeatureTest {
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);
-        final InputStream in = read.read(test, new TransferStatus().length(content.length));
+        final InputStream in = read.read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

@@ -191,10 +191,10 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk download = source.getFeature(Bulk.class);
         {
-            final Object id = download.pre(Type.download, files);
+            final Object id = download.pre(Type.download, files, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
@@ -205,7 +205,7 @@ public class CopyTransfer extends Transfer {
             for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
                 targets.put(this.mapping.get(entry.getKey()), entry.getValue());
             }
-            final Object id = upload.pre(Type.upload, targets);
+            final Object id = upload.pre(Type.upload, targets, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
@@ -262,9 +262,9 @@ public class CopyTransfer extends Transfer {
         OutputStream out = null;
         try {
             if(file.isFile()) {
-                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status), throttle);
+                in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status, new DisabledConnectionCallback()), throttle);
                 // Make sure to use S3MultipartWriteFeature, see #9362
-                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status), throttle);
+                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status, new DisabledConnectionCallback()), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())
                         .withListener(new DelegateStreamListener(streamListener) {

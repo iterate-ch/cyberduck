@@ -1,6 +1,8 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -9,7 +11,6 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -117,9 +118,10 @@ public class RenameExistingFilterTest {
             }
 
             @Override
-            public Find withCache(PathCache cache) {
+            public Find withCache(Cache<Path> cache) {
                 return this;
             }
+
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
@@ -128,9 +130,10 @@ public class RenameExistingFilterTest {
             }
 
             @Override
-            public AttributesFinder withCache(PathCache cache) {
+            public AttributesFinder withCache(Cache<Path> cache) {
                 return this;
             }
+
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -170,15 +173,15 @@ public class RenameExistingFilterTest {
                     };
                 }
                 if(type.equals(Write.class)) {
-                    return (T) new Write() {
+                    return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
                             fail();
                             return new Append(1L);
                         }
@@ -236,7 +239,7 @@ public class RenameExistingFilterTest {
             }
 
             @Override
-            public Find withCache(PathCache cache) {
+            public Find withCache(Cache<Path> cache) {
                 return this;
             }
         };
@@ -247,7 +250,7 @@ public class RenameExistingFilterTest {
             }
 
             @Override
-            public AttributesFinder withCache(PathCache cache) {
+            public AttributesFinder withCache(Cache<Path> cache) {
                 return this;
             }
         };
@@ -281,15 +284,15 @@ public class RenameExistingFilterTest {
                     };
                 }
                 if(type.equals(Write.class)) {
-                    return (T) new Write() {
+                    return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
                             fail();
                             return new Append(0L);
                         }

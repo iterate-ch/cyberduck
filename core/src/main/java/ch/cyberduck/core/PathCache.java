@@ -19,7 +19,7 @@ package ch.cyberduck.core;
 
 import java.util.List;
 
-public class PathCache extends Cache<Path> {
+public class PathCache extends AbstractCache<Path> {
 
     public static PathCache empty() {
         return new PathCache(0) {
@@ -39,6 +39,7 @@ public class PathCache extends Cache<Path> {
         return new DefaultPathReference(file);
     }
 
+    @Override
     public boolean isHidden(final Path file) {
         final List<?> hidden = this.get(file.getParent()).attributes().getHidden();
         return hidden.contains(file);

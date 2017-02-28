@@ -26,6 +26,10 @@ import java.lang.reflect.InvocationTargetException;
 public class PasswordCallbackFactory extends Factory<PasswordCallback> {
     private static final Logger log = Logger.getLogger(PasswordCallbackFactory.class);
 
+    protected PasswordCallbackFactory() {
+        super("factory.passwordcallback.class");
+    }
+
     public PasswordCallback create(final Controller controller) {
         final String clazz = PreferencesFactory.get().getProperty("factory.passwordcallback.class");
         if(null == clazz) {

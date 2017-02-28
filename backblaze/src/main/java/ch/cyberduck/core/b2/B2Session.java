@@ -98,7 +98,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache cache) throws BackgroundException {
+                      final Cache<Path> cache) throws BackgroundException {
         try {
             client.authenticate(host.getCredentials().getUsername(), host.getCredentials().getPassword());
         }

@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -32,10 +33,11 @@ public class SpectraTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus transferStatus) throws BackgroundException {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status.length(0L)));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(file, status.length(0L)), new DisabledConnectionCallback());
+        return file;
     }
 
 

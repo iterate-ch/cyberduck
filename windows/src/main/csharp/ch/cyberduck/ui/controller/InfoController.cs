@@ -157,6 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case InfoTab.General:
                     InitGeneral();
+                    InitPermissions();
                     break;
                 case InfoTab.Permissions:
                     InitPermissions();
@@ -191,8 +192,9 @@ namespace Ch.Cyberduck.Ui.Controller
             SessionPool session = _controller.Session;
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
-                session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
+            if (session.getHost().getProtocol().getType() == Protocol.Type.s3
+                    || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                    || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
@@ -241,7 +243,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarS3Enabled = session.getHost().getProtocol().getType() == Protocol.Type.s3;
+                View.ToolbarS3Enabled = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                    || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                    || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             }
 
             if (anonymous)
@@ -1123,6 +1127,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
+                          session.getHost().getProtocol().getType() == Protocol.Type.azure ||
                           session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             if (enable)
             {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -53,7 +54,7 @@ public class StatelessSessionPoolTest {
                 interrupt.set(true);
                 super.interrupt();
             }
-        }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        }, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", new SocketException("m")));
         assertTrue(interrupt.get());
@@ -73,7 +74,7 @@ public class StatelessSessionPoolTest {
                 interrupt.set(true);
                 super.interrupt();
             }
-        }, PathCache.empty(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
+        }, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", "d"));
         assertFalse(interrupt.get());

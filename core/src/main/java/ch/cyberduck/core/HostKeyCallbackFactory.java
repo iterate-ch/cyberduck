@@ -30,6 +30,10 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
+    protected HostKeyCallbackFactory() {
+        super("factory.hostkeycallback.class");
+    }
+
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
             final String clazz = PreferencesFactory.get().getProperty("factory.hostkeycallback.class");

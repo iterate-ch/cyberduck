@@ -52,7 +52,7 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertEquals(Session.State.open, session.getState());
         assertTrue(session.isConnected());
@@ -81,7 +81,7 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
             c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -100,7 +100,7 @@ public class FTPSessionTest {
         ));
         final FTPSession session = new FTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test
@@ -277,7 +277,7 @@ public class FTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(callback.get());
         session.close();

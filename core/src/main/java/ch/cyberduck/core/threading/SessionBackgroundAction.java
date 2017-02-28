@@ -51,7 +51,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     private final AlertCallback alert;
     private final ProgressListener progressListener;
-    private final TranscriptListener transcriptListener;
 
     private final FailureDiagnostics<BackgroundException> diagnostics
             = new DefaultFailureDiagnostics();
@@ -65,7 +64,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         this.pool = pool;
         this.alert = alert;
         this.progressListener = progress;
-        this.transcriptListener = transcript;
     }
 
     @Override
@@ -79,7 +77,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public void log(final Type request, final String message) {
         transcript.append(message).append(LINE_SEPARATOR);
-        transcriptListener.log(request, message);
     }
 
     @Override
@@ -89,8 +86,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     protected void reset() throws BackgroundException {
-        // Clear the transcript and exceptions
-        transcript = new StringBuilder();
         // Reset the failure status but remember the previous exception for automatic retry.
         failed = false;
     }
@@ -114,7 +109,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     // Run action
                     return SessionBackgroundAction.this.run();
                 }
-            }, progressListener, this).call();
+            }, this, this).call();
         }
         catch(ConnectionCanceledException e) {
             throw e;
@@ -127,16 +122,16 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T run() throws BackgroundException {
-        final Session<?> session = pool.borrow(this);
+        final Session<?> session = pool.borrow(this).withListener(this);
         try {
             return this.run(session);
         }
         catch(BackgroundException e) {
-            pool.release(session, e);
+            pool.release(session.removeListener(this), e);
             throw e;
         }
         finally {
-            pool.release(session, null);
+            pool.release(session.removeListener(this), null);
         }
     }
 
@@ -191,7 +186,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     public boolean alert(final BackgroundException failure) {
         if(!this.isCanceled()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Display alert for failure %s", failure));
+                log.info(String.format("Run alert callback %s for failure %s", alert, failure));
             }
             // Display alert if the action was not canceled intentionally
             return alert.alert(pool.getHost(), failure, transcript);
@@ -201,6 +196,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public void cleanup() {
+        this.transcript.setLength(0);
         this.message(StringUtils.EMPTY);
     }
 

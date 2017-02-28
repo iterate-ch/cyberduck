@@ -15,8 +15,8 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -27,6 +27,8 @@ public class VaultRegistryFindFeature implements Find {
     private final Session<?> session;
     private final Find proxy;
 
+    private Cache<Path> cache;
+
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final DefaultVaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
@@ -35,12 +37,15 @@ public class VaultRegistryFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Find.class, proxy).find(file);
+        return registry.find(session, file).getFeature(session, Find.class, proxy)
+                .withCache(cache)
+                .find(file);
     }
 
     @Override
-    public Find withCache(final PathCache cache) {
-        proxy.withCache(cache);
+    public Find withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
+
 }

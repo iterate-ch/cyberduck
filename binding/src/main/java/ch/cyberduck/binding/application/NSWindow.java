@@ -626,7 +626,12 @@ public abstract class NSWindow extends NSResponder {
      * Original signature : <code>void close()</code><br>
      * <i>native declaration : :309</i>
      */
-    public abstract void close();
+    public void close() {
+        // If the window is the key or main window, the NSWindow object immediately behind it is made key
+        // or main in its place. Calling the orderOut(_:) method causes the window to be removed from the screen,
+        // but does not cause it to be released. See the close() method for information on when a window is released.
+        this.orderOut(null);
+    }
 
     /**
      * Original signature : <code>void setReleasedWhenClosed(BOOL)</code><br>

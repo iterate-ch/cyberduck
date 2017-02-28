@@ -24,9 +24,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -34,6 +34,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -87,10 +88,10 @@ public class OAuth2AuthorizationService {
 
     private final HttpTransport transport;
 
-    public OAuth2AuthorizationService(final HttpSession<?> session,
+    public OAuth2AuthorizationService(final HttpClient client,
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
-        this(new ApacheHttpTransport(session.getBuilder().build(session).build()),
+        this(new ApacheHttpTransport(client),
                 tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
     }
 
@@ -156,6 +157,9 @@ public class OAuth2AuthorizationService {
                 );
             }
             try {
+                if(StringUtils.isBlank(token.getPassword())) {
+                    throw new LoginCanceledException();
+                }
                 // Swap the given authorization token for access/refresh tokens
                 final TokenResponse response = flow.newTokenRequest(token.getPassword())
                         .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
@@ -332,6 +336,10 @@ public class OAuth2AuthorizationService {
     }
 
     public boolean isExpired(final Credential tokens) {
+        if(-1 == tokens.getExpirationTimeMilliseconds()) {
+            log.warn(String.format("Unknown expiration time for tokens %s", tokens));
+            return true;
+        }
         return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
     }
 }

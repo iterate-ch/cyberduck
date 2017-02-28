@@ -21,7 +21,6 @@ import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
-import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
 import ch.cyberduck.binding.foundation.NSAppleEventManager;
@@ -130,7 +129,7 @@ public class MainController extends BundleController implements NSApplication.De
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PeriodicUpdateChecker updater
-            = PeriodicUpdateCheckerFactory.get();
+            = PeriodicUpdateCheckerFactory.get(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
@@ -149,9 +148,6 @@ public class MainController extends BundleController implements NSApplication.De
      * Display donation reminder dialog
      */
     private boolean displayDonationPrompt = true;
-
-    @Outlet
-    private WindowController donationController;
 
     @Outlet
     private NSMenu applicationMenu;
@@ -502,12 +498,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void newBrowserMenuClicked(final ID sender) {
-        this.openDefaultBookmark(this.newDocument(true));
+        this.openDefaultBookmark(newDocument(true));
     }
 
     @Action
     public void newWindowForTab(final ID sender) {
-        this.openDefaultBookmark(this.newDocument(true));
+        this.openDefaultBookmark(newDocument(true));
     }
 
     /**
@@ -567,7 +563,7 @@ public class MainController extends BundleController implements NSApplication.De
                     if(null == bookmark) {
                         return false;
                     }
-                    this.newDocument().mount(bookmark);
+                    newDocument().mount(bookmark);
                     return true;
                 }
                 catch(AccessDeniedException e) {
@@ -637,7 +633,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                         ProtocolFactory.register(profile);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                        this.newDocument().addBookmark(host);
+                        newDocument().addBookmark(host);
                         // Register in application support
                         final Local profiles = LocalFactory.get(preferences.getProperty("application.support.path"),
                                 PreferencesFactory.get().getProperty("profiles.folder.name"));
@@ -877,7 +873,7 @@ public class MainController extends BundleController implements NSApplication.De
         // open a new window. (If your application is not document-based, display the
         // application’s main window.)
         if(MainController.getBrowsers().isEmpty() && !TransferControllerFactory.get().isVisible()) {
-            this.openDefaultBookmark(this.newDocument());
+            this.openDefaultBookmark(newDocument());
         }
         NSWindow miniaturized = null;
         for(BrowserController browser : MainController.getBrowsers()) {
@@ -916,7 +912,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.loadBundle();
         // Open default windows
         if(preferences.getBoolean("browser.open.untitled")) {
-            final BrowserController c = this.newDocument();
+            final BrowserController c = newDocument();
             c.window().makeKeyAndOrderFront(null);
         }
         if(preferences.getBoolean("queue.window.open.default")) {
@@ -1131,11 +1127,13 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         if(updater.hasUpdatePrivileges()) {
-            final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
-            if(next < System.currentTimeMillis()) {
-                updater.check(true);
+            if(PreferencesFactory.get().getBoolean("update.check")) {
+                final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
+                if(next < System.currentTimeMillis()) {
+                    updater.check(true);
+                }
+                updater.register();
             }
-            updater.register();
         }
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
                 this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);

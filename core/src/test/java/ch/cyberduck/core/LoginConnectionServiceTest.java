@@ -27,7 +27,7 @@ public class LoginConnectionServiceTest {
                 return false;
             }
         };
-        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener(),
+        final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(),
                 new DisabledProxyFinder() {
                     @Override
                     public Proxy find(final Host target) {
@@ -52,8 +52,8 @@ public class LoginConnectionServiceTest {
                 return true;
             }
         }, new DisabledPasswordStore(),
-                new DisabledProgressListener(),
-                new DisabledTranscriptListener());
+                new DisabledProgressListener()
+        );
         try {
             s.check(session, PathCache.empty(), new DisabledCancelCallback());
             fail();
@@ -81,7 +81,7 @@ public class LoginConnectionServiceTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty(), new DisabledCancelCallback());
     }
 
@@ -109,7 +109,7 @@ public class LoginConnectionServiceTest {
                 // Old password stored
                 return "a";
             }
-        }, new DisabledProgressListener(), new DisabledTranscriptListener());
+        }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
             public Void connect(final HostKeyCallback key) throws BackgroundException {

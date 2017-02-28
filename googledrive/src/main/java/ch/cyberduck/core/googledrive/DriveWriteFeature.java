@@ -15,10 +15,11 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -70,7 +71,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attributes = this.attributes.withCache(cache).find(file);
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
@@ -89,7 +90,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             @Override
             public Void call(final AbstractHttpEntity entity) throws BackgroundException {

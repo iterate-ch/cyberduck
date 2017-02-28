@@ -18,6 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,31 +52,32 @@ public class AzureDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
-            if(containerService.isContainer(file)) {
+            if(containerService.isContainer(folder)) {
                 // Container name must be lower case.
-                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
+                final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(folder).getName());
                 container.create(options, context);
             }
             else {
                 // Add placeholder object
-                file.getType().add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(file, status));
+                folder.getType().add(Path.Type.placeholder);
+                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
             }
         }
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
         catch(StorageException e) {
-            throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new AzureExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

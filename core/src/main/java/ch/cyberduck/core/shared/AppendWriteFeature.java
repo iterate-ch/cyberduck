@@ -18,9 +18,9 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -34,8 +34,8 @@ public abstract class AppendWriteFeature<Reply> implements Write<Reply> {
     private final AttributesFinder attributes;
 
     protected AppendWriteFeature(final Session<?> session) {
-        this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
-        this.attributes = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
+        this.finder = new DefaultFindFeature(session);
+        this.attributes = new DefaultAttributesFinderFeature(session);
     }
 
     protected AppendWriteFeature(final Find finder, final AttributesFinder attributes) {
@@ -44,7 +44,7 @@ public abstract class AppendWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(finder.withCache(cache).find(file)) {
             final PathAttributes attr = attributes.withCache(cache).find(file);
             return new Append(attr.getSize()).withChecksum(attr.getChecksum());

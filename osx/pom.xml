@@ -115,7 +115,7 @@
                                             <groupId>org.sparkle-project</groupId>
                                             <artifactId>sparkle</artifactId>
                                             <type>zip</type>
-                                            <version>1.15.1</version>
+                                            <version>1.16.0</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -133,7 +133,7 @@
                                             <groupId>com.oracle.java</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u112</version>
+                                            <version>8u121</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

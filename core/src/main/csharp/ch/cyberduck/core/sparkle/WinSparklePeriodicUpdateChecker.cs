@@ -19,6 +19,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using java.time;
@@ -34,6 +35,11 @@ namespace Ch.Cyberduck.Core.Sparkle
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
             IntPtr tokenInformation, int tokenInformationLength, out int returnLength);
+
+        public WinSparklePeriodicUpdateChecker(Controller controller)
+            : base(controller)
+        {
+        }
 
         public override void unregister()
         {

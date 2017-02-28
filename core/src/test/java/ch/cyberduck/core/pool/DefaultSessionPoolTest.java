@@ -17,7 +17,7 @@ package ch.cyberduck.core.pool;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -48,7 +48,7 @@ public class DefaultSessionPoolTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testShutdown() throws Exception {
         final DefaultSessionPool pool = new DefaultSessionPool(new TestLoginConnectionService(), new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol()));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), new Host(new TestProtocol()));
         pool.shutdown();
         pool.borrow(BackgroundActionState.running);
     }
@@ -61,7 +61,7 @@ public class DefaultSessionPoolTest {
                 throw new ConnectionRefusedException("t", new RuntimeException());
             }
         }, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), new Host(new TestProtocol(), "t"));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), new Host(new TestProtocol(), "t"));
         pool.borrow(BackgroundActionState.running);
     }
 
@@ -76,7 +76,7 @@ public class DefaultSessionPoolTest {
             }
         };
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), bookmark,
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), bookmark,
                 new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
@@ -106,7 +106,7 @@ public class DefaultSessionPoolTest {
             }
         };
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledProgressListener(), bookmark,
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), bookmark,
                 new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                         PathCache.empty(), bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override

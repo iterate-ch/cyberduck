@@ -14,8 +14,10 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -71,21 +73,21 @@ public class SpectraWriteFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(test, new ByteArrayInputStream(content), status));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status), new DisabledConnectionCallback());
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status);
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         // Overwrite
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)), new DisabledConnectionCallback());
         {
-            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true));
+            final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
@@ -115,10 +117,10 @@ public class SpectraWriteFeatureTest {
         // Replace content
         final byte[] content = RandomStringUtils.random(1000).getBytes();
         final TransferStatus status = new TransferStatus().length(content.length);
-        status.setChecksum(new CRC32ChecksumCompute().compute(test, new ByteArrayInputStream(content), status));
+        status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final SpectraBulkService bulk = new SpectraBulkService(session);
-        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)));
-        final OutputStream out = new SpectraWriteFeature(session).write(test, status);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(test, status.exists(true)), new DisabledConnectionCallback());
+        final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -142,7 +144,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public Find withCache(final PathCache cache) {
+            public Find withCache(final Cache<Path> cache) {
                 return this;
             }
         }, new AttributesFinder() {
@@ -154,7 +156,7 @@ public class SpectraWriteFeatureTest {
             }
 
             @Override
-            public AttributesFinder withCache(final PathCache cache) {
+            public AttributesFinder withCache(final Cache<Path> cache) {
                 return this;
             }
         });

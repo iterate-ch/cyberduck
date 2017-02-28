@@ -335,6 +335,7 @@ public class InfoController extends ToolbarWindowController {
         switch(item) {
             case info:
                 this.initGeneral();
+                this.initPermissions();
                 break;
             case permissions:
                 this.initPermissions();
@@ -422,6 +423,7 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 return session.getHost().getProtocol().getType() == Protocol.Type.s3
+                        || session.getHost().getProtocol().getType() == Protocol.Type.azure
                         || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
                 if(anonymous) {
@@ -1167,7 +1169,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(identifier.equals(MetadataColumns.VALUE.name())) {
                         final String value = metadata.get(row.intValue()).getValue();
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : LocaleFactory.localizedString("Multiple files"));
+                        return NSAttributedString.attributedString(value != null ? value : LocaleFactory.localizedString("Multiple files"));
                     }
                 }
                 return null;
@@ -1706,6 +1708,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.azure
                 || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {
             enable = !credentials.isAnonymousLogin();

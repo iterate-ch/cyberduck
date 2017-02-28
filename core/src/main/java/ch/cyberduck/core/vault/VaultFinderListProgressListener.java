@@ -46,6 +46,9 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
         if(MASTERKEY_FILE_NAME.equals(file.getName())) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Found master key %s", file));
+            }
             final Vault vault = VaultFactory.get(directory, keychain);
             if(vault.equals(Vault.DISABLED)) {
                 return;

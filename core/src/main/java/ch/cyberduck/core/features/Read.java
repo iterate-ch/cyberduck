@@ -15,6 +15,7 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -24,10 +25,11 @@ import java.io.InputStream;
 public interface Read {
 
     /**
-     * @param status Transfer status
+     * @param status   Transfer status
+     * @param callback Prompt
      * @return Stream to read from to download file
      */
-    InputStream read(Path file, TransferStatus status) throws BackgroundException;
+    InputStream read(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
 
     /**
      * @param file File

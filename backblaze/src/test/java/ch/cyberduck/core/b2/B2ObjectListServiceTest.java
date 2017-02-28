@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -62,12 +63,12 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
         status.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
-        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status);
+        final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file, status, new DisabledConnectionCallback());
         IOUtils.write(new byte[0], out);
         out.close();
         final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
@@ -94,7 +95,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final Path file1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path file2 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -120,7 +121,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final String name = UUID.randomUUID().toString();
         final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
@@ -129,8 +130,8 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file1, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file1, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
@@ -146,8 +147,8 @@ public class B2ObjectListServiceTest {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            status.setChecksum(new SHA1ChecksumCompute().compute(file2, new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status);
+            status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session).write(file2, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
@@ -181,15 +182,15 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
         final Path folder1 = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path folder2 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(folder1, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path file2 = new Path(folder2, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new B2DirectoryFeature(session).mkdir(folder1);
+        new B2DirectoryFeature(session).mkdir(folder1, null, new TransferStatus());
         new B2TouchFeature(session).touch(file1, new TransferStatus());
-        new B2DirectoryFeature(session).mkdir(folder2);
+        new B2DirectoryFeature(session).mkdir(folder2, null, new TransferStatus());
         new B2TouchFeature(session).touch(file2, new TransferStatus());
         final AttributedList<Path> list = new B2ObjectListService(session).list(folder1, new DisabledListProgressListener());
         // Including
@@ -218,7 +219,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(folder1, "2-f", EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file1, new TransferStatus());
@@ -241,7 +242,7 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         final Path folder1 = new Path(bucket, "1-d", EnumSet.of(Path.Type.directory));
         final Path folder2 = new Path(folder1, "2-d", EnumSet.of(Path.Type.directory));
         final Path file11 = new Path(folder2, "31-f", EnumSet.of(Path.Type.file));
@@ -267,11 +268,11 @@ public class B2ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path(String.format("test-%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2DirectoryFeature(session).mkdir(bucket);
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         final String name = UUID.randomUUID().toString();
         final Path folder1 = new Path(bucket, name, EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
-        new B2DirectoryFeature(session).mkdir(folder1);
+        new B2DirectoryFeature(session).mkdir(folder1, null, new TransferStatus());
         new B2TouchFeature(session).touch(file1, new TransferStatus());
 
         final AttributedList<Path> list = new B2ObjectListService(session).list(bucket, new DisabledListProgressListener());

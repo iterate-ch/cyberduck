@@ -49,6 +49,9 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
@@ -65,7 +68,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected C client;
     protected VaultRegistry registry = VaultRegistry.DISABLED;
 
-    private TranscriptListener listener = new DisabledTranscriptListener();
+    private Set<TranscriptListener> listeners = new HashSet<>();
 
     /**
      * Connection attempt being made.
@@ -91,7 +94,12 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add listener %s", listener));
         }
-        this.listener = listener;
+        listeners.add(listener);
+        return this;
+    }
+
+    public Session<?> removeListener(final TranscriptListener listener) {
+        listeners.remove(listener);
         return this;
     }
 
@@ -195,7 +203,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
      */
     protected void disconnect() {
         state = State.closed;
-        listener = null;
+        listeners.clear();
         client = null;
     }
 
@@ -243,7 +251,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     @Override
     public void log(final Type request, final String message) {
         transcript.log(request, message);
-        listener.log(request, message);
+        for(TranscriptListener listener : listeners) {
+            listener.log(request, message);
+        }
     }
 
     /**

@@ -159,7 +159,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         final IRODSAccount account;
         try {
             account = new IRODSAccount(host.getHostname(), host.getPort(),
-                    user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(), region, resource) {
+                    StringUtils.isBlank(user) ? StringUtils.EMPTY : user, credentials.getPassword(), new IRODSHomeFinderService(this).find().getAbsolute(), region, resource) {
                 @Override
                 public URI toURI(final boolean includePassword) throws JargonException {
                     try {

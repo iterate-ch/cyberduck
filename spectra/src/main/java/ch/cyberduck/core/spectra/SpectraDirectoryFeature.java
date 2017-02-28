@@ -39,13 +39,19 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            super.mkdir(file, region, status);
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+        if(containerService.isContainer(folder)) {
+            super.mkdir(folder, region, status);
         }
         else {
-            status.setChecksum(writer.checksum().compute(file, new NullInputStream(0L), status));
-            super.mkdir(file, region, status);
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+            super.mkdir(folder, region, status);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 }

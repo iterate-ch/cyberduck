@@ -18,11 +18,12 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -82,7 +83,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
                              final SwiftObjectListService listService,
                              final SwiftSegmentService segmentService, final Find finder) {
-        this(session, regionService, listService, segmentService, finder, new DefaultAttributesFinderFeature(session));
+        this(session, regionService, listService, segmentService, finder,
+                session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session)));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
@@ -99,7 +101,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status) throws BackgroundException {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store run to background thread
         final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             /**
@@ -139,7 +141,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public Append append(final Path file, final Long length, final PathCache cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
             if(preferences.getBoolean("openstack.upload.largeobject")) {
                 Long size = 0L;

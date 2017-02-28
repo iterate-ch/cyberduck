@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -51,7 +52,7 @@ public class SpectraReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.download, file, status);
         final List<InputStream> streams = new ArrayList<InputStream>();

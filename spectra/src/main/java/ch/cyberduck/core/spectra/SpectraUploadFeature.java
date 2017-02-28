@@ -51,7 +51,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         // verify the CRC after downloading the object at a later time (see Get Object). The BlackPearl gateway also
         // verifies the CRC when reading from physical data stores so the gateway can identify problems before
         // transmitting data to the client.
-        status.setChecksum(writer.checksum().compute(file, local.getInputStream(), status));
+        status.setChecksum(writer.checksum().compute(local.getInputStream(), status));
         // Make sure file is available in cache
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;

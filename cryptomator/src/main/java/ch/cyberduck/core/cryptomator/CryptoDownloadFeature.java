@@ -20,6 +20,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
@@ -46,7 +47,12 @@ public class CryptoDownloadFeature implements Download {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return proxy.offset(vault.encrypt(session, file));
+        try {
+            return proxy.offset(vault.encrypt(session, file));
+        }
+        catch(NotfoundException e) {
+            return false;
+        }
     }
 
     @Override

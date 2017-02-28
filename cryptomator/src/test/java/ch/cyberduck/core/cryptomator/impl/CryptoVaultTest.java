@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -54,7 +55,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -100,7 +101,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -157,7 +158,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -204,7 +205,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -251,14 +252,16 @@ public class CryptoVaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            return true;
                         }
 
                         @Override
@@ -289,14 +292,16 @@ public class CryptoVaultTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            throw new UnsupportedOperationException();
                         }
 
                         @Override
