@@ -132,7 +132,7 @@ public enum Scheme {
             return 1247;
         }
     },
-    file {
+    local {
         @Override
         public boolean isSecure() {
             return true;
