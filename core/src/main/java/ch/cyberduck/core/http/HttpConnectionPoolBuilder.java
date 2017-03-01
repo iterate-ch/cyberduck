@@ -43,13 +43,13 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.auth.DigestSchemeFactory;
 import org.apache.http.impl.auth.KerberosSchemeFactory;
 import org.apache.http.impl.auth.NTLMSchemeFactory;
 import org.apache.http.impl.auth.SPNegoSchemeFactory;
+import org.apache.http.impl.client.DefaultClientConnectionReuseStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -210,7 +210,7 @@ public class HttpConnectionPoolBuilder {
                 .setCharset(Charset.forName(encoding))
                 .build());
         if(preferences.getBoolean("http.connections.reuse")) {
-            builder.setConnectionReuseStrategy(new DefaultConnectionReuseStrategy());
+            builder.setConnectionReuseStrategy(new DefaultClientConnectionReuseStrategy());
         }
         else {
             builder.setConnectionReuseStrategy(new NoConnectionReuseStrategy());
