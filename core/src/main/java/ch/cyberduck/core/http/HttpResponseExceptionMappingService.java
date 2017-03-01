@@ -48,6 +48,7 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_CONFLICT:
                 return new ConflictException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
+            case HttpStatus.SC_GONE:
                 return new NotfoundException(buffer.toString(), failure);
             case HttpStatus.SC_UNPROCESSABLE_ENTITY:
                 return new InteroperabilityException(buffer.toString(), failure);
