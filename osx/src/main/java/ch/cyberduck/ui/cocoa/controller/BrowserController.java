@@ -2340,7 +2340,13 @@ public class BrowserController extends WindowController
     @Action
     public void sendCustomCommandClicked(final ID sender) {
         final CommandController controller = new CommandController(this, pool);
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller);
+        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                controller.callback(returncode);
+            }
+        }, this, controller);
+
         sheet.beginSheet();
     }
 
