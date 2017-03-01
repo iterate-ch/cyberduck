@@ -28,8 +28,10 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +45,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class LocalReadFeatureTest {
 
     @Test(expected = NotfoundException.class)

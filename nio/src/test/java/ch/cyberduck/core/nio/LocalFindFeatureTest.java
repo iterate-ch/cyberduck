@@ -23,8 +23,10 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
@@ -32,6 +34,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class LocalFindFeatureTest {
 
     @Test

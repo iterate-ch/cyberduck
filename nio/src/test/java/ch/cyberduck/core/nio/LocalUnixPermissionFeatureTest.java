@@ -27,8 +27,10 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,6 +38,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class LocalUnixPermissionFeatureTest {
 
     @Test
