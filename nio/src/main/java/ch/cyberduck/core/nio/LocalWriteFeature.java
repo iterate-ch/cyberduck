@@ -38,15 +38,14 @@ import java.util.Set;
 
 public class LocalWriteFeature extends AppendWriteFeature<Void> {
 
-
     protected LocalWriteFeature(final Session<?> session) {
         super(session);
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path path, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final java.nio.file.Path p = Paths.get(path.getAbsolute());
+            final java.nio.file.Path p = Paths.get(file.getAbsolute());
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
             if(status.isAppend()) {
@@ -56,7 +55,7 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
             }
             else {
                 if(status.isExists()) {
-                    if(path.isSymbolicLink()) {
+                    if(file.isSymbolicLink()) {
                         Files.delete(p);
                         options.add(StandardOpenOption.CREATE);
                     }
@@ -73,12 +72,12 @@ public class LocalWriteFeature extends AppendWriteFeature<Void> {
                     options.add(StandardOpenOption.CREATE_NEW);
                 }
             }
-            final FileChannel channel = FileChannel.open(Paths.get(path.getAbsolute()), options.stream().toArray(OpenOption[]::new));
+            final FileChannel channel = FileChannel.open(Paths.get(file.getAbsolute()), options.stream().toArray(OpenOption[]::new));
             channel.position(status.getOffset());
             return new VoidStatusOutputStream(Channels.newOutputStream(channel));
         }
         catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Upload {0} failed", e, path);
+            throw new LocalExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 

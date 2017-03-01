@@ -36,14 +36,14 @@ public class LocalReadFeature implements Read {
     }
 
     @Override
-    public InputStream read(final Path path, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileChannel channel = FileChannel.open(session.getClient().getPath(path.getAbsolute()), StandardOpenOption.READ);
+            final FileChannel channel = FileChannel.open(session.getClient().getPath(file.getAbsolute()), StandardOpenOption.READ);
             channel.position(status.getOffset());
             return Channels.newInputStream(channel);
         }
         catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Download {0} failed", e, path);
+            throw new LocalExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
