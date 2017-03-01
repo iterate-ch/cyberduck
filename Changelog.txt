@@ -8,6 +8,7 @@ https://cyberduck.io/
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
 - [Feature] Search files fast using prefix (S3)
+- [Feature] Browse local filesystem in browser
 
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
 - [Bugfix| Interoperability with PROPFIND for listing folders (WebDAV)
