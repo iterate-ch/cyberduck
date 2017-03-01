@@ -19,20 +19,7 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
@@ -85,6 +72,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.text.MessageFormat;
 
@@ -150,6 +138,16 @@ public class DAVSession extends HttpSession<DAVClient> {
                     return this.copyEntity(new HttpPut(this.getLocationURI(request, response, context)), request);
                 }
                 return super.getRedirect(request, response, context);
+            }
+
+            @Override
+            protected URI createLocationURI(final String location) throws ProtocolException {
+                try {
+                    return super.createLocationURI(location);
+                }
+                catch(ProtocolException e) {
+                    return super.createLocationURI(URIEncoder.encode(location));
+                }
             }
 
             private HttpUriRequest copyEntity(final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
