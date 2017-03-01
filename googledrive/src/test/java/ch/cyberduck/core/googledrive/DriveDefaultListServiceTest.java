@@ -82,7 +82,9 @@ public class DriveDefaultListServiceTest {
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
-            assertNotNull(f.attributes().getVersionId());
+            if(!f.isVolume()) {
+                assertNotNull(f.attributes().getVersionId());
+            }
             assertNotNull(f.attributes().getModificationDate());
         }
     }
