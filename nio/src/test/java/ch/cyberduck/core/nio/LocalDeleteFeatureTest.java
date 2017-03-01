@@ -25,8 +25,10 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import java.util.UUID;
 
 import static junit.framework.TestCase.assertFalse;
 
+@Category(IntegrationTest.class)
 public class LocalDeleteFeatureTest {
 
     @Test
