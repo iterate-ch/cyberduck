@@ -223,7 +223,7 @@ public class S3SessionTest {
         final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));
-        assertNull(o.getFeature(Versioning.class));
+        assertNotNull(o.getFeature(Versioning.class));
         assertNull(o.getFeature(AnalyticsProvider.class));
         assertNotNull(o.getFeature(Lifecycle.class));
         assertNotNull(o.getFeature(Location.class));
