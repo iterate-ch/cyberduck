@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +39,6 @@ import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
-    protected static final String MIMETYPE = "application/octet-stream";
     protected static final String PLACEHOLDER = "/.bzEmpty";
 
     private final PathContainerService containerService
@@ -69,7 +69,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             }
             else {
                 status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
-                status.setMime(MIMETYPE);
+                status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
             }
         }

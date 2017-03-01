@@ -57,7 +57,7 @@ public class MappingMimeTypeService implements MimeTypeService {
     @Override
     public String getMime(final String filename) {
         if(StringUtils.startsWith(filename, "._")) {
-            return "application/octet-stream";
+            return DEFAULT_CONTENT_TYPE;
         }
         // Reads from mime.types in classpath
         return types.getMimetype(StringUtils.lowerCase(filename));
