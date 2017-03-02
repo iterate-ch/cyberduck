@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
-public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
+public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test(expected = NotfoundException.class)
@@ -76,13 +75,4 @@ public class OneDriveAttributesFinderFeatureTest extends OneDriveTest {
         }
     }
 
-    @Override
-    protected String getHostname() {
-        return "api.onedrive.com";
-    }
-
-    @Override
-    protected Credentials getCredentials() {
-        return new Credentials();
-    }
 }

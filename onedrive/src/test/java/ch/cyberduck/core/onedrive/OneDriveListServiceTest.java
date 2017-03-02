@@ -1,7 +1,6 @@
 package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -32,7 +31,7 @@ import static org.junit.Assert.assertFalse;
  */
 
 @Category(IntegrationTest.class)
-public class OneDriveListServiceTest extends OneDriveTest {
+public class OneDriveListServiceTest extends AbstractOneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test
@@ -67,13 +66,4 @@ public class OneDriveListServiceTest extends OneDriveTest {
         }
     }
 
-    @Override
-    protected String getHostname() {
-        return "api.onedrive.com";
-    }
-
-    @Override
-    protected Credentials getCredentials() {
-        return new Credentials();
-    }
 }

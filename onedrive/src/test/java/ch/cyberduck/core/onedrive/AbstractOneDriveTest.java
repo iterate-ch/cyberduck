@@ -15,30 +15,25 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import static org.junit.Assert.fail;
 
-public abstract class OneDriveTest {
+public abstract class AbstractOneDriveTest {
 
     protected OneDriveSession session;
+
+    @BeforeClass
+    public static void protocol() {
+        ProtocolFactory.register(new OneDriveProtocol());
+    }
 
     @After
     public void disconnect() throws Exception {
@@ -47,7 +42,9 @@ public abstract class OneDriveTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new OneDriveProtocol(), getHostname(), getCredentials());
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/OneDrive Personal.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname());
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -74,8 +71,4 @@ public abstract class OneDriveTest {
                 }, new DisabledProgressListener(),
                 new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
-
-    protected abstract String getHostname();
-
-    protected abstract Credentials getCredentials();
 }

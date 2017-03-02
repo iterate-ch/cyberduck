@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -34,7 +33,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveSessionTest extends OneDriveTest {
+public class OneDriveSessionTest extends AbstractOneDriveTest {
 
     @Test
     public void testFeatures() throws Exception {
@@ -55,13 +54,4 @@ public class OneDriveSessionTest extends OneDriveTest {
         assertFalse(session.isConnected());
     }
 
-    @Override
-    protected String getHostname() {
-        return "api.onedrive.com";
-    }
-
-    @Override
-    protected Credentials getCredentials() {
-        return new Credentials("u");
-    }
 }
