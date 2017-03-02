@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>onedrive</string>
+        <key>Vendor</key>
+        <string>personal</string>
+        <key>Description</key>
+        <string>OneDrive Personal</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Hostname</key>
+        <string>api.onedrive.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Context</key>
+        <string>/v1.0</string>
+        <key>Authorization</key>
+        <string>login.live.com</string>
+    </dict>
+</plist>
