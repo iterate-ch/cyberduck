@@ -57,11 +57,6 @@ public class OneDriveProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getDefaultHostname() {
-        return "api.onedrive.com";
-    }
-
-    @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
     }
@@ -85,5 +80,10 @@ public class OneDriveProtocol extends AbstractProtocol {
     @Override
     public String getClientSecret() {
         return PreferencesFactory.get().getProperty("onedrive.oauth.secret");
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }
