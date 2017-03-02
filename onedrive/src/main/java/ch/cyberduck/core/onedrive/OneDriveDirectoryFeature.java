@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -28,7 +27,6 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
-import java.net.URL;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -42,29 +40,25 @@ public class OneDriveDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
+    public void mkdir(final Path directory) throws BackgroundException {
+        this.mkdir(directory, null, new TransferStatus());
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        if(file.isRoot() || file.getParent().isRoot()) {
+    public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+        if(directory.isRoot() || directory.getParent().isRoot()) {
             throw new BackgroundException("Cannot create directory here", "Create directory in container");
         }
 
         // evaluating query
-        StringBuilder builder = session.getBaseUrlStringBuilder();
-        final Path parent = file.getParent();
-        PathContainerService pathContainerService = new PathContainerService();
-        session.resolveDriveQueryPath(parent, builder, pathContainerService);
-        session.resolveChildrenPath(parent, builder, pathContainerService);
-
-        final URL apiUrl = session.getUrl(builder);
+        final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
+                .resolveDriveQueryPath(directory.getParent())
+                .resolveChildrenPath(directory.getParent());
 
         try {
-            final OneDriveJsonRequest request = new OneDriveJsonRequest(apiUrl, "POST");
+            final OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "POST");
             JsonObject requestObject = new JsonObject();
-            requestObject.add("name", file.getName());
+            requestObject.add("name", directory.getName());
             requestObject.add("folder", new JsonObject());
             request.sendRequest(session.getClient().getExecutor()).close();
         }

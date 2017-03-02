@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -26,7 +25,6 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 public class OneDriveDeleteFeature implements Delete {
@@ -43,15 +41,10 @@ public class OneDriveDeleteFeature implements Delete {
             callback.delete(file);
 
             // evaluating query
-            StringBuilder builder = session.getBaseUrlStringBuilder();
-
-            PathContainerService pathContainerService = new PathContainerService();
-            session.resolveDriveQueryPath(file, builder, pathContainerService);
-
-            final URL apiUrl = session.getUrl(builder);
-
+            final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
+                    .resolveDriveQueryPath(file);
             try {
-                OneDriveJsonRequest request = new OneDriveJsonRequest(apiUrl, "DELETE");
+                OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "DELETE");
                 request.sendRequest(session.getClient().getExecutor()).close();
             }
             catch(OneDriveAPIException e) {

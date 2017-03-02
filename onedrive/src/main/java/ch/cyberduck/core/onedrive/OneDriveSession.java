@@ -24,8 +24,6 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -50,16 +48,11 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveJsonRequest;
-import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 
-import com.eclipsesource.json.JsonObject;
 import com.google.api.client.auth.oauth2.Credential;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
@@ -161,59 +154,6 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return new OneDriveListService(this).list(directory, listener);
-    }
-
-    public StringBuilder getBaseUrlStringBuilder() {
-        // evaluating query
-        StringBuilder builder = new StringBuilder();
-        builder.append(getClient().getBaseURL());
-        return builder;
-    }
-
-    public void resolveDriveQueryPath(final Path file, final StringBuilder builder, final PathContainerService pathContainerService) {
-        builder.append("/drives"); // query single drive
-
-        if(!file.isRoot()) {
-            Path driveId = pathContainerService.getContainer(file); // using pathContainerService for retrieving current drive id
-            builder.append(String.format("/%s", driveId.getName()));
-
-            if(!pathContainerService.isContainer(file)) {
-                // append path to item via pathContainerService with format :/path:
-                builder.append(String.format("/root:/%s:", URIEncoder.encode(pathContainerService.getKey(file))));
-            }
-        }
-    }
-
-    public void resolveChildrenPath(final Path directory, final StringBuilder builder, final PathContainerService pathContainerService) {
-        if(pathContainerService.isContainer(directory)) {
-            builder.append("/root/children");
-        }
-        else if(!directory.isRoot()) {
-            builder.append("/children");
-        }
-    }
-
-    public URL getUrl(final StringBuilder builder) throws BackgroundException {
-        try {
-            return new URL(builder.toString());
-        }
-        catch(MalformedURLException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-    }
-
-    public JsonObject getSimpleResult(final URL url) throws BackgroundException {
-        try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(url, "GET");
-            OneDriveJsonResponse response = request.sendRequest(client.getExecutor());
-            return response.getContent();
-        }
-        catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
     }
 
     @Override

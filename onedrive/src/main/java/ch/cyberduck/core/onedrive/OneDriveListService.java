@@ -31,13 +31,15 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
-import java.net.URL;
 import java.util.EnumSet;
 
 public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
 
     private final OneDriveSession session;
+
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public OneDriveListService(final OneDriveSession session) {
         this.session = session;
@@ -46,17 +48,7 @@ public class OneDriveListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
-
-        // evaluating query
-        StringBuilder builder = session.getBaseUrlStringBuilder();
-
-        PathContainerService pathContainerService = new PathContainerService();
-        session.resolveDriveQueryPath(directory, builder, pathContainerService);
-        session.resolveChildrenPath(directory, builder, pathContainerService);
-
-        final URL apiUrl = session.getUrl(builder);
         try {
-            log.info(String.format("Querying OneDrive API with %s", apiUrl));
             if(directory.isRoot()) {
                 final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient());
                 while(iter.hasNext()) {
@@ -71,13 +63,13 @@ public class OneDriveListService implements ListService {
                 }
             }
             else {
-                final OneDriveDrive drive = new OneDriveDrive(session.getClient(), pathContainerService.getContainer(directory).getName());
+                final OneDriveDrive drive = new OneDriveDrive(session.getClient(), containerService.getContainer(directory).getName());
                 final OneDriveFolder folder;
-                if(pathContainerService.isContainer(directory)) {
+                if(containerService.isContainer(directory)) {
                     folder = drive.getRoot();
                 }
                 else {
-                    folder = new OneDriveFolder(session.getClient(), drive, pathContainerService.getKey(directory));
+                    folder = new OneDriveFolder(session.getClient(), drive, containerService.getKey(directory));
                 }
                 for(final OneDriveItem.Metadata metadata : folder) {
                     try {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -27,7 +26,6 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
-import java.net.URL;
 
 import com.eclipsesource.json.JsonObject;
 
@@ -46,16 +44,12 @@ public class OneDriveTouchFeature implements Touch {
         }
 
         // evaluating query
-        StringBuilder builder = session.getBaseUrlStringBuilder();
-        final Path parent = file.getParent();
-        PathContainerService pathContainerService = new PathContainerService();
-        session.resolveDriveQueryPath(parent, builder, pathContainerService);
-        session.resolveChildrenPath(parent, builder, pathContainerService);
-
-        final URL apiUrl = session.getUrl(builder);
+        final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
+                .resolveDriveQueryPath(file.getParent())
+                .resolveChildrenPath(file.getParent());
 
         try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(apiUrl, "POST");
+            OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "POST");
             JsonObject requestObject = new JsonObject();
             requestObject.add("name", file.getName());
             requestObject.add("file", new JsonObject());
