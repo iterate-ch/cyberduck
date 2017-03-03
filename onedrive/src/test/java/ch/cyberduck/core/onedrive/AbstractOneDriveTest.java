@@ -68,7 +68,6 @@ public abstract class AbstractOneDriveTest {
                     public String getPassword(String hostname, String user) {
                         return super.getPassword(hostname, user);
                     }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }
