@@ -38,7 +38,7 @@ public class OneDriveTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isRoot() || file.getParent().isRoot()) {
             throw new BackgroundException("Cannot create file here", "Create file in container");
         }
@@ -61,6 +61,7 @@ public class OneDriveTouchFeature implements Touch {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return file;
     }
 
     @Override

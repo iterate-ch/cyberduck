@@ -40,12 +40,7 @@ public class OneDriveDirectoryFeature implements Directory {
     }
 
     @Override
-    public void mkdir(final Path directory) throws BackgroundException {
-        this.mkdir(directory, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
         if(directory.isRoot() || directory.getParent().isRoot()) {
             throw new BackgroundException("Cannot create directory here", "Create directory in container");
         }
@@ -68,6 +63,12 @@ public class OneDriveDirectoryFeature implements Directory {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return directory;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return !workdir.isRoot();
     }
 
     @Override
