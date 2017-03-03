@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -59,7 +60,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.source = source;
         this.destination = destination;
         this.completion = new DefaultThreadPool<TransferStatus>(
-                PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
+                transfer.getSource().getTransferType() == Host.TransferType.newconnection ? 1 :
+                        PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
     }
 
     @Override
