@@ -19,6 +19,7 @@ import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -32,6 +33,8 @@ import org.apache.log4j.Logger;
 
 public class SessionPoolFactory {
     private static final Logger log = Logger.getLogger(SessionPoolFactory.class);
+
+    private static final Preferences preferences = PreferencesFactory.get();
 
     private SessionPoolFactory() {
         //
@@ -70,9 +73,9 @@ public class SessionPoolFactory {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
                 return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, vault, cache, transcript, bookmark)
-                        .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                        .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                        .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+                        .withMinIdle(preferences.getInteger("connection.pool.minidle"))
+                        .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))
+                        .withMaxTotal(preferences.getInteger("connection.pool.maxtotal"));
         }
     }
 
