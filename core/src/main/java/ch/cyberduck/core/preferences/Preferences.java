@@ -409,6 +409,8 @@ public abstract class Preferences {
          */
         defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
+
+        defaults.put("editor.upload.permissions.change", String.valueOf(true));
         defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
 
         /*
