@@ -68,19 +68,12 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHeaders;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.ProtocolException;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
@@ -89,7 +82,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 
 import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.SardineRedirectStrategy;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
@@ -137,28 +129,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public DAVClient connect(final HostKeyCallback key) throws BackgroundException {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(this);
-        pool.setRedirectStrategy(new SardineRedirectStrategy() {
-            @Override
-            protected boolean isRedirectable(final String method) {
-                return redirect.redirect(method);
-            }
-
-            @Override
-            public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) throws ProtocolException {
-                final String method = request.getRequestLine().getMethod();
-                if(method.equalsIgnoreCase(HttpPut.METHOD_NAME)) {
-                    return this.copyEntity(new HttpPut(this.getLocationURI(request, response, context)), request);
-                }
-                return super.getRedirect(request, response, context);
-            }
-
-            private HttpUriRequest copyEntity(final HttpEntityEnclosingRequestBase redirect, final HttpRequest original) {
-                if(original instanceof HttpEntityEnclosingRequest) {
-                    redirect.setEntity(((HttpEntityEnclosingRequest) original).getEntity());
-                }
-                return redirect;
-            }
-        });
+        pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
         return new DAVClient(new HostUrlProvider(false).get(host), pool);
     }
 
@@ -348,4 +319,5 @@ public class DAVSession extends HttpSession<DAVClient> {
         }
         return super._getFeature(type);
     }
+
 }

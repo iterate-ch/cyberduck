@@ -19,7 +19,6 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -29,8 +28,6 @@ import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.text.MessageFormat;
 
 public abstract class SessionBackgroundAction<T> extends AbstractBackgroundAction<T> implements ProgressListener, TranscriptListener {
     private static final Logger log = Logger.getLogger(SessionBackgroundAction.class);
@@ -136,51 +133,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     public abstract T run(final Session<?> session) throws BackgroundException;
-
-    /**
-     * The number of times a new connection attempt should be made. Takes into
-     * account the number of times already tried.
-     *
-     * @param failure   Connect failure
-     * @param remaining Remaining number of connect attempts. The initial connection attempt does not count
-     * @return Greater than zero if a failed action should be repeated again
-     */
-    protected boolean retry(final BackgroundException failure, final int remaining) {
-        if(remaining > 0) {
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Retry for failure %s", failure));
-                }
-                // This is an automated retry. Wait some time first.
-                this.pause(remaining);
-                // Retry to connect
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Idle this action for some time. Blocks the caller.
-     */
-    protected void pause(final int attempt) {
-        final BackgroundActionPauser pauser = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
-            @Override
-            public boolean isCanceled() {
-                return SessionBackgroundAction.this.isCanceled();
-            }
-
-            @Override
-            public void progress(final Integer delay) {
-                progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} seconds ({1} more attempts)", "Status"),
-                        delay, attempt));
-            }
-        });
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Pause failed background action %s", this));
-        }
-        pauser.await();
-    }
 
     @Override
     public boolean alert(final BackgroundException failure) {

@@ -33,18 +33,19 @@ public class DropboxDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            new DbxUserFilesRequests(session.getClient()).createFolder(file.getAbsolute());
+            new DbxUserFilesRequests(session.getClient()).createFolder(folder.getAbsolute());
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

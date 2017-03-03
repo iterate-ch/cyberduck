@@ -34,20 +34,21 @@ public class FTPDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            if(!session.getClient().makeDirectory(file.getAbsolute())) {
+            if(!session.getClient().makeDirectory(folder.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
             }
         }
         catch(IOException e) {
-            throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, file);
+            throw new FTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

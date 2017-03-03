@@ -27,7 +27,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
-public class TouchWorker extends Worker<Boolean> {
+public class TouchWorker extends Worker<Path> {
 
     private final Path file;
 
@@ -36,21 +36,17 @@ public class TouchWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
+    public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
-        if(feature.isSupported(file.getParent())) {
-            feature.touch(file, new TransferStatus()
-                    .exists(false)
-                    .length(0L)
-                    .mime(new MappingMimeTypeService().getMime(file.getName())));
-            return true;
-        }
-        return false;
+        return feature.touch(file, new TransferStatus()
+                .exists(false)
+                .length(0L)
+                .mime(new MappingMimeTypeService().getMime(file.getName())));
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public Path initialize() {
+        return file;
     }
 
     @Override

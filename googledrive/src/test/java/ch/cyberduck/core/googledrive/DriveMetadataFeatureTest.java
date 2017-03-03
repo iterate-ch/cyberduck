@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
@@ -71,8 +70,8 @@ public class DriveMetadataFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return super.getPassword(hostname, user);
                     }
-                }, new DisabledProgressListener(),
-                new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                }, new DisabledProgressListener()
+        ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DriveHomeFinderService(session).find();
         final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus());

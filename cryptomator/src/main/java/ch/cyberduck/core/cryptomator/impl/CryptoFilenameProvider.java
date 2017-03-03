@@ -22,6 +22,7 @@ import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
@@ -68,13 +69,13 @@ public class CryptoFilenameProvider {
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
         if(!find.find(metadataRoot)) {
-            mkdir.mkdir(metadataRoot);
+            mkdir.mkdir(metadataRoot, null, new TransferStatus());
         }
         if(!find.find(firstLevel)) {
-            mkdir.mkdir(firstLevel);
+            mkdir.mkdir(firstLevel, null, new TransferStatus());
         }
         if(!find.find(secondLevel)) {
-            mkdir.mkdir(secondLevel);
+            mkdir.mkdir(secondLevel, null, new TransferStatus());
         }
         new ContentWriter(session).write(metadataFile, longFileNameBytes);
         if(log.isInfoEnabled()) {

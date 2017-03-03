@@ -1,6 +1,19 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -110,7 +123,7 @@ public class SFTPSessionTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
             login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -180,7 +193,7 @@ public class SFTPSessionTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
             login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -207,7 +220,7 @@ public class SFTPSessionTest {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
             login.check(session, PathCache.empty(), new DisabledCancelCallback());
         }
@@ -252,7 +265,7 @@ public class SFTPSessionTest {
                 }
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(change.get());
         session.close();
@@ -277,7 +290,7 @@ public class SFTPSessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(), new DisabledTranscriptListener());
+                new DisabledProgressListener());
         try {
             c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         }

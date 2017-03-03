@@ -576,20 +576,18 @@ public class BrowserController extends WindowController
     }
 
     private void updateQuickLookSelection(final List<Path> selected) {
-        if(quicklook.isAvailable()) {
-            final List<TransferItem> downloads = new ArrayList<TransferItem>();
-            for(Path path : selected) {
-                if(!path.isFile()) {
-                    continue;
-                }
-                downloads.add(new TransferItem(
-                        path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+        final List<TransferItem> downloads = new ArrayList<TransferItem>();
+        for(Path path : selected) {
+            if(!path.isFile()) {
+                continue;
             }
-            if(downloads.size() > 0) {
-                final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-                final TransferOptions options = new TransferOptions();
-                this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
-            }
+            downloads.add(new TransferItem(
+                    path, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), path)));
+        }
+        if(downloads.size() > 0) {
+            final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
+            final TransferOptions options = new TransferOptions();
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
         }
     }
 
@@ -2236,10 +2234,10 @@ public class BrowserController extends WindowController
         final CreateFileController sheet = new CreateFileController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateFileController.Callback() {
             @Override
             public void callback(final boolean edit, final Path file) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new TouchWorker(file) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path folder) {
                                 reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
                                 if(edit) {
                                     file.attributes().setSize(0L);
@@ -2292,10 +2290,10 @@ public class BrowserController extends WindowController
 
             @Override
             public void callback(final Path folder, final String region) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new CreateDirectoryWorker(folder, region) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path folder) {
                                 reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         }));
@@ -2311,10 +2309,10 @@ public class BrowserController extends WindowController
                 feature != null ? feature.getLocations() : Collections.emptySet(), new VaultController.Callback() {
             @Override
             public void callback(final Path folder, final String region, final String passphrase) {
-                background(new WorkerBackgroundAction<Boolean>(BrowserController.this, getSession(),
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, getSession(),
                         new CreateVaultWorker(folder, region, PasswordStoreFactory.get(), passphrase) {
                             @Override
-                            public void cleanup(final Boolean done) {
+                            public void cleanup(final Path vault) {
                                 reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
                             }
                         })
@@ -2342,7 +2340,13 @@ public class BrowserController extends WindowController
     @Action
     public void sendCustomCommandClicked(final ID sender) {
         final CommandController controller = new CommandController(this, pool);
-        final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), this, controller);
+        final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
+            @Override
+            public void callback(final int returncode) {
+                controller.callback(returncode);
+            }
+        }, this, controller);
+
         sheet.beginSheet();
     }
 
@@ -3276,11 +3280,8 @@ public class BrowserController extends WindowController
      */
     @Override
     public void invalidate() {
-        if(quicklook.isAvailable()) {
-            if(quicklook.isOpen()) {
-                quicklook.close();
-            }
-        }
+        quicklook.close();
+
         bookmarkTable.setDelegate(null);
         bookmarkTable.setDataSource(null);
         bookmarkModel.invalidate();

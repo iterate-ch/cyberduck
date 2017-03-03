@@ -146,7 +146,7 @@ public class S3SessionTest {
                 p.set(true);
                 credentials.setPassword(System.getProperties().getProperty("s3.secret"));
             }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(), new DisabledTranscriptListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(p.get());
         session.close();
     }
@@ -223,7 +223,7 @@ public class S3SessionTest {
         final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));
-        assertNull(o.getFeature(Versioning.class));
+        assertNotNull(o.getFeature(Versioning.class));
         assertNull(o.getFeature(AnalyticsProvider.class));
         assertNotNull(o.getFeature(Lifecycle.class));
         assertNotNull(o.getFeature(Location.class));
@@ -302,8 +302,8 @@ public class S3SessionTest {
                 new DisabledLoginCallback(),
                 new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(),
-                new DisabledProgressListener(),
-                new DisabledTranscriptListener());
+                new DisabledProgressListener()
+        );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(verified.get());
         session.close();

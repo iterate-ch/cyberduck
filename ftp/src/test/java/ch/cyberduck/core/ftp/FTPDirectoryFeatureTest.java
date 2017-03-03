@@ -27,6 +27,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -52,7 +53,7 @@ public class FTPDirectoryFeatureTest {
         assertNotNull(session.getClient());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(test);
+        new FTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));

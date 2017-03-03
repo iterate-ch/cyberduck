@@ -15,7 +15,20 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -64,7 +77,7 @@ public class DropboxWriteFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session);
@@ -124,7 +137,7 @@ public class DropboxWriteFeatureTest {
                     public String getPassword(String hostname, String user) {
                         return System.getProperties().getProperty("dropbox.accesstoken");
                     }
-                }, new DisabledProgressListener(), new DisabledTranscriptListener())
+                }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
 
         final DropboxWriteFeature write = new DropboxWriteFeature(session, 44000L);

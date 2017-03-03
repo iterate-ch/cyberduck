@@ -46,8 +46,9 @@ public class AzureTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        return file;
     }
 
     @Override

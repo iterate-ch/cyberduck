@@ -41,7 +41,7 @@ public class DriveTouchFeature implements Touch {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())
@@ -52,6 +52,7 @@ public class DriveTouchFeature implements Touch {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);
         }
+        return file;
     }
 
     @Override

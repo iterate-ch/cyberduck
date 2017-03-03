@@ -118,7 +118,7 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.mlsd);
         final Path home = new FTPWorkdirService(session).find();
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(directory);
+        new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
         new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -138,7 +138,7 @@ public class FTPListServiceTest {
         list.remove(FTPListService.Command.mlsd);
         final Path home = new FTPWorkdirService(session).find();
         final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(directory);
+        new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
         new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

@@ -50,21 +50,16 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(file)) {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+        if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(file, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
+            service.create(folder, StringUtils.isBlank(region) ? PreferencesFactory.get().getProperty("s3.location") : region);
         }
         else {
             if(null == status.getEncryption()) {
                 final Encryption encryption = session.getFeature(Encryption.class);
                 if(encryption != null) {
-                    status.setEncryption(encryption.getDefault(file));
+                    status.setEncryption(encryption.getDefault(folder));
                 }
             }
             if(null == status.getStorageClass()) {
@@ -76,9 +71,15 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
             // Add placeholder object
             status.setMime(MIMETYPE);
-            file.getType().add(Path.Type.placeholder);
-            new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+            folder.getType().add(Path.Type.placeholder);
+            new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

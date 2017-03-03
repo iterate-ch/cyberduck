@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -38,7 +39,6 @@ import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
-    protected static final String MIMETYPE = "application/octet-stream";
     protected static final String PLACEHOLDER = "/.bzEmpty";
 
     private final PathContainerService containerService
@@ -57,33 +57,34 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        this.mkdir(file, null, new TransferStatus());
-    }
-
-    @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            if(containerService.isContainer(file)) {
-                final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(file).getName(),
+            if(containerService.isContainer(folder)) {
+                final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(folder).getName(),
                         null == region ? BucketType.valueOf(PreferencesFactory.get().getProperty("b2.bucket.acl.default")) : BucketType.valueOf(region));
                 switch(response.getBucketType()) {
                     case allPublic:
-                        file.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
+                        folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
             }
             else {
                 status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
-                status.setMime(MIMETYPE);
-                new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+                status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
+                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
             }
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, file);
+            throw new B2ExceptionMappingService(session).map("Cannot create folder {0}", e, folder);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        return folder;
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

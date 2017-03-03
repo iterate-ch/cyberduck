@@ -81,6 +81,12 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                 // Actually never returned by S3 but always 403
                 return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
+                if(StringUtils.isNotBlank(e.getErrorCode())) {
+                    switch(e.getErrorCode()) {
+                        case "RequestTimeout":
+                            return new ConnectionTimeoutException(buffer.toString(), e);
+                    }
+                }
             case HttpStatus.SC_NOT_IMPLEMENTED:
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
                 return new InteroperabilityException(buffer.toString(), e);

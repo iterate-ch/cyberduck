@@ -210,7 +210,7 @@ public class OAuth2AuthorizationService {
                 keychain.getPassword(bookmark.getProtocol().getScheme(),
                         bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                         String.format("%s OAuth2 Refresh Token", prefix)),
-                expiry);
+                expiry == -1 ? Long.MAX_VALUE : expiry);
     }
 
     private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
@@ -331,15 +331,11 @@ public class OAuth2AuthorizationService {
 
         @Override
         public void onTokenErrorResponse(final Credential credential, final TokenErrorResponse tokenErrorResponse) throws IOException {
-            log.warn(String.format("Failure with OAuth2 token response %s", tokenErrorResponse.getError()));
+            log.warn(String.format("Failure with OAuth2 token response %s", null == tokenErrorResponse ? "Unknown" : tokenErrorResponse.getError()));
         }
     }
 
     public boolean isExpired(final Credential tokens) {
-        if(-1 == tokens.getExpirationTimeMilliseconds()) {
-            log.warn(String.format("Unknown expiration time for tokens %s", tokens));
-            return true;
-        }
         return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
     }
 }

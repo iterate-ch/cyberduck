@@ -3,8 +3,15 @@ https://cyberduck.io/
 
 6.0 [https://trac.cyberduck.io/milestone/6.0]
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
-- [Feature] Encrypt uploads on client side prior file transfer into vault (Cyptomator)
+- [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
+
+5.3.9 [https://trac.cyberduck.io/milestone/5.3.9
+- [Bugfix] Failure dragging files to browser for upload (Mac) (#9860)
+
+5.3.8 [https://trac.cyberduck.io/milestone/5.3.8
+- [Bugfix] NTLM authentication failure for uploads (Sharepoint) (#9855)
+- [Bugfix] Selected client certificate cleared from bookmark after opening connection (#9842)
 
 5.3.7 [https://trac.cyberduck.io/milestone/5.3.7
 - [Bugfix] Include "Shared with me" files (Google Drive)

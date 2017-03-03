@@ -26,7 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 
-public class CreateDirectoryWorker extends Worker<Boolean> {
+public class CreateDirectoryWorker extends Worker<Path> {
 
     private final Path folder;
 
@@ -38,15 +38,14 @@ public class CreateDirectoryWorker extends Worker<Boolean> {
     }
 
     @Override
-    public Boolean run(final Session<?> session) throws BackgroundException {
+    public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
-        feature.mkdir(folder, region, new TransferStatus());
-        return true;
+        return feature.mkdir(folder, region, new TransferStatus());
     }
 
     @Override
-    public Boolean initialize() {
-        return false;
+    public Path initialize() {
+        return folder;
     }
 
     @Override

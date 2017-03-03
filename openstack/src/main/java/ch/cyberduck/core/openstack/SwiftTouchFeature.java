@@ -46,10 +46,11 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
     }
 
     @Override
-    public void touch(final Path file, final TransferStatus status) throws BackgroundException {
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         status.setMime(mapping.getMime(file.getName()));
         status.setLength(0L);
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        return file;
     }
 
     @Override

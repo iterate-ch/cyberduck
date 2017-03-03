@@ -47,14 +47,16 @@ public class CryptoWriteFeatureTest {
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Directory.class) {
                     return (T) new Directory() {
+
                         @Override
-                        public void mkdir(final Path file) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            assertTrue(folder.equals(home) || folder.isChild(home));
+                            return folder;
                         }
 
                         @Override
-                        public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-                            assertTrue(file.equals(home) || file.isChild(home));
+                        public boolean isSupported(final Path workdir) {
+                            return true;
                         }
 
                         @Override

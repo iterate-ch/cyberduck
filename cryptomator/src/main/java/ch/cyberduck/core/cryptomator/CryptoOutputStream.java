@@ -16,32 +16,25 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
     private final StatusOutputStream<Reply> proxy;
-    private final Cryptor cryptor;
-    private final FileHeader header;
-    private final ByteBuffer buffer;
-
-    /**
-     * Position proxy content cryptor
-     */
-    private long chunkIndex = 0;
 
     public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header) {
-        super(proxy);
+        super(new SegmentingOutputStream(new EncrpytingOutputStream(proxy, cryptor, header), cryptor.fileContentCryptor().cleartextChunkSize()));
         this.proxy = proxy;
-        this.cryptor = cryptor;
-        this.header = header;
-        this.buffer = ByteBuffer.allocate(cryptor.fileContentCryptor().cleartextChunkSize());
     }
 
     @Override
@@ -59,32 +52,37 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
         write(b, 0, b.length);
     }
 
-    @Override
-    public void write(final byte[] b, final int off, final int len) throws IOException {
-        int toWrite = len;
-        while(toWrite > 0) {
-            final int write = Math.min(toWrite, buffer.remaining());
-            buffer.put(b, buffer.position(), write);
-            if(buffer.remaining() == 0) {
-                this.encryptAndWriteBuffer();
-                buffer.clear();
+    private static final class EncrpytingOutputStream extends ProxyOutputStream {
+        private final Cryptor cryptor;
+        private final FileHeader header;
+        private final int chunksize;
+
+        /**
+         * Position proxy content cryptor
+         */
+        private long chunkIndex = 0;
+
+        public EncrpytingOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header) {
+            super(proxy);
+            this.cryptor = cryptor;
+            this.header = header;
+            this.chunksize = cryptor.fileContentCryptor().cleartextChunkSize();
+        }
+
+        @Override
+        public void write(final byte[] b) throws IOException {
+            this.write(b, 0, b.length);
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
+                int chunkLen = Math.min(chunksize, len - chunkOffset);
+                final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
+                        ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
+                        chunkIndex++, header);
+                super.write(encryptedChunk.array());
             }
-            toWrite -= write;
         }
-    }
-
-    private void encryptAndWriteBuffer() throws IOException {
-        buffer.flip();
-        if(buffer.remaining() == 0) {
-            return;
-        }
-        final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(buffer, chunkIndex++, header);
-        proxy.write(encryptedChunk.array());
-    }
-
-    @Override
-    public void close() throws IOException {
-        this.encryptAndWriteBuffer();
-        proxy.close();
     }
 }

@@ -131,6 +131,17 @@ public enum Scheme {
         public int getPort() {
             return 1247;
         }
+    },
+    local {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return Integer.MIN_VALUE;
+        }
     };
 
     public abstract boolean isSecure();

@@ -36,13 +36,13 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public void mkdir(final Path file) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Directory.class, proxy).mkdir(file);
+    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+        return registry.find(session, folder).getFeature(session, Directory.class, proxy).mkdir(folder, region, status);
     }
 
     @Override
-    public void mkdir(final Path file, final String region, final TransferStatus status) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Directory.class, proxy).mkdir(file, region, status);
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 
     @Override

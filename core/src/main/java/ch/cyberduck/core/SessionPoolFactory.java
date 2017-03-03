@@ -40,22 +40,18 @@ public class SessionPoolFactory {
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
         final HostPasswordStore keychain = PasswordStoreFactory.get();
         final LoginConnectionService connect = new LoginConnectionService(LoginCallbackFactory.get(controller),
-                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller, controller);
+                HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller);
         return create(connect, controller, cache, bookmark,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark),
                 VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)));
     }
 
-    public static SessionPool create(final LoginConnectionService connect, final TranscriptListener transcript,
-                                        final PathCache cache, final Host bookmark,
-                                        final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
-                                        final VaultRegistry vault) {
+    public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
+                                     final PathCache cache, final Host bookmark,
+                                     final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
+                                     final VaultRegistry vault) {
         switch(bookmark.getProtocol().getType()) {
-            case ftp:
-            case irods:
-                // Stateful
-                return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
             case s3:
             case googlestorage:
             case dropbox:
@@ -66,6 +62,9 @@ public class SessionPoolFactory {
             case b2:
                 // Statless protocol
                 return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
+            case ftp:
+            case irods:
+                // Stateful
             default:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
@@ -80,7 +79,7 @@ public class SessionPoolFactory {
     /**
      * @return Single stateless session
      */
-    protected static SessionPool stateless(final LoginConnectionService connect, final TranscriptListener transcript,
+    protected static SessionPool stateless(final ConnectionService connect, final TranscriptListener transcript,
                                            final PathCache cache, final Host bookmark,
                                            final X509TrustManager trust, final X509KeyManager key,
                                            final VaultRegistry vault) {
@@ -94,7 +93,7 @@ public class SessionPoolFactory {
     /**
      * @return Single stateful session
      */
-    protected static SessionPool stateful(final LoginConnectionService connect, final TranscriptListener transcript,
+    protected static SessionPool stateful(final ConnectionService connect, final TranscriptListener transcript,
                                           final PathCache cache, final Host bookmark,
                                           final X509TrustManager trust, final X509KeyManager key,
                                           final VaultRegistry vault) {

@@ -99,7 +99,7 @@ public class SwiftObjectListServiceTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("SYD");
         final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -118,7 +118,7 @@ public class SwiftObjectListServiceTest {
         container.attributes().setRegion("ORD");
         final String name = UUID.randomUUID().toString();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder);
+        new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener());
         assertTrue(list.contains(placeholder));
         assertTrue(list.contains(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
