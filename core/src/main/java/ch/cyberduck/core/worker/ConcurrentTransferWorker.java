@@ -23,7 +23,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -57,18 +56,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener) {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
-        if(source instanceof DefaultSessionPool) {
-            this.source = ((DefaultSessionPool) source).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
-        }
-        else {
-            this.source = source;
-        }
-        if(destination instanceof DefaultSessionPool) {
-            this.destination = ((DefaultSessionPool) destination).withMaxTotal(PreferencesFactory.get().getInteger("queue.maxtransfers"));
-        }
-        else {
-            this.destination = destination;
-        }
+        this.source = source;
+        this.destination = destination;
         this.completion = new DefaultThreadPool<TransferStatus>(
                 PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
     }
