@@ -205,6 +205,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 this.transfer(next, action);
             }
             this.await();
+            transfer.post(source, destination, table, callback);
         }
         finally {
             if(transfer.isReset()) {
