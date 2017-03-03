@@ -682,7 +682,7 @@ public class Host implements Serializable, Comparable<Host> {
         newconnection {
             @Override
             public String toString() {
-                return LocaleFactory.localizedString("Open new connection", "Transfer");
+                return LocaleFactory.localizedString("Open single connection", "Transfer");
             }
         },
         concurrent {
