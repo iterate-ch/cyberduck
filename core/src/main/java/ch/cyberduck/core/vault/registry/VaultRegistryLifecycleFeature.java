@@ -40,6 +40,6 @@ public class VaultRegistryLifecycleFeature implements Lifecycle {
 
     @Override
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
-        registry.find(session, container).getFeature(session, Lifecycle.class, proxy);
+        registry.find(session, container).getFeature(session, Lifecycle.class, proxy).setConfiguration(container, configuration);
     }
 }
