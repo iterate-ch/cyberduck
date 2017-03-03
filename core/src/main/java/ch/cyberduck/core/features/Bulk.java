@@ -27,4 +27,6 @@ public interface Bulk<R> {
     R pre(Transfer.Type type, Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException;
 
     Bulk<R> withDelete(Delete delete);
+
+    void post(Transfer.Type type, Map<Path, TransferStatus> files, ConnectionCallback callback) throws BackgroundException;
 }
