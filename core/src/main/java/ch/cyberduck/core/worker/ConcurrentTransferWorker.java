@@ -34,7 +34,6 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +43,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final SessionPool source;
     private final SessionPool destination;
 
-    private final ThreadPool<TransferStatus> completion;
+    private final ThreadPool completion;
 
     public ConcurrentTransferWorker(final SessionPool source,
                                     final SessionPool destination,
@@ -59,7 +58,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         this.source = source;
         this.destination = destination;
-        this.completion = new DefaultThreadPool<TransferStatus>(
+        this.completion = new DefaultThreadPool(
                 transfer.getSource().getTransferType() == Host.TransferType.newconnection ? 1 :
                         PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
     }

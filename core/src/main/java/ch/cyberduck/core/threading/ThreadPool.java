@@ -20,12 +20,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-public interface ThreadPool<T> {
+public interface ThreadPool {
 
     /**
      * Execute task when slot becomes available
      */
-    Future<T> execute(Callable<T> command);
+    <T> Future<T> execute(Callable<T> command);
 
     /**
      * Await completion of all previously submitted tasks

@@ -25,14 +25,14 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class ThreadPoolFactory<T> extends Factory<ThreadPool<T>> {
+public class ThreadPoolFactory extends Factory<ThreadPool> {
     private static final Logger log = Logger.getLogger(ThreadPoolFactory.class);
 
     public ThreadPoolFactory() {
         super("factory.threadpool.class");
     }
 
-    protected ThreadPool<T> create(final Thread.UncaughtExceptionHandler handler) {
+    protected ThreadPool create(final Thread.UncaughtExceptionHandler handler) {
         final String clazz = PreferencesFactory.get().getProperty("factory.threadpool.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
@@ -52,11 +52,11 @@ public class ThreadPoolFactory<T> extends Factory<ThreadPool<T>> {
         }
     }
 
-    public static <T> ThreadPool<T> get() {
-        return new ThreadPoolFactory<T>().create();
+    public static ThreadPool get() {
+        return new ThreadPoolFactory().create();
     }
 
-    public static <T> ThreadPool<T> get(final Thread.UncaughtExceptionHandler handler) {
-        return new ThreadPoolFactory<T>().create(handler);
+    public static ThreadPool get(final Thread.UncaughtExceptionHandler handler) {
+        return new ThreadPoolFactory().create(handler);
     }
 }
