@@ -207,6 +207,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             this.await();
         }
         finally {
+            transfer.post(source, destination, table, callback);
             if(transfer.isReset()) {
                 growl.notify(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :

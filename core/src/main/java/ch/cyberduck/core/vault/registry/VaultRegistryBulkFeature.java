@@ -53,4 +53,11 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
         proxy.withDelete(delete);
         return this;
     }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
+            registry.find(session, file).getFeature(session, Bulk.class, proxy).post(type, files, callback);
+        }
+    }
 }

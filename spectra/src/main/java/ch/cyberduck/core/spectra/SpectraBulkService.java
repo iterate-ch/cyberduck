@@ -87,6 +87,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         return this;
     }
 
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        //
+    }
+
     /**
      * Deletes the file if it already exists for upload type. Create a job to stream PUT object requests. Clients should use this before
      * putting objects to physical data stores.
