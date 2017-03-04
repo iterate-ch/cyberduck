@@ -2602,7 +2602,7 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    background(new MountAction(this, SessionPoolFactory.create(this, _cache, host), host, _limitListener));
+                    background(new MountAction(this, SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser), host, _limitListener));
                 };
             Unmount(callbackDelegate);
         }
@@ -3203,7 +3203,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly BrowserController _controller;
             private readonly Host _host;
-            private readonly SessionPool _pool;
 
             public MountAction(BrowserController controller, SessionPool pool, Host host, ListProgressListener listener)
                 : base(controller, pool, new InnerMountWorker(controller, pool, listener))
@@ -3222,13 +3221,13 @@ namespace Ch.Cyberduck.Ui.Controller
             private class InnerMountWorker : MountWorker
             {
                 private readonly BrowserController _controller;
-                private readonly SessionPool _session;
+                private readonly SessionPool _pool;
 
-                public InnerMountWorker(BrowserController controller, SessionPool session, ListProgressListener listener)
+                public InnerMountWorker(BrowserController controller, SessionPool pool, ListProgressListener listener)
                     : base(session.getHost(), controller._cache, listener)
                 {
                     _controller = controller;
-                    _session = session;
+                    _pool = pool;
                 }
 
                 public override void cleanup(object wd)
@@ -3241,15 +3240,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        _controller.Session = _session;
-                        _controller._pasteboard = PathPasteboardFactory.getPasteboard(_session.getHost());
+                        _controller.Session = _pool;
+                        _controller._pasteboard = PathPasteboardFactory.getPasteboard(_pool.getHost());
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
-                        _controller.View.RefreshBookmark(_session.getHost());
+                        _controller.View.RefreshBookmark(_pool.getHost());
                         _controller.ToggleView(BrowserView.File);
-                        _controller.View.SelectedEncoding = _session.getHost().getEncoding();
-                        _controller.View.SecureConnection = _session.getHost().getProtocol().isSecure();
-                        _controller.View.CertBasedConnection = _session.getFeature(typeof(X509TrustManager)) != null;
+                        _controller.View.SelectedEncoding = _pool.getHost().getEncoding();
+                        _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
+                        _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                     }
                 }

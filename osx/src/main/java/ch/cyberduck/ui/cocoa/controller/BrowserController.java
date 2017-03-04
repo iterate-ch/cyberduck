@@ -2977,7 +2977,7 @@ public class BrowserController extends WindowController
             public void run() {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
-                final SessionPool pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark);
+                final SessionPool pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                         new MountWorker(bookmark, cache, listener) {
                             @Override
