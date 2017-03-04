@@ -36,6 +36,6 @@
         <key>Context</key>
         <string>/v1.0</string>
         <key>Authorization</key>
-        <string>login.live.com</string>
+        <string>login.microsoftonline.com</string>
     </dict>
 </plist>

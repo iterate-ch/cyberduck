@@ -36,6 +36,6 @@
         <key>Context</key>
         <string>/_api/v2.0</string>
         <key>Authorization</key>
-        <string>login.windows.net</string>
+        <string>login.microsoftonline.com</string>
     </dict>
 </plist>
