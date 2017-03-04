@@ -108,11 +108,11 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(
                 ((OneDriveCommonsHttpRequestExecutor) client.getExecutor()).getClient(),
-                String.format("https://%s/oauth20_token.srf", host.getProtocol().getAuthorization()),
-                String.format("https://%s/oauth20_authorize.srf", host.getProtocol().getAuthorization()),
+                String.format("https://%s/common/oauth2/v2.0/token", host.getProtocol().getAuthorization()),
+                String.format("https://%s/common/oauth2/v2.0/authorize", host.getProtocol().getAuthorization()),
                 host.getProtocol().getClientId(),
                 host.getProtocol().getClientSecret(),
-                Arrays.asList("onedrive.readwrite", "wl.offline_access"))
+                Arrays.asList("files.readwrite.all", "offline_access"))
                 .withRedirectUri(preferences.getProperty("onedrive.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
         this.login(authorizationService, keychain, prompt, cancel, tokens);
