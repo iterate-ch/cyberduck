@@ -219,6 +219,12 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Bulk feature = source.getFeature(Bulk.class);
+        feature.post(Type.upload, files, callback);
+    }
+
+    @Override
     public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status, final ConnectionCallback callback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {

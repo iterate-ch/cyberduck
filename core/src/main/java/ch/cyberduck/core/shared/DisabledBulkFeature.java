@@ -35,4 +35,9 @@ public class DisabledBulkFeature implements Bulk<Void> {
     public Bulk<Void> withDelete(final Delete delete) {
         return this;
     }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) {
+        //
+    }
 }
