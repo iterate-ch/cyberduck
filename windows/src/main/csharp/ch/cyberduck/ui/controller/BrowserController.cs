@@ -3224,7 +3224,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly SessionPool _pool;
 
                 public InnerMountWorker(BrowserController controller, SessionPool pool, ListProgressListener listener)
-                    : base(session.getHost(), controller._cache, listener)
+                    : base(pool.getHost(), controller._cache, listener)
                 {
                     _controller = controller;
                     _pool = pool;
