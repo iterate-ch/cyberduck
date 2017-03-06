@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Search;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
 
@@ -108,6 +109,11 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
                 return true;
             }
             return filter.accept(file);
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return filter.toPattern();
         }
 
         @Override

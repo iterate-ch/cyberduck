@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public final class ProtocolFactory {
     private static final Logger log = Logger.getLogger(ProtocolFactory.class);
@@ -60,12 +61,7 @@ public final class ProtocolFactory {
         final Local bundled = LocalFactory.get(PreferencesFactory.get().getProperty("application.profiles.path"));
         if(bundled.exists()) {
             try {
-                for(Local f : bundled.list().filter(new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
-                    }
-                })) {
+                for(Local f : bundled.list().filter(new ProfileFilter())) {
                     final Profile profile = ProfileReaderFactory.get().read(f);
                     if(null == profile.getProtocol()) {
                         continue;
@@ -86,12 +82,7 @@ public final class ProtocolFactory {
                 PreferencesFactory.get().getProperty("profiles.folder.name"));
         if(library.exists()) {
             try {
-                for(Local profile : library.list().filter(new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
-                    }
-                })) {
+                for(Local profile : library.list().filter(new ProfileFilter())) {
                     final Profile protocol = ProfileReaderFactory.get().read(profile);
                     if(null == protocol) {
                         continue;
@@ -175,5 +166,17 @@ public final class ProtocolFactory {
         }
         log.warn(String.format("Unknown scheme %s", scheme));
         return null;
+    }
+
+    private static class ProfileFilter implements Filter<Local> {
+        @Override
+        public boolean accept(final Local file) {
+            return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile(".*\\.cyberduckprofile");
+        }
     }
 }

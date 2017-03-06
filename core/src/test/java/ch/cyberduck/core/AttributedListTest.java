@@ -14,14 +14,14 @@ public class AttributedListTest {
         AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.add(a));
-        assertTrue(list.filter(new NullComparator<Path>(), new Filter<Path>() {
+        assertTrue(list.filter(new NullComparator<Path>(), new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return !file.getName().equals("a");
             }
         }).isEmpty());
         assertEquals(Collections.<Path>singletonList(a), list.attributes().getHidden());
-        assertFalse(list.filter(new NullComparator<Path>(), new Filter<Path>() {
+        assertFalse(list.filter(new NullComparator<Path>(), new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return !file.getName().equals("b");
