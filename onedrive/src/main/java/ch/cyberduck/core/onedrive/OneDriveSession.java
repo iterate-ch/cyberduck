@@ -51,7 +51,6 @@ import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -108,8 +107,8 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
         final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(
                 ((OneDriveCommonsHttpRequestExecutor) client.getExecutor()).getClient(),
-                String.format("https://%s/%s", host.getProtocol().getAuthorization(), host.getProtocol().getAuthorizationToken()),
-                String.format("https://%s/%s", host.getProtocol().getAuthorization(), host.getProtocol().getAuthorizationAuthorize()),
+                host.getProtocol().getOAuthTokenUrl(),
+                host.getProtocol().getOAuthAuthorizationUrl(),
                 host.getProtocol().getClientId(),
                 host.getProtocol().getClientSecret(),
                 host.getProtocol().getScopes())

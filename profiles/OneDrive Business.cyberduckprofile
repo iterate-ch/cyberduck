@@ -35,12 +35,10 @@
         <false/>
         <key>Context</key>
         <string>/_api/v2.0</string>
-        <key>Authorization</key>
-        <string>login.windows.net</string>
-        <key>Authorization Authorize</key>
-        <string>common/oauth2/authorize</string>
-        <key>Authorization Token</key>
-        <string>common/oauth2/token</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://login.windows.net/common/oauth2/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://login.windows.net/common/oauth2/token</string>
         <key>Scopes</key>
         <array>
             <string>files.readwrite.all</string>

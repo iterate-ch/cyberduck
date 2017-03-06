@@ -262,19 +262,19 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public String getAuthorizationAuthorize() {
-        final String v = this.value("Authorization Authorize");
-        if (StringUtils.isBlank(v)) {
-            return parent.getAuthorizationAuthorize();
+    public String getOAuthAuthorizationUrl() {
+        final String v = this.value("OAuth Authorization Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthAuthorizationUrl();
         }
         return v;
     }
 
     @Override
-    public String getAuthorizationToken() {
-        final String v = this.value("Authorization Token");
-        if (StringUtils.isBlank(v)) {
-            return parent.getAuthorizationAuthorize();
+    public String getOAuthTokenUrl() {
+        final String v = this.value("OAuth Token Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthAuthorizationUrl();
         }
         return v;
     }

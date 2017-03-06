@@ -35,12 +35,10 @@
         <false/>
         <key>Context</key>
         <string>/v1.0</string>
-        <key>Authorization</key>
-        <string>login.live.com</string>
-        <key>Authorization Authorize</key>
-        <string>oauth20_authorize.srf</string>
-        <key>Authorization Token</key>
-        <string>oauth20_token.srf</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://login.live.com/oauth20_authorize.srf</string>
+        <key>OAuth Token Url</key>
+        <string>https://login.live.com/oauth20_token.srf</string>
         <key>Scopes</key>
         <array>
             <string>onedrive.readwrite</string>

@@ -161,12 +161,12 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public String getAuthorizationAuthorize() {
+    public String getOAuthAuthorizationUrl() {
         return null;
     }
 
     @Override
-    public String getAuthorizationToken() {
+    public String getOAuthTokenUrl() {
         return null;
     }
 

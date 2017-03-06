@@ -232,14 +232,14 @@ public interface Protocol extends Comparable<Protocol> {
     String getAuthorization();
 
     /**
-     * @return Authorizeation URL Authorize Part
+     * @return OAuth 2 Authorization Server URL
      */
-    String getAuthorizationAuthorize();
+    String getOAuthAuthorizationUrl();
 
     /**
-     * @return Authorizeation URL Token Part
+     * @return OAuth 2 Token Server URL
      */
-    String getAuthorizationToken();
+    String getOAuthTokenUrl();
 
     /**
      * @return Requested scopes
