@@ -85,7 +85,7 @@ public class OAuth2AuthorizationService {
     private final List<String> scopes;
 
     private final Map<String, String> additionalParameters
-            = new HashMap();
+            = new HashMap<>();
 
     private Credential.AccessMethod method
             = BearerToken.authorizationHeaderAccessMethod();
