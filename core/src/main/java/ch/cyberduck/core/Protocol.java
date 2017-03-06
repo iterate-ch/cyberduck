@@ -231,6 +231,16 @@ public interface Protocol extends Comparable<Protocol> {
     String getAuthorization();
 
     /**
+     * @return Authorizeation URL Authorize Part
+     */
+    String getAuthorizationAuthorize();
+
+    /**
+     * @return Authorizeation URL Token Part
+     */
+    String getAuthorizationToken();
+
+    /**
      * @return Available regions
      */
     Set<Location.Name> getRegions();
