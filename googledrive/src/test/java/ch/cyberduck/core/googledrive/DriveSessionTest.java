@@ -87,18 +87,13 @@ public class DriveSessionTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        if(user.equals("Google Drive (u) OAuth2 Access Token")) {
+                        if(user.equals("Google Drive OAuth2 Access Token")) {
                             return System.getProperties().getProperty("googledrive.accesstoken");
                         }
-                        if(user.equals("Google Drive (u) OAuth2 Refresh Token")) {
+                        if(user.equals("Google Drive OAuth2 Refresh Token")) {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         return null;
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());

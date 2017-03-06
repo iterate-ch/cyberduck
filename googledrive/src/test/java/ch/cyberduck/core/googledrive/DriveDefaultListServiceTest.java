@@ -71,11 +71,6 @@ public class DriveDefaultListServiceTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final AttributedList<Path> list = new DriveDefaultListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
