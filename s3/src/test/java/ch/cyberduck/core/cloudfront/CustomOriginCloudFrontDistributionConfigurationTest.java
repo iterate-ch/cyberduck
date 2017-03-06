@@ -92,11 +92,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
             }
         }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
-        assertNull(distribution.getId());
-        assertEquals("myhost.localdomain", distribution.getOrigin().getHost());
-        assertEquals("Unknown", distribution.getStatus());
-        assertEquals(null, distribution.getId());
+        configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
 
     @Test
