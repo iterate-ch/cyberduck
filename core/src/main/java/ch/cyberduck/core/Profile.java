@@ -280,6 +280,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public List<String> getScopes() {
+        return this.list("Scopes");
+    }
+
+    @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
         final Set<Location.Name> set = new HashSet<Location.Name>();

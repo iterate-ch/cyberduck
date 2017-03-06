@@ -112,7 +112,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                 String.format("https://%s/%s", host.getProtocol().getAuthorization(), host.getProtocol().getAuthorizationAuthorize()),
                 host.getProtocol().getClientId(),
                 host.getProtocol().getClientSecret(),
-                Arrays.asList("onedrive.readwrite", "wl.offline_access"))
+                host.getProtocol().getScopes())
                 .withRedirectUri(preferences.getProperty("onedrive.oauth.redirecturi"));
         final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
         this.login(authorizationService, keychain, prompt, cancel, tokens);
