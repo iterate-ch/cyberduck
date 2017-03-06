@@ -39,9 +39,12 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
@@ -80,6 +83,9 @@ public class OAuth2AuthorizationService {
             = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
+
+    private final Map<String, String> additionalParameters
+            = new HashMap();
 
     private Credential.AccessMethod method
             = BearerToken.authorizationHeaderAccessMethod();
@@ -136,8 +142,14 @@ public class OAuth2AuthorizationService {
                     authorizationServerUrl)
                     .setScopes(scopes)
                     .build();
+            final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
+            authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+            for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
+                authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
+            }
+
             // Direct the user to an authorization page to grant access to their protected data.
-            final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
+            final String url = authorizationCodeRequestUrl.build();
             if(!browser.open(url)) {
                 log.warn(String.format("Failed to launch web browser for %s", url));
             }
@@ -242,6 +254,11 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
         this.redirectUri = redirectUri;
+        return this;
+    }
+
+    public OAuth2AuthorizationService withParameter(final String key, final String value) {
+        additionalParameters.put(key, value);
         return this;
     }
 
