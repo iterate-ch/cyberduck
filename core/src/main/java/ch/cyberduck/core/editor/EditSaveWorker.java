@@ -72,7 +72,7 @@ public class EditSaveWorker extends TransferWorker<Transfer> {
             public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(source, destination, action, listener).withOptions(new UploadFilterOptions()
                         .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
-                        .withPermission(PreferencesFactory.get().getBoolean("queue.upload.permissions.change")));
+                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
             }
         };
         this.listener = listener;

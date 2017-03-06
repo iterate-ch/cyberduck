@@ -67,11 +67,6 @@ public class DriveUrlProviderTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final DriveUrlProvider provider = new DriveUrlProvider();

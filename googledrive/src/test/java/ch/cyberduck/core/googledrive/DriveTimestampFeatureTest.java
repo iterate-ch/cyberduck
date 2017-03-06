@@ -69,11 +69,6 @@ public class DriveTimestampFeatureTest {
                         }
                         return null;
                     }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
-                    }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DriveHomeFinderService(session).find();
@@ -109,11 +104,6 @@ public class DriveTimestampFeatureTest {
                             return System.getProperties().getProperty("googledrive.refreshtoken");
                         }
                         return null;
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return super.getPassword(hostname, user);
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());

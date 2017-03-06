@@ -101,7 +101,7 @@ public abstract class BundleController extends ProxyController {
         }
         // Unarchives the contents of the nib file and links them to a specific owner object
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
-            throw new FactoryException(String.format("Couldn't load %s.nib", bundleName));
+            throw new FactoryException(String.format("Failure loading %s.xib", bundleName));
         }
         if(!awaked) {
             this.awakeFromNib();
