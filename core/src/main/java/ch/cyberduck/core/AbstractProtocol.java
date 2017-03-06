@@ -160,6 +160,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getAuthorizationAuthorize() {
+        return null;
+    }
+
+    @Override
+    public String getAuthorizationToken() {
+        return null;
+    }
+
+    @Override
     public String getRegion() {
         return null;
     }
