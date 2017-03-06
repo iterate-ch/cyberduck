@@ -8,6 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -78,7 +79,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         assertEquals(-1, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void testReadNoConfiguredDistributionForOrigin() throws Exception {
         final Host origin = new Host(new TestProtocol(), "myhost.localdomain");
         origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
