@@ -75,7 +75,7 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
             }
         };
         request.setEntity(entity);
-        final DefaultThreadPool<CloseableHttpResponse> executor = new DefaultThreadPool<CloseableHttpResponse>(1, String.format("http-%s", url));
+        final DefaultThreadPool executor = new DefaultThreadPool(1, String.format("http-%s", url));
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
