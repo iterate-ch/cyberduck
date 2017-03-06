@@ -41,5 +41,10 @@
         <string>common/oauth2/authorize</string>
         <key>Authorization Token</key>
         <string>common/oauth2/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>files.readwrite.all</string>
+            <string>offline_access</string>
+        </array>
     </dict>
 </plist>
