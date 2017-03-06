@@ -32,18 +32,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
+public abstract class ExecutorServiceThreadPool implements ThreadPool {
     private static final Logger log = Logger.getLogger(ExecutorServiceThreadPool.class);
 
     private final ExecutorService pool;
 
-    private final ExecutorCompletionService<T> completion;
+    private final ExecutorCompletionService completion;
 
     private final AtomicInteger size = new AtomicInteger();
 
     public ExecutorServiceThreadPool(final ExecutorService pool) {
         this.pool = pool;
-        this.completion = new ExecutorCompletionService<T>(pool);
+        this.completion = new ExecutorCompletionService(pool);
     }
 
     @Override
@@ -76,7 +76,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
                 }
-                final T value = completion.take().get();
+                final Object value = completion.take().get();
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Finished task with return value %s", value));
                 }
@@ -116,7 +116,7 @@ public abstract class ExecutorServiceThreadPool<T> implements ThreadPool<T> {
      * @return Future result
      */
     @Override
-    public Future<T> execute(final Callable<T> command) {
+    public <T> Future<T> execute(final Callable<T> command) {
         final Future<T> future = completion.submit(command);
         size.incrementAndGet();
         return future;

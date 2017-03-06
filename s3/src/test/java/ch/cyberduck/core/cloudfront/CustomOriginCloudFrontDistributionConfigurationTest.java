@@ -8,6 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -78,7 +79,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         assertEquals(-1, configuration.getOrigin(container, Distribution.CUSTOM).getPort());
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void testReadNoConfiguredDistributionForOrigin() throws Exception {
         final Host origin = new Host(new TestProtocol(), "myhost.localdomain");
         origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
@@ -91,11 +92,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
             }
         }, new DefaultX509KeyManager(), new DisabledTranscriptListener());
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Distribution distribution = configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
-        assertNull(distribution.getId());
-        assertEquals("myhost.localdomain", distribution.getOrigin().getHost());
-        assertEquals("Unknown", distribution.getStatus());
-        assertEquals(null, distribution.getId());
+        configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback());
     }
 
     @Test

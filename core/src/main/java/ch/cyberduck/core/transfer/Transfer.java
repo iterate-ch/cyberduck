@@ -307,6 +307,10 @@ public abstract class Transfer implements Serializable {
         //
     }
 
+    public void post(Session<?> source, Session<?> destination, Map<Path, TransferStatus> files, ConnectionCallback callback) throws BackgroundException {
+        //
+    }
+
     /**
      * The actual transfer implementation
      *

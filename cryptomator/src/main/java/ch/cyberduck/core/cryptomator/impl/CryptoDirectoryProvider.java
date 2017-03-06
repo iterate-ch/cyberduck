@@ -104,6 +104,7 @@ public class CryptoDirectoryProvider {
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(directory.attributes().serialize(SerializerFactory.get()));
+            attributes.setVersionId(null);
             // Save directory id for use in vault
             attributes.setDirectoryId(directoryId);
             attributes.setDecrypted(directory);

@@ -176,7 +176,7 @@ public class SwiftSession extends HttpSession<Client> {
                 return;
             }
             if(accountPreload) {
-                final ThreadPool<AccountInfo> pool = new DefaultThreadPool<AccountInfo>("accounts");
+                final ThreadPool pool = new DefaultThreadPool("accounts");
                 try {
                     for(Region region : client.getRegions()) {
                         pool.execute(new Callable<AccountInfo>() {

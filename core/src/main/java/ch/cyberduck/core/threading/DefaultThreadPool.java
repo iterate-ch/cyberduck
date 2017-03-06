@@ -25,20 +25,22 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
+public class DefaultThreadPool extends ExecutorServiceThreadPool {
+
+    private static final String DEFAULT_PREFIX = "background";
 
     /**
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public DefaultThreadPool() {
-        super(Executors.newSingleThreadExecutor(new NamedThreadFactory("background")));
+        super(Executors.newSingleThreadExecutor(new NamedThreadFactory(DEFAULT_PREFIX)));
     }
 
     public DefaultThreadPool(final Thread.UncaughtExceptionHandler handler) {
         super(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                 PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(),
-                new NamedThreadFactory("background", handler)));
+                new NamedThreadFactory(DEFAULT_PREFIX, handler)));
     }
 
     /**
@@ -47,7 +49,7 @@ public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
      * @param size Number of concurrent threads
      */
     public DefaultThreadPool(final int size) {
-        this(size, "background");
+        this(size, DEFAULT_PREFIX);
     }
 
     public DefaultThreadPool(final String prefix) {
@@ -59,13 +61,13 @@ public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
 
     public DefaultThreadPool(final int size, final String prefix) {
         super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory("background")) :
+                Executors.newSingleThreadExecutor(new NamedThreadFactory(prefix)) :
                 Executors.newFixedThreadPool(size, new NamedThreadFactory(prefix)));
     }
 
     public DefaultThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
         super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory("background", handler)) :
-                Executors.newFixedThreadPool(size, new NamedThreadFactory("background", handler)));
+                Executors.newSingleThreadExecutor(new NamedThreadFactory(DEFAULT_PREFIX, handler)) :
+                Executors.newFixedThreadPool(size, new NamedThreadFactory(DEFAULT_PREFIX, handler)));
     }
 }
