@@ -37,5 +37,9 @@
         <string>/_api/v2.0</string>
         <key>Authorization</key>
         <string>login.windows.net</string>
+        <key>Authorization Authorize</key>
+        <string>common/oauth2/authorize</string>
+        <key>Authorization Token</key>
+        <string>common/oauth2/token</string>
     </dict>
 </plist>

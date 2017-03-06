@@ -26,7 +26,7 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
-        <string>my.sharepoint.com</string>
+        <string>account-my.sharepoint.com</string>
         <key>Hostname Configurable</key>
         <true/>
         <key>Default Port</key>
@@ -37,5 +37,14 @@
         <string>/_api/v2.0</string>
         <key>Authorization</key>
         <string>login.windows.net</string>
+        <key>Authorization Authorize</key>
+        <string>common/oauth2/authorize</string>
+        <key>Authorization Token</key>
+        <string>common/oauth2/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>files.readwrite.all</string>
+            <string>offline_access</string>
+        </array>
     </dict>
 </plist>

@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -157,6 +158,21 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public String getAuthorization() {
         return null;
+    }
+
+    @Override
+    public String getAuthorizationAuthorize() {
+        return null;
+    }
+
+    @Override
+    public String getAuthorizationToken() {
+        return null;
+    }
+
+    @Override
+    public List<String> getScopes() {
+        return Collections.emptyList();
     }
 
     @Override
