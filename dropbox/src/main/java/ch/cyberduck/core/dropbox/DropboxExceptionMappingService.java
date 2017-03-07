@@ -138,6 +138,22 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new QuotaException(buffer.toString(), failure);
             }
         }
+        if(failure instanceof SearchErrorException) {
+            final SearchError error = ((SearchErrorException) failure).errorValue;
+            final LookupError lookup = error.getPathValue();
+            switch(lookup.tag()) {
+                case INVALID_PATH_ROOT:
+                case MALFORMED_PATH:
+                case OTHER:
+                    return new InteroperabilityException(buffer.toString(), failure);
+                case NOT_FOUND:
+                case NOT_FILE:
+                case NOT_FOLDER:
+                    return new NotfoundException(buffer.toString(), failure);
+                case RESTRICTED_CONTENT:
+                    return new AccessDeniedException(buffer.toString(), failure);
+            }
+        }
         if(failure instanceof DownloadErrorException) {
             final DownloadError error = ((DownloadErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();

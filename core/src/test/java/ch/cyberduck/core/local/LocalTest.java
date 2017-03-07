@@ -1,7 +1,7 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
@@ -17,7 +17,7 @@ public class LocalTest {
     @Test
     public void testList() throws Exception {
         assertFalse(new Local("../profiles").list().isEmpty());
-        assertTrue(new Local("../profiles").list(new Filter<String>() {
+        assertTrue(new Local("../profiles").list(new NullFilter<String>() {
             @Override
             public boolean accept(final String file) {
                 return false;

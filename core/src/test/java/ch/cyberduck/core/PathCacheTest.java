@@ -75,7 +75,7 @@ public class PathCacheTest {
         final Path parent = new Path("/", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new AttributedList<Path>(
                 Arrays.asList(new Path(parent, "a", EnumSet.of(Path.Type.file)), new Path(parent, "b", EnumSet.of(Path.Type.file))));
-        list.filter(new Filter<Path>() {
+        list.filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
                 return file.equals(new Path(parent, "a", EnumSet.of(Path.Type.file)));

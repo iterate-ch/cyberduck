@@ -27,6 +27,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ReceiptFactory extends LicenseFactory {
     private static final Logger log = Logger.getLogger(ReceiptFactory.class);
@@ -38,21 +39,11 @@ public class ReceiptFactory extends LicenseFactory {
 
     public ReceiptFactory() {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("application.receipt.path")),
-                new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return "receipt".equals(file.getName());
-                    }
-                });
+                new ReceiptFilter());
     }
 
     public ReceiptFactory(final Local folder) {
-        super(folder, new Filter<Local>() {
-            @Override
-            public boolean accept(final Local file) {
-                return "receipt".equals(file.getName());
-            }
-        });
+        super(folder, new ReceiptFilter());
     }
 
     @Override
@@ -95,5 +86,17 @@ public class ReceiptFactory extends LicenseFactory {
             System.exit(APPSTORE_VALIDATION_FAILURE);
         }
         return keys;
+    }
+
+    private static class ReceiptFilter implements Filter<Local> {
+        @Override
+        public boolean accept(final Local file) {
+            return "receipt".equals(file.getName());
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile("receipt");
+        }
     }
 }
