@@ -427,8 +427,8 @@ public abstract class Preferences {
           Default transfer connection handling
          */
         defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
-                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.browser.name()),
+                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
