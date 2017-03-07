@@ -9,6 +9,8 @@ https://cyberduck.io/
 5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
+- [Feature] Add "Open single connection" option for file transfers
+- [Bugfix] Failure enabling download distribution (CloudFront) (#9870)
 
 5.3.9 [https://trac.cyberduck.io/milestone/5.3.9
 - [Bugfix] Failure dragging files to browser for upload (Mac) (#9860)
