@@ -33,9 +33,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final FailureDiagnostics<BackgroundException> diagnostics
-            = new DefaultFailureDiagnostics();
-
     /**
      * The number of times to retry a failed action
      */
@@ -77,6 +74,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
             return false;
         }
         int delay;
+        final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
         switch(diagnostics.determine(failure)) {
             case network:
                 delay = backoff;
