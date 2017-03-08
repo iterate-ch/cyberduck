@@ -29,6 +29,10 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
 
     private static final String DEFAULT_PREFIX = "background";
 
+    public DefaultThreadPool() {
+        this(PreferencesFactory.get().getInteger("threading.pool.size.max"));
+    }
+
     /**
      * New thread pool with first-in-first-out ordered fair wait queue.
      *
@@ -44,7 +48,7 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
      * @param prefix Thread name prefix
      */
     public DefaultThreadPool(final String prefix) {
-        this(prefix, Integer.MAX_VALUE);
+        this(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"));
     }
 
     /**
