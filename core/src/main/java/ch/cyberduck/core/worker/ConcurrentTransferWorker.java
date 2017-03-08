@@ -42,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -126,12 +127,14 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     @Override
     public void await(final Set<Future<TransferStatus>> queue) throws BackgroundException {
         final Set<BackgroundException> failures = new HashSet<>();
-        for(Future<TransferStatus> f : queue) {
+        for(Iterator<Future<TransferStatus>> iterator = queue.iterator(); iterator.hasNext(); ) {
+            final Future<TransferStatus> f = iterator.next();
             try {
                 final TransferStatus status = f.get();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Finished transfer with status %s", status));
                 }
+                iterator.remove();
             }
             catch(InterruptedException e) {
                 log.error(String.format("Transfer failed with failure %s", e.getMessage()));
