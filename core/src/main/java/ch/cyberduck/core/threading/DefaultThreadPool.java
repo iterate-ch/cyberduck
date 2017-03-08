@@ -77,6 +77,6 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
                 new ThreadPoolExecutor(0, size,
                         PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
                         new SynchronousQueue<>(true),
-                        new NamedThreadFactory(prefix)));
+                        new NamedThreadFactory(prefix, handler)));
     }
 }
