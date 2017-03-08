@@ -20,4 +20,8 @@ public class DispatchThreadPool extends ExecutorServiceThreadPool implements Thr
     public DispatchThreadPool() {
         super(new DispatchExecutorService());
     }
+
+    public DispatchThreadPool(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
+        super(new DispatchExecutorService());
+    }
 }

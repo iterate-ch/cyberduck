@@ -53,7 +53,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             = new S3PathContainerService();
 
     private final ThreadPool pool
-            = new DefaultThreadPool(PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"), "multipart");
+            = new DefaultThreadPool("multipart", PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
 
     /**
      * A split smaller than 5M is not allowed

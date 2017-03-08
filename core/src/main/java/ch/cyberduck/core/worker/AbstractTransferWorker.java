@@ -47,13 +47,18 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
@@ -138,7 +143,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         destination
     }
 
-    protected abstract void submit(TransferCallable callable) throws BackgroundException;
+    protected abstract Future<TransferStatus> submit(TransferCallable callable) throws BackgroundException;
 
     protected abstract Session<?> borrow(Connection type) throws BackgroundException;
 
@@ -159,7 +164,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         super.cancel();
     }
 
-    public void await() throws BackgroundException {
+    public void await(final Set<Future<TransferStatus>> queue) throws BackgroundException {
         // No need to implement for single threaded transfer
     }
 
@@ -193,18 +198,19 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             // Reset the cached size of the transfer and progress value
             transfer.reset();
+            final Set<Future<TransferStatus>> queue = new LinkedHashSet<>();
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
+                queue.add(this.prepare(next.remote, next.local, new TransferStatus().exists(true), action));
             }
-            this.await();
+            this.await(queue);
             meter.reset();
             transfer.pre(source, destination, table, callback);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
-                this.transfer(next, action);
+                queue.add(this.transfer(next, action));
             }
-            this.await();
+            this.await(queue);
         }
         finally {
             transfer.post(source, destination, table, callback);
@@ -220,11 +226,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
     /**
      * To be called before any file is actually transferred
-     *
-     * @param file   File to transfer
+     *  @param file   File to transfer
      * @param action Transfer action for existing files
      */
-    public void prepare(final Path file, final Local local, final TransferStatus parent, final TransferAction action) throws BackgroundException {
+    public Future<TransferStatus> prepare(final Path file, final Local local, final TransferStatus parent, final TransferAction action) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
@@ -233,7 +238,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         }
         final TransferItem item = new TransferItem(file, local);
         if(prompt.isSelected(item)) {
-            this.submit(new RetryTransferCallable() {
+            return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     final Session<?> source = borrow(Connection.source);
@@ -332,13 +337,14 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         else {
             log.info(String.format("Skip unchecked file %s for transfer %s", file, this));
         }
+        return null;
     }
 
     /**
      * @param item   File to transfer
      * @param action Transfer action for existing files
      */
-    public void transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
+    public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
         }
@@ -349,7 +355,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                this.submit(new RetryTransferCallable() {
+                return this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
@@ -426,7 +432,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                     }
                 });
             }
-            this.submit(new TransferCallable() {
+            return this.submit(new TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     if(status.isSegmented()) {
@@ -476,6 +482,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         else {
             log.warn(String.format("Skip file %s with unknown transfer status", item));
         }
+        return ConcurrentUtils.constantFuture(null);
     }
 
     @Override

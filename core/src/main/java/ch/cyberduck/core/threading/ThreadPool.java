@@ -15,22 +15,17 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public interface ThreadPool {
 
+    String DEFAULT_THREAD_NAME_PREFIX = "background";
+
     /**
      * Execute task when slot becomes available
      */
     <T> Future<T> execute(Callable<T> command);
-
-    /**
-     * Await completion of all previously submitted tasks
-     */
-    void await() throws BackgroundException;
 
     /**
      * Shutdown pool and reject any further executions

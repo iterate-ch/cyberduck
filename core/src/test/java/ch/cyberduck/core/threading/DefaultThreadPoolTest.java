@@ -34,7 +34,7 @@ public class DefaultThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
     public void testShutdown() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool(1);
         p.shutdown(true);
         p.execute(new Callable<Void>() {
             @Override
@@ -47,7 +47,7 @@ public class DefaultThreadPoolTest {
 
     @Test
     public void testGracefulShutdown() throws Exception {
-        final DefaultThreadPool pool = new DefaultThreadPool();
+        final DefaultThreadPool pool = new DefaultThreadPool(Integer.MAX_VALUE);
         final AtomicInteger counter = new AtomicInteger(10);
         for(int i = 0; i < 10; i++) {
             pool.execute(new Callable<Integer>() {
@@ -64,7 +64,7 @@ public class DefaultThreadPoolTest {
 
     @Test
     public void testExecute() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool(Integer.MAX_VALUE);
         final Object r = new Object();
         assertEquals(r, p.execute(new Callable<Object>() {
             @Override
@@ -76,7 +76,7 @@ public class DefaultThreadPoolTest {
 
     @Test
     public void testFifoOrderSingleThread() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool();
+        final DefaultThreadPool p = new DefaultThreadPool(1);
         final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {

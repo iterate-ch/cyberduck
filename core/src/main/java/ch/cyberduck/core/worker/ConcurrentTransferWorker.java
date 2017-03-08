@@ -22,20 +22,29 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
@@ -58,9 +67,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         this.source = source;
         this.destination = destination;
-        this.completion = new DefaultThreadPool(
-                transfer.getSource().getTransferType() == Host.TransferType.newconnection ? 1 :
-                        PreferencesFactory.get().getInteger("queue.maxtransfers"), "transfer");
+        this.completion = ThreadPoolFactory.get("transfer",
+                transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
+                        1 : PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
     @Override
@@ -107,16 +116,50 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void submit(final TransferCallable callable) throws BackgroundException {
+    public Future<TransferStatus> submit(final TransferCallable callable) throws BackgroundException {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to pool", callable));
         }
-        completion.execute(callable);
+        return completion.execute(callable);
     }
 
     @Override
-    public void await() throws BackgroundException {
-        completion.await();
+    public void await(final Set<Future<TransferStatus>> queue) throws BackgroundException {
+        final Set<BackgroundException> failures = new HashSet<>();
+        for(Future<TransferStatus> f : queue) {
+            try {
+                final TransferStatus status = f.get();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Finished transfer with status %s", status));
+                }
+            }
+            catch(InterruptedException e) {
+                log.error(String.format("Transfer failed with failure %s", e.getMessage()));
+                failures.add(new ConnectionCanceledException(e));
+            }
+            catch(ExecutionException e) {
+                log.warn(String.format("Transfer failed with execution failure %s", e.getMessage()));
+                if(e.getCause() instanceof BackgroundException) {
+                    failures.add((BackgroundException) e.getCause());
+                }
+                else {
+                    failures.add(new DefaultExceptionMappingService().map(e.getCause()));
+                }
+                throw new BackgroundException(e.getCause());
+            }
+        }
+        if(!failures.isEmpty()) {
+            final BackgroundException failure = failures.iterator().next();
+            if(failures.size() == 1) {
+                throw failure;
+            }
+            final StringAppender appender = new StringAppender(System.getProperty("line.separator").charAt(0));
+            for(BackgroundException f : failures) {
+                appender.append(StringUtils.capitalize(f.getDetail()));
+            }
+            failure.setDetail(appender.toString());
+            throw failure;
+        }
     }
 
     @Override

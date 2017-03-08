@@ -1023,6 +1023,7 @@ public abstract class Preferences {
 
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
 
+        defaults.put("threading.pool.size.max", String.valueOf(20));
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");

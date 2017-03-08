@@ -42,11 +42,13 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -267,16 +269,17 @@ public class ConcurrentTransferWorkerTest {
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);
+        final Set<Future<TransferStatus>> queue = new LinkedHashSet<>();
         for(int i = 0; i < workers; i++) {
-            worker.submit(new TransferWorker.TransferCallable() {
+            queue.add(worker.submit(new TransferWorker.TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     entry.countDown();
                     return new TransferStatus().complete();
                 }
-            });
+            }));
         }
-        worker.await();
+        worker.await(queue);
         assertTrue(entry.getCount() == 0);
 
     }
