@@ -142,10 +142,14 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             log.info(String.format("Caching %s", reference));
         }
         for(T f : children) {
-            reverse.put(this.key(f), reference);
+            final CacheReference key = this.key(f);
+            reverse.remove(key);
+            reverse.put(key, reference);
         }
         for(T f : children.attributes().getHidden()) {
-            reverse.put(this.key(f), reference);
+            final CacheReference key = this.key(f);
+            reverse.remove(key);
+            reverse.put(key, reference);
         }
         return impl.put(reference, children);
     }
