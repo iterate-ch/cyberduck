@@ -30,44 +30,49 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     private static final String DEFAULT_PREFIX = "background";
 
     /**
-     * With FIFO (first-in-first-out) ordered wait queue.
-     */
-    public DefaultThreadPool() {
-        super(Executors.newSingleThreadExecutor(new NamedThreadFactory(DEFAULT_PREFIX)));
-    }
-
-    public DefaultThreadPool(final Thread.UncaughtExceptionHandler handler) {
-        super(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                new NamedThreadFactory(DEFAULT_PREFIX, handler)));
-    }
-
-    /**
-     * With FIFO (first-in-first-out) ordered wait queue.
+     * New thread pool with first-in-first-out ordered fair wait queue.
      *
      * @param size Number of concurrent threads
      */
     public DefaultThreadPool(final int size) {
-        this(size, DEFAULT_PREFIX);
+        this(DEFAULT_PREFIX, size);
     }
 
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue and unlimited number of threads.
+     *
+     * @param prefix Thread name prefix
+     */
     public DefaultThreadPool(final String prefix) {
-        super(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                new NamedThreadFactory(prefix)));
+        this(prefix, Integer.MAX_VALUE);
     }
 
-    public DefaultThreadPool(final int size, final String prefix) {
-        super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory(prefix)) :
-                Executors.newFixedThreadPool(size, new NamedThreadFactory(prefix)));
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue.
+     *
+     * @param prefix Thread name prefix
+     * @param size   Maximum number of threads in pool
+     */
+    public DefaultThreadPool(final String prefix, final int size) {
+        this(prefix, size, new LoggingUncaughtExceptionHandler());
     }
 
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue.
+     *
+     * @param size    Maximum number of threads in pool
+     * @param handler Uncaught thread exception handler
+     */
     public DefaultThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
+        this(DEFAULT_PREFIX, size, handler);
+    }
+
+    public DefaultThreadPool(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
         super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory(DEFAULT_PREFIX, handler)) :
-                Executors.newFixedThreadPool(size, new NamedThreadFactory(DEFAULT_PREFIX, handler)));
+                Executors.newSingleThreadExecutor(new NamedThreadFactory(prefix, handler)) :
+                new ThreadPoolExecutor(0, size,
+                        PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
+                        new SynchronousQueue<>(true),
+                        new NamedThreadFactory(prefix)));
     }
 }

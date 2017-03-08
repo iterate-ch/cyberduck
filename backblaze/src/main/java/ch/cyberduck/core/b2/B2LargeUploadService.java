@@ -96,7 +96,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                  final StreamListener listener,
                                  final TransferStatus status,
                                  final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool pool = new DefaultThreadPool(concurrency, "largeupload");
+        final DefaultThreadPool pool = new DefaultThreadPool("largeupload", concurrency);
         try {
             final String fileid;
             // Get the results of the uploads in the order they were submitted

@@ -95,7 +95,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     @Override
     public StorageObject upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool pool = new DefaultThreadPool(concurrency, "multipart");
+        final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
         try {
             MultipartUpload multipart = null;
             if(status.isAppend()) {
