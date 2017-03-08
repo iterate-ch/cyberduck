@@ -20,6 +20,8 @@ import java.util.concurrent.Future;
 
 public interface ThreadPool {
 
+    String DEFAULT_THREAD_NAME_PREFIX = "background";
+
     /**
      * Execute task when slot becomes available
      */

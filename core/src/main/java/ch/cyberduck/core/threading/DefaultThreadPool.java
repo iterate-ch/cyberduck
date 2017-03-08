@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 public class DefaultThreadPool extends ExecutorServiceThreadPool {
 
-    private static final String DEFAULT_PREFIX = "background";
-
     public DefaultThreadPool() {
         this(PreferencesFactory.get().getInteger("threading.pool.size.max"));
     }
@@ -39,7 +37,7 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
      * @param size Number of concurrent threads
      */
     public DefaultThreadPool(final int size) {
-        this(DEFAULT_PREFIX, size);
+        this(DEFAULT_THREAD_NAME_PREFIX, size);
     }
 
     /**
@@ -68,7 +66,7 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
      * @param handler Uncaught thread exception handler
      */
     public DefaultThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
-        this(DEFAULT_PREFIX, size, handler);
+        this(DEFAULT_THREAD_NAME_PREFIX, size, handler);
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
