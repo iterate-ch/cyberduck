@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.BackgroundCallable;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -45,8 +46,12 @@ public abstract class AbstractController implements Controller {
     private final ThreadPool concurrentExecutor;
 
     protected AbstractController() {
-        singleExecutor = ThreadPoolFactory.get(1);
-        concurrentExecutor = ThreadPoolFactory.get();
+        this(new LoggingUncaughtExceptionHandler());
+    }
+
+    protected AbstractController(final Thread.UncaughtExceptionHandler handler) {
+        singleExecutor = ThreadPoolFactory.get(1, handler);
+        concurrentExecutor = ThreadPoolFactory.get(handler);
     }
 
     /**
