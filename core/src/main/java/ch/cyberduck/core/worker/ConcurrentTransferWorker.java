@@ -29,8 +29,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
-import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -67,9 +67,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         this.source = source;
         this.destination = destination;
-        this.completion = new DefaultThreadPool(
-                "transfer", transfer.getSource().getTransferType() == Host.TransferType.newconnection ? 1 :
-                        PreferencesFactory.get().getInteger("queue.maxtransfers"));
+        this.completion = ThreadPoolFactory.get("transfer",
+                transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
+                        1 : PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
 
     @Override
