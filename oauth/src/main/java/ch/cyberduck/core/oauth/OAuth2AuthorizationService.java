@@ -153,7 +153,8 @@ public class OAuth2AuthorizationService {
             }
             else {
                 prompt.prompt(bookmark, token,
-                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
+                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                        LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
                         new LoginOptions().keychain(false).user(false)
                 );
             }
