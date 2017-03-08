@@ -77,6 +77,7 @@ public class SessionPoolFactory {
                 if(Arrays.asList(usage).contains(Usage.browser)) {
                     return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
                 }
+                // Break through to default pool
             default:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
