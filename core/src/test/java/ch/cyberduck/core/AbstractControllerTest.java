@@ -27,7 +27,7 @@ public class AbstractControllerTest {
 
         final CountDownLatch entry = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
-        final AbstractBackgroundAction action = new AbstractBackgroundAction() {
+        final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
             @Override
             public void init() {
                 assertEquals("main", Thread.currentThread().getName());
@@ -58,7 +58,7 @@ public class AbstractControllerTest {
             }
         };
         controller.background(action);
-        controller.background(new AbstractBackgroundAction() {
+        controller.background(new AbstractBackgroundAction<Object>() {
             @Override
             public Object run() throws BackgroundException {
                 assertFalse(controller.getRegistry().contains(action));
