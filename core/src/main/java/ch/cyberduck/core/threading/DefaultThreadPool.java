@@ -20,8 +20,12 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -72,9 +76,34 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     public DefaultThreadPool(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
         super(1 == size ?
                 Executors.newSingleThreadExecutor(new NamedThreadFactory(prefix, handler)) :
-                new ThreadPoolExecutor(0, size,
+                new BlockingThreadPoolExecutor(0, size,
                         PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
                         new SynchronousQueue<>(true),
                         new NamedThreadFactory(prefix, handler)));
+    }
+
+    private static final class BlockingThreadPoolExecutor extends ThreadPoolExecutor {
+        public BlockingThreadPoolExecutor(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit, final BlockingQueue<Runnable> workQueue, final ThreadFactory threadFactory) {
+            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+            this.setRejectedExecutionHandler(new QueuingRejectedExecutionHandler(workQueue));
+        }
+
+        private final class QueuingRejectedExecutionHandler implements RejectedExecutionHandler {
+            private final BlockingQueue<Runnable> queue;
+
+            public QueuingRejectedExecutionHandler(final BlockingQueue<Runnable> queue) {
+                this.queue = queue;
+            }
+
+            @Override
+            public void rejectedExecution(final Runnable r, final ThreadPoolExecutor executor) {
+                try {
+                    queue.put(r);
+                }
+                catch(InterruptedException e) {
+                    throw new RejectedExecutionException(e);
+                }
+            }
+        }
     }
 }
