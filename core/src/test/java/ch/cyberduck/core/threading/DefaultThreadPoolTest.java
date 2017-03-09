@@ -91,5 +91,24 @@ public class DefaultThreadPoolTest {
         for(Future f : wait) {
             assertEquals(i++, f.get());
         }
+        p.shutdown(true);
+        assertEquals(1000, counter.get());
+    }
+
+    @Test
+    public void testShutdownGracefully() throws Exception {
+        final DefaultThreadPool p = new DefaultThreadPool(Integer.MAX_VALUE);
+        final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
+        final AtomicInteger counter = new AtomicInteger(0);
+        for(int i = 0; i < 1000; i++) {
+            wait.add(p.execute(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    return counter.incrementAndGet();
+                }
+            }));
+        }
+        p.shutdown(true);
+        assertEquals(1000, counter.get());
     }
 }
