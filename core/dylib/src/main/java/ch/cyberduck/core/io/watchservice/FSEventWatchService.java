@@ -23,7 +23,7 @@ import ch.cyberduck.binding.foundation.CFRunLoopRef;
 import ch.cyberduck.binding.foundation.CFStringRef;
 import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
 import ch.cyberduck.core.io.watchservice.jna.FSEvents;
-import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.AutoReleaseNamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -66,7 +66,7 @@ public class FSEventWatchService extends AbstractWatchService {
             = new HashMap<WatchKey, FSEvents.FSEventStreamCallback>();
 
     private final ThreadFactory threadFactory
-            = new NamedThreadFactory("fsevent");
+            = new AutoReleaseNamedThreadFactory("fsevent");
 
     public FSEventWatchService() {
         if(log.isDebugEnabled()) {

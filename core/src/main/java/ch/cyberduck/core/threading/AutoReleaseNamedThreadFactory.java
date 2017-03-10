@@ -23,8 +23,8 @@ import org.apache.log4j.Logger;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class NamedThreadFactory implements ThreadFactory {
-    private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
+public class AutoReleaseNamedThreadFactory implements ThreadFactory {
+    private static final Logger log = Logger.getLogger(AutoReleaseNamedThreadFactory.class);
 
     private final AtomicInteger threadNumber
             = new AtomicInteger(1);
@@ -33,11 +33,11 @@ public class NamedThreadFactory implements ThreadFactory {
 
     private final Thread.UncaughtExceptionHandler handler;
 
-    public NamedThreadFactory(final String name) {
+    public AutoReleaseNamedThreadFactory(final String name) {
         this(name, new LoggingUncaughtExceptionHandler());
     }
 
-    public NamedThreadFactory(final String name, final Thread.UncaughtExceptionHandler handler) {
+    public AutoReleaseNamedThreadFactory(final String name, final Thread.UncaughtExceptionHandler handler) {
         this.name = name;
         this.handler = handler;
     }
