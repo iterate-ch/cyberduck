@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -142,10 +143,17 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                     log.info(String.format("Finished task with return value %s", status));
                 }
             }
-            catch(InterruptedException | ExecutionException e) {
+            catch(InterruptedException e) {
                 // Errors are handled in transfer worker error callback already
                 log.warn(String.format("Unhandled failure %s", e));
-                throw new BackgroundException(e);
+                throw new ConnectionCanceledException(e);
+            }
+
+            catch(ExecutionException e) {
+                if(e.getCause() instanceof BackgroundException) {
+                    throw (BackgroundException) e.getCause();
+                }
+                throw new DefaultExceptionMappingService().map(e.getCause());
             }
             finally {
                 size.decrementAndGet();
