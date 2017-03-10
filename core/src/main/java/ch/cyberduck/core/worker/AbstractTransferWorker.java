@@ -52,7 +52,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -355,7 +354,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             final List<TransferStatus> segments = status.getSegments();
             for(final Iterator<TransferStatus> iter = segments.iterator(); iter.hasNext(); ) {
                 final TransferStatus segment = iter.next();
-                return this.submit(new RetryTransferCallable() {
+                this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         // Transfer
