@@ -108,7 +108,7 @@ public class ConcurrentTransferWorkerTest {
 
     @Test
     public void testConcurrentSessions() throws Exception {
-        final int files = 5;
+        final int files = 20;
         final int connections = 7;
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
