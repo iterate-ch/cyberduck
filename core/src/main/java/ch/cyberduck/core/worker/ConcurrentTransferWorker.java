@@ -38,10 +38,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
@@ -49,10 +50,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final SessionPool source;
     private final SessionPool destination;
 
-    private final ThreadPool pool;
-
-    // Concurrently modified queue
-    private final List<Future<TransferStatus>> queue = new CopyOnWriteArrayList<>();
+    private final CompletionService<TransferStatus> completion;
+    // Keep number of submited tasks
+    private final AtomicInteger size = new AtomicInteger();
 
     public ConcurrentTransferWorker(final SessionPool source,
                                     final SessionPool destination,
@@ -67,9 +67,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         this.source = source;
         this.destination = destination;
-        this.pool = ThreadPoolFactory.get("transfer",
+        final ThreadPool pool = ThreadPoolFactory.get("transfer",
                 transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
                         1 : PreferencesFactory.get().getInteger("queue.maxtransfers"));
+        this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
     }
 
     @Override
@@ -104,12 +105,6 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void cleanup(final Boolean result) {
-        queue.clear();
-        super.cleanup(result);
-    }
-
-    @Override
     protected void release(final Session session, final Connection type) {
         switch(type) {
             case source:
@@ -126,26 +121,34 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to pool", callable));
         }
-        final Future<TransferStatus> future = pool.execute(callable);
-        queue.add(future);
-        return future;
+        final Future<TransferStatus> f = completion.submit(callable);
+        size.incrementAndGet();
+        return f;
     }
 
     @Override
     public void await() throws BackgroundException {
-        // Repeat until no new entries in queue found
-        while(!queue.isEmpty()) {
-            // Obtain iterator with current snapshot of queue
-            for(final Future<TransferStatus> f : queue) {
-                try {
-                    f.get();
-                    // Works without concurrent modification because we are iterating over snapshot of queue
-                    queue.remove(f);
+        while(size.get() > 0) {
+            // Repeat until no new entries in queue found
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
+            }
+            try {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Await completion for %d submitted tasks in queue", size.get()));
                 }
-                catch(InterruptedException | ExecutionException e) {
-                    log.warn(String.format("Ignore failure %s", e));
-                    throw new BackgroundException(e);
+                final TransferStatus status = completion.take().get();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Finished task with return value %s", status));
                 }
+            }
+            catch(InterruptedException | ExecutionException e) {
+                // Errors are handled in transfer worker error callback already
+                log.warn(String.format("Unhandled failure %s", e));
+                throw new BackgroundException(e);
+            }
+            finally {
+                size.decrementAndGet();
             }
         }
     }
@@ -155,7 +158,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
         sb.append("source=").append(source);
         sb.append(", destination=").append(destination);
-        sb.append(", pool=").append(pool);
+        sb.append(", pool=").append(completion);
         sb.append('}');
         return sb.toString();
     }
