@@ -240,6 +240,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
+                    if(AbstractTransferWorker.this.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
                     final Session<?> source = borrow(Connection.source);
                     final Session<?> destination = borrow(Connection.destination);
                     try {
@@ -357,6 +360,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
+                        if(status.isCanceled()) {
+                            throw new ConnectionCanceledException();
+                        }
                         // Transfer
                         final Session<?> source = borrow(Connection.source);
                         final Session<?> destination = borrow(Connection.destination);
@@ -434,6 +440,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
+                    if(status.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
                     if(status.isSegmented()) {
                         // Await completion of all segments
                         boolean complete = true;
