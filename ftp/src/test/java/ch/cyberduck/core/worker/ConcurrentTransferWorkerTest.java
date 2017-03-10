@@ -40,7 +40,6 @@ import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -108,7 +107,6 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 5;
         final int connections = 7;
@@ -146,7 +144,9 @@ public class ConcurrentTransferWorkerTest {
         );
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run(s));
+        final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
+        assertTrue(worker.run(session, session));
+        worker.release(session, ConcurrentTransferWorker.Connection.source);
         worker.release(s, ConcurrentTransferWorker.Connection.source);
         assertEquals(0L, transfer.getTransferred(), 0L);
     }
