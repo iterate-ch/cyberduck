@@ -37,7 +37,6 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -137,11 +136,9 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
-        final int files = 5;
+        final int files = 20;
         final int connections = 3;
-        final CountDownLatch d = new CountDownLatch(connections - 1);
         final Set<Path> transferred = new HashSet<Path>();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         for(int i = 1; i <= files; i++) {
@@ -158,13 +155,6 @@ public class ConcurrentTransferWorkerTest {
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
                 assertNotNull(source);
                 transferred.add(file);
-                d.countDown();
-                try {
-                    d.await();
-                }
-                catch(InterruptedException e) {
-                    fail();
-                }
             }
 
             @Override
