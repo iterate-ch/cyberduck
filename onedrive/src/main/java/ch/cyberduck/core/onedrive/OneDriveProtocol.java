@@ -57,11 +57,6 @@ public class OneDriveProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String disk() {
-        return String.format("%s.tiff", "ftp");
-    }
-
-    @Override
     public String getPasswordPlaceholder() {
         return LocaleFactory.localizedString("Authorization code", "Credentials");
     }
