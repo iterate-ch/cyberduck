@@ -73,19 +73,24 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
             buckets.add(new S3PathContainerService().getContainer(file));
         }
         for(Path bucket : buckets) {
-            try {
-                if(this.accelerate(bucket, callback)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
+            if(enabled) {
+                try {
+                    if(this.accelerate(bucket, callback)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
+                        }
+                        accelerationService.configure(true, bucket);
                     }
-                    accelerationService.configure(enabled, bucket);
+                    else {
+                        log.warn(String.format("Transfer acceleration disabled for %s", bucket));
+                    }
                 }
-                else {
-                    log.warn(String.format("Transfer acceleration disabled for %s", bucket));
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
                 }
             }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
+            else {
+                accelerationService.configure(false, bucket);
             }
         }
     }
