@@ -109,13 +109,13 @@ public class ConcurrentTransferWorkerTest {
     @Test
     public void testConcurrentSessions() throws Exception {
         final int files = 20;
-        final int connections = 7;
+        final int connections = 2;
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
         }
-        final Host host = new Host(new FTPProtocol(), "localhost", PORT_NUMBER, new Credentials("test", "test"));
+        final Host host = new Host(protocol, "localhost", PORT_NUMBER, new Credentials("test", "test"));
         final Transfer transfer = new UploadTransfer(host, list);
         final DefaultSessionPool pool = new DefaultSessionPool(
                 new LoginConnectionService(new DisabledLoginCallback() {
