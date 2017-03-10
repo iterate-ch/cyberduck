@@ -53,10 +53,8 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
@@ -163,7 +161,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         super.cancel();
     }
 
-    public void await(final Set<Future<TransferStatus>> queue) throws BackgroundException {
+    public void await() throws BackgroundException {
         // No need to implement for single threaded transfer
     }
 
@@ -197,19 +195,18 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             // Reset the cached size of the transfer and progress value
             transfer.reset();
-            final Set<Future<TransferStatus>> queue = new LinkedHashSet<>();
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                queue.add(this.prepare(next.remote, next.local, new TransferStatus().exists(true), action));
+                this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
             }
-            this.await(queue);
+            this.await();
             meter.reset();
             transfer.pre(source, destination, table, callback);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
-                queue.add(this.transfer(next, action));
+                this.transfer(next, action);
             }
-            this.await(queue);
+            this.await();
         }
         finally {
             transfer.post(source, destination, table, callback);

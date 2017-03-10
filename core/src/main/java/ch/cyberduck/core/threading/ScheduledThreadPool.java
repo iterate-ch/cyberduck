@@ -34,7 +34,7 @@ public class ScheduledThreadPool {
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ScheduledThreadPool() {
-        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
+        pool = Executors.newScheduledThreadPool(1, new AutoReleaseNamedThreadFactory("timer"));
     }
 
     public ScheduledFuture repeat(final Runnable runnable, final Long period, final TimeUnit unit) {

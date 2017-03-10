@@ -34,21 +34,19 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -138,11 +136,9 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
-        final int files = 5;
+        final int files = 20;
         final int connections = 3;
-        final CountDownLatch d = new CountDownLatch(connections - 1);
         final Set<Path> transferred = new HashSet<Path>();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         for(int i = 1; i <= files; i++) {
@@ -157,20 +153,13 @@ public class ConcurrentTransferWorkerTest {
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback callback,
                                  final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
-                assertNotNull(destination);
+                assertNotNull(source);
                 transferred.add(file);
-                d.countDown();
-                try {
-                    d.await();
-                }
-                catch(InterruptedException e) {
-                    fail();
-                }
             }
 
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return new AbstractDownloadFilter(null, destination, null) {
+                return new AbstractDownloadFilter(new DisabledDownloadSymlinkResolver(), source, null) {
                     @Override
                     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
                         assertFalse(transferred.contains(file));
@@ -269,17 +258,16 @@ public class ConcurrentTransferWorkerTest {
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);
-        final Set<Future<TransferStatus>> queue = new LinkedHashSet<>();
         for(int i = 0; i < workers; i++) {
-            queue.add(worker.submit(new TransferWorker.TransferCallable() {
+            worker.submit(new TransferWorker.TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     entry.countDown();
                     return new TransferStatus().complete();
                 }
-            }));
+            });
         }
-        worker.await(queue);
+        worker.await();
         assertTrue(entry.getCount() == 0);
 
     }

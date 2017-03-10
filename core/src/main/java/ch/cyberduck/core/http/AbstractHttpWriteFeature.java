@@ -26,7 +26,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
-import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.AutoReleaseNamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -109,7 +109,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
                 }
             };
             final ThreadFactory factory
-                    = new NamedThreadFactory(String.format("http-%s", file.getName()));
+                    = new AutoReleaseNamedThreadFactory(String.format("http-%s", file.getName()));
             final Thread t = factory.newThread(target);
             t.start();
             // Wait for output stream to become available

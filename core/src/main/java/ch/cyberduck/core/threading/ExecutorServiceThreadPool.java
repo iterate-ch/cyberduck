@@ -17,17 +17,17 @@ package ch.cyberduck.core.threading;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public abstract class ExecutorServiceThreadPool implements ThreadPool {
     private static final Logger log = Logger.getLogger(ExecutorServiceThreadPool.class);
 
-    private final ExecutorService pool;
+    private final AbstractExecutorService pool;
 
-    public ExecutorServiceThreadPool(final ExecutorService pool) {
+    public ExecutorServiceThreadPool(final AbstractExecutorService pool) {
         this.pool = pool;
     }
 
@@ -62,5 +62,10 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
     @Override
     public <T> Future<T> execute(final Callable<T> command) {
         return pool.submit(command);
+    }
+
+    @Override
+    public AbstractExecutorService executor() {
+        return pool;
     }
 }

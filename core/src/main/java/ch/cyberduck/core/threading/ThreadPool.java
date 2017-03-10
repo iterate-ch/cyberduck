@@ -15,6 +15,7 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -33,4 +34,6 @@ public interface ThreadPool {
      * @param gracefully Wait for tasks to complete
      */
     void shutdown(boolean gracefully);
+
+    AbstractExecutorService executor();
 }
