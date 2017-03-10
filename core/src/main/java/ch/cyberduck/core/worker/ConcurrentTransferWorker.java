@@ -22,9 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -38,12 +36,10 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -53,7 +49,10 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private final SessionPool source;
     private final SessionPool destination;
 
-    private final ThreadPool completion;
+    private final ThreadPool pool;
+
+    // Concurrently modified queue
+    private final List<Future<TransferStatus>> queue = new CopyOnWriteArrayList<>();
 
     public ConcurrentTransferWorker(final SessionPool source,
                                     final SessionPool destination,
@@ -68,7 +67,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback);
         this.source = source;
         this.destination = destination;
-        this.completion = ThreadPoolFactory.get("transfer",
+        this.pool = ThreadPoolFactory.get("transfer",
                 transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
                         1 : PreferencesFactory.get().getInteger("queue.maxtransfers"));
     }
@@ -105,6 +104,12 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
+    public void cleanup(final Boolean result) {
+        queue.clear();
+        super.cleanup(result);
+    }
+
+    @Override
     protected void release(final Session session, final Connection type) {
         switch(type) {
             case source:
@@ -121,55 +126,36 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to pool", callable));
         }
-        return completion.execute(callable);
+        final Future<TransferStatus> future = pool.execute(callable);
+        queue.add(future);
+        return future;
     }
 
     @Override
-    public void await(final Set<Future<TransferStatus>> queue) throws BackgroundException {
-        final Set<BackgroundException> failures = new HashSet<>();
-        for(Iterator<Future<TransferStatus>> iterator = queue.iterator(); iterator.hasNext(); ) {
-            final Future<TransferStatus> f = iterator.next();
-            try {
-                final TransferStatus status = f.get();
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Finished transfer with status %s", status));
+    public void await() throws BackgroundException {
+        // Repeat until no new entries in queue found
+        while(!queue.isEmpty()) {
+            // Obtain iterator with current snapshot of queue
+            for(final Future<TransferStatus> f : queue) {
+                try {
+                    f.get();
+                    // Works without concurrent modification because we are iterating over snapshot of queue
+                    queue.remove(f);
                 }
-                iterator.remove();
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Transfer failed with failure %s", e.getMessage()));
-                failures.add(new ConnectionCanceledException(e));
-            }
-            catch(ExecutionException e) {
-                log.warn(String.format("Transfer failed with execution failure %s", e.getMessage()));
-                if(e.getCause() instanceof BackgroundException) {
-                    failures.add((BackgroundException) e.getCause());
+                catch(InterruptedException | ExecutionException e) {
+                    log.warn(String.format("Ignore failure %s", e));
+                    throw new BackgroundException(e);
                 }
-                else {
-                    failures.add(new DefaultExceptionMappingService().map(e.getCause()));
-                }
-                throw new BackgroundException(e.getCause());
             }
-        }
-        if(!failures.isEmpty()) {
-            final BackgroundException failure = failures.iterator().next();
-            if(failures.size() == 1) {
-                throw failure;
-            }
-            final StringAppender appender = new StringAppender(System.getProperty("line.separator").charAt(0));
-            for(BackgroundException f : failures) {
-                appender.append(StringUtils.capitalize(f.getDetail()));
-            }
-            failure.setDetail(appender.toString());
-            throw failure;
         }
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ConcurrentTransferWorker{");
-        sb.append("completion=").append(completion);
-        sb.append(", pool=").append(source);
+        sb.append("source=").append(source);
+        sb.append(", destination=").append(destination);
+        sb.append(", pool=").append(pool);
         sb.append('}');
         return sb.toString();
     }
