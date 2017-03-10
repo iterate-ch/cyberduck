@@ -166,6 +166,7 @@
 		4767310416108E1300B28D35 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B416108E1300B28D35 /* unlocked.tiff */; };
 		4767310516108E1300B28D35 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B516108E1300B28D35 /* update.tiff */; };
 		4767310616108E1300B28D35 /* upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B616108E1300B28D35 /* upload.tiff */; };
+		4778BE391E72B183001D2E7C /* onedrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4778BE381E72B183001D2E7C /* onedrive.tiff */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786AA14162F4AED006156A0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
@@ -1030,6 +1031,7 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = i18n/src/main/resources/sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		4778BE381E72B183001D2E7C /* onedrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = onedrive.tiff; sourceTree = "<group>"; };
 		477BE2330FD9B38C00F5CB50 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Main.xib; sourceTree = "<group>"; };
 		477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
@@ -1824,6 +1826,7 @@
 				47A40B311DEF1C09004E6084 /* cryptomator.tiff */,
 				4749604A1CD75C7200B020C9 /* toolbar */,
 				479626AE1C98057C00CEBEC0 /* googledrive.tiff */,
+				4778BE381E72B183001D2E7C /* onedrive.tiff */,
 				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
@@ -2210,6 +2213,7 @@
 				476730C216108E1300B28D35 /* nav-backward.tiff in Resources */,
 				476730C316108E1300B28D35 /* nav-forward.tiff in Resources */,
 				476730C416108E1300B28D35 /* transfer-upload.tiff in Resources */,
+				4778BE391E72B183001D2E7C /* onedrive.tiff in Resources */,
 				474960671CD75C9700B020C9 /* delete.pdf in Resources */,
 				4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */,
 				474960751CD75C9700B020C9 /* cleanup.pdf in Resources */,
