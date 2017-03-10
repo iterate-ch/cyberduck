@@ -124,11 +124,11 @@ public class ProgressController extends BundleController implements TransferList
      */
     @Override
     public void awakeFromNib() {
-        this.progress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
+        this.setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                 sizeFormatter.format(transfer.getTransferred()),
                 sizeFormatter.format(transfer.getSize())));
-        this.message(StringUtils.EMPTY);
-        this.status(LocaleFactory.localizedString(transfer.isComplete() ?
+        this.setMessage(StringUtils.EMPTY);
+        this.setStatus(LocaleFactory.localizedString(transfer.isComplete() ?
                 String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
         super.awakeFromNib();
     }
@@ -136,6 +136,16 @@ public class ProgressController extends BundleController implements TransferList
     @Override
     protected String getBundleName() {
         return "Progress.nib";
+    }
+
+    @Override
+    public void message(final String message) {
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                setMessage(message);
+            }
+        });
     }
 
     @Override
@@ -147,8 +157,8 @@ public class ProgressController extends BundleController implements TransferList
                 progressBar.setIndeterminate(true);
                 progressBar.startAnimation(null);
                 statusIconView.setImage(YELLOW_ICON);
-                progress(StringUtils.EMPTY);
-                status(StringUtils.EMPTY);
+                setProgress(StringUtils.EMPTY);
+                setStatus(StringUtils.EMPTY);
             }
         });
     }
@@ -161,11 +171,11 @@ public class ProgressController extends BundleController implements TransferList
                 progressBar.stopAnimation(null);
                 progressBar.setIndeterminate(true);
                 progressBar.setHidden(true);
-                message(StringUtils.EMPTY);
-                progress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
+                setMessage(StringUtils.EMPTY);
+                setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
                         sizeFormatter.format(transfer.getTransferred()),
                         sizeFormatter.format(transfer.getSize())));
-                status(LocaleFactory.localizedString(LocaleFactory.localizedString(transfer.isComplete() ?
+                setStatus(LocaleFactory.localizedString(LocaleFactory.localizedString(transfer.isComplete() ?
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
                 statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
             }
@@ -174,7 +184,7 @@ public class ProgressController extends BundleController implements TransferList
 
     @Override
     public void transferDidProgress(final Transfer transfer, final TransferProgress progress) {
-        this.progress(progress.getProgress());
+        this.setProgress(progress.getProgress());
         final double transferred = progress.getTransferred();
         final double size = progress.getSize();
         invoke(new DefaultMainAction() {
@@ -192,7 +202,7 @@ public class ProgressController extends BundleController implements TransferList
         });
     }
 
-    private void progress(final String message) {
+    private void setProgress(final String message) {
         this.invoke(new DefaultMainAction() {
             @Override
             public void run() {
@@ -202,8 +212,7 @@ public class ProgressController extends BundleController implements TransferList
         });
     }
 
-    @Override
-    public void message(final String message) {
+    public void setMessage(final String message) {
         final String text;
         if(StringUtils.isBlank(message)) {
             // Do not display any progress text when transfer is stopped
@@ -222,7 +231,7 @@ public class ProgressController extends BundleController implements TransferList
                 text, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private void status(final String status) {
+    private void setStatus(final String status) {
         statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(status,
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
