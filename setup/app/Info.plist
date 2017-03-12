@@ -263,7 +263,7 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources</string>
             <key>VMOptions</key>
-            <string>-Djava.ext.dirs=$APP_PACKAGE/Contents/PlugIns/Runtime.jre/Contents/Home/lib/ext -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none</string>
+            <string>-Djava.ext.dirs=$APP_PACKAGE/Contents/PlugIns/Runtime.jre/Contents/Home/lib/ext -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -Xverify:none -XX:+UseConcMarkSweepGC</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
