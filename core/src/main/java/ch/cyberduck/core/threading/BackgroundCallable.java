@@ -46,6 +46,7 @@ public class BackgroundCallable<T> implements Callable<T> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Running background action %s", action));
         }
+        final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
         if(action.isCanceled()) {
             // Canceled action yields no result
             return null;
@@ -55,7 +56,11 @@ public class BackgroundCallable<T> implements Callable<T> {
         }
         action.prepare();
         try {
-            return this.run();
+            final T result = this.run();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return result %s from background action %s", result, action));
+            }
+            return result;
         }
         finally {
             try {
@@ -82,6 +87,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Releasing lock for background runnable %s", action));
             }
+            autorelease.operate();
         }
     }
 
