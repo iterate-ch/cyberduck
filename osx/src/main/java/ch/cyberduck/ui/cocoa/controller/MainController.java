@@ -61,6 +61,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -1295,6 +1296,7 @@ public class MainController extends BundleController implements NSApplication.De
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
         preferences.save();
+        DefaultBackgroundExecutor.get().shutdown();
     }
 
     public void applicationWillRestartAfterUpdate(ID updater) {
