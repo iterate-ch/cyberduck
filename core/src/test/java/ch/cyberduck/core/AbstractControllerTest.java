@@ -31,7 +31,6 @@ public class AbstractControllerTest {
 
             @Override
             public Object run() throws BackgroundException {
-                assertEquals("background-1", Thread.currentThread().getName());
                 return null;
             }
 
