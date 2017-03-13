@@ -1,6 +1,7 @@
 package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -16,6 +17,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.*;
 
 public class ProxyControllerTest {
+
+    @Test
+    public void testBackground() throws Exception {
+        final AbstractController controller = new ProxyController();
+        final CountDownLatch entry = new CountDownLatch(1);
+        final CountDownLatch exit = new CountDownLatch(1);
+        final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
+            @Override
+            public void init() {
+                assertEquals("main", Thread.currentThread().getName());
+            }
+
+            @Override
+            public Object run() throws BackgroundException {
+                assertEquals("background-1", Thread.currentThread().getName());
+                return null;
+            }
+
+            @Override
+            public void cleanup() {
+                assertEquals("main", Thread.currentThread().getName());
+                assertFalse(controller.getRegistry().contains(this));
+            }
+
+        };
+        controller.background(action).get();
+    }
 
     @Test
     public void testInvokeNoWait() throws Exception {
