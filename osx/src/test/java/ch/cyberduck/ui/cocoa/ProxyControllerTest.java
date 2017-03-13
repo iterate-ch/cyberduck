@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
 
@@ -67,7 +66,6 @@ public class ProxyControllerTest {
                     public void run() {
                         c.set(true);
                         invoked.countDown();
-//                        assertEquals("main", Thread.currentThread().getName());
                     }
                 }, false);
             }
@@ -96,73 +94,11 @@ public class ProxyControllerTest {
                     @Override
                     public void run() {
                         c.set(true);
-//                        assertEquals("main", Thread.currentThread().getName());
                     }
                 }, true);
             }
         }.start();
         entry.await(1, TimeUnit.SECONDS);
         assertTrue(c.get());
-    }
-
-    @Test
-    public void testBackgroundTaskConcurrentCleanup() throws Exception {
-        final ProxyController controller = new ProxyController();
-
-        final CountDownLatch connectLatch = new CountDownLatch(1);
-        final AtomicBoolean connected = new AtomicBoolean();
-        final AtomicInteger increment = new AtomicInteger(0);
-
-        final CountDownLatch mounted = new CountDownLatch(1);
-        // Connect
-        controller.background(new AbstractBackgroundAction<Object>() {
-            @Override
-            public Object run() throws BackgroundException {
-                try {
-                    connectLatch.await(1, TimeUnit.MINUTES);
-                }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                connected.set(true);
-                return null;
-            }
-
-            @Override
-            public void cleanup() {
-                assertEquals(1, increment.incrementAndGet());
-            }
-        });
-        // Disconnect before connect was successful
-        controller.background(new AbstractBackgroundAction<Object>() {
-            @Override
-            public Object run() throws BackgroundException {
-                assertTrue(connected.get());
-                return null;
-            }
-
-            @Override
-            public void cleanup() {
-                assertEquals(2, increment.incrementAndGet());
-                // Initialize new session in cleanup from disconnect task as in browser controller
-                // Not synchronized with first session
-                final Object session2 = new Object();
-                controller.background(new AbstractBackgroundAction<Object>() {
-                    @Override
-                    public Object run() throws BackgroundException {
-                        assertTrue(connected.get());
-                        return null;
-                    }
-
-                    @Override
-                    public void cleanup() {
-                        assertEquals(3, increment.incrementAndGet());
-                        mounted.countDown();
-                    }
-                });
-            }
-        });
-        connectLatch.countDown();
-        mounted.await(1, TimeUnit.MINUTES);
     }
 }
