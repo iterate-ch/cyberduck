@@ -102,12 +102,6 @@ public class ProxyControllerTest {
             }
 
             @Override
-            public Object lock() {
-                assertNotNull(session);
-                return session;
-            }
-
-            @Override
             public void cleanup() {
                 assertEquals(1, increment.incrementAndGet());
             }
@@ -121,12 +115,6 @@ public class ProxyControllerTest {
             }
 
             @Override
-            public Object lock() {
-                assertNotNull(session);
-                return session;
-            }
-
-            @Override
             public void cleanup() {
                 assertEquals(2, increment.incrementAndGet());
                 // Initialize new session in cleanup from disconnect task as in browser controller
@@ -137,12 +125,6 @@ public class ProxyControllerTest {
                     public Object run() throws BackgroundException {
                         assertTrue(connected.get());
                         return null;
-                    }
-
-                    @Override
-                    public Object lock() {
-                        assertNotNull(session2);
-                        return session2;
                     }
 
                     @Override

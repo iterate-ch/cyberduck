@@ -52,10 +52,6 @@ public class AbstractControllerTest {
                 assertFalse(controller.getRegistry().contains(this));
             }
 
-            @Override
-            public Object lock() {
-                return lock;
-            }
         };
         controller.background(action);
         controller.background(new AbstractBackgroundAction<Object>() {
@@ -65,10 +61,6 @@ public class AbstractControllerTest {
                 return null;
             }
 
-            @Override
-            public Object lock() {
-                return lock;
-            }
         });
         entry.await(1, TimeUnit.SECONDS);
         assertTrue(controller.getRegistry().contains(action));
