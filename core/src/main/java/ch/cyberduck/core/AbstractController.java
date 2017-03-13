@@ -64,13 +64,9 @@ public abstract class AbstractController implements Controller {
     }
 
     /**
-     * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
-     * as soon as no other previous <code>BackgroundAction</code> is pending.
-     * Will return immediately but not run the runnable before the lock of the runnable is acquired.
+     * Will queue up the <code>BackgroundAction</code> to be run in a background thread
      *
-     * @param action The runnable to execute in a secondary Thread
-     * @see java.lang.Thread
-     * @see ch.cyberduck.core.threading.BackgroundAction#lock()
+     * @param action The runnable to execute in a secondary thread
      */
     @Override
     public <T> Future<T> background(final BackgroundAction<T> action) {
