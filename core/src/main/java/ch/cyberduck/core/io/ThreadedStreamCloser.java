@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.StreamCloseTimeoutException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AutoReleaseNamedThreadFactory;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.commons.io.IOUtils;
 
@@ -38,7 +38,7 @@ public class ThreadedStreamCloser implements StreamCloser {
             = PreferencesFactory.get();
 
     private final ThreadFactory threadFactory
-            = new AutoReleaseNamedThreadFactory("close");
+            = new NamedThreadFactory("close");
 
     @Override
     public void close(final InputStream in) throws ConnectionTimeoutException {

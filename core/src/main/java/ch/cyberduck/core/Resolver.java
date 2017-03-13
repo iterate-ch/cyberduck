@@ -21,8 +21,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
-import ch.cyberduck.core.threading.AutoReleaseNamedThreadFactory;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +38,7 @@ public final class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
     private final ThreadFactory threadFactory
-            = new AutoReleaseNamedThreadFactory("resolver");
+            = new NamedThreadFactory("resolver");
 
     /**
      * This method is blocking until the hostname has been resolved or the lookup
