@@ -54,8 +54,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
         private readonly Host _host;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
-        private readonly Object _syncRootFavicon = new Object();
-        private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
 
@@ -626,11 +624,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     _controller.View.Favicon = IconCache.Instance.IconForName("site", 16);
                 }
             }
-
-            public override object @lock()
-            {
-                return _controller._syncRootFavicon;
-            }
         }
 
         private class ReachabilityAction : AbstractBackgroundAction
@@ -654,11 +647,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _controller.View.AlertIconEnabled = !_reachable;
-            }
-
-            public override object @lock()
-            {
-                return _controller._syncRootReachability;
             }
         }
 

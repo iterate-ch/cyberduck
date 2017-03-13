@@ -97,10 +97,4 @@ public class TransferCollectionBackgroundAction extends TransferBackgroundAction
             collection.collectionItemChanged(transfer);
         }
     }
-
-    @Override
-    public Object lock() {
-        // No synchronization with other tasks
-        return null;
-    }
 }
