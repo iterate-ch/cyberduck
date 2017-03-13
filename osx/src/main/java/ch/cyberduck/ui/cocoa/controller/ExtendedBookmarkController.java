@@ -296,11 +296,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                                 webUrlImage.setImage(favicon);
                             }
                         }
-
-                        @Override
-                        public Object lock() {
-                            return bookmark;
-                        }
                     });
                 }
                 webUrlImage.setToolTip(bookmark.getWebURL());
