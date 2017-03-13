@@ -10,7 +10,8 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class AbstractControllerTest {
 
@@ -19,12 +20,9 @@ public class AbstractControllerTest {
         final AbstractController controller = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
-                assertEquals("main", Thread.currentThread().getName());
+                runnable.run();
             }
         };
-
-        final CountDownLatch entry = new CountDownLatch(1);
-        final CountDownLatch exit = new CountDownLatch(1);
         final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
             @Override
             public void init() {
@@ -34,35 +32,16 @@ public class AbstractControllerTest {
             @Override
             public Object run() throws BackgroundException {
                 assertEquals("background-1", Thread.currentThread().getName());
-                entry.countDown();
-                try {
-                    exit.await(1, TimeUnit.SECONDS);
-                }
-                catch(InterruptedException e) {
-                    fail();
-                }
                 return null;
             }
 
             @Override
             public void cleanup() {
-                assertEquals("main", Thread.currentThread().getName());
                 assertFalse(controller.getRegistry().contains(this));
             }
 
         };
-        controller.background(action);
-        controller.background(new AbstractBackgroundAction<Object>() {
-            @Override
-            public Object run() throws BackgroundException {
-                assertFalse(controller.getRegistry().contains(action));
-                return null;
-            }
-
-        });
-        entry.await(1, TimeUnit.SECONDS);
-        assertTrue(controller.getRegistry().contains(action));
-        exit.countDown();
+        controller.background(action).get();
     }
 
     @Test
