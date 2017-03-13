@@ -34,7 +34,6 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         return DEFAULT;
     }
 
-    private final ThreadPool singleExecutor;
     private final ThreadPool concurrentExecutor;
 
     protected DefaultBackgroundExecutor() {
@@ -42,7 +41,6 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     }
 
     protected DefaultBackgroundExecutor(final Thread.UncaughtExceptionHandler handler) {
-        singleExecutor = ThreadPoolFactory.get(1, handler);
         concurrentExecutor = ThreadPoolFactory.get(handler);
     }
 
@@ -60,16 +58,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action, controller, registry);
         try {
-            final Future<T> task;
-            if(null == action.lock()) {
-                task = concurrentExecutor.execute(command);
-            }
-            else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Synchronize on lock %s for action %s", action.lock(), action));
-                }
-                task = singleExecutor.execute(command);
-            }
+            final Future<T> task = concurrentExecutor.execute(command);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Scheduled background runnable %s for execution", action));
             }
@@ -84,10 +73,6 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
 
     @Override
     public void shutdown() {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Terminating single executor thread pool %s", singleExecutor));
-        }
-        singleExecutor.shutdown(false);
         if(log.isInfoEnabled()) {
             log.info(String.format("Terminating concurrent executor thread pool %s", concurrentExecutor));
         }
