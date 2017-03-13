@@ -18,7 +18,7 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.threading.AutoReleaseNamedThreadFactory;
+import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
 
@@ -37,7 +37,7 @@ public class UDTSocket extends NetSocketUDT {
     private static final Logger log = Logger.getLogger(UDTSocket.class);
 
     private final ThreadFactory threadFactory
-            = new AutoReleaseNamedThreadFactory("connect");
+            = new NamedThreadFactory("connect");
 
     private IOException exception;
 
