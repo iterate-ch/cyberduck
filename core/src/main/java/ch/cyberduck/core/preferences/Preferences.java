@@ -1031,7 +1031,7 @@ public abstract class Preferences {
         defaults.put("dropbox.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
-        defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.enable", String.valueOf(false));
     }
 
     protected void setLogging() {
