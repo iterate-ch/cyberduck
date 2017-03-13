@@ -77,6 +77,12 @@ public abstract class AbstractController implements Controller {
         return DefaultBackgroundExecutor.get().execute(this, registry, action);
     }
 
+    /**
+     * Free resources
+     */
+    protected void invalidate() {
+    }
+
     @Override
     public void start(final BackgroundAction action) {
         if(log.isDebugEnabled()) {
