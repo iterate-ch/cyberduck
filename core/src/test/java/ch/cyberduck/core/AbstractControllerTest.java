@@ -23,8 +23,6 @@ public class AbstractControllerTest {
             }
         };
 
-        final Object lock = new Object();
-
         final CountDownLatch entry = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
         final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {

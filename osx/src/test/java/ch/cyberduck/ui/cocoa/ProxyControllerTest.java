@@ -80,7 +80,6 @@ public class ProxyControllerTest {
     @Test
     public void testBackgroundTaskConcurrentCleanup() throws Exception {
         final ProxyController controller = new ProxyController();
-        final Object session = new Object();
 
         final CountDownLatch connectLatch = new CountDownLatch(1);
         final AtomicBoolean connected = new AtomicBoolean();
@@ -88,7 +87,7 @@ public class ProxyControllerTest {
 
         final CountDownLatch mounted = new CountDownLatch(1);
         // Connect
-        controller.background(new AbstractBackgroundAction() {
+        controller.background(new AbstractBackgroundAction<Object>() {
             @Override
             public Object run() throws BackgroundException {
                 try {
@@ -107,7 +106,7 @@ public class ProxyControllerTest {
             }
         });
         // Disconnect before connect was successful
-        controller.background(new AbstractBackgroundAction() {
+        controller.background(new AbstractBackgroundAction<Object>() {
             @Override
             public Object run() throws BackgroundException {
                 assertTrue(connected.get());
@@ -120,7 +119,7 @@ public class ProxyControllerTest {
                 // Initialize new session in cleanup from disconnect task as in browser controller
                 // Not synchronized with first session
                 final Object session2 = new Object();
-                controller.background(new AbstractBackgroundAction() {
+                controller.background(new AbstractBackgroundAction<Object>() {
                     @Override
                     public Object run() throws BackgroundException {
                         assertTrue(connected.get());
