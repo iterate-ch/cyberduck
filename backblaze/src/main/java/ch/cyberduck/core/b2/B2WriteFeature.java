@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -82,9 +81,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             public BaseB2Response call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final Checksum checksum = status.getChecksum();
-                    if(Checksum.NONE == checksum) {
-                        throw new InteroperabilityException(String.format("Missing SHA1 checksum for file %s", file.getName()));
-                    }
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
                                 = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
@@ -102,7 +98,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                         try {
                             return session.getClient().uploadFile(uploadUrl,
                                     file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                                    entity, checksum.toString(),
+                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
                                     status.getMime(),
                                     status.getMetadata());
                         }
