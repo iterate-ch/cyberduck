@@ -36,6 +36,11 @@ public class DriveSearchFeature implements Search {
     }
 
     @Override
+    public boolean isRecursive() {
+        return true;
+    }
+
+    @Override
     public Search withCache(final Cache<Path> cache) {
         return this;
     }
