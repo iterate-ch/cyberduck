@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
@@ -24,23 +25,29 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
+import java.util.EnumSet;
 import java.util.List;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
+import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.SearchMatch;
 import com.dropbox.core.v2.files.SearchMode;
 import com.dropbox.core.v2.files.SearchResult;
 
 public class DropboxSearchFeature implements Search {
-    private final DropboxSession session;
+    private static final Logger log = Logger.getLogger(DropboxListService.class);
 
-    private final DropboxListService listService;
+    private final DropboxSession session;
+    private final DropboxAttributesFinderFeature attributes;
 
     public DropboxSearchFeature(final DropboxSession session) {
         this.session = session;
-        this.listService = new DropboxListService(this.session);
+        this.attributes = new DropboxAttributesFinderFeature(session);
     }
 
     @Override
@@ -54,7 +61,19 @@ public class DropboxSearchFeature implements Search {
                         .withMode(SearchMode.FILENAME).withStart(start).start();
                 final List<SearchMatch> matches = result.getMatches();
                 for(SearchMatch match : matches) {
-                    list.add(listService.parse(workdir, match.getMetadata()));
+                    final Metadata metadata = match.getMetadata();
+                    final EnumSet<AbstractPath.Type> type;
+                    if(metadata instanceof FileMetadata) {
+                        type = EnumSet.of(Path.Type.file);
+                    }
+                    else if(metadata instanceof FolderMetadata) {
+                        type = EnumSet.of(Path.Type.directory);
+                    }
+                    else {
+                        log.warn(String.format("Skip file %s", metadata));
+                        return null;
+                    }
+                    list.add(new Path(metadata.getPathDisplay(), type, attributes.convert(metadata)));
                     listener.chunk(workdir, list);
                 }
                 start = result.getStart();
