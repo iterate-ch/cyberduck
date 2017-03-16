@@ -95,7 +95,7 @@ public class B2TouchFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2SingleUploadService(new B2WriteFeature(session))), new B2WriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2SingleUploadService(new B2WriteFeature(session))), new B2WriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new B2DeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
