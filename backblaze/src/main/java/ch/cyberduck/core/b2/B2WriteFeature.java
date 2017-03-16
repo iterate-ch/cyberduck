@@ -33,7 +33,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -55,30 +54,21 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             = new PathContainerService();
 
     private final B2Session session;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
-
-    private final Long threshold;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
             = new ThreadLocal<B2GetUploadUrlResponse>();
 
     public B2WriteFeature(final B2Session session) {
-        this(session, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public B2WriteFeature(final B2Session session, final Long threshold) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), threshold);
-    }
-
-    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes, final Long threshold) {
+    public B2WriteFeature(final B2Session session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;
-        this.threshold = threshold;
     }
 
     @Override
@@ -136,23 +126,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             }
         };
         return this.write(file, status, command);
-    }
-
-    protected boolean threshold(final Long length) {
-        if(length > threshold) {
-            if(!PreferencesFactory.get().getBoolean("b2.upload.largeobject")) {
-                // Disabled by user
-                if(length < PreferencesFactory.get().getLong("b2.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
-                    return false;
-                }
-            }
-            return true;
-        }
-        else {
-            // Below threshold
-            return false;
-        }
     }
 
     @Override
