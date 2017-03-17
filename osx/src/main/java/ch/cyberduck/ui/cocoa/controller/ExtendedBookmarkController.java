@@ -79,8 +79,8 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
         this.toggleOptionsButton = toggleOptionsButton;
         this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
-        this.connectmodePopup.setTarget(this.id());
-        this.connectmodePopup.setAction(Foundation.selector("toggleOptionsButtonClicked:"));
+        this.toggleOptionsButton.setTarget(this.id());
+        this.toggleOptionsButton.setAction(Foundation.selector("toggleOptionsButtonClicked:"));
     }
 
     @Action
