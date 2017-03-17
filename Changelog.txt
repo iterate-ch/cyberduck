@@ -7,6 +7,7 @@ https://cyberduck.io/
 - [Feature] Decrypt downloads from vault (Cyptomator)
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
+- [Feature] Search files fast using prefix (S3)
 
 5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Add "Open single connection" option for file transfers
