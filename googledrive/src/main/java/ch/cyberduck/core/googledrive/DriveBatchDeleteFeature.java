@@ -77,4 +77,9 @@ public class DriveBatchDeleteFeature implements Delete {
             throw e;
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

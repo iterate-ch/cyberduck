@@ -74,4 +74,9 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
             throw new DefaultExceptionMappingService().map(e);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }
