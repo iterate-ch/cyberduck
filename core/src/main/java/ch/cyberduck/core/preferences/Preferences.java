@@ -773,6 +773,7 @@ public abstract class Preferences {
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
