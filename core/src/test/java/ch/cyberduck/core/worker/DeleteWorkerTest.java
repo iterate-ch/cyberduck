@@ -45,7 +45,7 @@ public class DeleteWorkerTest {
 
                         @Override
                         public boolean isRecursive() {
-                            throw new UnsupportedOperationException();
+                            return false;
                         }
                     };
                 }
