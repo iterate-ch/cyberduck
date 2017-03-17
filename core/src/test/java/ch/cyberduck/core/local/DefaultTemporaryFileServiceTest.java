@@ -1,5 +1,7 @@
 package ch.cyberduck.core.local;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,8 +11,16 @@ import java.io.File;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DefaultTemporaryFileServiceTest {
+
+    @Test
+    public void testExists() throws Exception {
+        final Local f = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
+        assertFalse(f.exists());
+        assertFalse(f.getParent().exists());
+    }
 
     @Test
     public void testCreateFile() throws Exception {
