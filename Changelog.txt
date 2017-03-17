@@ -5,10 +5,10 @@ https://cyberduck.io/
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
 - [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
-
-5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
+
+5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Add "Open single connection" option for file transfers
 - [Bugfix] Failure enabling download distribution (CloudFront) (#9870)
 - [Bugfix] Authentication failure when using PAM (iRODS) (#9872)
