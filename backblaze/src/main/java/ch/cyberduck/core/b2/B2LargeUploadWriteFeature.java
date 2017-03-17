@@ -79,8 +79,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
         try {
             final String fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
                     containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
-            // Save file id for use in part referencing this
-            file.attributes().setVersionId(fileid);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Multipart upload started for %s with ID %s",
+                        file, fileid));
+            }
             final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, fileid, status);
             return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new SegmentingOutputStream(proxy,
                     PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
@@ -143,6 +145,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
+                final int segment = ++LargeUploadOutputStream.this.partNumber;
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Write segment %d for upload %s", segment, fileid));
+                }
                 completed.add(new AbstractRetryCallable<B2UploadPartResponse>() {
                     @Override
                     public B2UploadPartResponse call() throws BackgroundException {
@@ -152,7 +158,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                             final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
                                     .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
-                                return session.getClient().uploadLargeFilePart(fileid, ++partNumber, entity, checksum.hash);
+                                return session.getClient().uploadLargeFilePart(fileid, segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
                                 throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
