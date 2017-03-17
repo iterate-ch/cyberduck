@@ -70,30 +70,16 @@ public class S3ObjectListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            // Keys can be listed by prefix. By choosing a common prefix
-            // for the names of related keys and marking these keys with
-            // a special character that delimits hierarchy, you can use the list
-            // operation to select and browse keys hierarchically
-            String prefix = StringUtils.EMPTY;
-            if(!containerService.isContainer(directory)) {
-                // Restricts the response to only contain results that begin with the
-                // specified prefix. If you omit this optional argument, the value
-                // of Prefix for your query will be the empty string.
-                // In other words, the results will be not be restricted by prefix.
-                prefix = containerService.getKey(directory);
-                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                    prefix += Path.DELIMITER;
-                }
-            }
+            String prefix = this.createPrefix(directory);
             // If this optional, Unicode string parameter is included with your request,
             // then keys that contain the same string between the prefix and the first
             // occurrence of the delimiter will be rolled up into a single result
             // element in the CommonPrefixes collection. These rolled-up keys are
             // not returned elsewhere in the response.
             final AttributedList<Path> objects = new AttributedList<Path>();
-            final Path container = containerService.getContainer(directory);
-            objects.addAll(this.listObjects(container, directory, prefix, String.valueOf(Path.DELIMITER), listener));
+            objects.addAll(this.listObjects(directory, prefix, listener));
             final Versioning feature = session.getFeature(Versioning.class);
+            final Path container = containerService.getContainer(directory);
             if(feature != null && feature.getConfiguration(container).isEnabled()) {
                 String priorLastKey = null;
                 String priorLastVersionId = null;
@@ -120,10 +106,28 @@ public class S3ObjectListService implements ListService {
         }
     }
 
-    private AttributedList<Path> listObjects(final Path bucket, final Path parent,
-                                             final String prefix, final String delimiter,
-                                             final ListProgressListener listener)
+    protected String createPrefix(final Path directory) {
+        // Keys can be listed by prefix. By choosing a common prefix
+        // for the names of related keys and marking these keys with
+        // a special character that delimits hierarchy, you can use the list
+        // operation to select and browse keys hierarchically
+        String prefix = StringUtils.EMPTY;
+        if(!containerService.isContainer(directory)) {
+            // Restricts the response to only contain results that begin with the
+            // specified prefix. If you omit this optional argument, the value
+            // of Prefix for your query will be the empty string.
+            // In other words, the results will be not be restricted by prefix.
+            prefix = containerService.getKey(directory);
+            if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                prefix += Path.DELIMITER;
+            }
+        }
+        return prefix;
+    }
+
+    protected AttributedList<Path> listObjects(final Path parent, final String prefix, final ListProgressListener listener)
             throws IOException, ServiceException, BackgroundException {
+        final Path bucket = containerService.getContainer(parent);
         final AttributedList<Path> children = new AttributedList<Path>();
         // Null if listing is complete
         String priorLastKey = null;
@@ -131,7 +135,7 @@ public class S3ObjectListService implements ListService {
             // Read directory listing in chunks. List results are always returned
             // in lexicographic (alphabetical) order.
             final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, String.valueOf(Path.DELIMITER),
                     preferences.getInteger("s3.listing.chunksize"), priorLastKey);
 
             final StorageObject[] objects = chunk.getObjects();
