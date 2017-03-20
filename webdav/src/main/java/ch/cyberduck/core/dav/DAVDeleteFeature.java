@@ -65,4 +65,9 @@ public class DAVDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }
