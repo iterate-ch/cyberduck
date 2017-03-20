@@ -46,6 +46,11 @@ public class VaultRegistrySearchFeature implements Search {
     }
 
     @Override
+    public boolean isRecursive() {
+        return proxy.isRecursive();
+    }
+
+    @Override
     public Search withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
