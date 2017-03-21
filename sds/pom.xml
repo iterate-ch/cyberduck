@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>ch.cyberduck</groupId>
+        <version>6.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>sds</artifactId>
+    <properties>
+        <swagger-annotations-version>1.5.8</swagger-annotations-version>
+        <jersey-version>2.25.1</jersey-version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger-annotations-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>test</artifactId>
+            <type>pom</type>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <!-- add support for Apache HTTP client -->
+        <dependency>
+            <groupId>org.glassfish.jersey.connectors</groupId>
+            <artifactId>jersey-apache-connector</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>${jersey-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.brsanthu</groupId>
+            <artifactId>migbase64</artifactId>
+            <version>2.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArguments combine.self="override"/>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>codegen</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-codegen-maven-plugin</artifactId>
+                        <version>2.2.2</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>https://sds.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
+                                    <language>java</language>
+                                    <output>${project.basedir}</output>
+                                    <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
+                                    <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
+                                    <generateSupportingFiles>false</generateSupportingFiles>
+                                    <generateApiDocumentation>false</generateApiDocumentation>
+                                    <configOptions>
+                                        <sourceFolder>src/main/java</sourceFolder>
+                                        <library>jersey2</library>
+                                    </configOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
