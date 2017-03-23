@@ -36,6 +36,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -300,7 +301,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         if(isCanceled()) {
                             throw new ConnectionCanceledException(e);
                         }
-                        if(this.retry(e, progress, parent)) {
+                        if(this.retry(e, progress, new TransferBackgroundActionState(parent))) {
                             // Retry immediately
                             return call();
                         }
@@ -407,7 +408,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             if(AbstractTransferWorker.this.isCanceled()) {
                                 throw new ConnectionCanceledException(e);
                             }
-                            if(this.retry(e, progress, segment)) {
+                            if(this.retry(e, progress, new TransferBackgroundActionState(segment))) {
                                 // Retry immediately
                                 return call();
                             }

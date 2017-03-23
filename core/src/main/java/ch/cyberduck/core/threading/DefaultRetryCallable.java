@@ -15,17 +15,25 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-
-import java.util.concurrent.Callable;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
 
     private final BackgroundExceptionCallable<T> delegate;
     private final ProgressListener listener;
     private final BackgroundActionState cancel;
+
+    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final TransferStatus status) {
+        this(delegate, new TransferBackgroundActionState(status));
+    }
+
+    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final BackgroundActionState cancel) {
+        this(delegate, new DisabledProgressListener(), cancel);
+    }
 
     public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
         this.delegate = delegate;
@@ -43,14 +51,9 @@ public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
                 if(!this.retry(e, listener, cancel)) {
                     throw e;
                 }
-                // Continue
+                // Try again
             }
         }
         throw new ConnectionCanceledException();
-    }
-
-    public static abstract class BackgroundExceptionCallable<T> implements Callable<T> {
-        @Override
-        public abstract T call() throws BackgroundException;
     }
 }

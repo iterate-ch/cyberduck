@@ -95,7 +95,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public T call() throws BackgroundException {
         try {
-            return new DefaultRetryCallable<T>(new DefaultRetryCallable.BackgroundExceptionCallable<T>() {
+            return new DefaultRetryCallable<T>(new BackgroundExceptionCallable<T>() {
                 @Override
                 public T call() throws BackgroundException {
                     // Reset status
