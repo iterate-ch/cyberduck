@@ -37,7 +37,9 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
+import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -52,6 +54,7 @@ import java.util.List;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
+import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPartResponse>> {
@@ -76,28 +79,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
 
     @Override
     public StatusOutputStream<List<B2UploadPartResponse>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final String fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                    containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Multipart upload started for %s with ID %s",
-                        file, fileid));
+        final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
+        return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new SegmentingOutputStream(proxy,
+                PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
+            @Override
+            public List<B2UploadPartResponse> getStatus() throws BackgroundException {
+                return proxy.getCompleted();
             }
-            final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, fileid, status);
-            return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new SegmentingOutputStream(proxy,
-                    PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
-                @Override
-                public List<B2UploadPartResponse> getStatus() throws BackgroundException {
-                    return proxy.getCompleted();
-                }
-            };
-        }
-        catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(session).map("Upload {0} failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
+        };
     }
 
     @Override
@@ -127,13 +116,13 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
     private final class LargeUploadOutputStream extends OutputStream {
         final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
         private final Path file;
-        private final String fileid;
         private final TransferStatus status;
+
+        private String fileid;
         private int partNumber;
 
-        public LargeUploadOutputStream(final Path file, final String fileid, final TransferStatus status) {
+        public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
-            this.fileid = fileid;
             this.status = status;
         }
 
@@ -145,14 +134,30 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                final int segment = ++LargeUploadOutputStream.this.partNumber;
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Write segment %d for upload %s", segment, fileid));
+                if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
+                    // Write single upload
+                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                    final Checksum checksum = status.getChecksum();
+                    session.getClient().uploadFile(uploadUrl,
+                            file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
+                            new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
+                            status.getMime(), status.getMetadata());
                 }
-                completed.add(new AbstractRetryCallable<B2UploadPartResponse>() {
-                    @Override
-                    public B2UploadPartResponse call() throws BackgroundException {
-                        try {
+                else {
+                    if(0 == partNumber) {
+                        fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                                containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Multipart upload started for %s with ID %s", file, fileid));
+                        }
+                    }
+                    final int segment = ++partNumber;
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Write segment %d for upload %s", segment, fileid));
+                    }
+                    completed.add(new DefaultRetryCallable<B2UploadPartResponse>(new BackgroundExceptionCallable<B2UploadPartResponse>() {
+                        @Override
+                        public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                             final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
@@ -167,25 +172,23 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                         }
-                        catch(BackgroundException e) {
-                            if(this.retry(e, new DisabledProgressListener(), status)) {
-                                return this.call();
-                            }
-                            else {
-                                throw e;
-                            }
-                        }
-                    }
-                }.call());
+                    }, new DisabledProgressListener(), new TransferBackgroundActionState(status)).call());
+                }
             }
-            catch(Exception e) {
+            catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
+            }
+            catch(B2ApiException e) {
+                throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
             }
         }
 
         @Override
         public void close() throws IOException {
             try {
+                if(completed.isEmpty()) {
+                    return;
+                }
                 completed.sort(new Comparator<B2UploadPartResponse>() {
                     @Override
                     public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
