@@ -65,4 +65,9 @@ public class CryptoDeleteFeature implements Delete {
         }
         delegate.delete(encrypted, prompt, callback);
     }
+
+    @Override
+    public boolean isRecursive() {
+        return delegate.isRecursive();
+    }
 }

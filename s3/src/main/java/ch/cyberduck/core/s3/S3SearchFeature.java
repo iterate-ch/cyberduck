@@ -1,4 +1,4 @@
-package ch.cyberduck.core.googledrive;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -17,27 +17,42 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
-public class DriveSearchFeature implements Search {
-    private DriveSession session;
+import org.jets3t.service.ServiceException;
 
-    public DriveSearchFeature(final DriveSession session) {
+import java.io.IOException;
+
+public class S3SearchFeature implements Search {
+
+    private final S3Session session;
+
+    public S3SearchFeature(final S3Session session) {
         this.session = session;
     }
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
-        return new DriveSearchListService(session, regex.toPattern().pattern()).list(workdir, listener);
+        final S3ObjectListService list = new S3ObjectListService(session);
+        try {
+            return list.listObjects(workdir, String.format("%s%s", list.createPrefix(workdir), regex.toPattern().pattern()), listener);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
+        }
+        catch(ServiceException e) {
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
+        }
     }
 
     @Override
     public boolean isRecursive() {
-        return true;
+        return false;
     }
 
     @Override

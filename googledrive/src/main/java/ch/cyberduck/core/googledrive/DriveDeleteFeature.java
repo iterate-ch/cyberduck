@@ -46,4 +46,9 @@ public class DriveDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

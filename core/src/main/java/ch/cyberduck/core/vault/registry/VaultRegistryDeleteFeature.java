@@ -60,4 +60,9 @@ public class VaultRegistryDeleteFeature implements Delete {
             feature.delete(entry.getValue(), prompt, callback);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return proxy.isRecursive();
+    }
 }

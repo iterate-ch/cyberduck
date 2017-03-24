@@ -43,6 +43,11 @@ public class CryptoSearchFeature implements Search {
     }
 
     @Override
+    public boolean isRecursive() {
+        return delegate.isRecursive();
+    }
+
+    @Override
     public Search withCache(final Cache<Path> cache) {
         delegate.withCache(new CryptoPathCache(session, cache, vault));
         return this;

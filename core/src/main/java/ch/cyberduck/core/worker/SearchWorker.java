@@ -59,12 +59,14 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         }
         // Get filtered list from search
         final AttributedList<Path> list = search.search(workdir, new RecursiveSearchFilter(), new ActionListProgressListener(this, listener));
-        for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
-            final Path file = iter.next();
-            if(file.isDirectory()) {
-                if(this.search(search, file).isEmpty()) {
-                    if(list.attributes().addHidden(file)) {
-                        iter.remove();
+        if(!search.isRecursive()) {
+            for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
+                final Path file = iter.next();
+                if(file.isDirectory()) {
+                    if(this.search(search, file).isEmpty()) {
+                        if(list.attributes().addHidden(file)) {
+                            iter.remove();
+                        }
                     }
                 }
             }

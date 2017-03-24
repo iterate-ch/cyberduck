@@ -70,4 +70,9 @@ public class IRODSDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

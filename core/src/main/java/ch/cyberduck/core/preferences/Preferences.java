@@ -601,6 +601,7 @@ public abstract class Preferences {
         defaults.put("ftp.socket.buffer", String.valueOf(0));
 
         defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
+        defaults.put("ftp.parser.reply.strict", String.valueOf(false));
 
         /*
           Send LIST -a
