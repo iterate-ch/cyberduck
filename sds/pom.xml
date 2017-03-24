@@ -129,7 +129,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
-                                    <inputSpec>https://sds.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
+                                    <inputSpec>https://duck.ssp-europe.eu/swagger-proxy/api_v4/</inputSpec>
                                     <language>java</language>
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
