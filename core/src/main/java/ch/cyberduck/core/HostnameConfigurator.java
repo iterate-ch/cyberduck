@@ -33,4 +33,6 @@ public interface HostnameConfigurator {
      * @return -1 to use default port
      */
     int getPort(String alias);
+
+    void reload();
 }

@@ -71,6 +71,11 @@ public class HostTest {
                                public int getPort(String alias) {
                                    return 444;
                                }
+
+            @Override
+            public void reload() {
+                //
+            }
                            }, new CredentialsConfigurator() {
                                @Override
                                public Credentials configure(Host host) {
@@ -78,6 +83,11 @@ public class HostTest {
                                    c.setUsername("uu");
                                    return c;
                                }
+
+            @Override
+            public void reload() {
+                //
+            }
                            }
         );
         assertEquals(444, bookmark.getPort());
