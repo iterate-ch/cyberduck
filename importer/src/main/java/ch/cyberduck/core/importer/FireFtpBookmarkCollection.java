@@ -18,10 +18,10 @@ package ch.cyberduck.core.importer;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -67,13 +67,13 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      */
     @Override
     protected void parse(final Local folder) throws AccessDeniedException {
-        for(Local settings : folder.list().filter(new Filter<Local>() {
+        for(Local settings : folder.list().filter(new NullFilter<Local>() {
             @Override
             public boolean accept(Local file) {
                 return file.isDirectory();
             }
         })) {
-            for(Local child : settings.list().filter(new Filter<Local>() {
+            for(Local child : settings.list().filter(new NullFilter<Local>() {
                 @Override
                 public boolean accept(Local file) {
                     if(file.isFile()) {

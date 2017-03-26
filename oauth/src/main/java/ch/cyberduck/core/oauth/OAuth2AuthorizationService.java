@@ -34,6 +34,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
@@ -164,7 +165,8 @@ public class OAuth2AuthorizationService {
             }
             else {
                 prompt.prompt(bookmark, token,
-                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
+                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                        LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
                         new LoginOptions().keychain(false).user(false)
                 );
             }
@@ -312,18 +314,18 @@ public class OAuth2AuthorizationService {
             if(failure instanceof HttpResponseException) {
                 final HttpResponseException response = (HttpResponseException) failure;
                 this.append(buffer, response.getStatusMessage());
-                if(response.getStatusCode() == 401) {
+                if(response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                     // Invalid Credentials. Refresh the access token using the long-lived refresh token
                     return new LoginFailureException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 400) {
+                if(response.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     // Invalid Grant
                     return new LoginFailureException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 403) {
+                if(response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
                     return new AccessDeniedException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 404) {
+                if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                     return new NotfoundException(buffer.toString(), failure);
                 }
             }

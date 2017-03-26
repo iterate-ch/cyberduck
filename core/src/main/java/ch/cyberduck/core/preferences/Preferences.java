@@ -427,8 +427,8 @@ public abstract class Preferences {
           Default transfer connection handling
          */
         defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
-                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.browser.name()),
+                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
@@ -601,6 +601,7 @@ public abstract class Preferences {
         defaults.put("ftp.socket.buffer", String.valueOf(0));
 
         defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
+        defaults.put("ftp.parser.reply.strict", String.valueOf(false));
 
         /*
           Send LIST -a
@@ -1027,6 +1028,7 @@ public abstract class Preferences {
 
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
 
+        defaults.put("threading.pool.size.max", String.valueOf(20));
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");

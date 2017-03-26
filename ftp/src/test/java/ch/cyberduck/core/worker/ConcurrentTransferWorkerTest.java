@@ -40,7 +40,6 @@ import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -108,16 +107,15 @@ public class ConcurrentTransferWorkerTest {
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
-        final int files = 5;
-        final int connections = 7;
+        final int files = 20;
+        final int connections = 2;
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Local file = new Local(File.createTempFile(UUID.randomUUID().toString(), "t").getAbsolutePath());
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
         }
-        final Host host = new Host(new FTPProtocol(), "localhost", PORT_NUMBER, new Credentials("test", "test"));
+        final Host host = new Host(protocol, "localhost", PORT_NUMBER, new Credentials("test", "test"));
         final Transfer transfer = new UploadTransfer(host, list);
         final DefaultSessionPool pool = new DefaultSessionPool(
                 new LoginConnectionService(new DisabledLoginCallback() {
@@ -146,7 +144,9 @@ public class ConcurrentTransferWorkerTest {
         );
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run(s));
+        final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
+        assertTrue(worker.run(session, session));
+        worker.release(session, ConcurrentTransferWorker.Connection.source);
         worker.release(s, ConcurrentTransferWorker.Connection.source);
         assertEquals(0L, transfer.getTransferred(), 0L);
     }

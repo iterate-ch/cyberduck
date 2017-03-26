@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import static ch.cyberduck.core.threading.ThreadPool.DEFAULT_THREAD_NAME_PREFIX;
+
 public class ThreadPoolFactory extends Factory<ThreadPool> {
     private static final Logger log = Logger.getLogger(ThreadPoolFactory.class);
 
@@ -32,20 +34,25 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         super("factory.threadpool.class");
     }
 
-    protected ThreadPool create(final Thread.UncaughtExceptionHandler handler) {
+    /**
+     * @param size    Maximum pool size
+     * @param handler Uncaught thread exception handler
+     */
+    protected ThreadPool create(final String prefix, final Integer size, final Thread.UncaughtExceptionHandler handler) {
         final String clazz = PreferencesFactory.get().getProperty("factory.threadpool.class");
         if(null == clazz) {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
             final Class<ThreadPool> name = (Class<ThreadPool>) Class.forName(clazz);
-            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name, handler.getClass());
+            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
+                    prefix.getClass(), size.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
                 return name.newInstance();
             }
-            return constructor.newInstance(handler);
+            return constructor.newInstance(prefix, size, handler);
         }
         catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
@@ -53,10 +60,26 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     public static ThreadPool get() {
-        return new ThreadPoolFactory().create();
+        return get(new LoggingUncaughtExceptionHandler());
     }
 
     public static ThreadPool get(final Thread.UncaughtExceptionHandler handler) {
-        return new ThreadPoolFactory().create(handler);
+        return get(DEFAULT_THREAD_NAME_PREFIX, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
+    }
+
+    public static ThreadPool get(final int size) {
+        return get(DEFAULT_THREAD_NAME_PREFIX, size);
+    }
+
+    public static ThreadPool get(final int size, final Thread.UncaughtExceptionHandler handler) {
+        return get(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, size, handler);
+    }
+
+    public static ThreadPool get(final String prefix, final int size) {
+        return get(prefix, size, new LoggingUncaughtExceptionHandler());
+    }
+
+    public static ThreadPool get(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
+        return new ThreadPoolFactory().create(prefix, size, handler);
     }
 }

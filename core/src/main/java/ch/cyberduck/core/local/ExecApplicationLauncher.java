@@ -33,7 +33,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
     private final Runtime runtime = Runtime.getRuntime();
 
     private final ThreadPool pool
-            = new DefaultThreadPool(1, "process");
+            = new DefaultThreadPool("process", 1);
 
     @Override
     public boolean open(final Local file) {

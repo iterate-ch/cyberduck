@@ -150,12 +150,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     }
 
     @Override
-    public Object lock() {
-        // No synchronization with other tasks by default
-        return null;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("AbstractBackgroundAction{");
         sb.append("state=").append(state);

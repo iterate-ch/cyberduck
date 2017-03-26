@@ -68,11 +68,6 @@ public interface BackgroundAction<T> extends BackgroundActionState {
     String getName();
 
     /**
-     * @return The synchronization object. Null if no ordering is required.
-     */
-    Object lock();
-
-    /**
      * @param listener A listener to be notified
      * @see ch.cyberduck.core.threading.BackgroundActionListener
      */

@@ -87,11 +87,14 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.add(file);
         }
         else if(file.isDirectory()) {
-            for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
-                if(this.isCanceled()) {
-                    throw new ConnectionCanceledException();
+            final Delete feature = session.getFeature(Delete.class);
+            if(!feature.isRecursive()) {
+                for(Path child : session.getFeature(ListService.class).list(file, new ActionListProgressListener(this, listener)).filter(filter)) {
+                    if(this.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    recursive.addAll(this.compile(session, child));
                 }
-                recursive.addAll(this.compile(session, child));
             }
             // Add parent after children
             recursive.add(file);

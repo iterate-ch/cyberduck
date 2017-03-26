@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Search;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
 
@@ -58,12 +59,14 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
         }
         // Get filtered list from search
         final AttributedList<Path> list = search.search(workdir, new RecursiveSearchFilter(), new ActionListProgressListener(this, listener));
-        for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
-            final Path file = iter.next();
-            if(file.isDirectory()) {
-                if(this.search(search, file).isEmpty()) {
-                    if(list.attributes().addHidden(file)) {
-                        iter.remove();
+        if(!search.isRecursive()) {
+            for(Iterator<Path> iter = list.iterator(); iter.hasNext(); ) {
+                final Path file = iter.next();
+                if(file.isDirectory()) {
+                    if(this.search(search, file).isEmpty()) {
+                        if(list.attributes().addHidden(file)) {
+                            iter.remove();
+                        }
                     }
                 }
             }
@@ -108,6 +111,11 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
                 return true;
             }
             return filter.accept(file);
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return filter.toPattern();
         }
 
         @Override

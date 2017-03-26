@@ -53,6 +53,7 @@ using ch.cyberduck.core.spectra;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -798,6 +799,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 ApplicationShouldTerminateAfterDonationPrompt();
             }
+            DefaultBackgroundExecutor.get().shutdown();
             System.Windows.Forms.Application.Exit();
         }
 

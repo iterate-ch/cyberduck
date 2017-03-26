@@ -51,7 +51,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new DefaultThreadPool(1, "watcher");
+        this.pool = new DefaultThreadPool("watcher", 1);
     }
 
     public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {

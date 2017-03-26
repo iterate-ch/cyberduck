@@ -46,4 +46,9 @@ public class DropboxDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
 }

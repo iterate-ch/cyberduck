@@ -49,8 +49,9 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Session<C> implements ListService, TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
@@ -68,7 +69,7 @@ public abstract class Session<C> implements ListService, TranscriptListener {
     protected C client;
     protected VaultRegistry registry = VaultRegistry.DISABLED;
 
-    private Set<TranscriptListener> listeners = new HashSet<>();
+    private Set<TranscriptListener> listeners = Collections.newSetFromMap(new ConcurrentHashMap<TranscriptListener, Boolean>());
 
     /**
      * Connection attempt being made.

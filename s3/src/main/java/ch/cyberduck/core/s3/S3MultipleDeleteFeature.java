@@ -112,6 +112,11 @@ public class S3MultipleDeleteFeature implements Delete {
         }
     }
 
+    @Override
+    public boolean isRecursive() {
+        return false;
+    }
+
     /**
      * @param container Bucket
      * @param keys      Key and version ID for versioned object or null

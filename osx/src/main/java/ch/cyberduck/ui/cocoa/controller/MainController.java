@@ -61,6 +61,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
@@ -586,7 +587,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 null
                         );
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                        if(alert.runModal() == SheetCallback.DEFAULT_OPTION) {
+                        if(new AlertSheetReturnCodeMapper().getOption(alert.runModal()) == SheetCallback.DEFAULT_OPTION) {
                             for(BrowserController c : MainController.getBrowsers()) {
                                 c.removeDonateWindowTitle();
                             }
@@ -1009,7 +1010,7 @@ public class MainController extends BundleController implements NSApplication.De
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                int choice = alert.runModal(); //alternate
+                int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal());
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
                     preferences.setProperty("defaulthandler.reminder", false);
@@ -1101,7 +1102,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                    int choice = alert.runModal(); //alternate
+                    int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal()); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
                         preferences.setProperty(t.getConfiguration(), true);
@@ -1202,7 +1203,7 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
-                    int choice = alert.runModal(); //alternate
+                    int choice = new AlertSheetReturnCodeMapper().getOption(alert.runModal());
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
                         preferences.setProperty("browser.disconnect.confirm", false);
@@ -1295,6 +1296,7 @@ public class MainController extends BundleController implements NSApplication.De
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
         preferences.save();
+        DefaultBackgroundExecutor.get().shutdown();
     }
 
     public void applicationWillRestartAfterUpdate(ID updater) {
