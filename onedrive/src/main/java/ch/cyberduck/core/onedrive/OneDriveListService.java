@@ -72,24 +72,19 @@ public class OneDriveListService implements ListService {
                 else {
                     folder = new OneDriveFolder(session.getClient(), drive, containerService.getKey(directory));
                 }
-                try {
-                    Iterator<OneDriveItem.Metadata> iterator = folder.iterator();
-                    while(iterator.hasNext()) {
-                        final OneDriveItem.Metadata metadata;
-                        try {
-                            metadata = iterator.next();
-                        }
-                        catch(OneDriveRuntimeException e) {
-                            log.warn(e);
-                            continue;
-                        }
-                        final PathAttributes attributes = new PathAttributes();
-                        children.add(new Path(directory, metadata.getName(),
-                                metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                Iterator<OneDriveItem.Metadata> iterator = folder.iterator();
+                while(iterator.hasNext()) {
+                    final OneDriveItem.Metadata metadata;
+                    try {
+                        metadata = iterator.next();
                     }
-                }
-                catch(OneDriveRuntimeException e) {
-                    throw new OneDriveExceptionMappingService().map(e.getCause());
+                    catch(OneDriveRuntimeException e) {
+                        log.warn(e);
+                        continue;
+                    }
+                    final PathAttributes attributes = new PathAttributes();
+                    children.add(new Path(directory, metadata.getName(),
+                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
                 }
             }
         }
