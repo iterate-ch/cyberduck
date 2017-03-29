@@ -188,16 +188,7 @@ public class HttpConnectionPoolBuilder {
                 .setTcpNoDelay(true)
                 .setSoTimeout(timeout)
                 .build());
-        builder.setDefaultRequestConfig(RequestConfig.custom()
-                .setRedirectsEnabled(true)
-                // Disable use of Expect: Continue by default for all methods
-                .setExpectContinueEnabled(false)
-                .setAuthenticationEnabled(true)
-                .setConnectTimeout(timeout)
-                // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-                .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
-                .setSocketTimeout(timeout)
-                .build());
+        builder.setDefaultRequestConfig(this.createRequestConfig(timeout));
         final String encoding;
         if(null == host.getEncoding()) {
             encoding = preferences.getProperty("browser.charset.encoding");
@@ -222,7 +213,7 @@ public class HttpConnectionPoolBuilder {
         builder.setRequestExecutor(new LoggingHttpRequestExecutor(listener));
         // Always register HTTP for possible use with proxy. Contains a number of protocol properties such as the
         // default port and the socket factory to be used to create the java.net.Socket instances for the given protocol
-        builder.setConnectionManager(this.pool(this.registry().build()));
+        builder.setConnectionManager(this.createConnectionManager(this.createRegistry()));
         builder.setDefaultAuthSchemeRegistry(RegistryBuilder.<AuthSchemeProvider>create()
                 .register(AuthSchemes.BASIC, new BasicSchemeFactory(
                         Charset.forName(preferences.getProperty("http.credentials.charset"))))
@@ -234,13 +225,26 @@ public class HttpConnectionPoolBuilder {
         return builder;
     }
 
-    protected RegistryBuilder<ConnectionSocketFactory> registry() {
-        return RegistryBuilder.<ConnectionSocketFactory>create()
-                .register(Scheme.http.toString(), socketFactory)
-                .register(Scheme.https.toString(), sslSocketFactory);
+    public RequestConfig createRequestConfig(final int timeout) {
+        return RequestConfig.custom()
+                .setRedirectsEnabled(true)
+                // Disable use of Expect: Continue by default for all methods
+                .setExpectContinueEnabled(false)
+                .setAuthenticationEnabled(true)
+                .setConnectTimeout(timeout)
+                // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+                .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
+                .setSocketTimeout(timeout)
+                .build();
     }
 
-    protected PoolingHttpClientConnectionManager pool(final Registry<ConnectionSocketFactory> registry) {
+    public Registry<ConnectionSocketFactory> createRegistry() {
+        return RegistryBuilder.<ConnectionSocketFactory>create()
+                .register(Scheme.http.toString(), socketFactory)
+                .register(Scheme.https.toString(), sslSocketFactory).build();
+    }
+
+    public PoolingHttpClientConnectionManager createConnectionManager(final Registry<ConnectionSocketFactory> registry) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Setup connection pool with registry %s", registry));
         }
