@@ -40,6 +40,10 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
         final int statusCode = failure.getStatusCode();
+        return this.map(failure, buffer, statusCode);
+    }
+
+    public BackgroundException map(final Throwable failure, final StringBuilder buffer, final int statusCode) {
         switch(statusCode) {
             case HttpStatus.SC_UNAUTHORIZED:
                 return new LoginFailureException(buffer.toString(), failure);
@@ -59,6 +63,7 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), failure);
             case HttpStatus.SC_BAD_REQUEST:
+            case HttpStatus.SC_REQUEST_URI_TOO_LONG:
                 return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
                 return new InteroperabilityException(buffer.toString(), failure);
@@ -73,7 +78,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case 429:
                 // Rate limiting
                 return new RetriableAccessDeniedException(buffer.toString(), failure);
+            default:
+                return new InteroperabilityException(buffer.toString(), failure);
         }
-        return this.wrap(failure, buffer);
     }
 }
