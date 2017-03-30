@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -121,6 +122,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         }
         if(type == Upload.class) {
             return (T) new B2ThresholdUploadService(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new B2LargeUploadWriteFeature(this);
         }
         if(type == Write.class) {
             return (T) new B2WriteFeature(this);

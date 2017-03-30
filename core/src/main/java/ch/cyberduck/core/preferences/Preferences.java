@@ -769,11 +769,12 @@ public abstract class Preferences {
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        defaults.put("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 

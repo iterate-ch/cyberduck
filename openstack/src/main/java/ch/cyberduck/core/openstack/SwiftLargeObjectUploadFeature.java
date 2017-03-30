@@ -21,7 +21,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -33,7 +32,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -198,40 +198,30 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
-        return pool.execute(new AbstractRetryCallable<StorageObject>() {
+        return pool.execute(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset);
-                try {
-                    if(overall.isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    return SwiftLargeObjectUploadFeature.super.upload(
-                            segment, local, throttle, listener, status, overall, new StreamProgress() {
-                                @Override
-                                public void progress(final long bytes) {
-                                    status.progress(bytes);
-                                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                                    overall.progress(bytes);
-                                }
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
+                return SwiftLargeObjectUploadFeature.super.upload(
+                        segment, local, throttle, listener, status, overall, new StreamProgress() {
+                            @Override
+                            public void progress(final long bytes) {
+                                status.progress(bytes);
+                                // Discard sent bytes in overall progress if there is an error reply for segment.
+                                overall.progress(bytes);
+                            }
 
-                                @Override
-                                public void setComplete() {
-                                    status.setComplete();
-                                }
-                            }, callback);
-                }
-                catch(BackgroundException e) {
-                    if(this.retry(e, new DisabledProgressListener(), overall)) {
-                        return this.call();
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                            @Override
+                            public void setComplete() {
+                                status.setComplete();
+                            }
+                        }, callback);
             }
-        });
+        }, overall));
     }
 }
