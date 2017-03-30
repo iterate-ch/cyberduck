@@ -31,4 +31,9 @@ public class SDSProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.https;
     }
+
+    @Override
+    public String getContext() {
+        return "/api/v4";
+    }
 }
