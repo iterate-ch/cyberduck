@@ -61,6 +61,7 @@ public class SDSSession extends HttpSession<ApiClient> {
     @Override
     protected ApiClient connect(final HostKeyCallback key) throws BackgroundException {
         final ApiClient client = new ApiClient();
+        client.setBasePath(String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext()));
         final ClientConfig configuration = new ClientConfig();
         configuration.property(ApacheClientProperties.CONNECTION_MANAGER, builder.createConnectionManager(builder.createRegistry()));
         configuration.property(ApacheClientProperties.REQUEST_CONFIG, builder.createRequestConfig(
