@@ -36,4 +36,9 @@ public class SDSProtocol extends AbstractProtocol {
     public String getContext() {
         return "/api/v4";
     }
+
+    @Override
+    public String getAuthorization() {
+        return "sql";
+    }
 }

@@ -78,7 +78,7 @@ public class SDSSession extends HttpSession<ApiClient> {
         try {
             // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
             final LoginResponse response = new AuthApi(client).login(new LoginRequest()
-                    .authType("sql")
+                    .authType(host.getProtocol().getAuthorization())
                     .language("en")
                     .login(host.getCredentials().getUsername())
                     .password(host.getCredentials().getPassword())
