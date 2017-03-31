@@ -19,6 +19,7 @@ import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -30,27 +31,35 @@ import ch.cyberduck.core.vault.VaultRegistryFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
+
 public class SessionPoolFactory {
     private static final Logger log = Logger.getLogger(SessionPoolFactory.class);
+
+    private static final Preferences preferences = PreferencesFactory.get();
 
     private SessionPoolFactory() {
         //
     }
 
     public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark) {
+        return create(controller, cache, bookmark, Usage.transfer);
+    }
+
+    public static SessionPool create(final Controller controller, final PathCache cache, final Host bookmark, final Usage... usage) {
         final HostPasswordStore keychain = PasswordStoreFactory.get();
         final LoginConnectionService connect = new LoginConnectionService(LoginCallbackFactory.get(controller),
                 HostKeyCallbackFactory.get(controller, bookmark.getProtocol()), keychain, controller);
         return create(connect, controller, cache, bookmark,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
                 new KeychainX509KeyManager(bookmark),
-                VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)));
+                VaultRegistryFactory.create(keychain, PasswordCallbackFactory.get(controller)), usage);
     }
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
                                      final PathCache cache, final Host bookmark,
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
-                                     final VaultRegistry vault) {
+                                     final VaultRegistry vault, final Usage... usage) {
         switch(bookmark.getProtocol().getType()) {
             case s3:
             case googlestorage:
@@ -65,14 +74,18 @@ public class SessionPoolFactory {
             case ftp:
             case irods:
                 // Stateful
+                if(Arrays.asList(usage).contains(Usage.browser)) {
+                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, vault);
+                }
+                // Break through to default pool
             default:
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
                 return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, vault, cache, transcript, bookmark)
-                        .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                        .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                        .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+                        .withMinIdle(preferences.getInteger("connection.pool.minidle"))
+                        .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))
+                        .withMaxTotal(preferences.getInteger("connection.pool.maxtotal"));
         }
     }
 
@@ -102,5 +115,10 @@ public class SessionPoolFactory {
         }
         final Session<?> session = SessionFactory.create(bookmark, trust, key);
         return new StatefulSessionPool(connect, session, cache, transcript, vault);
+    }
+
+    public enum Usage {
+        transfer,
+        browser
     }
 }

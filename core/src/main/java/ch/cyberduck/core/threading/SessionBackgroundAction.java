@@ -49,9 +49,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     private final AlertCallback alert;
     private final ProgressListener progressListener;
 
-    private final FailureDiagnostics<BackgroundException> diagnostics
-            = new DefaultFailureDiagnostics();
-
     protected final SessionPool pool;
 
     public SessionBackgroundAction(final SessionPool pool,
@@ -98,7 +95,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     @Override
     public T call() throws BackgroundException {
         try {
-            return new DefaultRetryCallable<T>(new DefaultRetryCallable.BackgroundExceptionCallable<T>() {
+            return new DefaultRetryCallable<T>(new BackgroundExceptionCallable<T>() {
                 @Override
                 public T call() throws BackgroundException {
                     // Reset status

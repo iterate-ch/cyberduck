@@ -213,6 +213,22 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
+    public void post(final Session<?> source, final Session<?> destination, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Bulk download = source.getFeature(Bulk.class);
+        {
+            download.post(Type.download, files, callback);
+        }
+        final Bulk upload = destination.getFeature(Bulk.class);
+        {
+            final Map<Path, TransferStatus> targets = new HashMap<>();
+            for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+                targets.put(this.mapping.get(entry.getKey()), entry.getValue());
+            }
+            upload.post(Type.upload, targets, callback);
+        }
+    }
+
+    @Override
     public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback callback,

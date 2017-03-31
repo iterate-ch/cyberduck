@@ -39,8 +39,8 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
     private final Preferences preferences
             = PreferencesFactory.get();
 
-    private S3Session session;
-    private TransferAcceleration accelerationService;
+    private final S3Session session;
+    private final TransferAcceleration accelerationService;
 
     public S3BulkTransferAccelerationFeature(final S3Session session) {
         this(session, session.getFeature(TransferAcceleration.class));
@@ -53,32 +53,46 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
 
     @Override
     public Void pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Set<Path> buckets = new HashSet<>();
-        for(Path file : files.keySet()) {
-            buckets.add(new S3PathContainerService().getContainer(file));
-        }
-        for(Path bucket : buckets) {
-            try {
-                if(this.accelerate(bucket, callback)) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
-                    }
-                    accelerationService.configure(true, bucket);
-                }
-                else {
-                    log.warn(String.format("Transfer acceleration disabled for %s", bucket));
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
-            }
-        }
+        this.configure(files, callback, true);
         return null;
+    }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        this.configure(files, callback, false);
     }
 
     @Override
     public Bulk<Void> withDelete(final Delete delete) {
         return this;
+    }
+
+    private void configure(final Map<Path, TransferStatus> files, final ConnectionCallback callback, final boolean enabled) throws BackgroundException {
+        final Set<Path> buckets = new HashSet<>();
+        for(Path file : files.keySet()) {
+            buckets.add(new S3PathContainerService().getContainer(file));
+        }
+        for(Path bucket : buckets) {
+            if(enabled) {
+                try {
+                    if(this.accelerate(bucket, callback)) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Tunnel upload for file %s through accelerated endpoint %s", bucket, accelerationService));
+                        }
+                        accelerationService.configure(true, bucket);
+                    }
+                    else {
+                        log.warn(String.format("Transfer acceleration disabled for %s", bucket));
+                    }
+                }
+                catch(AccessDeniedException e) {
+                    log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
+                }
+            }
+            else {
+                accelerationService.configure(false, bucket);
+            }
+        }
     }
 
     private boolean accelerate(final Path file, final ConnectionCallback prompt) throws BackgroundException {

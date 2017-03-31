@@ -34,14 +34,18 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
+import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
@@ -80,6 +84,9 @@ public class OAuth2AuthorizationService {
             = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
+
+    private final Map<String, String> additionalParameters
+            = new HashMap<>();
 
     private Credential.AccessMethod method
             = BearerToken.authorizationHeaderAccessMethod();
@@ -136,8 +143,14 @@ public class OAuth2AuthorizationService {
                     authorizationServerUrl)
                     .setScopes(scopes)
                     .build();
+            final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
+            authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+            for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
+                authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
+            }
+
             // Direct the user to an authorization page to grant access to their protected data.
-            final String url = flow.newAuthorizationUrl().setRedirectUri(redirectUri).build();
+            final String url = authorizationCodeRequestUrl.build();
             if(!browser.open(url)) {
                 log.warn(String.format("Failed to launch web browser for %s", url));
             }
@@ -152,7 +165,8 @@ public class OAuth2AuthorizationService {
             }
             else {
                 prompt.prompt(bookmark, token,
-                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"), url,
+                        LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                        LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
                         new LoginOptions().keychain(false).user(false)
                 );
             }
@@ -245,6 +259,11 @@ public class OAuth2AuthorizationService {
         return this;
     }
 
+    public OAuth2AuthorizationService withParameter(final String key, final String value) {
+        additionalParameters.put(key, value);
+        return this;
+    }
+
     private static final class TokenCredentials extends Credentials {
         private final Host bookmark;
 
@@ -295,18 +314,18 @@ public class OAuth2AuthorizationService {
             if(failure instanceof HttpResponseException) {
                 final HttpResponseException response = (HttpResponseException) failure;
                 this.append(buffer, response.getStatusMessage());
-                if(response.getStatusCode() == 401) {
+                if(response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                     // Invalid Credentials. Refresh the access token using the long-lived refresh token
                     return new LoginFailureException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 400) {
+                if(response.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                     // Invalid Grant
                     return new LoginFailureException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 403) {
+                if(response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
                     return new AccessDeniedException(buffer.toString(), failure);
                 }
-                if(response.getStatusCode() == 404) {
+                if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                     return new NotfoundException(buffer.toString(), failure);
                 }
             }

@@ -2,7 +2,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -23,7 +22,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -146,49 +146,39 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new AbstractRetryCallable<MultipartPart>() {
+                completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
+                        final Map<String, String> parameters = new HashMap<String, String>();
+                        parameters.put("uploadId", multipart.getUploadId());
+                        parameters.put("partNumber", String.valueOf(++partNumber));
+                        final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
+                        switch(session.getSignatureVersion()) {
+                            case AWS4HMACSHA256:
+                                status.setChecksum(S3MultipartWriteFeature.this.checksum()
+                                        .compute(new ByteArrayInputStream(content, off, len), status)
+                                );
+                                break;
+                        }
+                        final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService())
+                                .getDetails(containerService.getKey(file), status);
                         try {
-                            final Map<String, String> parameters = new HashMap<String, String>();
-                            parameters.put("uploadId", multipart.getUploadId());
-                            parameters.put("partNumber", String.valueOf(++partNumber));
-                            final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
-                            switch(session.getSignatureVersion()) {
-                                case AWS4HMACSHA256:
-                                    status.setChecksum(S3MultipartWriteFeature.this.checksum()
-                                            .compute(new ByteArrayInputStream(content, off, len), status)
-                                    );
-                                    break;
-                            }
-                            final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService())
-                                    .getDetails(containerService.getKey(file), status);
-                            try {
-                                session.getClient().putObjectWithRequestEntityImpl(
-                                        containerService.getContainer(file).getName(), part,
-                                        new ByteArrayEntity(content, off, len), parameters);
-                            }
-                            catch(ServiceException e) {
-                                throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
-                            }
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
-                            }
-                            return new MultipartPart(partNumber,
-                                    null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                                    null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                                    part.getContentLength());
+                            session.getClient().putObjectWithRequestEntityImpl(
+                                    containerService.getContainer(file).getName(), part,
+                                    new ByteArrayEntity(content, off, len), parameters);
                         }
-                        catch(BackgroundException e) {
-                            if(this.retry(e, new DisabledProgressListener(), status)) {
-                                return this.call();
-                            }
-                            else {
-                                throw e;
-                            }
+                        catch(ServiceException e) {
+                            throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                         }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Saved object %s with checksum %s", file, part.getETag()));
+                        }
+                        return new MultipartPart(partNumber,
+                                null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                                null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                                part.getContentLength());
                     }
-                }.call());
+                }, status).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);

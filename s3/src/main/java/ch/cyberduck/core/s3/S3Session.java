@@ -387,6 +387,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }
         }
+        if(type == Search.class) {
+            return (T) new S3SearchFeature(this);
+        }
         return super._getFeature(type);
     }
 }

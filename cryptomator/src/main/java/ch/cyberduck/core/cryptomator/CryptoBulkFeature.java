@@ -71,4 +71,15 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     public Bulk<R> withDelete(final Delete delete) {
         return this;
     }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        final Map<Path, TransferStatus> encrypted = new HashMap<>(files.size());
+        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
+            final Path file = entry.getKey();
+            final TransferStatus status = entry.getValue();
+            encrypted.put(cryptomator.encrypt(session, file), status);
+        }
+        proxy.post(type, encrypted, callback);
+    }
 }

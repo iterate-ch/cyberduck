@@ -32,6 +32,7 @@ import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 
 public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
@@ -71,15 +72,19 @@ public class OneDriveListService implements ListService {
                 else {
                     folder = new OneDriveFolder(session.getClient(), drive, containerService.getKey(directory));
                 }
-                for(final OneDriveItem.Metadata metadata : folder) {
+                Iterator<OneDriveItem.Metadata> iterator = folder.iterator();
+                while(iterator.hasNext()) {
+                    final OneDriveItem.Metadata metadata;
                     try {
-                        final PathAttributes attributes = new PathAttributes();
-                        children.add(new Path(directory, metadata.getName(),
-                                metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                        metadata = iterator.next();
                     }
                     catch(OneDriveRuntimeException e) {
-                        throw new OneDriveExceptionMappingService().map(e.getCause());
+                        log.warn(e);
+                        continue;
                     }
+                    final PathAttributes attributes = new PathAttributes();
+                    children.add(new Path(directory, metadata.getName(),
+                            metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
                 }
             }
         }

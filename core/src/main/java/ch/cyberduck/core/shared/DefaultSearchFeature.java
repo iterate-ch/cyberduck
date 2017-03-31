@@ -52,6 +52,11 @@ public class DefaultSearchFeature implements Search {
     }
 
     @Override
+    public boolean isRecursive() {
+        return false;
+    }
+
+    @Override
     public Search withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;

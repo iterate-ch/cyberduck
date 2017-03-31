@@ -38,6 +38,7 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -189,6 +190,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == Touch.class) {
             return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
+        }
+        if(type == Search.class) {
+            return (T) new DropboxSearchFeature(this);
         }
         return super._getFeature(type);
     }

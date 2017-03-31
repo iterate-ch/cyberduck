@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 @Category(IntegrationTest.class)
 public class HubicSessionTest {
 
-    @Test(expected = LoginCanceledException.class)
+    @Test(expected = LoginFailureException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
         final HubicSession session = new HubicSession(new Host(new HubicProtocol(),
                 new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
@@ -65,9 +65,6 @@ public class HubicSessionTest {
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("hubiC (u@domain) OAuth2 Access Token")) {
                     return "invalid";
-                }
-                if(user.equals("hubiC (u@domain) OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("hubic.refreshtoken");
                 }
                 return null;
             }

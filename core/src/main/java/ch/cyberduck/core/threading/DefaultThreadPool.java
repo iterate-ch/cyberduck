@@ -20,52 +20,58 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultThreadPool<T> extends ExecutorServiceThreadPool<T> {
+public class DefaultThreadPool extends ExecutorServiceThreadPool {
 
-    /**
-     * With FIFO (first-in-first-out) ordered wait queue.
-     */
     public DefaultThreadPool() {
-        super(Executors.newSingleThreadExecutor(new NamedThreadFactory("background")));
-    }
-
-    public DefaultThreadPool(final Thread.UncaughtExceptionHandler handler) {
-        super(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                new NamedThreadFactory("background", handler)));
+        this(PreferencesFactory.get().getInteger("threading.pool.size.max"));
     }
 
     /**
-     * With FIFO (first-in-first-out) ordered wait queue.
+     * New thread pool with first-in-first-out ordered fair wait queue.
      *
      * @param size Number of concurrent threads
      */
     public DefaultThreadPool(final int size) {
-        this(size, "background");
+        this(DEFAULT_THREAD_NAME_PREFIX, size);
     }
 
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue and unlimited number of threads.
+     *
+     * @param prefix Thread name prefix
+     */
     public DefaultThreadPool(final String prefix) {
-        super(new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                new NamedThreadFactory(prefix)));
+        this(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"));
     }
 
-    public DefaultThreadPool(final int size, final String prefix) {
-        super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory("background")) :
-                Executors.newFixedThreadPool(size, new NamedThreadFactory(prefix)));
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue.
+     *
+     * @param prefix Thread name prefix
+     * @param size   Maximum number of threads in pool
+     */
+    public DefaultThreadPool(final String prefix, final int size) {
+        this(prefix, size, new LoggingUncaughtExceptionHandler());
     }
 
+    /**
+     * New thread pool with first-in-first-out ordered fair wait queue.
+     *
+     * @param size    Maximum number of threads in pool
+     * @param handler Uncaught thread exception handler
+     */
     public DefaultThreadPool(final int size, final Thread.UncaughtExceptionHandler handler) {
-        super(1 == size ?
-                Executors.newSingleThreadExecutor(new NamedThreadFactory("background", handler)) :
-                Executors.newFixedThreadPool(size, new NamedThreadFactory("background", handler)));
+        this(DEFAULT_THREAD_NAME_PREFIX, size, handler);
+    }
+
+    public DefaultThreadPool(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
+        super(new ThreadPoolExecutor(size, size,
+                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(),
+                new NamedThreadFactory(prefix, handler)));
     }
 }

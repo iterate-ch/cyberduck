@@ -61,12 +61,13 @@ public class DropboxFindFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
                 }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
@@ -87,12 +88,13 @@ public class DropboxFindFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
                 }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());
@@ -117,12 +119,13 @@ public class DropboxFindFeatureTest {
                 new DisabledPasswordStore() {
                     @Override
                     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
-                    }
-
-                    @Override
-                    public String getPassword(String hostname, String user) {
-                        return System.getProperties().getProperty("dropbox.accesstoken");
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
                     }
                 }, new DisabledProgressListener())
                 .connect(session, PathCache.empty(), new DisabledCancelCallback());

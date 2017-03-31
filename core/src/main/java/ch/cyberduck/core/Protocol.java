@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Location;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
 import java.util.Set;
 
 public interface Protocol extends Comparable<Protocol> {
@@ -229,6 +230,21 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Authentication header version
      */
     String getAuthorization();
+
+    /**
+     * @return OAuth 2 Authorization Server URL
+     */
+    String getOAuthAuthorizationUrl();
+
+    /**
+     * @return OAuth 2 Token Server URL
+     */
+    String getOAuthTokenUrl();
+
+    /**
+     * @return Requested scopes
+     */
+    List<String> getScopes();
 
     /**
      * @return Available regions

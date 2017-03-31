@@ -52,6 +52,11 @@ public class UploadRegexFilter implements Filter<Local> {
     }
 
     @Override
+    public Pattern toPattern() {
+        return pattern;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("UploadRegexFilter{");
         sb.append("pattern=").append(pattern);

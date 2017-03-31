@@ -35,7 +35,9 @@
         <false/>
         <key>Context</key>
         <string>/_api/v2.0</string>
-        <key>Authorization</key>
-        <string>login.microsoftonline.com</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://login.windows.net/common/oauth2/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>https://login.windows.net/common/oauth2/token</string>
     </dict>
 </plist>

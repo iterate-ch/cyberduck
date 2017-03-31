@@ -409,6 +409,8 @@ public abstract class Preferences {
          */
         defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
+
+        defaults.put("editor.upload.permissions.change", String.valueOf(true));
         defaults.put("editor.upload.symboliclink.resolve", String.valueOf(true));
 
         /*
@@ -424,8 +426,9 @@ public abstract class Preferences {
         /*
           Default transfer connection handling
          */
-        defaults.put("queue.transfer.type.enabled", String.format("%s %s",
+        defaults.put("queue.transfer.type.enabled", String.format("%s %s %s",
                 String.valueOf(Host.TransferType.browser.name()),
+                String.valueOf(Host.TransferType.newconnection.name()),
                 String.valueOf(Host.TransferType.concurrent.name())
         ));
         defaults.put("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
@@ -598,6 +601,7 @@ public abstract class Preferences {
         defaults.put("ftp.socket.buffer", String.valueOf(0));
 
         defaults.put("ftp.parser.multiline.strict", String.valueOf(false));
+        defaults.put("ftp.parser.reply.strict", String.valueOf(false));
 
         /*
           Send LIST -a
@@ -769,11 +773,12 @@ public abstract class Preferences {
 
         defaults.put("b2.upload.largeobject", String.valueOf(true));
         defaults.put("b2.upload.largeobject.concurrency", String.valueOf(5));
-        defaults.put("openstack.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
+        defaults.put("b2.upload.largeobject.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L)); // 5GB
         // When uploading files larger than 200MB, use the large files support to break up the files into parts and upload the parts in parallel.
         defaults.put("b2.upload.largeobject.threshold", String.valueOf(200 * 1024L * 1024L)); // 200MB
         // Each part can be anywhere from 100MB to 5GB in size
         defaults.put("b2.upload.largeobject.size", String.valueOf(100 * 1024L * 1024L));
+        defaults.put("b2.upload.largeobject.size.minimum", String.valueOf(5 * 1024L * 1024L));
 
         defaults.put("b2.metadata.default", StringUtils.EMPTY);
 
@@ -1024,6 +1029,7 @@ public abstract class Preferences {
 
         defaults.put("network.interface.blacklist", StringUtils.EMPTY);
 
+        defaults.put("threading.pool.size.max", String.valueOf(20));
         defaults.put("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         defaults.put("dropbox.oauth.clientid", "rjqgs45ntjp1va9");

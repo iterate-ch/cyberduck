@@ -31,7 +31,10 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 public class DefaultTouchFeature<T> implements Touch<T> {
+    private static final Logger log = Logger.getLogger(DefaultTouchFeature.class);
 
     private final Upload<T> feature;
 
@@ -44,9 +47,12 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         final Local temp = TemporaryFileServiceFactory.get().create(file);
         LocalTouchFactory.get().touch(temp);
         try {
-            feature.upload(file, temp,
+            final T reply = feature.upload(file, temp,
                     new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                     new DisabledStreamListener(), status, new DisabledConnectionCallback());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received reply %s for creating file %s", reply, file));
+            }
         }
         finally {
             temp.delete();

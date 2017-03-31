@@ -35,7 +35,14 @@
         <false/>
         <key>Context</key>
         <string>/v1.0</string>
-        <key>Authorization</key>
-        <string>login.microsoftonline.com</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://login.live.com/oauth20_authorize.srf</string>
+        <key>OAuth Token Url</key>
+        <string>https://login.live.com/oauth20_token.srf</string>
+        <key>Scopes</key>
+        <array>
+            <string>onedrive.readwrite</string>
+            <string>wl.offline_access</string>
+        </array>
     </dict>
 </plist>

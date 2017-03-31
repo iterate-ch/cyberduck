@@ -26,4 +26,6 @@ public interface CredentialsConfigurator {
      * @param host Hostname
      */
     Credentials configure(Host host);
+
+    void reload();
 }

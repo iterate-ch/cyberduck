@@ -130,7 +130,10 @@ public final class TransferQueue {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resize queue to %d", newsize));
         }
-        running.drainTo(temporary);
+        final int drained = running.drainTo(temporary);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Drained %d elements", drained));
+        }
         running.clear();
         running = new ArrayBlockingQueue<Transfer>(newsize);
         this.poll();

@@ -115,7 +115,7 @@ public class SwiftContainerListService implements RootListService {
                 while(!chunk.isEmpty());
                 if(cdnPreload) {
                     final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
-                    final ThreadPool<Void> pool = new DefaultThreadPool<Void>(2, "cdn");
+                    final ThreadPool pool = new DefaultThreadPool("cdn", 2);
                     try {
                         for(final Path container : containers) {
                             pool.execute(new Callable<Void>() {
@@ -143,7 +143,7 @@ public class SwiftContainerListService implements RootListService {
                     }
                 }
                 if(containerPreload) {
-                    final ThreadPool<Long> pool = new DefaultThreadPool<Long>(2, "container");
+                    final ThreadPool pool = new DefaultThreadPool("container", 2);
                     try {
                         for(final Path container : containers) {
                             pool.execute(new Callable<Long>() {

@@ -50,12 +50,9 @@ public class NamedThreadFactory implements ThreadFactory {
         final Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
-                try {
-                    action.run();
-                }
-                finally {
-                    autorelease.operate();
+                action.run();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Finished execution of runnable %s", action));
                 }
             }
         });
