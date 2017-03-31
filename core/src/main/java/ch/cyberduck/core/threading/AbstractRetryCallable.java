@@ -19,7 +19,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -47,20 +46,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
 
     @Override
     public abstract T call() throws BackgroundException;
-
-    public boolean retry(final BackgroundException failure, final ProgressListener progress, final StreamCancelation cancel) {
-        return this.retry(failure, progress, new BackgroundActionState() {
-            @Override
-            public boolean isCanceled() {
-                return cancel.isCanceled();
-            }
-
-            @Override
-            public boolean isRunning() {
-                return true;
-            }
-        });
-    }
 
     /**
      * @param failure  Failure

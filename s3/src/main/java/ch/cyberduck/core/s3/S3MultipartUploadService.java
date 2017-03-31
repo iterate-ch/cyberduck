@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -35,7 +34,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -221,7 +221,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new AbstractRetryCallable<MultipartPart>() {
+        return pool.execute(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 final Map<String, String> requestParameters = new HashMap<String, String>();
@@ -231,51 +231,42 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         .length(length)
                         .skip(offset)
                         .parameters(requestParameters);
-                try {
-                    if(overall.isCanceled()) {
-                        throw new ConnectionCanceledException();
-                    }
-                    switch(session.getSignatureVersion()) {
-                        case AWS4HMACSHA256:
-                            status.setChecksum(writer.checksum()
-                                    .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
-                            );
-                            break;
-                    }
-                    status.setSegment(true);
-                    final StorageObject part = S3MultipartUploadService.super.upload(
-                            file, local, throttle, listener, status, overall, new StreamProgress() {
-                                @Override
-                                public void progress(final long bytes) {
-                                    status.progress(bytes);
-                                    // Discard sent bytes in overall progress if there is an error reply for segment.
-                                    overall.progress(bytes);
-                                }
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
+                switch(session.getSignatureVersion()) {
+                    case AWS4HMACSHA256:
+                        status.setChecksum(writer.checksum()
+                                .compute(StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status)
+                        );
+                        break;
+                }
+                status.setSegment(true);
+                final StorageObject part = S3MultipartUploadService.super.upload(
+                        file, local, throttle, listener, status, overall, new StreamProgress() {
+                            @Override
+                            public void progress(final long bytes) {
+                                status.progress(bytes);
+                                // Discard sent bytes in overall progress if there is an error reply for segment.
+                                overall.progress(bytes);
+                            }
 
-                                @Override
-                                public void setComplete() {
-                                    status.setComplete();
-                                }
-                            }, callback);
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Received response %s for part number %d", part, partNumber));
-                    }
-                    // Populate part with response data that is accessible via the object's metadata
-                    return new MultipartPart(partNumber,
-                            null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                            null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                            part.getContentLength());
+                            @Override
+                            public void setComplete() {
+                                status.setComplete();
+                            }
+                        }, callback);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
-                catch(BackgroundException e) {
-                    if(this.retry(e, new DisabledProgressListener(), overall)) {
-                        return this.call();
-                    }
-                    else {
-                        throw e;
-                    }
-                }
+                // Populate part with response data that is accessible via the object's metadata
+                return new MultipartPart(partNumber,
+                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                        part.getContentLength());
+
             }
-        });
+        }, overall));
     }
 
     @Override

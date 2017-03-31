@@ -1,8 +1,8 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.threading;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,19 +13,13 @@ package ch.cyberduck.core;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
-public interface CredentialsConfigurator {
+import ch.cyberduck.core.exception.BackgroundException;
 
-    /**
-     * Configure default credentials from system settings.
-     *
-     * @param host Hostname
-     */
-    Credentials configure(Host host);
+import java.util.concurrent.Callable;
 
-    void reload();
+public abstract class BackgroundExceptionCallable<T> implements Callable<T> {
+    @Override
+    public abstract T call() throws BackgroundException;
 }

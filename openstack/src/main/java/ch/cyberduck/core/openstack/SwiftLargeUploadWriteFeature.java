@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -33,7 +32,8 @@ import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.AbstractRetryCallable;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -142,47 +142,37 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
-                completed.add(new AbstractRetryCallable<StorageObject>() {
+                completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
+                        final TransferStatus status = new TransferStatus().length(len);
+                        // Segment name with left padded segment number
+                        final Path segment = new Path(containerService.getContainer(file),
+                                segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
+                        final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
+                        final HashMap<String, String> headers = new HashMap<>();
+                        final String checksum;
                         try {
-                            final TransferStatus status = new TransferStatus().length(len);
-                            // Segment name with left padded segment number
-                            final Path segment = new Path(containerService.getContainer(file),
-                                    segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
-                            final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
-                            final HashMap<String, String> headers = new HashMap<>();
-                            final String checksum;
-                            try {
-                                checksum = session.getClient().storeObject(
-                                        regionService.lookup(file),
-                                        containerService.getContainer(segment).getName(), containerService.getKey(segment),
-                                        entity, headers, null);
-                            }
-                            catch(GenericException e) {
-                                throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
-                            }
-                            catch(IOException e) {
-                                throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-                            }
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
-                            }
-                            final StorageObject stored = new StorageObject(containerService.getKey(segment));
-                            stored.setMd5sum(checksum);
-                            stored.setSize(status.getLength());
-                            return stored;
+                            checksum = session.getClient().storeObject(
+                                    regionService.lookup(file),
+                                    containerService.getContainer(segment).getName(), containerService.getKey(segment),
+                                    entity, headers, null);
                         }
-                        catch(BackgroundException e) {
-                            if(this.retry(e, new DisabledProgressListener(), status)) {
-                                return this.call();
-                            }
-                            else {
-                                throw e;
-                            }
+                        catch(GenericException e) {
+                            throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
                         }
+                        catch(IOException e) {
+                            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Saved segment %s with checksum %s", segment, checksum));
+                        }
+                        final StorageObject stored = new StorageObject(containerService.getKey(segment));
+                        stored.setMd5sum(checksum);
+                        stored.setSize(status.getLength());
+                        return stored;
                     }
-                }.call());
+                }, status).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
