@@ -55,4 +55,9 @@ public class OneDriveDeleteFeature implements Delete {
             }
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }
