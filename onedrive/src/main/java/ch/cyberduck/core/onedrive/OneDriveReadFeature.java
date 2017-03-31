@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,9 +32,6 @@ import java.io.InputStream;
 public class OneDriveReadFeature implements Read {
 
     private final OneDriveSession session;
-
-    private final PathContainerService containerService
-            = new PathContainerService();
 
     public OneDriveReadFeature(final OneDriveSession session) {
         this.session = session;
