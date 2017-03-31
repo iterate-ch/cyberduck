@@ -57,6 +57,13 @@ public class OneDriveUrlBuilder {
         return this;
     }
 
+    public OneDriveUrlBuilder resolveContentPath(final Path directory) {
+        if(!containerService.isContainer(directory) && !directory.isRoot()) {
+            builder.append("/content");
+        }
+        return this;
+    }
+
     public URL build() throws BackgroundException {
         try {
             return new URL(builder.toString());
