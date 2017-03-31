@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.http.protocol.HTTP;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveRequest;
 
@@ -49,7 +50,7 @@ public class OneDriveTouchFeature implements Touch {
 
         try {
             OneDriveRequest request = new OneDriveRequest(builder.build(), "PUT");
-            request.addHeader("Content-Type", status.getMime());
+            request.addHeader(HTTP.CONTENT_TYPE, status.getMime());
             request.sendRequest(session.getClient().getExecutor(), new NullInputStream(0)).close();
         }
         catch(OneDriveAPIException e) {
