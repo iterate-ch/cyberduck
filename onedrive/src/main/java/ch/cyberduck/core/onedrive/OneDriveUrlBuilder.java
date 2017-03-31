@@ -64,6 +64,13 @@ public class OneDriveUrlBuilder {
         return this;
     }
 
+    public OneDriveUrlBuilder resolveUploadSession(final Path directory) {
+        if(!containerService.isContainer(directory) && !directory.isRoot()) {
+            builder.append("/createUploadSession");
+        }
+        return this;
+    }
+
     public URL build() throws BackgroundException {
         try {
             return new URL(builder.toString());
