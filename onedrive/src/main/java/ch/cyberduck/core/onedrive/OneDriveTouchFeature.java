@@ -22,12 +22,11 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveJsonRequest;
+import org.nuxeo.onedrive.client.OneDriveRequest;
 
 import java.io.IOException;
-
-import com.eclipsesource.json.JsonObject;
 
 public class OneDriveTouchFeature implements Touch {
 
@@ -45,15 +44,12 @@ public class OneDriveTouchFeature implements Touch {
 
         // evaluating query
         final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                .resolveDriveQueryPath(file.getParent())
-                .resolveChildrenPath(file.getParent());
+                .resolveDriveQueryPath(file)
+                .resolveContentPath(file);
 
         try {
-            OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "POST");
-            JsonObject requestObject = new JsonObject();
-            requestObject.add("name", file.getName());
-            requestObject.add("file", new JsonObject());
-            request.sendRequest(session.getClient().getExecutor()).close();
+            OneDriveRequest request = new OneDriveRequest(builder.build(), "PUT");
+            request.sendRequest(session.getClient().getExecutor(), new NullInputStream(0)).close();
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
