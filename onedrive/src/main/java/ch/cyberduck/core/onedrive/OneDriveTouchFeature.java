@@ -49,6 +49,7 @@ public class OneDriveTouchFeature implements Touch {
 
         try {
             OneDriveRequest request = new OneDriveRequest(builder.build(), "PUT");
+            request.addHeader("Content-Type", status.getMime());
             request.sendRequest(session.getClient().getExecutor(), new NullInputStream(0)).close();
         }
         catch(OneDriveAPIException e) {
