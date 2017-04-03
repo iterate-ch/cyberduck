@@ -2841,7 +2841,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             StringBuilder alertText =
                 new StringBuilder(
-                    String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.size()));
+                    String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count));
 
             StringBuilder content = new StringBuilder();
             int i = 0;
