@@ -9,6 +9,11 @@ https://cyberduck.io/
 - [Feature] Search files fast without recursively listing directories (Google Drive)
 - [Feature] Search files fast using prefix (S3)
 
+5.4.1 [https://trac.cyberduck.io/milestone/5.4.1
+- [Feature] Faster recursive delete with single operation for directories (WebDAV)
+- [Bugfix] Reload OpenSSH configuration (SFTP)
+- [Bugfix| Revert lenient server reply parsing (FTP)
+
 5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Add "Open single connection" option for file transfers
 - [Bugfix] Failure enabling download distribution (CloudFront) (#9870)
