@@ -27,7 +27,8 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
@@ -89,7 +90,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
 
     @Override
     public ChecksumCompute checksum() {
-        return new DisabledChecksumCompute();
+        return new MD5ChecksumCompute();
     }
 
     @Override
@@ -112,6 +113,9 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             if(headers.containsKey(HttpHeaders.CONTENT_TYPE)) {
                 blob.getProperties().setCacheControl(headers.get(HttpHeaders.CONTENT_TYPE));
                 headers.remove(HttpHeaders.CONTENT_TYPE);
+            }
+            if(status.getChecksum().algorithm.equals(HashAlgorithm.md5)) {
+                headers.put(HttpHeaders.CONTENT_MD5, status.getChecksum().hash);
             }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);

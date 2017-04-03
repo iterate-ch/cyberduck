@@ -28,6 +28,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
+
 import java.net.URISyntaxException;
 
 import com.microsoft.azure.storage.OperationContext;
@@ -61,6 +63,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 container.create(options, context);
             }
             else {
+                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
                 // Add placeholder object
                 folder.getType().add(Path.Type.placeholder);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
