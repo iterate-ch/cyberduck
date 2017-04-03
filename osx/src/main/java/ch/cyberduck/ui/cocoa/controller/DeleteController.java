@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.DeleteWorker;
 
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -48,8 +49,7 @@ public class DeleteController extends ProxyController {
         if(normalized.isEmpty()) {
             return;
         }
-        StringBuilder alertText =
-                new StringBuilder(LocaleFactory.localizedString("Really delete the following files? This cannot be undone."));
+        final StringBuilder alertText = new StringBuilder(MessageFormat.format(LocaleFactory.localizedString("Delete {0} files"), selected.size()));
         int i = 0;
         Iterator<Path> iter;
         for(iter = normalized.iterator(); i < 10 && iter.hasNext(); ) {

@@ -2841,7 +2841,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             StringBuilder alertText =
                 new StringBuilder(
-                    LocaleFactory.localizedString("Really delete the following files? This cannot be undone."));
+                    String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count));
 
             StringBuilder content = new StringBuilder();
             int i = 0;
