@@ -46,23 +46,6 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         // Parent defaults
         super.setDefaults();
 
-        if(null != Updater.getFeed()) {
-            defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
-        }
-        defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
-        defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
-        defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
-        defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
-        defaults.put("factory.alertcallback.class", PromptAlertCallback.class.getName());
-        defaults.put("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
-        defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
-        defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
-        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
-        defaults.put("factory.vault.class", CryptoVault.class.getName());
-        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
-
         defaults.put(String.format("browser.column.%s", Column.icon.name()), String.valueOf(true));
         defaults.put(String.format("browser.column.%s.width", Column.icon.name()), String.valueOf(20));
         defaults.put(String.format("browser.column.%s", Column.filename.name()), String.valueOf(true));
@@ -87,6 +70,29 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         defaults.put(String.format("browser.column.%s.width", Column.version.name()), String.valueOf(80));
 
         defaults.put("browser.sort.column", Column.filename.name());
+    }
+
+    @Override
+    protected void setFactories() {
+        super.setFactories();
+
+        if(null != Updater.getFeed()) {
+            defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
+        }
+
+        defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
+        defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
+        defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
+        defaults.put("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
+        defaults.put("factory.alertcallback.class", PromptAlertCallback.class.getName());
+        defaults.put("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
+        defaults.put("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.upload.class", UploadPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.copy.class", CopyPromptController.class.getName());
+        defaults.put("factory.transferpromptcallback.sync.class", SyncPromptController.class.getName());
+        defaults.put("factory.rendezvous.class", RendezvousResponder.class.getName());
+        defaults.put("factory.vault.class", CryptoVault.class.getName());
+        defaults.put("factory.securerandom.class", FastSecureRandomProvider.class.getName());
     }
 
     @Override
