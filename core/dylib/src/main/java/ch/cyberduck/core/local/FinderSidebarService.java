@@ -23,9 +23,6 @@ import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
-
 public class FinderSidebarService implements SidebarService {
     private static final Logger log = Logger.getLogger(FinderSidebarService.class);
 
@@ -53,13 +50,8 @@ public class FinderSidebarService implements SidebarService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Add %s to %s", file, this.forList(list)));
         }
-        try {
-            if(!this.addItem(new File(file.getAbsolute()).getCanonicalPath(), this.forList(list))) {
-                throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
-            }
-        }
-        catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)), e);
+        if(!this.addItem(file.getAbsolute(), this.forList(list))) {
+            throw new LocalAccessDeniedException(String.format("Failure adding %s to %s", file, this.forList(list)));
         }
     }
 
@@ -68,13 +60,8 @@ public class FinderSidebarService implements SidebarService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove %s in %s", file, this.forList(list)));
         }
-        try {
-            if(!this.removeItem(new File(file.getAbsolute()).getCanonicalPath(), this.forList(list))) {
-                throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)));
-            }
-        }
-        catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)), e);
+        if(!this.removeItem(file.getAbsolute(), this.forList(list))) {
+            throw new LocalAccessDeniedException(String.format("Failure removing %s from %s", file, this.forList(list)));
         }
     }
 
