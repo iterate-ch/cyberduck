@@ -24,7 +24,6 @@ import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.logging.SystemLogAppender;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.callback.PromptAlertCallback;
 import ch.cyberduck.ui.cocoa.callback.PromptHostKeyCallback;
@@ -76,10 +75,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
     protected void setFactories() {
         super.setFactories();
 
-        if(null != Updater.getFeed()) {
-            defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
-        }
-
+        defaults.put("factory.updater.class", SparklePeriodicUpdateChecker.class.getName());
         defaults.put("factory.dateformatter.class", UserDefaultsDateFormatter.class.getName());
         defaults.put("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
         defaults.put("factory.logincallback.class", PromptLoginCallback.class.getName());
