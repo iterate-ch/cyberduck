@@ -103,7 +103,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      */
     @Override
     public Set<UUID> pre(final Transfer.Type type, final Map<Path, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session));
+        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<Path, TransferStatus> item : files.entrySet()) {
             final Path file = item.getKey();
@@ -205,7 +205,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             List<TransferStatus> chunks = this.query(file, status, job, list);
             if(chunks.isEmpty()) {
                 // Fetch current list from server
-                final Ds3Client client = new SpectraClientBuilder().wrap(session);
+                final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
                 // For GET, the client may need to issue multiple GET requests for a single object if it has
                 // been broken up into multiple pieces due to its large size
                 // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
