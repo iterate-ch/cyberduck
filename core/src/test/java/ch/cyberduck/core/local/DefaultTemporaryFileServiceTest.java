@@ -71,31 +71,35 @@ public class DefaultTemporaryFileServiceTest {
 
     @Test
     public void testPathTooLong() {
+        final String replace = new File("/").getAbsolutePath();
         final String testPathDirectory = "/Lorem/ipsum/dolor/sit/amet/consetetur/sadipscing/elitr/sed/diam/nonumy/eirmod/tempor/invidunt/ut/labore/et/dolore/magna/aliquyam/erat/sed/diam/voluptua/At/vero/eos/et/accusam/et/justo/duo/dolores/et/ea/rebum/Stet/clita/kasd/gubergren/no/sea";
         final String testPathFile = "takimata.sanc";
         final String testPath = String.format("%s/%s", testPathDirectory, testPathFile);
         final String testPathMD5 = DigestUtils.md5Hex(testPathDirectory);
 
-        PreferencesFactory.get().setProperty("tmp.dir", "/temp"); // overwrite tmp.dir for better results
+        PreferencesFactory.get().setProperty("tmp.dir", "/temp"); // overwrite tmp.dir for easier tests
         final Path file = new Path(testPath, EnumSet.of(Path.Type.file));
         file.attributes().setVersionId("2");
-        Local local = new DefaultTemporaryFileService().create("UID", file);
-        assertNotEquals(String.format("/%s/%s/%s/2/%s", "temp", "UID", testPathDirectory, testPathFile), local.getAbsolute());
-        assertEquals(String.format("/%s/%s/%s/2/%s", "temp", "UID", testPathMD5, testPathFile), local.getAbsolute());
+        final Local local = new DefaultTemporaryFileService().create("UID", file);
+        final String localFile = local.getAbsolute().replace(replace, "/").replace('/', File.separatorChar);
+        assertNotEquals(String.format("/%s/%s%s/2/%s", "temp", "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("/%s/%s/%s/2/%s", "temp", "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test
     public void testPathNotTooLong() {
+        final String replace = new File("/").getAbsolutePath();
         final String testPathDirectory = "/Lorem/ipsum/dolor/sit/amet/consetetur/sadipscing/elitr/sed/diam/nonumy/eirmod/tempor";
         final String testPathFile = "takimata.sanc";
         final String testPath = String.format("%s/%s", testPathDirectory, testPathFile);
         final String testPathMD5 = DigestUtils.md5Hex(testPathDirectory);
 
-        PreferencesFactory.get().setProperty("tmp.dir", "/temp"); // overwrite tmp.dir for better results
-        final Path file = new Path(testPath, EnumSet.of(Path.Type.file));
+        PreferencesFactory.get().setProperty("tmp.dir", "/temp"); // overwrite tmp.dir for easier tests
+        Path file = new Path(testPath, EnumSet.of(Path.Type.file));
         file.attributes().setVersionId("2");
-        Local local = new DefaultTemporaryFileService().create("UID", file);
-        assertEquals(String.format("/%s/%s/%s/2/%s", "temp", "UID", testPathDirectory, testPathFile), local.getAbsolute());
-        assertNotEquals(String.format("/%s/%s/%s/2/%s", "temp", "UID", testPathMD5, testPathFile), local.getAbsolute());
+        final Local local = new DefaultTemporaryFileService().create("UID", file);
+        final String localFile = local.getAbsolute().replace(replace, "/").replace('/', File.separatorChar);
+        assertEquals(String.format("/%s/%s%s/2/%s", "temp", "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
+        assertNotEquals(String.format("/%s/%s%s/2/%s", "temp", "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 }
