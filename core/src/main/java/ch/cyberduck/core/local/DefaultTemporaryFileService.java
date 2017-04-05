@@ -63,9 +63,18 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
      */
     @Override
     public Local create(final String uid, final Path file) {
-        final String folder = uid + delimiter + this.shorten(file.getParent().getAbsolute())
-                + delimiter + new DefaultPathReference(file).attributes();
-        return this.create(folder, PathNormalizer.name(file.getAbsolute()));
+        final String attributes = new DefaultPathReference(file).attributes();
+        final String normalizedFileName = PathNormalizer.name(file.getAbsolute());
+        final String directoryPath = uid + delimiter + attributes;
+        final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), directoryPath + delimiter + normalizedFileName);
+        final int shortenLength = PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold") - shortenTestPath.getAbsolutePath().length();
+        if (shortenLength < 0) {
+            // should throw Exception or warn user that this operation might result in CD crash
+        }
+
+        final String folder = uid + delimiter + this.shorten(file.getParent().getAbsolute(), shortenLength)
+                + delimiter + attributes;
+        return this.create(folder, normalizedFileName);
     }
 
     private Local create(final String folder, final String name) {
@@ -84,8 +93,8 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
         files.add(file);
     }
 
-    protected String shorten(final String path) {
-        if(path.length() > PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold")) {
+    protected String shorten(final String path, int limit) {
+        if(path.length() > limit) {
             return DigestUtils.md5Hex(path);
         }
         return path;
