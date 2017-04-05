@@ -63,17 +63,26 @@ public class DefaultTemporaryFileService implements TemporaryFileService {
      */
     @Override
     public Local create(final String uid, final Path file) {
+        /*
+        $1%s: Delimiter
+        $2%s: UID
+        $3%s: Path
+        $4%s: Region
+         */
+        final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
+        final String normalizedPathFormat = pathFormat + "%1$s%5$s";
+
         final String attributes = new DefaultPathReference(file).attributes();
         final String normalizedFileName = PathNormalizer.name(file.getAbsolute());
-        final String directoryPath = uid + delimiter + attributes;
-        final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), directoryPath + delimiter + normalizedFileName);
+
+        final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, normalizedFileName));
         final int shortenLength = PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold") - shortenTestPath.getAbsolutePath().length();
         if (shortenLength < 0) {
             // should throw Exception or warn user that this operation might result in CD crash
         }
 
-        final String folder = uid + delimiter + this.shorten(file.getParent().getAbsolute(), shortenLength)
-                + delimiter + attributes;
+        final String shortenedPath = this.shorten(file.getParent().getAbsolute(), shortenLength);
+        final String folder = String.format(pathFormat, delimiter, uid, shortenedPath, attributes);
         return this.create(folder, normalizedFileName);
     }
 
