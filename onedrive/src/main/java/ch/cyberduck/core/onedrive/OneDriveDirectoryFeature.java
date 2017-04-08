@@ -24,6 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
@@ -45,17 +46,8 @@ public class OneDriveDirectoryFeature implements Directory {
             throw new BackgroundException("Cannot create directory here", "Create directory in container");
         }
 
-        // evaluating query
-        final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                .resolveDriveQueryPath(directory.getParent())
-                .resolveChildrenPath(directory.getParent());
-
         try {
-            final OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "POST");
-            JsonObject requestObject = new JsonObject();
-            requestObject.add("name", directory.getName());
-            requestObject.add("folder", new JsonObject());
-            request.sendRequest(session.getClient().getExecutor()).close();
+            final OneDriveFolder.Metadata createdFolder = session.getDirectory(directory.getParent()).create(directory.getName());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
