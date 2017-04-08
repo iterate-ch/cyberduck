@@ -117,7 +117,7 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
 
     @Override
     public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
-        return null;
+        return null; // TODO
     }
 
     @Override
@@ -135,6 +135,16 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
         this.authenticate(request);
         final CloseableHttpResponse response = client.execute(request);
         return new CommonsHttpResponse(response);
+    }
+
+    @Override
+    public Response doDelete(final URL url, final Set<RequestHeader> headers) throws IOException {
+        return null; // TODO
+    }
+
+    @Override
+    public Upload doPatch(final URL url, final Set<RequestHeader> headers) throws IOException {
+        return null; // TODO
     }
 
     protected void authenticate(final HttpRequestBase request) {
