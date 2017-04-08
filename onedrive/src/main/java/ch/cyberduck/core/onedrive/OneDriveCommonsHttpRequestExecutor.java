@@ -116,6 +116,11 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
     }
 
     @Override
+    public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
+        return null;
+    }
+
+    @Override
     public Response doGet(final URL url, final Set<RequestHeader> headers) throws IOException {
         final HttpGet request = new HttpGet(url.toString());
         for(RequestHeader header : headers) {
