@@ -31,6 +31,7 @@ import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 import org.nuxeo.onedrive.client.OneDriveRequest;
 import org.nuxeo.onedrive.client.OneDriveResponse;
+import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
 import java.net.URL;
