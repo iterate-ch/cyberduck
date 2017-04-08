@@ -21,6 +21,7 @@ import ch.cyberduck.core.threading.DefaultThreadPool;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -139,7 +140,19 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
 
     @Override
     public Response doDelete(final URL url, final Set<RequestHeader> headers) throws IOException {
-        return null; // TODO
+        final HttpDelete request = new HttpDelete(url.toString());
+        for(RequestHeader header : headers) {
+            if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
+                continue;
+            }
+            if(header.getKey().equals(HTTP.CONTENT_LEN)) {
+                continue;
+            }
+            request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
+        }
+        this.authenticate(request);
+        final CloseableHttpResponse response = client.execute(request);
+        return new CommonsHttpResponse(response);
     }
 
     @Override
