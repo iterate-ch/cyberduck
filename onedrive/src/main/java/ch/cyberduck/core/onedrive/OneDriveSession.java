@@ -24,6 +24,7 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -47,6 +48,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
@@ -57,6 +60,9 @@ import com.google.api.client.auth.oauth2.Credential;
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     private final Preferences preferences
             = PreferencesFactory.get();
 
@@ -64,6 +70,18 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+    }
+
+    public OneDriveDrive getDrive(final Path file) {
+        return new OneDriveDrive(getClient(), containerService.getContainer(file).getName());
+    }
+
+    public OneDriveFile getFile(final Path file) {
+        return new OneDriveFile(getClient(), getDrive(file), containerService.getKey(file));
+    }
+
+    public OneDriveFolder getDirectory(final Path file) {
+        return new OneDriveFolder(getClient(), getDrive(file), containerService.getKey(file));
     }
 
     @Override
