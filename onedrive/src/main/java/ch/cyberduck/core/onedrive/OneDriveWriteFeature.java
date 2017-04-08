@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveJsonResponse;
 import org.nuxeo.onedrive.client.OneDriveRequest;
 import org.nuxeo.onedrive.client.OneDriveResponse;
@@ -50,24 +52,12 @@ public class OneDriveWriteFeature extends AbstractHttpWriteFeature<Void> {
         if(file.isRoot() || file.getParent().isRoot()) {
             throw new BackgroundException("Cannot create file here", "Create file in container");
         }
-
-        // evaluating query
-        final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                .resolveDriveQueryPath(file)
-                .resolveUploadSession(file);
+        OneDriveFile oneDriveFile = session.getFile(file);
 
         try {
-            OneDriveRequest request = new OneDriveRequest(builder.build(), "POST");
-            OneDriveResponse response = request.sendRequest(session.getClient().getExecutor());
-            OneDriveJsonResponse jsonResponse = new OneDriveJsonResponse(response.getResponseCode(), null, response.getContent());
-            JsonObject object = jsonResponse.getContent();
-            JsonValue uploadUrlJsonValue = object.get("uploadUrl");
-            if(uploadUrlJsonValue == null || uploadUrlJsonValue.isNull()) {
-                return null; // Invalid Upload URL
-            }
-            String uploadUrlValue = uploadUrlJsonValue.asString();
-            URL uploadUrl = new URL(uploadUrlValue);
-            // TODO Continue with uploadUrl. See https://dev.onedrive.com/items/upload_large_files.htm
+            OneDriveUploadSession uploadSession = oneDriveFile.getUploadSession();
+
+            // TODO Continue with uploadSession.getUploadUrl. See https://dev.onedrive.com/items/upload_large_files.htm
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
