@@ -22,10 +22,8 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.io.input.NullInputStream;
-import org.apache.http.protocol.HTTP;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveRequest;
+import org.nuxeo.onedrive.client.OneDriveFile;
 
 import java.io.IOException;
 
@@ -43,15 +41,11 @@ public class OneDriveTouchFeature implements Touch {
             throw new BackgroundException("Cannot create file here", "Create file in container");
         }
 
-        // evaluating query
-        final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                .resolveDriveQueryPath(file)
-                .resolveContentPath(file);
+        final OneDriveFile oneDriveFile = session.getFile(file);
 
         try {
-            OneDriveRequest request = new OneDriveRequest(builder.build(), "PUT");
-            request.addHeader(HTTP.CONTENT_TYPE, status.getMime());
-            request.sendRequest(session.getClient().getExecutor(), new NullInputStream(0)).close();
+            final OneDriveFile.Metadata fileMetadata = oneDriveFile.create(status.getMime());
+            // TODO
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
