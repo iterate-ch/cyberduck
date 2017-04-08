@@ -49,8 +49,10 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
@@ -74,6 +76,15 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     public OneDriveDrive getDrive(final Path file) {
         return new OneDriveDrive(getClient(), containerService.getContainer(file).getName());
+    }
+
+    public OneDriveItem getItem(final Path file) {
+        return new OneDriveItem(getClient(), getDrive(file), containerService.getKey(file)) {
+            @Override
+            public Metadata getMetadata(final OneDriveExpand... expand) throws IOException {
+                return null;
+            }
+        };
     }
 
     public OneDriveFile getFile(final Path file) {

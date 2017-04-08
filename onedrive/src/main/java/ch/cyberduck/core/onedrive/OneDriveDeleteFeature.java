@@ -18,10 +18,13 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
@@ -38,14 +41,14 @@ public class OneDriveDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
+            if(file.isRoot() || file.getParent().isRoot()) {
+                continue;
+            }
+
             callback.delete(file);
 
-            // evaluating query
-            final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                    .resolveDriveQueryPath(file);
             try {
-                OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "DELETE");
-                request.sendRequest(session.getClient().getExecutor()).close();
+                session.getItem(file).delete();
             }
             catch(OneDriveAPIException e) {
                 throw new OneDriveExceptionMappingService().map(e);

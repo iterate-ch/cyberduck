@@ -35,9 +35,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by alive on 31.03.2017.
- */
 @Category(IntegrationTest.class)
 public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
     private static final Logger log = Logger.getLogger(OneDriveTouchFeatureTest.class);
