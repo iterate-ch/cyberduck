@@ -30,7 +30,9 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -50,7 +52,7 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory));
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1, Collections.<QName>emptySet());
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);

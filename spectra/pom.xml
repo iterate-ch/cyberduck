@@ -42,16 +42,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.spectralogic.ds3</groupId>
+            <groupId>ch.iterate.spectralogic</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.9</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>spectra</id>
-            <url>https://dl.bintray.com/spectralogic/ds3</url>
-        </repository>
-    </repositories>
 </project>
