@@ -92,7 +92,13 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     public OneDriveFolder getDirectory(final Path file) {
-        return new OneDriveFolder(getClient(), getDrive(file), containerService.getKey(file));
+        final OneDriveDrive drive = getDrive(file);
+
+        final String key = containerService.getKey(file);
+        if(key == null) {
+            return drive.getRoot();
+        }
+        return new OneDriveFolder(getClient(), getDrive(file), key);
     }
 
     @Override
