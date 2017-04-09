@@ -42,7 +42,7 @@
         <key>Scopes</key>
         <array>
             <string>onedrive.readwrite</string>
-            <string>wl.offline_access</string>
+            <string>offline_access</string>
         </array>
     </dict>
 </plist>
