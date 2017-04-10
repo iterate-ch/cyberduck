@@ -103,7 +103,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             // Get a lexicographically ordered list of the existing file segments
             existingSegments.addAll(listService.list(
                     new Path(containerService.getContainer(file),
-                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
