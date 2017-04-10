@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
-    private static final Logger log = Logger.getLogger(OneDriveDirectoryFeatureTest.class);
 
     @Test
     public void testMkdir() throws Exception {
@@ -46,7 +44,6 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            log.info(f);
             final Path target = directoryFeature.mkdir(new Path(f, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, null);
             assertNotNull(attributesFinderFeature.find(target).getVersionId());
             deleteFeature.delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

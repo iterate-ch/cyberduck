@@ -21,19 +21,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
-    private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
@@ -54,23 +51,20 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         final AttributedList<Path> list = new OneDriveListService(session).list(file, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            log.info(f);
-            attributesFinderFeature.find(f);
+            assertNotNull(attributesFinderFeature.find(f));
         }
     }
 
     @Test
     public void testFindHierarchy() throws Exception {
-        final Path path = new Path("/", EnumSet.of(Path.Type.directory));
         OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         OneDriveListService listService = new OneDriveListService(session);
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            log.info(f);
             final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
             for(Path c : children) {
-                attributesFinderFeature.find(c);
+                assertNotNull(attributesFinderFeature.find(c));
             }
         }
     }

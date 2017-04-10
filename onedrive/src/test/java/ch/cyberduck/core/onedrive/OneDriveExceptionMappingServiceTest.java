@@ -27,6 +27,7 @@ import java.net.SocketException;
 import static org.junit.Assert.assertTrue;
 
 public class OneDriveExceptionMappingServiceTest {
+
     @Test
     public void map() throws Exception {
         assertTrue(new OneDriveExceptionMappingService().map(
