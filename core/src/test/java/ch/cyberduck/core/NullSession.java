@@ -40,6 +40,11 @@ public class NullSession extends Session<Void> {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new AttributedList<Path>() {
             @Override
+            public boolean contains(final Path path) {
+                return true;
+            }
+
+            @Override
             public Path get(final Path reference) {
                 return reference;
             }
