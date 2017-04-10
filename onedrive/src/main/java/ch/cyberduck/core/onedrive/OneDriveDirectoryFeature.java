@@ -40,10 +40,10 @@ public class OneDriveDirectoryFeature implements Directory {
             session.getDirectory(directory.getParent()).create(directory.getName());
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
+            throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, directory);
         }
         return directory;
     }

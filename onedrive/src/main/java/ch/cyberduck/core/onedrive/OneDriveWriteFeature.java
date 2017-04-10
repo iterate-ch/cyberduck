@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -28,16 +27,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveJsonResponse;
-import org.nuxeo.onedrive.client.OneDriveRequest;
-import org.nuxeo.onedrive.client.OneDriveResponse;
 import org.nuxeo.onedrive.client.OneDriveUploadSession;
 
 import java.io.IOException;
-import java.net.URL;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 public class OneDriveWriteFeature extends AbstractHttpWriteFeature<Void> {
 
@@ -61,10 +53,10 @@ public class OneDriveWriteFeature extends AbstractHttpWriteFeature<Void> {
             // TODO Continue with uploadSession.getUploadUrl. See https://dev.onedrive.com/items/upload_large_files.htm
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
+            throw new OneDriveExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
 
         return null; // TODO

@@ -18,14 +18,10 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,10 +47,10 @@ public class OneDriveDeleteFeature implements Delete {
                 session.getItem(file).delete();
             }
             catch(OneDriveAPIException e) {
-                throw new OneDriveExceptionMappingService().map(e);
+                throw new OneDriveExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }

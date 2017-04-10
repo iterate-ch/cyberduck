@@ -89,7 +89,7 @@ public class OneDriveListService implements ListService {
             }
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext() which in return should fail fast
-            throw new OneDriveExceptionMappingService().map(e.getCause());
+            throw new OneDriveExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
         }
         return children;
     }

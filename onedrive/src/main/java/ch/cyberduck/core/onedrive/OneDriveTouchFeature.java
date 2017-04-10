@@ -40,10 +40,10 @@ public class OneDriveTouchFeature implements Touch {
             session.getFile(file).create(status.getMime());
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
+            throw new OneDriveExceptionMappingService().map("Cannot create file {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create file {0}", e, file);
         }
         return file;
     }

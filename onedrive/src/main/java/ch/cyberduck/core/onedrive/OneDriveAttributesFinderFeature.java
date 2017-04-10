@@ -127,10 +127,10 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
+            throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
