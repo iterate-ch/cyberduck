@@ -75,11 +75,11 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     public OneDriveDrive getDrive(final Path file) {
-        return new OneDriveDrive(getClient(), containerService.getContainer(file).getName());
+        return new OneDriveDrive(client, containerService.getContainer(file).getName());
     }
 
     public OneDriveItem getItem(final Path file) {
-        return new OneDriveItem(getClient(), getDrive(file), containerService.getKey(file)) {
+        return new OneDriveItem(client, getDrive(file), containerService.getKey(file)) {
             @Override
             public Metadata getMetadata(final OneDriveExpand... expand) throws IOException {
                 return null;
@@ -88,17 +88,16 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     public OneDriveFile getFile(final Path file) {
-        return new OneDriveFile(getClient(), getDrive(file), containerService.getKey(file));
+        return new OneDriveFile(client, getDrive(file), containerService.getKey(file));
     }
 
     public OneDriveFolder getDirectory(final Path file) {
         final OneDriveDrive drive = getDrive(file);
-
         final String key = containerService.getKey(file);
         if(key == null) {
             return drive.getRoot();
         }
-        return new OneDriveFolder(getClient(), getDrive(file), key);
+        return new OneDriveFolder(client, getDrive(file), key);
     }
 
     @Override
