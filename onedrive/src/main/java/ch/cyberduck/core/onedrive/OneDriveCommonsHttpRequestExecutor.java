@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -52,6 +53,16 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
     @Override
     public Upload doPost(final URL url, final Set<RequestHeader> headers) throws IOException {
         final HttpEntityEnclosingRequestBase request = new HttpPost(url.toString());
+        return this.doUpload(url, headers, request);
+    }
+
+    @Override
+    public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
+        final HttpEntityEnclosingRequestBase request = new HttpPut(url.toString());
+        return this.doUpload(url, headers, request);
+    }
+
+    protected Upload doUpload(final URL url, final Set<RequestHeader> headers, final HttpEntityEnclosingRequestBase request) {
         this.authenticate(request);
         for(RequestHeader header : headers) {
             if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
@@ -114,11 +125,6 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
                 return entity.getStream();
             }
         };
-    }
-
-    @Override
-    public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
-        return null; // TODO
     }
 
     @Override
