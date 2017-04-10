@@ -125,4 +125,16 @@ public class IRODSSessionTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
     }
 
+    @Test
+    public void testLoginPamAuthentication() throws Exception {
+        final Profile profile = ProfileReaderFactory.get().read(
+                new Local("../profiles/iRODS (TACC).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                String.format("PAM:%s", System.getProperties().getProperty("tacc.key")), System.getProperties().getProperty("tacc.secret")
+        ));
+        final IRODSSession session = new IRODSSession(host);
+        assertNotNull(session.open(new DisabledHostKeyCallback()));
+        assertTrue(session.isConnected());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+    }
 }
