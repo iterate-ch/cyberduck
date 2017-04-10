@@ -23,7 +23,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
 
 import java.io.IOException;
 
@@ -37,15 +36,8 @@ public class OneDriveTouchFeature implements Touch {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isRoot() || file.getParent().isRoot()) {
-            throw new BackgroundException("Cannot create file here", "Create file in container");
-        }
-
-        final OneDriveFile oneDriveFile = session.getFile(file);
-
         try {
-            final OneDriveFile.Metadata fileMetadata = oneDriveFile.create(status.getMime());
-            // TODO
+            session.getFile(file).create(status.getMime());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
@@ -58,7 +50,7 @@ public class OneDriveTouchFeature implements Touch {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return true;
+        return !workdir.isRoot();
     }
 
     @Override
