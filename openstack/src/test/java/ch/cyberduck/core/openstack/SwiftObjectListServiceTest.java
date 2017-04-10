@@ -38,7 +38,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -56,7 +55,7 @@ public class SwiftObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("DFW");
-        final List<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             if(p.isFile()) {
