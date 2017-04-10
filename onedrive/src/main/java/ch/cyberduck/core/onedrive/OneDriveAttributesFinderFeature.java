@@ -20,30 +20,26 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.date.ISO8601DateParser;
-import ch.cyberduck.core.date.InvalidDateException;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveJsonRequest;
-import org.nuxeo.onedrive.client.OneDriveJsonResponse;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveFile;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
-
-import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 
 public class OneDriveAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(OneDriveAttributesFinderFeature.class);
 
     private final OneDriveSession session;
 
-    private final ISO8601DateParser dateParser = new ISO8601DateParser();
+    private final PathContainerService containerService
+            = new PathContainerService();
 
     public OneDriveAttributesFinderFeature(final OneDriveSession session) {
         this.session = session;
@@ -54,76 +50,24 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+        if(containerService.isContainer(file)) {
+            final OneDriveDrive metadata = session.getDrive(file);
+            return PathAttributes.EMPTY;
+        }
         try {
+            final OneDriveFile.Metadata metadata = session.getFile(file).getMetadata();
             final PathAttributes attributes = new PathAttributes();
-
-            // Evaluating query
-            final OneDriveUrlBuilder builder = new OneDriveUrlBuilder(session)
-                    .resolveDriveQueryPath(file);
-            OneDriveJsonRequest request = new OneDriveJsonRequest(builder.build(), "GET");
-            OneDriveJsonResponse response = request.sendRequest(session.getClient().getExecutor());
-            final JsonObject jsonObject = response.getContent();
-
-            attributes.setVersionId(jsonObject.get("id").asString());
-
-            JsonValue driveType = jsonObject.get("driveType");
-            if(driveType != null && !driveType.isNull()) {
-                // this is drive object we are on /drives hierarchy
+            attributes.setVersionId(metadata.getId());
+            attributes.setETag(metadata.getETag());
+            attributes.setSize(metadata.getSize());
+            try {
+                attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
             }
-            else {
-                attributes.setETag(jsonObject.get("eTag").asString());
-                attributes.setSize(jsonObject.get("size").asLong());
-                try {
-                    attributes.setLink(new DescriptiveUrl(new URI(jsonObject.get("webUrl").asString()), DescriptiveUrl.Type.http));
-                }
-                catch(URISyntaxException e) {
-                    log.warn(String.format("Cannot set link. Web URL returned %s", jsonObject.get("webUrl")), e);
-                }
-                try {
-                    final Date createdDateTimeValue = dateParser.parse(jsonObject.get("createdDateTime").asString());
-                    attributes.setCreationDate(createdDateTimeValue.getTime());
-                }
-                catch(InvalidDateException e) {
-                    log.warn(String.format("Cannot parse Created Date Time. createdDateTime on Item returned %s", jsonObject.get("createdDateTime")), e);
-                }
-                try {
-                    final Date lastModifiedDateTime = dateParser.parse(jsonObject.get("lastModifiedDateTime").asString());
-                    attributes.setCreationDate(lastModifiedDateTime.getTime());
-                }
-                catch(InvalidDateException e) {
-                    log.warn(String.format("Cannot parse Last Modified Date Time. lastModifiedDateTime on Item returned %s", jsonObject.get("lastModifiedDateTime")), e);
-                }
-
-                final JsonValue fileValue = jsonObject.get("file");
-                final JsonValue folderValue = jsonObject.get("folder");
-                final JsonValue filesystemValue = jsonObject.get("fileSystemInfo");
-
-                if(fileValue != null && !fileValue.isNull()) {
-                    final JsonObject fileObject = fileValue.asObject();
-                }
-                else if(folderValue != null && !folderValue.isNull()) {
-                    final JsonObject folderObject = folderValue.asObject();
-                }
-
-                if(filesystemValue != null && !filesystemValue.isNull()) {
-                    final JsonObject filesystemObject = filesystemValue.asObject();
-                    String createdDateTimeValue = filesystemObject.get("createdDateTime").asString();
-                    String lastModifiedDateTimeValue = filesystemObject.get("lastModifiedDateTime").asString();
-
-                    try {
-                        attributes.setCreationDate(dateParser.parse(createdDateTimeValue).getTime());
-                    }
-                    catch(InvalidDateException e) {
-                        log.warn(String.format("Cannot parse Created Date Time. createdDateTime on FilesystemInfo Facet returned %s", jsonObject.get("createdDateTime")), e);
-                    }
-                    try {
-                        attributes.setModificationDate(dateParser.parse(lastModifiedDateTimeValue).getTime());
-                    }
-                    catch(InvalidDateException e) {
-                        log.warn(String.format("Cannot parse Last Modified Date Time. lastModifiedDateTime on FilesystemInfo Facet returned %s", jsonObject.get("lastModifiedDateTime")), e);
-                    }
-                }
+            catch(URISyntaxException e) {
+                log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
             }
+            attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
             return attributes;
         }
         catch(OneDriveAPIException e) {

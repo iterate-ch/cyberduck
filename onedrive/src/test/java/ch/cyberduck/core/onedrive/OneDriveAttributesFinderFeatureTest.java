@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,7 +46,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
-    public void testFind() throws Exception {
+    public void testFindDrives() throws Exception {
         final Path file = new Path("/", EnumSet.of(Path.Type.directory));
         OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         final AttributedList<Path> list = new OneDriveListService(session).list(file, new DisabledListProgressListener());
@@ -56,7 +57,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
-    public void testFindHierarchy() throws Exception {
+    public void testFindFiles() throws Exception {
         OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         OneDriveListService listService = new OneDriveListService(session);
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
@@ -64,7 +65,14 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
         for(Path f : list) {
             final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
             for(Path c : children) {
-                assertNotNull(attributesFinderFeature.find(c));
+                final PathAttributes attributes = attributesFinderFeature.find(c);
+                assertNotNull(attributes);
+                assertNotEquals(-1L, attributes.getSize());
+                assertNotEquals(-1L, attributes.getCreationDate());
+                assertNotEquals(-1L, attributes.getModificationDate());
+                assertNotNull(attributes.getETag());
+                assertNotNull(attributes.getVersionId());
+                assertNotNull(attributes.getLink());
             }
         }
     }
