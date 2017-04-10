@@ -118,7 +118,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
                 distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()));
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
                 return distribution;
             }
             catch(ServiceException e) {

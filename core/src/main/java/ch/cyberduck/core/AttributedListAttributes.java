@@ -38,21 +38,22 @@ public class AttributedListAttributes<E> {
     /**
      * The filter to apply to the directory listing excluding files from display.
      */
-    private Filter filter;
+    private Filter<E> filter;
 
     /**
      * Hidden attribute holds a list of hidden files.
      */
-    private final List<E> hidden
-            = new ArrayList<E>();
+    private final List<E> hidden = new ArrayList<E>();
 
     /**
      * The cached version should be superseded
      * with an updated listing.
      */
-    private final AtomicBoolean invalid
-            = new AtomicBoolean();
+    private final AtomicBoolean invalid = new AtomicBoolean();
 
+    /**
+     * Timestamp this snapshot of a directory listing was taken
+     */
     private Long timestamp;
 
     /**
@@ -69,7 +70,7 @@ public class AttributedListAttributes<E> {
      * @param comparator Sorting comparator
      * @param filter     Collection filter
      */
-    public AttributedListAttributes(final Comparator<E> comparator, final Filter filter) {
+    public AttributedListAttributes(final Comparator<E> comparator, final Filter<E> filter) {
         this.comparator = comparator;
         this.filter = filter;
     }
@@ -82,11 +83,11 @@ public class AttributedListAttributes<E> {
         this.comparator = comparator;
     }
 
-    public Filter getFilter() {
+    public Filter<E> getFilter() {
         return filter;
     }
 
-    public void setFilter(final Filter filter) {
+    public void setFilter(final Filter<E> filter) {
         this.filter = filter;
     }
 
