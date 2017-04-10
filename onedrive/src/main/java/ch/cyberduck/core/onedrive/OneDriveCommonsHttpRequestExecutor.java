@@ -25,6 +25,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -60,6 +61,12 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
     @Override
     public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
         final HttpEntityEnclosingRequestBase request = new HttpPut(url.toString());
+        return this.doUpload(url, headers, request);
+    }
+
+    @Override
+    public Upload doPatch(final URL url, final Set<RequestHeader> headers) throws IOException {
+        final HttpPatch request = new HttpPatch(url.toString());
         return this.doUpload(url, headers, request);
     }
 
@@ -160,11 +167,6 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
         this.authenticate(request);
         final CloseableHttpResponse response = client.execute(request);
         return new CommonsHttpResponse(response);
-    }
-
-    @Override
-    public Upload doPatch(final URL url, final Set<RequestHeader> headers) throws IOException {
-        return null; // TODO
     }
 
     protected void authenticate(final HttpRequestBase request) {
