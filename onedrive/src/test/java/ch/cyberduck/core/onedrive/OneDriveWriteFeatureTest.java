@@ -25,7 +25,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -41,17 +41,17 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
     public void testWrite() throws Exception {
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
         final Path container = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
-        status.setLength(-1L);
+        status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = RandomStringUtils.random(5 * 1024 * 1024).getBytes("UTF-8");
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[1 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNotNull(out.getStatus());
+        assertNull(out.getStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new OneDriveReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
