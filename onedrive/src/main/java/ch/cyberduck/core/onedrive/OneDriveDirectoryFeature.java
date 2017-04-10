@@ -22,17 +22,11 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveJsonRequest;
 
 import java.io.IOException;
 
-import com.eclipsesource.json.JsonObject;
-
 public class OneDriveDirectoryFeature implements Directory {
-    private static final Logger log = Logger.getLogger(OneDriveDirectoryFeature.class);
 
     private final OneDriveSession session;
 
@@ -42,12 +36,8 @@ public class OneDriveDirectoryFeature implements Directory {
 
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
-        if(directory.isRoot() || directory.getParent().isRoot()) {
-            throw new BackgroundException("Cannot create directory here", "Create directory in container");
-        }
-
         try {
-            final OneDriveFolder.Metadata createdFolder = session.getDirectory(directory.getParent()).create(directory.getName());
+            session.getDirectory(directory.getParent()).create(directory.getName());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map(e);
