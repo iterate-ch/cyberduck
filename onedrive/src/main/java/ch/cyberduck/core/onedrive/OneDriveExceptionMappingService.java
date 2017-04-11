@@ -28,10 +28,14 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import java.io.IOException;
 
 public class OneDriveExceptionMappingService extends AbstractExceptionMappingService<OneDriveAPIException> {
+
     @Override
     public BackgroundException map(final OneDriveAPIException failure) {
         if(failure.getResponseCode() > 0) {
-            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), failure.getMessage()));
+            final StringBuilder buffer = new StringBuilder();
+            buffer.append(failure.getMessage());
+            buffer.append(failure.getErrorMessage());
+            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }
         if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
