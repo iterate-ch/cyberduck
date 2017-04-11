@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.random.NonceGenerator;
 
 import org.apache.log4j.Logger;
 
@@ -153,6 +154,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Encrypted file header
      */
     private ByteBuffer header;
+
+    /**
+     * Chunk nonces
+     */
+    private NonceGenerator nonces;
 
     /**
      * Await completion
@@ -492,6 +498,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus withHeader(final ByteBuffer header) {
         this.setHeader(header);
+        return this;
+    }
+
+    public NonceGenerator getNonces() {
+        return nonces;
+    }
+
+    public void setNonces(final NonceGenerator nonces) {
+        this.nonces = nonces;
+    }
+
+    public TransferStatus withNonces(final NonceGenerator nonces) {
+        this.setNonces(nonces);
         return this;
     }
 

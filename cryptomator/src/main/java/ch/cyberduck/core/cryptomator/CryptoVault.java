@@ -403,6 +403,11 @@ public class CryptoVault implements Vault {
         return directoryProvider;
     }
 
+    public int numberOfChunks(final long cleartextFileSize) {
+        return (int) cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
+                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getFeature(final Session<?> session, final Class<T> type, final T delegate) {

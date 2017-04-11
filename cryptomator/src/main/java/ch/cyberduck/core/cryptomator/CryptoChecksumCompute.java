@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -23,7 +24,6 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,18 +57,19 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        return this.compute(in, status.getHeader());
+        final Checksum checksum = this.compute(in, status.getHeader(), status.getNonces());
+        return checksum;
     }
 
-    protected Checksum compute(final InputStream in, final ByteBuffer header) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
-                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header));
-            final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
+                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces);
+            final PipedInputStream sink = new PipedInputStream(source);
             final ThreadPool pool = ThreadPoolFactory.get();
             try {
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
