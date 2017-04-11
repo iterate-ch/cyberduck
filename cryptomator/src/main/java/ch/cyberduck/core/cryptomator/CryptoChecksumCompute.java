@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -24,6 +23,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
+import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,8 +57,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        final Checksum checksum = this.compute(in, status.getHeader(), status.getNonces());
-        return checksum;
+        return this.compute(in, status.getHeader(), status.getNonces());
     }
 
     protected Checksum compute(final InputStream in, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
