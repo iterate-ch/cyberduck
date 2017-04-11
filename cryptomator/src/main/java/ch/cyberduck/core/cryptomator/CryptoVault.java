@@ -404,8 +404,8 @@ public class CryptoVault implements Vault {
     }
 
     public int numberOfChunks(final long cleartextFileSize) {
-        return (int) cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0);
+        return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
+                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
     }
 
     @Override
