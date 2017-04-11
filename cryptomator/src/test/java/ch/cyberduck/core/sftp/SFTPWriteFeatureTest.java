@@ -34,6 +34,7 @@ import ch.cyberduck.core.cryptomator.CryptoListService;
 import ch.cyberduck.core.cryptomator.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
@@ -85,6 +86,7 @@ public class SFTPWriteFeatureTest {
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        status.setNonces(new RandomNonceGenerator());
         status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
