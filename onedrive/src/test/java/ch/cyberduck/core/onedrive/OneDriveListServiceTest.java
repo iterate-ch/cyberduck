@@ -4,16 +4,15 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -32,14 +31,12 @@ import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class OneDriveListServiceTest extends AbstractOneDriveTest {
-    private static final Logger log = Logger.getLogger(OneDriveListServiceTest.class);
 
     @Test
     public void testList() throws Exception {
         final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            log.info(f);
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
         }
     }
@@ -50,20 +47,23 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            log.info(f);
             final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
             for(Path c : children) {
-                log.info(c);
                 assertEquals(f.getName(), c.getParent().getName());
+                final PathAttributes attributes = c.attributes();
+                assertNotEquals(-1L, attributes.getSize());
+                assertNotEquals(-1L, attributes.getCreationDate());
+                assertNotEquals(-1L, attributes.getModificationDate());
+                assertNotNull(attributes.getETag());
+                assertNotNull(attributes.getVersionId());
+                assertNotNull(attributes.getLink());
                 if(c.isDirectory()) {
                     final AttributedList<Path> subChildren = listService.list(c, new DisabledListProgressListener());
                     for(Path s : subChildren) {
-                        log.info(s);
                         assertEquals(c.getName(), s.getParent().getName());
                     }
                 }
             }
         }
     }
-
 }

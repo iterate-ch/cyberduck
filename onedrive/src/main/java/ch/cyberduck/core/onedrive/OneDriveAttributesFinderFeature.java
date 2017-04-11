@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 import java.net.URI;
@@ -56,19 +57,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         }
         try {
             final OneDriveFile.Metadata metadata = session.getFile(file).getMetadata();
-            final PathAttributes attributes = new PathAttributes();
-            attributes.setVersionId(metadata.getId());
-            attributes.setETag(metadata.getETag());
-            attributes.setSize(metadata.getSize());
-            try {
-                attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
-            }
-            catch(URISyntaxException e) {
-                log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
-            }
-            attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
-            attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
-            return attributes;
+            return this.convert(metadata);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -76,6 +65,22 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    protected PathAttributes convert(final OneDriveItem.Metadata metadata) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setVersionId(metadata.getId());
+        attributes.setETag(metadata.getETag());
+        attributes.setSize(metadata.getSize());
+        try {
+            attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
+        }
+        catch(URISyntaxException e) {
+            log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
+        }
+        attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+        attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+        return attributes;
     }
 
     @Override

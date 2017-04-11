@@ -37,13 +37,15 @@ import java.util.Iterator;
 public class OneDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(OneDriveListService.class);
 
-    private final OneDriveSession session;
-
     private final PathContainerService containerService
             = new PathContainerService();
 
+    private final OneDriveSession session;
+    private final OneDriveAttributesFinderFeature attributes;
+
     public OneDriveListService(final OneDriveSession session) {
         this.session = session;
+        this.attributes = new OneDriveAttributesFinderFeature(session);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class OneDriveListService implements ListService {
                         log.warn(e);
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes();
+                    final PathAttributes attributes = this.attributes.convert(metadata);
                     children.add(new Path(directory, metadata.getName(),
                             metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
                 }
