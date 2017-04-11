@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -93,7 +94,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator());
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -120,7 +121,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator());
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
@@ -144,7 +145,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header);
+        }, vault.getCryptor(), header, new RandomNonceGenerator());
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);

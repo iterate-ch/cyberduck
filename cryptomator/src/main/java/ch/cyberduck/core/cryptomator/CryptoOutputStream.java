@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -32,8 +33,8 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
     private final StatusOutputStream<Reply> proxy;
 
-    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header) {
-        super(new SegmentingOutputStream(new EncrpytingOutputStream(proxy, cryptor, header), cryptor.fileContentCryptor().cleartextChunkSize()));
+    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header, final NonceGenerator nonces) {
+        super(new SegmentingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces), cryptor.fileContentCryptor().cleartextChunkSize()));
         this.proxy = proxy;
     }
 
@@ -52,21 +53,24 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
         write(b, 0, b.length);
     }
 
-    private static final class EncrpytingOutputStream extends ProxyOutputStream {
+    private static final class EncryptingOutputStream extends ProxyOutputStream {
         private final Cryptor cryptor;
         private final FileHeader header;
         private final int chunksize;
+        private final NonceGenerator nonces;
 
         /**
          * Position proxy content cryptor
          */
         private long chunkIndex = 0;
 
-        public EncrpytingOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header) {
+        public EncryptingOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header,
+                                      final NonceGenerator nonces) {
             super(proxy);
             this.cryptor = cryptor;
             this.header = header;
             this.chunksize = cryptor.fileContentCryptor().cleartextChunkSize();
+            this.nonces = nonces;
         }
 
         @Override
@@ -80,7 +84,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
                 int chunkLen = Math.min(chunksize, len - chunkOffset);
                 final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
                         ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
-                        chunkIndex++, header);
+                        chunkIndex++, header, nonces.next());
                 super.write(encryptedChunk.array());
             }
         }

@@ -84,7 +84,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
                                 = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
-                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.toString());
+                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
@@ -98,7 +98,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                         try {
                             return session.getClient().uploadFile(uploadUrl,
                                     file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
+                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
                                     status.getMetadata());
                         }

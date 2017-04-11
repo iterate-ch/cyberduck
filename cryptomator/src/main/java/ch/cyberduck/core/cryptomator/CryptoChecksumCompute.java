@@ -24,6 +24,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,17 +58,17 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        return this.compute(in, status.getHeader());
+        return this.compute(in, status.getHeader(), status.getNonces());
     }
 
-    protected Checksum compute(final InputStream in, final ByteBuffer header) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
-                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header));
+                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces);
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get();
             try {

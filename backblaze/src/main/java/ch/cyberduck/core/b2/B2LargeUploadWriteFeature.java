@@ -140,7 +140,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                     final Checksum checksum = status.getChecksum();
                     session.getClient().uploadFile(uploadUrl,
                             file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                            new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
+                            new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                             status.getMime(), status.getMetadata());
                 }
                 else {
@@ -203,8 +203,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                 }
-                // Mark parent status as complete
-                status.setComplete();
             }
             catch(B2ApiException e) {
                 throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
