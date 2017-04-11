@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -33,7 +34,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
@@ -54,7 +54,7 @@ public class B2BucketListServiceTest {
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
         bucket.attributes().setVersionId(new B2FileidProvider(session).getFileid(bucket));
-        final List<Path> list = new B2BucketListService(session).list(
+        final AttributedList<Path> list = new B2BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(bucket));

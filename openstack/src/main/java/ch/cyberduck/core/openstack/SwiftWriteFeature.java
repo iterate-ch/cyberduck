@@ -148,7 +148,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                 Long size = 0L;
                 final List<Path> segments = listService.list(
                         new Path(containerService.getContainer(file), segmentService.basename(file, length), EnumSet.of(Path.Type.directory)),
-                        new DisabledListProgressListener());
+                        new DisabledListProgressListener()).toList();
                 if(segments.isEmpty()) {
                     return Write.notfound;
                 }

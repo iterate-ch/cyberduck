@@ -694,7 +694,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 try {
                     distribution.setContainers(new S3BucketListService(session).list(
                             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                            new DisabledListProgressListener()));
+                            new DisabledListProgressListener()).toList());
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
@@ -736,7 +736,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 distribution.setContainers(new S3BucketListService(session).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()));
+                        new DisabledListProgressListener()).toList());
             }
             return distribution;
         }
