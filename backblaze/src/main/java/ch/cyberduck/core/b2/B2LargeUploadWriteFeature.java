@@ -203,8 +203,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                 }
-                // Mark parent status as complete
-                status.setComplete();
             }
             catch(B2ApiException e) {
                 throw new IOException(new B2ExceptionMappingService(session).map("Upload {0} failed", e, file));
