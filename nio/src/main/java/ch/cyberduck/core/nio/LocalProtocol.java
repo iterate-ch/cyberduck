@@ -42,11 +42,6 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isUTCTimezone() {
-        return false;
-    }
-
-    @Override
     public boolean isEncodingConfigurable() {
         return true;
     }
