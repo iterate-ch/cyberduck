@@ -68,7 +68,7 @@ public class S3ObjectListServiceTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         container.attributes().setRegion("us-east-1");
-        final List<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             assertEquals("us-east-1", p.attributes().getRegion());
@@ -92,7 +92,7 @@ public class S3ObjectListServiceTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final List<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
                 new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();

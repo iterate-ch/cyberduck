@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -39,6 +40,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -61,14 +63,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final Long segmentSize;
-
+    private final Write<StorageObject> writer;
     private final SwiftSegmentService segmentService;
-
     private final SwiftObjectListService listService;
-    private final Integer concurrency;
-
     private final SwiftRegionService regionService;
+
+    private final Long segmentSize;
+    private final Integer concurrency;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
@@ -85,6 +86,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         super(writer);
         this.session = session;
         this.regionService = regionService;
+        this.writer = writer;
         this.segmentSize = segmentSize;
         this.segmentService = segmentService;
         this.listService = listService;
@@ -103,7 +105,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             // Get a lexicographically ordered list of the existing file segments
             existingSegments.addAll(listService.list(
                     new Path(containerService.getContainer(file),
-                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
@@ -207,6 +209,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
+                status.setChecksum(writer.checksum().compute(
+                        StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status));
                 return SwiftLargeObjectUploadFeature.super.upload(
                         segment, local, throttle, listener, status, overall, new StreamProgress() {
                             @Override

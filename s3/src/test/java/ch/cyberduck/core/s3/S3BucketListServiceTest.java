@@ -1,5 +1,6 @@
 package ch.cyberduck.core.s3;
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -33,7 +33,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback());
-        final List<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
@@ -48,7 +48,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback());
-        final List<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new S3BucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
@@ -63,7 +63,7 @@ public class S3BucketListServiceTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         session.open(new DisabledHostKeyCallback());
-        final List<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1")).list(
+        final AttributedList<Path> list = new S3BucketListService(session, new S3LocationFeature.S3Region("eu-central-1")).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path bucket : list) {

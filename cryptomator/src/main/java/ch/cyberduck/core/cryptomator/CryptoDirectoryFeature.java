@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -60,6 +61,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
+            status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(0L)));
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
         proxy.mkdir(target, region, status);

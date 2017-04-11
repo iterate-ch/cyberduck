@@ -60,7 +60,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
             catch(InteroperabilityException | AccessDeniedException | NotfoundException f) {
                 log.warn(String.format("Failure listing directory %s. %s", file.getParent(), f.getMessage()));
                 // Try native implementation
-                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
+                final AttributesFinder feature = session._getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
                     throw f;
                 }
@@ -76,11 +76,11 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             if(null == file.attributes().getVersionId()) {
                 // Try native implementation
-                final AttributesFinder feature = session.getFeature(AttributesFinder.class);
+                final AttributesFinder feature = session._getFeature(AttributesFinder.class);
                 if(feature instanceof DefaultAttributesFinderFeature) {
                     throw new NotfoundException(file.getAbsolute());
                 }
-                final IdProvider id = session.getFeature(IdProvider.class);
+                final IdProvider id = session._getFeature(IdProvider.class);
                 final String version = id.getFileid(file);
                 if(version == null) {
                     throw new NotfoundException(file.getAbsolute());

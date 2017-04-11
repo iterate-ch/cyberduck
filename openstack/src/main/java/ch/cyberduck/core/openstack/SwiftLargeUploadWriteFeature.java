@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.SegmentingOutputStream;
@@ -39,6 +40,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -140,23 +142,26 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         }
 
         @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
+        public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
                 completed.add(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);
+                        status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum()
+                                .compute(new ByteArrayInputStream(content, off, len), status)
+                        );
                         // Segment name with left padded segment number
                         final Path segment = new Path(containerService.getContainer(file),
                                 segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
-                        final ByteArrayEntity entity = new ByteArrayEntity(b, off, len);
+                        final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                         final HashMap<String, String> headers = new HashMap<>();
                         final String checksum;
                         try {
                             checksum = session.getClient().storeObject(
                                     regionService.lookup(file),
                                     containerService.getContainer(segment).getName(), containerService.getKey(segment),
-                                    entity, headers, null);
+                                    entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
                         }
                         catch(GenericException e) {
                             throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
