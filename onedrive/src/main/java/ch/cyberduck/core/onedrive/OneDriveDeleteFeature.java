@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
@@ -28,6 +29,9 @@ import java.util.List;
 
 public class OneDriveDeleteFeature implements Delete {
 
+    private final PathContainerService containerService
+            = new PathContainerService();
+
     private final OneDriveSession session;
 
     public OneDriveDeleteFeature(OneDriveSession session) {
@@ -37,12 +41,10 @@ public class OneDriveDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            if(file.isRoot() || file.getParent().isRoot()) {
+            if(containerService.isContainer(file)) {
                 continue;
             }
-
             callback.delete(file);
-
             try {
                 session.getItem(file).delete();
             }
