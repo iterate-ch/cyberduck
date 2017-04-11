@@ -140,7 +140,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                     final Checksum checksum = status.getChecksum();
                     session.getClient().uploadFile(uploadUrl,
                             file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                            new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
+                            new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                             status.getMime(), status.getMetadata());
                 }
                 else {
