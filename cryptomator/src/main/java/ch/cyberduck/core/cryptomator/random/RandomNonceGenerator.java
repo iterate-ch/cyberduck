@@ -17,7 +17,7 @@ package ch.cyberduck.core.cryptomator.random;
 
 import ch.cyberduck.core.random.NonceGenerator;
 
-public class RandomNonceGenerator implements NonceGenerator {
+public final class RandomNonceGenerator implements NonceGenerator {
 
     private final static int len = 16;
 

@@ -21,7 +21,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RotatingNonceGenerator implements NonceGenerator {
+public final class RotatingNonceGenerator implements NonceGenerator {
 
     private final static int len = 16;
 
