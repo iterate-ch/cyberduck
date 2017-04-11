@@ -127,8 +127,13 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
-            final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(),
-                    status.getOffset() + status.getLength());
+            final String header;
+            if(status.getLength() == -1L) {
+                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
+            }
+            else {
+                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getOffset() + status.getLength());
+            }
             upload.uploadFragment(header, content);
             offset += content.length;
         }
