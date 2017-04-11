@@ -234,4 +234,8 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     public List<E> toList() {
         return impl;
     }
+
+    public int indexOf(final E e) {
+        return impl.indexOf(e);
+    }
 }
