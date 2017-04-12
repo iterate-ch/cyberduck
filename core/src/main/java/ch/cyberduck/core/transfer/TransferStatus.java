@@ -342,7 +342,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public TransferStatus displayname(final Path finalname) {
+    public TransferStatus withDisplayname(final Path finalname) {
         this.displayname.remote = finalname;
         return this;
     }
@@ -355,7 +355,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @param finalname Target filename to rename temporary file to
      */
-    public TransferStatus displayname(final Local finalname) {
+    public TransferStatus withDisplayname(final Local finalname) {
         this.displayname.local = finalname;
         return this;
     }
@@ -372,7 +372,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.mime = type;
     }
 
-    public TransferStatus mime(final String type) {
+    public TransferStatus withMime(final String type) {
         this.mime = type;
         return this;
     }
@@ -385,7 +385,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = checksum;
     }
 
-    public TransferStatus checksum(final Checksum checksum) {
+    public TransferStatus withChecksum(final Checksum checksum) {
         this.setChecksum(checksum);
         return this;
     }
@@ -446,7 +446,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.parameters = parameters;
     }
 
-    public TransferStatus parameters(final Map<String, String> parameters) {
+    public TransferStatus withParameters(final Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
     }
@@ -459,7 +459,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.metadata = metadata;
     }
 
-    public TransferStatus metadata(final Map<String, String> metadata) {
+    public TransferStatus withMetadata(final Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }

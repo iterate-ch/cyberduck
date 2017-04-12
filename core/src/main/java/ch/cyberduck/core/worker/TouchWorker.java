@@ -41,7 +41,7 @@ public class TouchWorker extends Worker<Path> {
         return feature.touch(file, new TransferStatus()
                 .exists(false)
                 .length(0L)
-                .mime(new MappingMimeTypeService().getMime(file.getName())));
+                .withMime(new MappingMimeTypeService().getMime(file.getName())));
     }
 
     @Override

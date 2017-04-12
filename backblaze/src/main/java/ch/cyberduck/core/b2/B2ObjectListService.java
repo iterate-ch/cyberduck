@@ -130,7 +130,9 @@ public class B2ObjectListService implements ListService {
      */
     protected PathAttributes parse(final B2FileInfoResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(Checksum.parse(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT)));
+        attributes.setChecksum(
+                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
+        );
         final long timestamp = response.getUploadTimestamp();
         attributes.setCreationDate(timestamp);
         attributes.setModificationDate(timestamp);

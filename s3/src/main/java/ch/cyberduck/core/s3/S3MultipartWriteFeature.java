@@ -152,7 +152,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         final Map<String, String> parameters = new HashMap<String, String>();
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
-                        final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
+                        final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
                                 status.setChecksum(S3MultipartWriteFeature.this.checksum()
