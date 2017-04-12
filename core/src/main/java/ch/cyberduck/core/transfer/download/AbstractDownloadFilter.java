@@ -359,7 +359,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             if(file.isFile()) {
                 if(this.options.checksum) {
-                    if(file.getType().contains(Path.Type.encrypted)) {
+                    if(file.getType().contains(Path.Type.decrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
                     else {
