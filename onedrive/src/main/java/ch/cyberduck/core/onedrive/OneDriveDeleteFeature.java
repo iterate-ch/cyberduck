@@ -46,7 +46,7 @@ public class OneDriveDeleteFeature implements Delete {
             }
             callback.delete(file);
             try {
-                session.getItem(file).delete();
+                session.toFile(file).delete();
             }
             catch(OneDriveAPIException e) {
                 throw new OneDriveExceptionMappingService().map("Cannot delete {0}", e, file);

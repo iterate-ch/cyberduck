@@ -37,7 +37,7 @@ public class OneDriveTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            session.getFile(file).create(status.getMime());
+            session.toFile(file).create(status.getMime());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create file {0}", e, file);

@@ -65,7 +65,7 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final OneDriveUploadSession upload = session.getFile(file).createUploadSession();
+            final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, status);
             return new HttpResponseOutputStream<Void>(new SegmentingOutputStream(proxy,
                     preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {

@@ -47,16 +47,16 @@ public class OneDriveMoveFeature implements Move {
             patchOperation.rename(renamed.getName());
         }
         if(file.getParent() != renamed.getParent()) {
-            patchOperation.move(session.getDirectory(renamed.getParent()));
+            patchOperation.move(session.toFolder(renamed.getParent()));
         }
         try {
-            session.getItem(file).patch(patchOperation);
+            session.toFile(file).patch(patchOperation);
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map("Moving {0} failed", e, file);
+            throw new OneDriveExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Moving {0} failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
     }
 
