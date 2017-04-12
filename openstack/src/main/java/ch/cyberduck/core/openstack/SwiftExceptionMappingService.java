@@ -19,16 +19,11 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
-import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
+import org.apache.http.client.HttpResponseException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -42,23 +37,6 @@ public class SwiftExceptionMappingService extends AbstractExceptionMappingServic
         if(null != status) {
             this.append(buffer, String.format("%d %s", status.getStatusCode(), status.getReasonPhrase()));
         }
-        switch(e.getHttpStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
-            case HttpStatus.SC_BAD_REQUEST:
-                return new LoginFailureException(buffer.toString(), e);
-            case HttpStatus.SC_FORBIDDEN:
-                return new AccessDeniedException(buffer.toString(), e);
-            case HttpStatus.SC_NOT_FOUND:
-                return new NotfoundException(buffer.toString(), e);
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-            case HttpStatus.SC_NOT_IMPLEMENTED:
-            case HttpStatus.SC_CONFLICT:
-                return new ConflictException(buffer.toString(), e);
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                return new ConnectionRefusedException(buffer.toString(), e);
-            case HttpStatus.SC_REQUEST_TIMEOUT:
-                return new ConnectionTimeoutException(buffer.toString(), e);
-        }
-        return this.wrap(e, buffer);
+        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getHttpStatusCode(), buffer.toString()));
     }
 }
