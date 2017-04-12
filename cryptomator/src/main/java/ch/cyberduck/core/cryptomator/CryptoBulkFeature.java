@@ -62,7 +62,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 // Write header
                 final Cryptor cryptor = cryptomator.getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
-                status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(file.attributes().getSize())));
+                status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
                 status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             }
         }

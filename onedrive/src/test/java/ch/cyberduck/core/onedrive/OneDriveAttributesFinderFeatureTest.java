@@ -71,10 +71,9 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
                 assertNotEquals(-1L, attributes.getCreationDate());
                 assertNotEquals(-1L, attributes.getModificationDate());
                 assertNotNull(attributes.getETag());
-                assertNotNull(attributes.getVersionId());
+                assertNull(attributes.getVersionId());
                 assertNotNull(attributes.getLink());
             }
         }
     }
-
 }

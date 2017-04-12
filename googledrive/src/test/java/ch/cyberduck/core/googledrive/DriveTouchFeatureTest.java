@@ -73,7 +73,7 @@ public class DriveTouchFeatureTest {
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus().mime("x-application/cyberduck"));
+        new DriveTouchFeature(session).touch(test, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new DriveAttributesFinderFeature(session) {
             @Override
             protected PathAttributes toAttributes(final File f) {

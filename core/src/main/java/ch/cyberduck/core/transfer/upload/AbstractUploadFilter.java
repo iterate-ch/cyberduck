@@ -164,7 +164,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     log.debug(String.format("Set temporary filename %s", renamed));
                 }
                 status.temporary(renamed);
-                status.displayname(file);
+                status.withDisplayname(file);
             }
             status.setMime(mapping.getMime(file.getName()));
         }

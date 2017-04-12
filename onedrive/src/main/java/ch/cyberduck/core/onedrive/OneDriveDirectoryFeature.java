@@ -37,7 +37,7 @@ public class OneDriveDirectoryFeature implements Directory {
     @Override
     public Path mkdir(final Path directory, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            session.getDirectory(directory.getParent()).create(directory.getName());
+            session.toFolder(directory.getParent()).create(directory.getName());
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create folder {0}", e, directory);

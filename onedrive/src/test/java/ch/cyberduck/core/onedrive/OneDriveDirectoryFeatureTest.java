@@ -45,7 +45,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         assertFalse(list.isEmpty());
         for(Path f : list) {
             final Path target = directoryFeature.mkdir(new Path(f, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, null);
-            assertNotNull(attributesFinderFeature.find(target).getVersionId());
+            assertNotNull(attributesFinderFeature.find(target).getETag());
             deleteFeature.delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }

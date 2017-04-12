@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -36,12 +35,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
+
     @Test
     public void testRename() throws BackgroundException {
         final Touch touch = new OneDriveTouchFeature(session);
@@ -54,7 +52,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         for(Path file : list) {
             if(file.isDirectory()) {
                 Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().mime("x-application/cyberduck"));
+                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
                 assertNotNull(attributesFinder.find(touchedFile));
                 Path rename = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
                 assertTrue(move.isSupported(touchedFile, rename));
@@ -82,7 +80,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
                 assertNotNull(attributesFinder.find(targetDirectory));
 
                 Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().mime("x-application/cyberduck"));
+                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
                 assertNotNull(attributesFinder.find(touchedFile));
 
                 Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
@@ -112,7 +110,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
                 assertNotNull(attributesFinder.find(targetDirectory));
 
                 Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().mime("x-application/cyberduck"));
+                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
                 assertNotNull(attributesFinder.find(touchedFile));
 
                 Path rename = new Path(targetDirectory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

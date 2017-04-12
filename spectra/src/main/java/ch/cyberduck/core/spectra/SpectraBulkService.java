@@ -159,7 +159,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         final TransferStatus status = item.getValue();
                         final Map<String, String> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, job.getJobId().toString());
-                        status.parameters(parameters);
+                        status.withParameters(parameters);
                     }
                 }
             }
@@ -299,8 +299,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     }
                     final TransferStatus chunk = new TransferStatus()
                             .exists(status.isExists())
-                            .metadata(status.getMetadata())
-                            .parameters(status.getParameters());
+                            .withMetadata(status.getMetadata())
+                            .withParameters(status.getParameters());
                     // Server sends multiple chunks with offsets
                     if(object.getOffset() > 0L) {
                         chunk.setAppend(true);

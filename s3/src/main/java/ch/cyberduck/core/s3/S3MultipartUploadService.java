@@ -230,7 +230,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset)
-                        .parameters(requestParameters);
+                        .withParameters(requestParameters);
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }

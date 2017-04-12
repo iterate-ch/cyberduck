@@ -25,12 +25,14 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -49,10 +51,8 @@ import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveExpand;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
@@ -74,30 +74,17 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
-    public OneDriveDrive getDrive(final Path file) {
-        return new OneDriveDrive(client, containerService.getContainer(file).getName());
+    public OneDriveFile toFile(final Path file) {
+        return new OneDriveFile(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
+                URIEncoder.encode(containerService.getKey(file)));
     }
 
-    public OneDriveItem getItem(final Path file) {
-        return new OneDriveItem(client, getDrive(file), containerService.getKey(file)) {
-            @Override
-            public Metadata getMetadata(final OneDriveExpand... expand) throws IOException {
-                return null;
-            }
-        };
-    }
-
-    public OneDriveFile getFile(final Path file) {
-        return new OneDriveFile(client, getDrive(file), containerService.getKey(file));
-    }
-
-    public OneDriveFolder getDirectory(final Path file) {
-        final OneDriveDrive drive = getDrive(file);
-        final String key = containerService.getKey(file);
-        if(key == null) {
-            return drive.getRoot();
+    public OneDriveFolder toFolder(final Path file) {
+        if(containerService.isContainer(file)) {
+            return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
         }
-        return new OneDriveFolder(client, getDrive(file), key);
+        return new OneDriveFolder(client, new OneDriveDrive(client, containerService.getContainer(file).getName()),
+                URIEncoder.encode(containerService.getKey(file)));
     }
 
     @Override
@@ -207,6 +194,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Touch.class) {
             return (T) new OneDriveTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new OneDriveMoveFeature(this);
         }
         if(type == AttributesFinder.class) {
             return (T) new OneDriveAttributesFinderFeature(this);
