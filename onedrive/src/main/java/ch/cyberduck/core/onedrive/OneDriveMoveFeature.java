@@ -28,6 +28,7 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class OneDriveMoveFeature implements Move {
     final OneDriveSession session;
@@ -70,11 +71,11 @@ public class OneDriveMoveFeature implements Move {
         final String sourceContainer = containerService.getContainer(source).getName();
         final String targetContainer = containerService.getContainer(source).getName();
 
-        if(sourceContainer != targetContainer) {
+        if(!StringUtils.equals(sourceContainer, targetContainer)) {
             return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override
