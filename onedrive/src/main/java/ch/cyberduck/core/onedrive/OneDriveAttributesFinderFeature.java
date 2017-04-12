@@ -67,7 +67,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
 
     protected PathAttributes convert(final OneDriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setVersionId(metadata.getId());
         attributes.setETag(metadata.getETag());
         attributes.setSize(metadata.getSize());
         try {
