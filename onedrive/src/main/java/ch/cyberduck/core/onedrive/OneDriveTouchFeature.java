@@ -16,12 +16,14 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.IOException;
@@ -37,7 +39,7 @@ public class OneDriveTouchFeature implements Touch {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            session.toFile(file).create(status.getMime());
+            session.toFile(file).create(StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Cannot create file {0}", e, file);
