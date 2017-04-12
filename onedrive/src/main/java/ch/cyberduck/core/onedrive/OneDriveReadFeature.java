@@ -23,14 +23,14 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class OneDriveReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(OneDriveReadFeature.class);
 
     private final OneDriveSession session;
 
@@ -41,19 +41,21 @@ public class OneDriveReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            OneDriveFile oneDriveFile = session.getFile(file);
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
+                final String header;
                 if(-1 == range.getEnd()) {
-                    return oneDriveFile.download(String.format("%d-", range.getStart()));
+                    header = String.format("%d-", range.getStart());
                 }
                 else {
-                    return oneDriveFile.download(String.format("%d-%d", range.getStart(), range.getEnd()));
+                    header = String.format("%d-%d", range.getStart(), range.getEnd());
                 }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add range header %s for file %s", header, file));
+                }
+                return session.toFile(file).download(header);
             }
-            else {
-                return oneDriveFile.download();
-            }
+            return session.toFile(file).download();
         }
         catch(OneDriveAPIException e) {
             throw new OneDriveExceptionMappingService().map("Download {0} failed", e, file);
