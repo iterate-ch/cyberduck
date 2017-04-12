@@ -86,7 +86,12 @@ public final class MainApplication {
                     new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol(),
-                    new LocalProtocol()
+                    new LocalProtocol() {
+                        @Override
+                        public String disk() {
+                            return "NSComputer";
+                        }
+                    }
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
