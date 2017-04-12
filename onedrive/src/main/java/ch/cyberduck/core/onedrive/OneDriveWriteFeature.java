@@ -66,7 +66,7 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
-            final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, status);
+            final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, status.getOffset() + status.getLength());
             return new HttpResponseOutputStream<Void>(new SegmentingOutputStream(proxy,
                     preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
                 @Override
@@ -109,13 +109,13 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
 
     private final class ChunkedOutputStream extends OutputStream {
         private final OneDriveUploadSession upload;
-        private final TransferStatus status;
+        private final Long length;
 
         private Long offset = 0L;
 
-        public ChunkedOutputStream(final OneDriveUploadSession upload, final TransferStatus status) {
+        public ChunkedOutputStream(final OneDriveUploadSession upload, final Long length) {
             this.upload = upload;
-            this.status = status;
+            this.length = length;
         }
 
         @Override
@@ -128,11 +128,11 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
             final String header;
-            if(status.getLength() == -1L) {
+            if(length == -1L) {
                 header = String.format("%d-%d/*", range.getStart(), range.getEnd());
             }
             else {
-                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getOffset() + status.getLength());
+                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             }
             upload.uploadFragment(header, content);
             offset += content.length;
