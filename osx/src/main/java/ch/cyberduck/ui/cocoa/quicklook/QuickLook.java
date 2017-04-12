@@ -37,8 +37,6 @@ public interface QuickLook {
      */
     boolean isOpen();
 
-    void willBeginQuickLook();
-
     /**
      * Open QuickLook panel
      */
@@ -49,5 +47,6 @@ public interface QuickLook {
      */
     void close();
 
+    void willBeginQuickLook();
     void didEndQuickLook();
 }
