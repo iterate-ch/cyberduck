@@ -20,19 +20,16 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.QuotaException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.jets3t.service.ServiceException;
 import org.xml.sax.SAXException;
 
@@ -55,31 +52,18 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
             this.append(buffer, e.getMessage());
         }
         switch(e.getResponseCode()) {
-            case HttpStatus.SC_NOT_FOUND:
-                return new NotfoundException(buffer.toString(), e);
-            case HttpStatus.SC_CONFLICT:
-                return new ConflictException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
                 if(StringUtils.isNotBlank(e.getErrorCode())) {
                     switch(e.getErrorCode()) {
                         case "SignatureDoesNotMatch":
-                            return new LoginFailureException(buffer.toString(), e);
                         case "InvalidAccessKeyId":
-                            return new LoginFailureException(buffer.toString(), e);
                         case "InvalidClientTokenId":
-                            return new LoginFailureException(buffer.toString(), e);
                         case "InvalidSecurity":
-                            return new LoginFailureException(buffer.toString(), e);
                         case "MissingClientTokenId":
-                            return new LoginFailureException(buffer.toString(), e);
                         case "MissingAuthenticationToken":
                             return new LoginFailureException(buffer.toString(), e);
                     }
                 }
-                return new AccessDeniedException(buffer.toString(), e);
-            case HttpStatus.SC_UNAUTHORIZED:
-                // Actually never returned by S3 but always 403
-                return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
                 if(StringUtils.isNotBlank(e.getErrorCode())) {
                     switch(e.getErrorCode()) {
@@ -87,17 +71,6 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
                             return new ConnectionTimeoutException(buffer.toString(), e);
                     }
                 }
-            case HttpStatus.SC_NOT_IMPLEMENTED:
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                // ServiceUnavailable
-                // SlowDown
-                return new RetriableAccessDeniedException(buffer.toString(), e);
-            case HttpStatus.SC_PAYMENT_REQUIRED:
-                return new QuotaException(buffer.toString(), e);
-            case HttpStatus.SC_REQUEST_TIMEOUT:
-                return new ConnectionTimeoutException(buffer.toString(), e);
         }
         if(e.getCause() instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
@@ -105,6 +78,6 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         if(e.getCause() instanceof SAXException) {
             return new InteroperabilityException(buffer.toString(), e);
         }
-        return this.wrap(e, buffer);
+        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()));
     }
 }

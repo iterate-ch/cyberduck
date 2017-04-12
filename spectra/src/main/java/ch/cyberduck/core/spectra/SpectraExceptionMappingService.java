@@ -16,18 +16,13 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
 
@@ -40,10 +35,6 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getError().getMessage());
         switch(e.getStatusCode()) {
-            case HttpStatus.SC_NOT_FOUND:
-                return new NotfoundException(buffer.toString(), e);
-            case HttpStatus.SC_CONFLICT:
-                return new ConflictException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
                 if(StringUtils.isNotBlank(e.getError().getCode())) {
                     switch(e.getError().getCode()) {
@@ -61,27 +52,10 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
                             return new LoginFailureException(buffer.toString(), e);
                     }
                 }
-                return new AccessDeniedException(buffer.toString(), e);
-
-            case HttpStatus.SC_UNAUTHORIZED:
-                // Actually never returned by S3 but always 403
-                return new LoginFailureException(buffer.toString(), e);
-            case HttpStatus.SC_BAD_REQUEST:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_PAYMENT_REQUIRED:
-                return new QuotaException(buffer.toString(), e);
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                return new ConnectionRefusedException(buffer.toString(), e);
-            case HttpStatus.SC_REQUEST_TIMEOUT:
-                return new ConnectionTimeoutException(buffer.toString(), e);
         }
         if(e.getCause() instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
         }
-        return this.wrap(e, buffer);
+        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatusCode(), buffer.toString()));
     }
 }
