@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
@@ -32,7 +33,7 @@ public class OneDriveExceptionMappingService extends AbstractExceptionMappingSer
     @Override
     public BackgroundException map(final OneDriveAPIException failure) {
         if(failure.getResponseCode() > 0) {
-            final StringBuilder buffer = new StringBuilder();
+            final StringAppender buffer = new StringAppender();
             buffer.append(failure.getMessage());
             buffer.append(failure.getErrorMessage());
             return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
