@@ -15,5 +15,75 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-public class OneDriveMoveFeature {
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Move;
+
+import org.apache.commons.codec.binary.StringUtils;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDrivePatchOperation;
+
+import java.io.IOException;
+
+public class OneDriveMoveFeature implements Move {
+    final OneDriveSession session;
+    final PathContainerService containerService
+            = new PathContainerService();
+
+    public OneDriveMoveFeature(OneDriveSession session) {
+        this.session = session;
+    }
+
+    @Override
+    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+        final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
+        if(!StringUtils.equals(file.getName(), renamed.getName())) {
+            patchOperation.rename(renamed.getName());
+        }
+        if(file.getParent() != renamed.getParent()) {
+            patchOperation.move(session.getDirectory(renamed.getParent()));
+        }
+        try {
+            session.getItem(file).patch(patchOperation);
+        }
+        catch(OneDriveAPIException e) {
+            throw new OneDriveExceptionMappingService().map("Moving {0} failed", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Moving {0} failed", e, file);
+        }
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        if(source.isRoot() || source.getParent().isRoot()) {
+            return false;
+        }
+        if(target.isRoot() || target.getParent().isRoot()) {
+            return false;
+        }
+
+        final String sourceContainer = containerService.getContainer(source).getName();
+        final String targetContainer = containerService.getContainer(source).getName();
+
+        if(sourceContainer != targetContainer) {
+            return false;
+        }
+
+        return false;
+    }
+
+    @Override
+    public Move withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Move withList(final ListService list) {
+        return this;
+    }
 }
