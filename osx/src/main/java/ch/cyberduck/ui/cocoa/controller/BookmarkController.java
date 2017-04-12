@@ -317,7 +317,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 updateField(usernameField, credentials.getUsername());
                 usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
-                usernameField.setEnabled(!credentials.isAnonymousLogin());
+                usernameField.setEnabled(bookmark.getProtocol().isUsernameConfigurable() && !credentials.isAnonymousLogin());
             }
         });
     }

@@ -100,7 +100,7 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
-                passwordField.setEnabled(!credentials.isAnonymousLogin());
+                passwordField.setEnabled(bookmark.getProtocol().isPasswordConfigurable() && !credentials.isAnonymousLogin());
                 if(preferences.getBoolean("connection.login.keychain")) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
