@@ -28,11 +28,12 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class OneDriveMoveFeature implements Move {
-    final OneDriveSession session;
-    final PathContainerService containerService
+
+    private final OneDriveSession session;
+
+    private final PathContainerService containerService
             = new PathContainerService();
 
     public OneDriveMoveFeature(OneDriveSession session) {
@@ -67,14 +68,11 @@ public class OneDriveMoveFeature implements Move {
         if(target.isRoot() || target.getParent().isRoot()) {
             return false;
         }
-
         final String sourceContainer = containerService.getContainer(source).getName();
         final String targetContainer = containerService.getContainer(source).getName();
-
         if(!StringUtils.equals(sourceContainer, targetContainer)) {
             return false;
         }
-
         return true;
     }
 
