@@ -33,7 +33,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
@@ -50,7 +51,7 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
         for(Path file : list) {
             if(file.isDirectory()) {
                 Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().mime("x-application/cyberduck"));
+                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
                 assertNotNull(attributesFinder.find(touchedFile));
                 delete.delete(Collections.singletonList(touchedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
