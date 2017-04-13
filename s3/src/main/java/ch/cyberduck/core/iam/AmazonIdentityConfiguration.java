@@ -39,7 +39,11 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.*;
 
 public class AmazonIdentityConfiguration implements IdentityConfiguration {
@@ -174,9 +178,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
         this.authenticated(new Authenticated<Void>() {
             @Override
             public Void call() throws BackgroundException {
-                // Create new IAM credentials
-                final AmazonIdentityManagementClient client = new AmazonIdentityManagementClient(
-                        new com.amazonaws.auth.AWSCredentials() {
+                final AmazonIdentityManagement client = AmazonIdentityManagementClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
                             @Override
                             public String getAWSAccessKeyId() {
                                 return host.getCredentials().getUsername();
@@ -186,8 +189,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                             public String getAWSSecretKey() {
                                 return host.getCredentials().getPassword();
                             }
-                        }, configuration
-                );
+                        }))
+                        .withClientConfiguration(configuration).build();
                 try {
                     // Create new IAM credentials
                     User user;
