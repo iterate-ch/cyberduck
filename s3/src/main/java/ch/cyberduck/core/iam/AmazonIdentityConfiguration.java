@@ -42,7 +42,6 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.*;
 
@@ -107,9 +106,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             @Override
             public Void call() throws BackgroundException {
                 PreferencesFactory.get().deleteProperty(String.format("%s%s", prefix, username));
-                // Create new IAM credentials
-                final AmazonIdentityManagementClient client = new AmazonIdentityManagementClient(
-                        new com.amazonaws.auth.AWSCredentials() {
+                final AmazonIdentityManagement client = AmazonIdentityManagementClientBuilder.standard()
+                        .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
                             @Override
                             public String getAWSAccessKeyId() {
                                 return host.getCredentials().getUsername();
@@ -119,8 +117,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                             public String getAWSSecretKey() {
                                 return host.getCredentials().getPassword();
                             }
-                        }, configuration
-                );
+                        }))
+                        .withClientConfiguration(configuration).build();
                 try {
                     final ListAccessKeysResult keys
                             = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
