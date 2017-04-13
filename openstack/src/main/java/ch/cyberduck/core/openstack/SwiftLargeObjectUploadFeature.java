@@ -156,7 +156,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            status.setCanceled();
             if(e.getCause() instanceof BackgroundException) {
                 throw (BackgroundException) e.getCause();
             }
@@ -211,6 +210,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 }
                 status.setChecksum(writer.checksum().compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status));
+                status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.super.upload(
                         segment, local, throttle, listener, status, overall, new StreamProgress() {
                             @Override
