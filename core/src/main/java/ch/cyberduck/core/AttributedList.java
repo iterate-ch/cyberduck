@@ -227,6 +227,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
         return impl.contains(e);
     }
 
+    @SuppressWarnings("unchecked")
     public E[] toArray() {
         return (E[]) impl.toArray(new Referenceable[impl.size()]);
     }
