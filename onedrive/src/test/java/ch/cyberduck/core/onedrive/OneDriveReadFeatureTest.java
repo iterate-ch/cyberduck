@@ -96,7 +96,9 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
-        final InputStream in = new OneDriveReadFeature(session).read(test, status.length(content.length - 100), new DisabledConnectionCallback());
+        final OneDriveReadFeature read = new OneDriveReadFeature(session);
+        assertTrue(read.offset(test));
+        final InputStream in = read.read(test, status.length(content.length - 100), new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length - 100);
         new StreamCopier(status, status).transfer(in, buffer);

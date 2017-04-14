@@ -67,6 +67,6 @@ public class OneDriveReadFeature implements Read {
 
     @Override
     public boolean offset(final Path file) throws BackgroundException {
-        return false;
+        return true;
     }
 }
