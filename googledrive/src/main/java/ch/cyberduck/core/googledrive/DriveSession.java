@@ -29,7 +29,20 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.Preferences;
@@ -182,9 +195,6 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Quota.class) {
             return (T) new DriveQuotaFeature(this);
-        }
-        if(type == AttributesFinder.class) {
-            return (T) new DriveAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
             return (T) new DriveTimestampFeature(this);
