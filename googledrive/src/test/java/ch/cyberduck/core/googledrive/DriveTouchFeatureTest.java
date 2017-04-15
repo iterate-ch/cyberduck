@@ -25,7 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -42,9 +41,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import com.google.api.services.drive.model.File;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class DriveTouchFeatureTest {
@@ -74,13 +71,6 @@ public class DriveTouchFeatureTest {
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(test, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(new DriveAttributesFinderFeature(session) {
-            @Override
-            protected PathAttributes toAttributes(final File f) {
-                assertEquals("x-application/cyberduck", f.getMimeType());
-                return super.toAttributes(f);
-            }
-        }.find(test));
         new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
