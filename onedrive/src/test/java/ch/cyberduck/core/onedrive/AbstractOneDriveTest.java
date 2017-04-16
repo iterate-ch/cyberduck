@@ -43,7 +43,7 @@ public abstract class AbstractOneDriveTest {
     @Before
     public void setup() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
-                new Local("../profiles/OneDrive.cyberduckprofile"));
+                new Local("../profiles/Microsoft OneDrive.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
