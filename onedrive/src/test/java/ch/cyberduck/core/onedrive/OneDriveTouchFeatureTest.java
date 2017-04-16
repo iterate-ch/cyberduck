@@ -15,11 +15,9 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -31,9 +29,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
@@ -44,17 +40,9 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
     public void testTouch() throws Exception {
         final Touch touch = new OneDriveTouchFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
-        final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
-
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path file : list) {
-            if(file.isDirectory()) {
-                Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-                assertNotNull(attributesFinder.find(touchedFile));
-                delete.delete(Collections.singletonList(touchedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-        }
+        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
+        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
