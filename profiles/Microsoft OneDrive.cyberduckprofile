@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>unified</string>
+        <string>cyberduck</string>
         <key>Description</key>
-        <string>OneDrive</string>
+        <string>Microsoft OneDrive</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
