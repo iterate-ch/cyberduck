@@ -33,37 +33,30 @@ import static org.junit.Assert.*;
 public class OneDriveListServiceTest extends AbstractOneDriveTest {
 
     @Test
-    public void testList() throws Exception {
+    public void testListDrives() throws Exception {
         final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
         }
+        assertTrue(list.contains(new OneDriveHomeFinderFeature(session).find()));
     }
 
     @Test
     public void testListDriveChildren() throws Exception {
         ListService listService = new OneDriveListService(session);
-        final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
-            for(Path c : children) {
-                assertEquals(f.getName(), c.getParent().getName());
-                final PathAttributes attributes = c.attributes();
-                assertNotEquals(-1L, attributes.getSize());
-                assertNotEquals(-1L, attributes.getCreationDate());
-                assertNotEquals(-1L, attributes.getModificationDate());
-                assertNotNull(attributes.getETag());
-                assertNull(attributes.getVersionId());
-                assertNotNull(attributes.getLink());
-                if(c.isDirectory()) {
-                    final AttributedList<Path> subChildren = listService.list(c, new DisabledListProgressListener());
-                    for(Path s : subChildren) {
-                        assertEquals(c.getName(), s.getParent().getName());
-                    }
-                }
-            }
+            assertEquals(drive.getName(), f.getParent().getName());
+            final PathAttributes attributes = f.attributes();
+            assertNotEquals(-1L, attributes.getSize());
+            assertNotEquals(-1L, attributes.getCreationDate());
+            assertNotEquals(-1L, attributes.getModificationDate());
+            assertNotNull(attributes.getETag());
+            assertNull(attributes.getVersionId());
+            assertNotNull(attributes.getLink());
         }
     }
 }
