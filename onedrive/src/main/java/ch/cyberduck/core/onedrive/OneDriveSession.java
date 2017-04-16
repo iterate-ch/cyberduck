@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -203,6 +204,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
+        }
+        if(type == Home.class) {
+            return (T) new OneDriveHomeFinderFeature(this);
         }
         return super._getFeature(type);
     }
