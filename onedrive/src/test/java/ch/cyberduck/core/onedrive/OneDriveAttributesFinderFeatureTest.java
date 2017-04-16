@@ -37,10 +37,10 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testFindNotFound() throws Exception {
         final OneDriveAttributesFinderFeature f = new OneDriveAttributesFinderFeature(session);
         try {
-            f.find(new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file)));
+            f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
         }
         catch(NotfoundException e) {
-            assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
