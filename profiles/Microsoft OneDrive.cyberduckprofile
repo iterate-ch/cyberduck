@@ -36,7 +36,7 @@
         <key>Context</key>
         <string>/v1.0/me</string>
         <key>OAuth Authorization Url</key>
-        <string>https://login.microsoftonline.com/common/oauth2/v2.0/auth</string>
+        <string>https://login.microsoftonline.com/common/oauth2/v2.0/authorize</string>
         <key>OAuth Token Url</key>
         <string>https://login.microsoftonline.com/common/oauth2/v2.0/token</string>
         <key>Scopes</key>
