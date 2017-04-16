@@ -46,7 +46,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWrite() throws Exception {
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
-        final Path container = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -70,7 +70,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
         final OneDriveWriteFeature feature = new OneDriveWriteFeature(session);
-        final Path container = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final Path container = new OneDriveHomeFinderFeature(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

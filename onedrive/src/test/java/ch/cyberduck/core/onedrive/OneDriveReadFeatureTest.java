@@ -49,7 +49,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         try {
-            final Path drive = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+            final Path drive = new OneDriveHomeFinderFeature(session).find();
             new OneDriveReadFeature(session).read(new Path(drive, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
         }
         catch(NotfoundException e) {
@@ -60,7 +60,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadInterrupt() throws Exception {
-        final Path drive = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
         // Unknown length in status
@@ -81,7 +81,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRange() throws Exception {
-        final Path drive = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
 
@@ -114,7 +114,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-        final Path drive = new Path("/587e132bbff8c44a", EnumSet.of(Path.Type.volume));
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(test, new TransferStatus());
 
