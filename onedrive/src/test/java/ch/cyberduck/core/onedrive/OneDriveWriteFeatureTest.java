@@ -25,10 +25,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +40,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
 
     @Test
