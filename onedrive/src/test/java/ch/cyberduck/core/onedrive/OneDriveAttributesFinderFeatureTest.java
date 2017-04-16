@@ -60,20 +60,17 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testFindFiles() throws Exception {
         OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         OneDriveListService listService = new OneDriveListService(session);
-        final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = listService.list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            final AttributedList<Path> children = listService.list(f, new DisabledListProgressListener());
-            for(Path c : children) {
-                final PathAttributes attributes = attributesFinderFeature.find(c);
-                assertNotNull(attributes);
-                assertNotEquals(-1L, attributes.getSize());
-                assertNotEquals(-1L, attributes.getCreationDate());
-                assertNotEquals(-1L, attributes.getModificationDate());
-                assertNotNull(attributes.getETag());
-                assertNull(attributes.getVersionId());
-                assertNotNull(attributes.getLink());
-            }
+            final PathAttributes attributes = attributesFinderFeature.find(f);
+            assertNotNull(attributes);
+            assertNotEquals(-1L, attributes.getSize());
+            assertNotEquals(-1L, attributes.getCreationDate());
+            assertNotEquals(-1L, attributes.getModificationDate());
+            assertNotNull(attributes.getETag());
+            assertNull(attributes.getVersionId());
+            assertNotNull(attributes.getLink());
         }
     }
 }
