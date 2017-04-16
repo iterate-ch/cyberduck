@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>onedrive</string>
+        <key>Vendor</key>
+        <string>unified</string>
+        <key>Description</key>
+        <string>OneDrive</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Default Hostname</key>
+        <string>graph.microsoft.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Context</key>
+        <string>/v1.0/me</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://login.microsoftonline.com/common/oauth2/v2.0/auth</string>
+        <key>OAuth Token Url</key>
+        <string>https://login.microsoftonline.com/common/oauth2/v2.0/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>files.readwrite</string>
+            <string>offline_access</string>
+        </array>
+    </dict>
+</plist>
