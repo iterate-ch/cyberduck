@@ -15,8 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -27,9 +26,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
@@ -37,16 +34,11 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMkdir() throws Exception {
-        final OneDriveListService listService = new OneDriveListService(session);
         final OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         final OneDriveDirectoryFeature directoryFeature = new OneDriveDirectoryFeature(session);
         final OneDriveDeleteFeature deleteFeature = new OneDriveDeleteFeature(session);
-        final AttributedList<Path> list = listService.list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path f : list) {
-            final Path target = directoryFeature.mkdir(new Path(f, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, null);
-            assertNotNull(attributesFinderFeature.find(target).getETag());
-            deleteFeature.delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
+        final Path target = directoryFeature.mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+        assertNotNull(attributesFinderFeature.find(target).getETag());
+        deleteFeature.delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
