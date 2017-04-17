@@ -95,6 +95,10 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(client) {
             @Override
             protected void authenticate(final HttpRequestBase request) {
+                if(null == credential) {
+                    log.warn("Missing authentication access token");
+                    return;
+                }
                 request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
             }
         };
