@@ -22,8 +22,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveDrivesIterator;
-import org.nuxeo.onedrive.client.OneDriveResource;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
@@ -49,8 +49,9 @@ public class OneDriveContainerListService implements RootListService {
             final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient());
             while(iter.hasNext()) {
                 try {
-                    final OneDriveResource.Metadata metadata = iter.next();
+                    final OneDriveDrive.Metadata metadata = iter.next();
                     final PathAttributes attributes = new PathAttributes();
+                    attributes.setSize(metadata.getTotal());
                     children.add(new Path(directory, metadata.getId(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
                 }
                 catch(OneDriveRuntimeException e) {
