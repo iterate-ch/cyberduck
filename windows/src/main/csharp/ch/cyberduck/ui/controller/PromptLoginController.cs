@@ -216,12 +216,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UsernameLabel = _credentials.getUsernamePlaceholder() + ":";
             View.PasswordLabel = _credentials.getPasswordPlaceholder() + ":";
             {
-                bool enable = _options.keychain() && !_credentials.isAnonymousLogin();
-                View.SavePasswordEnabled = enable;
-                if (!enable)
-                {
-                    View.SavePasswordState = false;
-                }
+                View.SavePasswordEnabled = _options.keychain() && !_credentials.isAnonymousLogin();;
+                View.SavePasswordState = _credentials.isSaved();
             }
             View.AnonymousEnabled = _options.anonymous();
             if (_options.anonymous() && _credentials.isAnonymousLogin())
