@@ -239,4 +239,8 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     public int indexOf(final E e) {
         return impl.indexOf(e);
     }
+
+    public boolean remove(final E e) {
+        return impl.remove(e);
+    }
 }
