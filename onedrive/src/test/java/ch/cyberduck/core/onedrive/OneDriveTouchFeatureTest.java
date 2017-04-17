@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -38,11 +37,9 @@ public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Touch touch = new OneDriveTouchFeature(session);
-        final Delete delete = new OneDriveDeleteFeature(session);
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
-        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new OneDriveDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
