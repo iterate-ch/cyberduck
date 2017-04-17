@@ -40,9 +40,8 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final OneDriveAttributesFinderFeature f = new OneDriveAttributesFinderFeature(session);
         try {
-            f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+            new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Item does not exist. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -52,11 +51,17 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDrive() throws Exception {
-        OneDriveAttributesFinderFeature attributesFinderFeature = new OneDriveAttributesFinderFeature(session);
         final AttributedList<Path> drives = new OneDriveContainerListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertFalse(drives.isEmpty());
         for(Path drive : drives) {
-            assertNotNull(attributesFinderFeature.find(drive));
+            final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(drive);
+            assertNotNull(attributes);
+            assertNotEquals(-1L, attributes.getSize());
+            assertNotEquals(-1L, attributes.getCreationDate());
+            assertNotEquals(-1L, attributes.getModificationDate());
+            assertNotNull(attributes.getETag());
+            assertNull(attributes.getVersionId());
+            assertNotNull(attributes.getLink());
         }
     }
 

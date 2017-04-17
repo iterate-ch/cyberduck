@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFile;
+import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
@@ -50,10 +51,11 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-        if(containerService.isContainer(file)) {
-            return PathAttributes.EMPTY;
-        }
         try {
+            if(containerService.isContainer(file)) {
+                final OneDriveFolder.Metadata metadata = session.toFolder(file).getMetadata();
+                return this.convert(metadata);
+            }
             final OneDriveFile.Metadata metadata = session.toFile(file).getMetadata();
             return this.convert(metadata);
         }
