@@ -99,7 +99,16 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
                     log.warn("Missing authentication access token");
                     return;
                 }
-                request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
+                switch(request.getMethod()) {
+                    case "PUT":
+                        if(!request.getURI().toString().endsWith("/content")) {
+                            // Hack because PUT requests for fragment uploads are pre-authenticated and cannot have an Authorization header
+                            break;
+                        }
+                        // Still add Authorization header for single item upload
+                    default:
+                        request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
+                }
             }
         };
         return new OneDriveAPI() {
