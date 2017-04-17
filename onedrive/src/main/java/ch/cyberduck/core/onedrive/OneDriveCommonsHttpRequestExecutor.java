@@ -44,7 +44,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
+public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
 
     private final CloseableHttpClient client;
 
@@ -169,9 +169,7 @@ public class OneDriveCommonsHttpRequestExecutor implements RequestExecutor {
         return new CommonsHttpResponse(response);
     }
 
-    protected void authenticate(final HttpRequestBase request) {
-        //
-    }
+    protected abstract void authenticate(final HttpRequestBase request);
 
     public HttpClient getClient() {
         return client;
