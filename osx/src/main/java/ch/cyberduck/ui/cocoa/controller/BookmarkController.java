@@ -43,6 +43,7 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -82,8 +83,9 @@ public class BookmarkController extends SheetController implements CollectionLis
     private final List<BookmarkObserver> observers = new ArrayList<>();
 
     protected final Host bookmark;
-
     protected final Credentials credentials;
+
+    protected final LoginOptions options;
 
     @Outlet
     protected NSPopUpButton protocolPopup;
@@ -121,13 +123,14 @@ public class BookmarkController extends SheetController implements CollectionLis
             public boolean validate() {
                 return true;
             }
-        });
+        }, new LoginOptions(bookmark.getProtocol()));
     }
 
-    public BookmarkController(final Host bookmark, final Credentials credentials, final InputValidator validator) {
+    public BookmarkController(final Host bookmark, final Credentials credentials, final InputValidator validator, final LoginOptions options) {
         super(validator);
         this.bookmark = bookmark;
         this.credentials = credentials;
+        this.options = options;
     }
 
     public Host getBookmark() {
@@ -175,6 +178,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             bookmark.setHostname(selected.getDefaultHostname());
         }
         bookmark.setProtocol(selected);
+        options.configure(selected);
         this.update();
     }
 
@@ -317,7 +321,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 updateField(usernameField, credentials.getUsername());
                 usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
-                usernameField.setEnabled(bookmark.getProtocol().isUsernameConfigurable() && !credentials.isAnonymousLogin());
+                usernameField.setEnabled(options.user && !credentials.isAnonymousLogin());
             }
         });
     }
@@ -349,7 +353,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                anonymousCheckbox.setEnabled(bookmark.getProtocol().isAnonymousConfigurable());
+                anonymousCheckbox.setEnabled(options.anonymous && bookmark.getProtocol().isAnonymousConfigurable());
                 anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
             }
         });
@@ -388,7 +392,9 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
-        window.makeFirstResponder(hostField);
+        if(bookmark.getProtocol().isHostnameConfigurable()) {
+            window.makeFirstResponder(hostField);
+        }
         this.update();
     }
 
