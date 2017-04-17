@@ -108,12 +108,15 @@ public final class LoginOptions {
      * Defer login options from protocol
      */
     public LoginOptions(final Protocol protocol) {
+        this.configure(protocol);
+    }
+
+    public void configure(final Protocol protocol) {
         publickey = protocol.getType() == Protocol.Type.sftp;
         anonymous = protocol.isAnonymousConfigurable();
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
     }
-
 
     @Override
     public boolean equals(final Object o) {
