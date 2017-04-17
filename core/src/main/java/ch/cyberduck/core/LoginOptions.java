@@ -17,13 +17,33 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import java.util.Objects;
+
 public final class LoginOptions {
 
+    /**
+     * Allow username input
+     */
     public boolean user = true;
+    /**
+     * Allow password input
+     */
     public boolean password = true;
+    /**
+     * Enable option to save password in keychain
+     */
     public boolean keychain = true;
+    /**
+     * Enable option to select public key
+     */
     public boolean publickey = false;
+    /**
+     * Enable option to login as anonymous user
+     */
     public boolean anonymous = false;
+    /**
+     * Set custom icon in login prompt
+     */
     public String icon;
 
     public LoginOptions() {
@@ -68,15 +88,15 @@ public final class LoginOptions {
         return password;
     }
 
-    public boolean isKeychain() {
+    public boolean keychain() {
         return keychain;
     }
 
-    public boolean isPublickey() {
+    public boolean publickey() {
         return publickey;
     }
 
-    public boolean isAnonymous() {
+    public boolean anonymous() {
         return anonymous;
     }
 
@@ -94,6 +114,7 @@ public final class LoginOptions {
         password = protocol.isPasswordConfigurable();
     }
 
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -103,23 +124,16 @@ public final class LoginOptions {
             return false;
         }
         final LoginOptions that = (LoginOptions) o;
-        if(anonymous != that.anonymous) {
-            return false;
-        }
-        if(keychain != that.keychain) {
-            return false;
-        }
-        if(publickey != that.publickey) {
-            return false;
-        }
-        return true;
+        return user == that.user &&
+                password == that.password &&
+                keychain == that.keychain &&
+                publickey == that.publickey &&
+                anonymous == that.anonymous &&
+                Objects.equals(icon, that.icon);
     }
 
     @Override
     public int hashCode() {
-        int result = (keychain ? 1 : 0);
-        result = 31 * result + (publickey ? 1 : 0);
-        result = 31 * result + (anonymous ? 1 : 0);
-        return result;
+        return Objects.hash(user, password, keychain, publickey, anonymous, icon);
     }
 }
