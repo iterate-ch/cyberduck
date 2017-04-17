@@ -71,6 +71,7 @@ public class OneDriveItemListService implements ListService {
                 final PathAttributes attributes = this.attributes.convert(metadata);
                 children.add(new Path(directory, metadata.getName(),
                         metadata.isFolder() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                listener.chunk(directory, children);
             }
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext() which in return should fail fast
