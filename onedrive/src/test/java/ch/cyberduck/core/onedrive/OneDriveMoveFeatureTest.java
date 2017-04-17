@@ -15,8 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,9 +32,9 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
@@ -46,21 +45,15 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
         final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
-
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path file : list) {
-            if(file.isDirectory()) {
-                Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-                assertNotNull(attributesFinder.find(touchedFile));
-                Path rename = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                assertTrue(move.isSupported(touchedFile, rename));
-                move.move(touchedFile, rename, false, new Delete.DisabledCallback());
-                assertNotNull(attributesFinder.find(rename));
-                delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-        }
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(attributesFinder.find(file));
+        Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertTrue(move.isSupported(file, rename));
+        move.move(file, rename, false, new Delete.DisabledCallback());
+        assertNotNull(attributesFinder.find(rename));
+        delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -70,27 +63,21 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
         final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        directory.mkdir(targetDirectory, null, null);
+        assertNotNull(attributesFinder.find(targetDirectory));
 
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path file : list) {
-            if(file.isDirectory()) {
-                Path targetDirectory = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-                directory.mkdir(targetDirectory, null, null);
-                assertNotNull(attributesFinder.find(targetDirectory));
+        Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(attributesFinder.find(touchedFile));
 
-                Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-                assertNotNull(attributesFinder.find(touchedFile));
+        Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
+        assertTrue(move.isSupported(touchedFile, rename));
+        move.move(touchedFile, rename, false, new Delete.DisabledCallback());
+        assertNotNull(attributesFinder.find(rename));
 
-                Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
-                assertTrue(move.isSupported(touchedFile, rename));
-                move.move(touchedFile, rename, false, new Delete.DisabledCallback());
-                assertNotNull(attributesFinder.find(rename));
-
-                delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-        }
+        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -100,26 +87,20 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Move move = new OneDriveMoveFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
         final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        directory.mkdir(targetDirectory, null, null);
+        assertNotNull(attributesFinder.find(targetDirectory));
 
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        for(Path file : list) {
-            if(file.isDirectory()) {
-                Path targetDirectory = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-                directory.mkdir(targetDirectory, null, null);
-                assertNotNull(attributesFinder.find(targetDirectory));
+        Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
+        assertNotNull(attributesFinder.find(touchedFile));
 
-                Path touchedFile = new Path(file, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-                assertNotNull(attributesFinder.find(touchedFile));
+        Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertTrue(move.isSupported(touchedFile, rename));
+        move.move(touchedFile, rename, false, new Delete.DisabledCallback());
+        assertNotNull(attributesFinder.find(rename));
 
-                Path rename = new Path(targetDirectory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-                assertTrue(move.isSupported(touchedFile, rename));
-                move.move(touchedFile, rename, false, new Delete.DisabledCallback());
-                assertNotNull(attributesFinder.find(rename));
-
-                delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-        }
+        delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
