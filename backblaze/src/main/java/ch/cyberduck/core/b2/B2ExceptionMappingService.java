@@ -20,18 +20,15 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
 import java.time.Duration;
@@ -56,31 +53,19 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 // 401 Unauthorized.
                 if("expired_auth_token".equalsIgnoreCase(e.getCode())) {
                     try {
-                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(),
-                                PathCache.empty());
+                        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
                         return new RetriableAccessDeniedException(buffer.toString());
                     }
                     catch(BackgroundException f) {
                         log.warn(String.format("Attempt to renew expired auth token failed. %s", f.getDetail()));
                     }
-
                 }
-                return new LoginFailureException(buffer.toString(), e);
             case HttpStatus.SC_FORBIDDEN:
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())
                         || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
                         || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
-                return new AccessDeniedException(buffer.toString(), e);
-            case HttpStatus.SC_NOT_FOUND:
-                return new NotfoundException(buffer.toString(), e);
-            case HttpStatus.SC_INSUFFICIENT_SPACE_ON_RESOURCE:
-                return new QuotaException(buffer.toString(), e);
-            case HttpStatus.SC_INSUFFICIENT_STORAGE:
-                return new QuotaException(buffer.toString(), e);
-            case HttpStatus.SC_PAYMENT_REQUIRED:
-                return new QuotaException(buffer.toString(), e);
             case HttpStatus.SC_BAD_REQUEST:
                 if("file_not_present".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
@@ -99,22 +84,12 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                         return new ChecksumException(buffer.toString(), e);
                     }
                 }
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), e);
-            case HttpStatus.SC_SERVICE_UNAVAILABLE:
-            case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-                return new ConnectionRefusedException(buffer.toString(), e);
-            case HttpStatus.SC_REQUEST_TIMEOUT:
-                return new ConnectionTimeoutException(buffer.toString(), e);
             default:
                 if(e.getRetry() != null) {
                     // Too Many Requests (429)
                     return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(e.getRetry()), e);
                 }
-                return new InteroperabilityException(buffer.toString(), e);
         }
+        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatus(), buffer.toString()));
     }
 }

@@ -25,6 +25,7 @@ import ch.cyberduck.core.TerminalServiceFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
@@ -210,10 +211,15 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0;
         }
         else if(action.equals(newfolder.action())) {
-            return this.isBrowser() && controller.isMounted();
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Directory.class).isSupported(
+                    new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+            );
         }
         else if(action.equals(Foundation.selector("createEncryptedVaultButtonClicked:"))) {
-            return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED;
+            return this.isBrowser() && controller.isMounted() && controller.getSession().getVault() != VaultRegistry.DISABLED &&
+                    controller.getSession().getFeature(Directory.class).isSupported(
+                            new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                    );
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(

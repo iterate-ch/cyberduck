@@ -75,19 +75,15 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         }
         else {
             if(null == file.attributes().getVersionId()) {
-                // Try native implementation
-                final AttributesFinder feature = session._getFeature(AttributesFinder.class);
-                if(feature instanceof DefaultAttributesFinderFeature) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
                 final IdProvider id = session._getFeature(IdProvider.class);
                 final String version = id.getFileid(file);
                 if(version == null) {
                     throw new NotfoundException(file.getAbsolute());
                 }
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setVersionId(version);
-                return feature.find(new Path(file.getAbsolute(), file.getType(), attributes));
+                file.attributes().setVersionId(version);
+                if(list.contains(file)) {
+                    return list.get(file).attributes();
+                }
             }
             throw new NotfoundException(file.getAbsolute());
         }

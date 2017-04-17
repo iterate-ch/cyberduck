@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -56,7 +57,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         final boolean isPosix = session.isPosixFilesystem();
         final PathAttributes attributes = new PathAttributes();
         final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes a = Files.readAttributes(path, provider);
+        final BasicFileAttributes a = Files.readAttributes(path, provider, LinkOption.NOFOLLOW_LINKS);
         attributes.setSize(a.size());
         attributes.setModificationDate(a.lastModifiedTime().toMillis());
         attributes.setCreationDate(a.creationTime().toMillis());
