@@ -46,6 +46,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
@@ -110,7 +111,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public boolean isGraphConnection() {
-                return false;
+                return StringUtils.equals("graph.microsoft.com", host.getHostname());
             }
 
             @Override
