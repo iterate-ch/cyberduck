@@ -52,13 +52,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
-import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.RequestExecutor;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -83,6 +83,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     }
 
     public OneDriveFolder toFolder(final Path file) {
+        if(file.isRoot()) {
+            return OneDriveFolder.getRoot(client);
+        }
         if(containerService.isContainer(file)) {
             return new OneDriveDrive(client, containerService.getContainer(file).getName()).getRoot();
         }
@@ -162,19 +165,10 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
             return;
         }
         try {
-            OneDriveFolder folder = OneDriveFolder.getRoot(client);
-            OneDriveFolder.Metadata metadata = folder.getMetadata();
+            new OneDriveAttributesFinderFeature(this).find(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume)));
         }
-        catch(OneDriveAPIException e) {
-            try {
-                throw new OneDriveExceptionMappingService().map(e);
-            }
-            catch(LoginFailureException f) {
-                this.login(authorizationService, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+        catch(LoginFailureException e) {
+            this.login(authorizationService, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
         }
     }
 
