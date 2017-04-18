@@ -48,7 +48,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
@@ -56,9 +55,11 @@ import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.RequestExecutor;
+import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Set;
 
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -98,21 +99,12 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         final CloseableHttpClient client = builder.build(this).build();
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(client) {
             @Override
-            protected void authenticate(final HttpRequestBase request) {
+            public void addAuthorizationHeader(final Set<RequestHeader> headers) {
                 if(null == credential) {
                     log.warn("Missing authentication access token");
                     return;
                 }
-                switch(request.getMethod()) {
-                    case "PUT":
-                        if(!request.getURI().toString().endsWith("/content")) {
-                            // Hack because PUT requests for fragment uploads are pre-authenticated and cannot have an Authorization header
-                            break;
-                        }
-                        // Still add Authorization header for single item upload
-                    default:
-                        request.addHeader("Authorization", String.format("Bearer %s", credential.getAccessToken()));
-                }
+                headers.add(new RequestHeader("Authorization", String.format("Bearer %s", credential.getAccessToken())));
             }
         };
         return new OneDriveAPI() {
