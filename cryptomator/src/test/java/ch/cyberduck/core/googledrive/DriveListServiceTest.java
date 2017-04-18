@@ -1,7 +1,7 @@
 package ch.cyberduck.core.googledrive;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,23 +15,18 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.CryptoListService;
+import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -39,15 +34,14 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DriveTouchFeatureTest {
+public class DriveListServiceTest {
 
     @Test
-    public void testTouch() throws Exception {
+    public void testListCryptomator() throws Exception {
         final Host host = new Host(new DriveProtocol(), "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -69,9 +63,20 @@ public class DriveTouchFeatureTest {
                     }
                 }, new DisabledProgressListener()
         ).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path test = new Path(new DriveHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DriveTouchFeature(session).touch(test, new TransferStatus().withMime("x-application/cyberduck"));
-        new DriveDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path home = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        });
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        assertTrue(new CryptoListService(session, new DriveDefaultListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DriveUploadFeature(new DriveWriteFeature(session))), new DriveWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        assertEquals(test, new CryptoListService(session, new DriveDefaultListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

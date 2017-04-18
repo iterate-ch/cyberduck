@@ -81,6 +81,12 @@ public class HubicProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPasswordConfigurable() {
+        // Only provide account email
+        return false;
+    }
+
+    @Override
     public boolean isEnabled() {
         return false;
     }

@@ -81,8 +81,7 @@ public class S3MultipartUploadServiceTest {
     }
 
     @Test
-    public void testUploadSinglePartEncrypted
-            () throws Exception {
+    public void testUploadSinglePartEncrypted() throws Exception {
         final S3Session session = new S3Session(
                 new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
                         new Credentials(

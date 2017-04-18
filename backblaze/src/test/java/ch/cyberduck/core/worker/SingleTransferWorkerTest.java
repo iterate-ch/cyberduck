@@ -82,29 +82,31 @@ public class SingleTransferWorkerTest {
                 ));
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session session = new B2Session(host) {
+            final B2LargeUploadService upload = new B2LargeUploadService(this) {
+                @Override
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return in;
+                    }
+                    return new CountingInputStream(in) {
+                        @Override
+                        protected void beforeRead(final int n) throws IOException {
+                            super.beforeRead(n);
+                            if(this.getByteCount() >= 100L * 1024L * 1024L) {
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                        }
+                    };
+                }
+            };
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new B2LargeUploadService(this) {
-                        @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-                            if(failed.get()) {
-                                // Second attempt successful
-                                return in;
-                            }
-                            return new CountingInputStream(in) {
-                                @Override
-                                protected void beforeRead(final int n) throws IOException {
-                                    super.beforeRead(n);
-                                    if(this.getByteCount() >= 100L * 1024L * 1024L) {
-                                        failed.set(true);
-                                        throw new SocketTimeoutException();
-                                    }
-                                }
-                            };
-                        }
-                    };
+                    return (T) upload;
                 }
                 return super._getFeature(type);
             }
