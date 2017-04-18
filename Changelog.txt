@@ -10,7 +10,7 @@ https://cyberduck.io/
 - [Feature] Search files fast using prefix (S3)
 - [Feature] Browse local filesystem in browser
 
-5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
+5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
 - [Bugfix] Multipart uploads do not resume (S3)
 - [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
 
