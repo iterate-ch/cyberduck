@@ -155,7 +155,7 @@ public class OAuth2AuthorizationService {
                 prompt.prompt(bookmark, token,
                         LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
                         LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                        new LoginOptions().keychain(false).user(false).password(true)
+                        new LoginOptions().keychain(true).user(false).password(true)
                 );
             }
             try {
@@ -173,10 +173,11 @@ public class OAuth2AuthorizationService {
                         .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
                         .build()
                         .setFromTokenResponse(response);
-
-                // Save
-                save(keychain, bookmark, new Tokens(
-                        tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
+                if(token.isSaved()) {
+                    // Save access key and refresh key
+                    save(keychain, bookmark, new Tokens(
+                            tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
+                }
             }
             catch(IOException e) {
                 throw new OAuthExceptionMappingService().map(e);
@@ -199,13 +200,7 @@ public class OAuth2AuthorizationService {
 
     public Tokens find(final HostPasswordStore keychain, final Host bookmark) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
-        final String prefix;
-        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-            prefix = String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
-        }
-        else {
-            prefix = bookmark.getProtocol().getDescription();
-        }
+        final String prefix = this.getPrefix(bookmark);
         return new Tokens(keychain.getPassword(bookmark.getProtocol().getScheme(),
                 bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                 String.format("%s OAuth2 Access Token", prefix)),
@@ -216,7 +211,7 @@ public class OAuth2AuthorizationService {
     }
 
     private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
-        final String prefix = String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
+        final String prefix = this.getPrefix(bookmark);
         if(StringUtils.isNotBlank(tokens.accesstoken)) {
             keychain.addPassword(bookmark.getProtocol().getScheme(),
                     bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
@@ -233,8 +228,11 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private String getPrefix(final Host host) {
-        return String.format("%s (%s)", host.getProtocol().getDescription(), host.getCredentials().getUsername());
+    private String getPrefix(final Host bookmark) {
+        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
+        }
+        return bookmark.getProtocol().getDescription();
     }
 
     public OAuth2AuthorizationService withMethod(final Credential.AccessMethod method) {
