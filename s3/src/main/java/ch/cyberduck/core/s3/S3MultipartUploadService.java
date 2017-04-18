@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -62,6 +63,9 @@ import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private final S3Session session;
 
@@ -197,9 +201,14 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         reference = complete.getEtag();
                     }
                     if(!expected.equals(reference)) {
-                        throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, reference));
+                        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, reference));
+                        }
+                        else {
+                            log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
+                        }
                     }
                 }
                 // Mark parent status as complete
