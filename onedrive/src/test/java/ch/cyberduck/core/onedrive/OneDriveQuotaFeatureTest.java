@@ -26,10 +26,12 @@ import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class OneDriveQuotaFeatureTest extends AbstractOneDriveTest {
+
     @Test
     public void testQuotaSimple() throws BackgroundException {
         final Quota quota = new OneDriveQuotaFeature(session);
         Quota.Space space = quota.get();
         assertTrue(space.available > 0);
+        assertTrue(space.used > 0);
     }
 }
