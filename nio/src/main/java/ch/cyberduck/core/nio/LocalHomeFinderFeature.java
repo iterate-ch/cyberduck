@@ -32,7 +32,7 @@ public class LocalHomeFinderFeature extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(home == DEFAULT_HOME) {
-            return new Path(PreferencesFactory.get().getProperty("local.user.home"), EnumSet.of(Path.Type.file));
+            return new Path(PreferencesFactory.get().getProperty("local.user.home"), EnumSet.of(Path.Type.directory));
         }
         return home;
     }
