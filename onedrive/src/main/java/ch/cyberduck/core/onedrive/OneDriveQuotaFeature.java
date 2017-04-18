@@ -15,8 +15,14 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
+
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+
+import java.io.IOException;
 
 public class OneDriveQuotaFeature implements Quota {
 
@@ -28,6 +34,17 @@ public class OneDriveQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
-        return new Space(0L, new OneDriveHomeFinderFeature(session).find().attributes().getSize());
+        OneDriveDrive drive = new OneDriveDrive(session.getClient(), new OneDriveHomeFinderFeature(session).find().getName());
+        final OneDriveDrive.Metadata metadata;
+        try {
+            metadata = drive.getMetadata();
+        }
+        catch(OneDriveAPIException e) {
+            throw new OneDriveExceptionMappingService().map("Cannot get space {0}", e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot get space {0}", e);
+        }
+        return new Space(metadata.getUsed(), metadata.getTotal());
     }
 }
