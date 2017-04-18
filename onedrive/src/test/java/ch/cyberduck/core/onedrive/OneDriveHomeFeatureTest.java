@@ -17,27 +17,25 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveHomeFeatureTest extends AbstractOneDriveTest{
+
     @Test
     public void testHomeFeature() throws BackgroundException {
-        final Home home = new OneDriveHomeFinderFeature(session);
-        final Path path = home.find();
-        assertNotNull(path);
-        assertFalse(path.isRoot());
-        assertTrue(path.isVolume());
-        assertTrue(path.isDirectory());
-        assertFalse(StringUtils.isEmpty(path.getName()));
+        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        assertNotNull(drive);
+        assertFalse(drive.isRoot());
+        assertTrue(drive.isVolume());
+        assertTrue(drive.isDirectory());
+        assertNotEquals("null", drive.getName());
+        assertFalse(StringUtils.isEmpty(drive.getName()));
     }
 }
