@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A sortable list with a map to lookup values by key.
@@ -242,5 +243,22 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
 
     public boolean remove(final E e) {
         return impl.remove(e);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final AttributedList<?> that = (AttributedList<?>) o;
+        return Objects.equals(impl, that.impl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(impl);
     }
 }
