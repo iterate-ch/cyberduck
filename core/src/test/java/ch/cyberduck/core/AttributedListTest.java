@@ -43,4 +43,14 @@ public class AttributedListTest {
         assertTrue(list.add(a));
         assertEquals(Collections.singletonList(a), list.attributes().getHidden());
     }
+
+    @Test
+    public void testEqiaös() throws Exception {
+        final AttributedList<Path> list1 = new AttributedList<Path>();
+        final AttributedList<Path> list2 = new AttributedList<Path>();
+        final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
+        assertTrue(list1.add(a));
+        assertTrue(list2.add(a));
+        assertEquals(list1, list2);
+    }
 }

@@ -10,17 +10,23 @@ https://cyberduck.io/
 - [Feature] Search files fast using prefix (S3)
 - [Feature] Browse local filesystem in browser
 
+5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
-- [Bugfix| Interoperability with PROPFIND for listing folders (WebDAV)
-- [Bugfix| Failed to generate HMAC (Spectra S3)
+- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
+- [Bugfix] Failed to generate HMAC (Spectra S3)
+- [Bugfix] Quick Look only works one time (#9889)
+- [Bugfix] Set MD5 checksum in ETag request header (OpenStack Swift)
 
 5.4.2 [https://trac.cyberduck.io/milestone/5.4.2
-- [Bugfix| Updated localizations
+- [Bugfix] Updated localizations
 
 5.4.1 [https://trac.cyberduck.io/milestone/5.4.1
 - [Feature] Faster recursive delete with single operation for directories (WebDAV)
 - [Bugfix] Reload OpenSSH configuration (SFTP)
-- [Bugfix| Revert lenient server reply parsing (FTP)
+- [Bugfix] Revert lenient server reply parsing (FTP)
 
 5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Add "Open single connection" option for file transfers
@@ -1116,7 +1122,7 @@ https://cyberduck.io/
 - [Bugfix] Warning before overwrite when moving or renaming files
 - [Bugfix] Dragging files to the Finder.app places them at the dropped position
 - [Bugfix] Always selecting parent directory as drop target when dragging to outline view
-- [Bugfix| Updated application and document icon
+- [Bugfix] Updated application and document icon
 - [Bugfix] Number of files in browser window not displayed correctly
 - [Bugfix] Don't recurse into directories when deleting symbolic links
 - [Bugfix] Overwriting group writable files

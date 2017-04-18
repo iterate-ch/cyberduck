@@ -69,7 +69,7 @@ public class AzureWriteFeatureTest {
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus()
-                .length("overwrite".getBytes("UTF-8").length).metadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+                .length("overwrite".getBytes("UTF-8").length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
                 .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
         overwrite.close();

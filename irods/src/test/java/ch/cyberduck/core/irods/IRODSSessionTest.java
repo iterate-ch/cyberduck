@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -126,6 +127,7 @@ public class IRODSSessionTest {
     }
 
     @Test
+    @Ignore
     public void testLoginPamAuthentication() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (TACC).cyberduckprofile"));

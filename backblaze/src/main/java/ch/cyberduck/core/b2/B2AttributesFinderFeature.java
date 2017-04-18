@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -62,18 +63,20 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final B2FileResponse info) {
+    protected PathAttributes toAttributes(final B2FileResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(info.getContentLength());
-        attributes.setChecksum(Checksum.parse(StringUtils.removeStart(info.getContentSha1(), "unverified:")));
+        attributes.setSize(response.getContentLength());
+        attributes.setChecksum(
+                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
+        );
         final Map<String, String> metadata = new HashMap<>();
-        for(Map.Entry<String, String> entry : info.getFileInfo().entrySet()) {
+        for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
             metadata.put(entry.getKey(), entry.getValue());
         }
         attributes.setMetadata(metadata);
-        attributes.setVersionId(info.getFileId());
-        if(info.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.valueOf(info.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        attributes.setVersionId(response.getFileId());
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
         }
         return attributes;
     }

@@ -32,7 +32,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.ui.InputValidator;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,22 +46,33 @@ public class ConnectionController extends BookmarkController {
             = PreferencesFactory.get();
 
     @Outlet
-    protected NSTextField passwordField;
+    private NSTextField passwordField;
     @Outlet
-    protected NSTextField passwordLabel;
+    private NSTextField passwordLabel;
     @Outlet
-    protected NSButton keychainCheckbox;
+    private NSButton keychainCheckbox;
 
     public ConnectionController(final Host bookmark) {
         this(bookmark, bookmark.getCredentials());
     }
 
     public ConnectionController(final Host bookmark, final Credentials credentials) {
-        this(bookmark, credentials, new LoginInputValidator(credentials, bookmark, new LoginOptions(bookmark.getProtocol())));
+        this(bookmark, credentials, new LoginOptions(bookmark.getProtocol()));
     }
 
-    public ConnectionController(final Host bookmark, final Credentials credentials, final InputValidator validator) {
-        super(bookmark, credentials, validator);
+    public ConnectionController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
+        super(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
+    }
+
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        if(options.user) {
+            window.makeFirstResponder(usernameField);
+        }
+        if(options.password) {
+            window.makeFirstResponder(passwordField);
+        }
     }
 
     @Override
@@ -100,7 +110,7 @@ public class ConnectionController extends BookmarkController {
             @Override
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(credentials.getPasswordPlaceholder());
-                passwordField.setEnabled(!credentials.isAnonymousLogin());
+                passwordField.setEnabled(options.password && !credentials.isAnonymousLogin());
                 if(preferences.getBoolean("connection.login.keychain")) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
@@ -143,7 +153,13 @@ public class ConnectionController extends BookmarkController {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
         this.keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
-        this.keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                keychainCheckbox.setEnabled(options.keychain);
+                keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
+            }
+        });
     }
 
     @Action

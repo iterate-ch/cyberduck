@@ -152,7 +152,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         final Map<String, String> parameters = new HashMap<String, String>();
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
-                        final TransferStatus status = new TransferStatus().parameters(parameters).length(len);
+                        final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
                                 status.setChecksum(S3MultipartWriteFeature.this.checksum()
@@ -201,23 +201,28 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
                                 complete.getObjectKey(), complete.getEtag()));
                     }
-                    final StringBuilder concat = new StringBuilder();
-                    for(MultipartPart part : completed) {
-                        concat.append(part.getEtag());
-                    }
-                    final String expected = String.format("%s-%d",
-                            new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
-                    final String reference;
-                    if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                        reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                    if(file.getType().contains(Path.Type.encrypted)) {
+                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
                     else {
-                        reference = complete.getEtag();
-                    }
-                    if(!expected.equals(reference)) {
-                        throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        expected, reference));
+                        final StringBuilder concat = new StringBuilder();
+                        for(MultipartPart part : completed) {
+                            concat.append(part.getEtag());
+                        }
+                        final String expected = String.format("%s-%d",
+                                new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
+                        final String reference;
+                        if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                            reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                        }
+                        else {
+                            reference = complete.getEtag();
+                        }
+                        if(!expected.equals(reference)) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, reference));
+                        }
                     }
                 }
             }

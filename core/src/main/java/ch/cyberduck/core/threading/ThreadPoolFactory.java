@@ -67,6 +67,10 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         return get(DEFAULT_THREAD_NAME_PREFIX, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
     }
 
+    public static ThreadPool get(final String prefix, final Thread.UncaughtExceptionHandler handler) {
+        return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
+    }
+
     public static ThreadPool get(final int size) {
         return get(DEFAULT_THREAD_NAME_PREFIX, size);
     }

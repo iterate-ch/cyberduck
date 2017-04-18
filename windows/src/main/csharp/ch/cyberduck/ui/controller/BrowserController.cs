@@ -1870,12 +1870,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateNewFolder()
         {
-            return IsMounted();
+            return IsMounted() &&
+                   ((ch.cyberduck.core.features.Directory) Session.getFeature(typeof(ch.cyberduck.core.features.Directory))).isSupported(
+                       new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
         private bool View_ValidateNewVault()
         {
-            return IsMounted() && Workdir!= null && Session.getVault() != VaultRegistry.DISABLED;
+            return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
+                   ((ch.cyberduck.core.features.Directory) Session.getFeature(typeof(ch.cyberduck.core.features.Directory))).isSupported(
+                       new UploadTargetFinder(Workdir).find(SelectedPath));
         }
 
         private void View_DuplicateFile()

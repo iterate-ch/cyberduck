@@ -168,7 +168,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             catch(ExecutionException e) {
                 log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                status.setCanceled();
                 if(e.getCause() instanceof BackgroundException) {
                     throw (BackgroundException) e.getCause();
                 }
