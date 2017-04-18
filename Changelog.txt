@@ -10,6 +10,10 @@ https://cyberduck.io/
 - [Feature] Search files fast using prefix (S3)
 
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+
+5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
 - [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
 - [Bugfix] Failed to generate HMAC (Spectra S3)
 - [Bugfix] Quick Look only works one time (#9889)
