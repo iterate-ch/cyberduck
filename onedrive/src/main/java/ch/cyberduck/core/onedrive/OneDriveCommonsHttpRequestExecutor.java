@@ -28,7 +28,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
@@ -71,7 +70,6 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
     }
 
     protected Upload doUpload(final URL url, final Set<RequestHeader> headers, final HttpEntityEnclosingRequestBase request) {
-        this.authenticate(request);
         for(RequestHeader header : headers) {
             if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
                 continue;
@@ -147,7 +145,6 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
             }
             request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
         }
-        this.authenticate(request);
         final CloseableHttpResponse response = client.execute(request);
         return new CommonsHttpResponse(response);
     }
@@ -164,12 +161,9 @@ public abstract class OneDriveCommonsHttpRequestExecutor implements RequestExecu
             }
             request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
         }
-        this.authenticate(request);
         final CloseableHttpResponse response = client.execute(request);
         return new CommonsHttpResponse(response);
     }
-
-    protected abstract void authenticate(final HttpRequestBase request);
 
     public HttpClient getClient() {
         return client;
