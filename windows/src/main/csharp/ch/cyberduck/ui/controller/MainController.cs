@@ -109,7 +109,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ProtocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol());
+                new DropboxProtocol(), new HubicProtocol(), new WindowsLocalProtocol());
 
             if (!Debugger.IsAttached)
             {
@@ -125,6 +125,14 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             //make sure that a language change takes effect after a restart only
             StartupLanguage = PreferencesFactory.get().getProperty("application.language");
+        }
+
+        private class WindowsLocalProtocol : LocalProtocol
+        {
+            public override string disk()
+            {
+                return "local.tiff";
+            }
         }
 
         /// <summary>
