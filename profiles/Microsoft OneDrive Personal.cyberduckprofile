@@ -20,7 +20,7 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>personal</string>
+        <string>cyberduck</string>
         <key>Description</key>
         <string>OneDrive Personal</string>
         <key>Scheme</key>
