@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Symlink;
@@ -112,6 +113,9 @@ public class LocalSession extends Session<FileSystem> {
             if(this.isPosixFilesystem()) {
                 return (T) new LocalUnixPermissionFeature(this);
             }
+        }
+        if(type == Home.class) {
+            return (T) new LocalHomeFinderFeature(this);
         }
         return super._getFeature(type);
     }

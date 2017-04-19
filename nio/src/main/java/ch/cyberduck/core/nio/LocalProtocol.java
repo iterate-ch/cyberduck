@@ -19,6 +19,9 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class LocalProtocol extends AbstractProtocol {
 
     @Override
@@ -33,7 +36,12 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return LocaleFactory.localizedString("Local Filesystem");
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        }
+        catch(UnknownHostException e) {
+            return LocaleFactory.localizedString("Local Filesystem");
+        }
     }
 
     @Override
@@ -83,6 +91,6 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
