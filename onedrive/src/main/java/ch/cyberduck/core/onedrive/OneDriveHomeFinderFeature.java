@@ -45,10 +45,10 @@ public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
                         EnumSet.of(Path.Type.volume, Path.Type.directory));
             }
             catch(OneDriveAPIException e) {
-                throw new OneDriveExceptionMappingService().map("Cannot get home {0}", e);
+                throw new OneDriveExceptionMappingService().map("Failure to read attributes of {0}", e, home);
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot get home {0}", e);
+                throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
             }
         }
         return home;
