@@ -87,8 +87,6 @@ public final class MainApplication {
                     new DropboxProtocol(),
                     new DriveProtocol(),
                     new HubicProtocol(),
-                    new LocalProtocol(),
-                    new HubicProtocol(),
                     new OneDriveProtocol(),
                     new LocalProtocol() {
                         @Override
