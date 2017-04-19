@@ -41,6 +41,8 @@
         <module>backblaze</module>
         <module>dropbox</module>
         <module>nio</module>
+        <module>hubic</module>
+        <module>onedrive</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -53,7 +55,6 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
-        <module>hubic</module>
     </modules>
 
     <scm>

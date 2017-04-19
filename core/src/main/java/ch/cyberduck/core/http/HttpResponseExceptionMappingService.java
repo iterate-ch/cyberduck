@@ -63,7 +63,9 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
                 return new ConnectionTimeoutException(buffer.toString(), failure);
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:
-                // Rate limiting
+                // Too Many Requests. Rate limiting
+            case 509:
+                // Bandwidth Limit Exceeded
                 return new RetriableAccessDeniedException(buffer.toString(), failure);
         }
         return this.wrap(failure, buffer);

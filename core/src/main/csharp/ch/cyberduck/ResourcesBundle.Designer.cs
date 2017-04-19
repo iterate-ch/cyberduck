@@ -348,6 +348,16 @@ namespace Ch.Cyberduck {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap onedrive {
+            get {
+                object obj = ResourceManager.GetObject("onedrive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap gear {
             get {
                 object obj = ResourceManager.GetObject("gear", resourceCulture);

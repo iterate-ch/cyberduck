@@ -262,6 +262,29 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public String getOAuthAuthorizationUrl() {
+        final String v = this.value("OAuth Authorization Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthAuthorizationUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public String getOAuthTokenUrl() {
+        final String v = this.value("OAuth Token Url");
+        if(StringUtils.isBlank(v)) {
+            return parent.getOAuthAuthorizationUrl();
+        }
+        return v;
+    }
+
+    @Override
+    public List<String> getScopes() {
+        return this.list("Scopes");
+    }
+
+    @Override
     public Set<Location.Name> getRegions() {
         final List<String> regions = this.list("Regions");
         final Set<Location.Name> set = new HashSet<Location.Name>();
