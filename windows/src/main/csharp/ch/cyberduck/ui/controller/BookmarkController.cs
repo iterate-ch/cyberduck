@@ -53,13 +53,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
         private readonly Host _host;
+        private LoginOptions _options;
         private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
 
-        private BookmarkController(IBookmarkView view, Host host)
+        private BookmarkController(IBookmarkView view, Host host, LoginOptions options)
         {
             _host = host;
+            _options = options;
             View = view;
 
             _ticklerReachability = new Timer(OnRechability, null, Timeout.Infinite, Timeout.Infinite);
@@ -71,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Init();
         }
 
-        private BookmarkController(Host host) : this(ObjectFactory.GetInstance<IBookmarkView>(), host)
+        private BookmarkController(Host host) : this(ObjectFactory.GetInstance<IBookmarkView>(), host, new LoginOptions(host.getProtocol()))
         {
             _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
         }
@@ -300,6 +302,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host.setHostname(selected.getDefaultHostname());
             }
             _host.setProtocol(selected);
+            _options.configure(selected);
             ItemChanged();
             Update();
             Reachable();
@@ -505,9 +508,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.Path = _host.getDefaultPath();
             View.Username = _host.getCredentials().getUsername();
-            View.UsernameEnabled = !_host.getCredentials().isAnonymousLogin();
+            View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
             View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder() + ":";
-            View.AnonymousEnabled = _host.getProtocol().isAnonymousConfigurable();
+            View.AnonymousEnabled = _options.anonymous() && _host.getProtocol().isAnonymousConfigurable();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
             View.SelectedTransferMode = _host.getTransferType();
