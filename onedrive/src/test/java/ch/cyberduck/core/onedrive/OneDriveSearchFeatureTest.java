@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -31,8 +32,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
@@ -47,11 +47,17 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
         new OneDriveTouchFeature(session).touch(file, new TransferStatus());
         final OneDriveSearchFeature feature = new OneDriveSearchFeature(session);
         assertTrue(feature.search(drive, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        assertTrue(feature.search(drive, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
+        assertFalse(feature.search(drive, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(drive, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(directory, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         final Path subdir = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        try {
+            assertFalse(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
         new OneDriveDeleteFeature(session).delete(Arrays.asList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
