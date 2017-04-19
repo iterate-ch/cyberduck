@@ -60,11 +60,6 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String disk() {
-        return String.format("%s.tiff", "ftp");
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return false;
     }
