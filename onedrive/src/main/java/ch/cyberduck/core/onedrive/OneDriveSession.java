@@ -36,6 +36,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
@@ -211,6 +212,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Quota.class) {
             return (T) new OneDriveQuotaFeature(this);
+        }
+        if(type == Search.class) {
+            return (T) new OneDriveSearchFeature(this);
         }
         return super._getFeature(type);
     }
