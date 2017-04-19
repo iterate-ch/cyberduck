@@ -384,6 +384,9 @@
       <Component Id="b2">
         <File Source="$(var.cyberduck.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="onedrive">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
