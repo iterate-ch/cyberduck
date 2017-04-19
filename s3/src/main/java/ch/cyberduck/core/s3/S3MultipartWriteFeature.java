@@ -219,9 +219,14 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             reference = complete.getEtag();
                         }
                         if(!expected.equals(reference)) {
-                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                            expected, reference));
+                            if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                                expected, reference));
+                            }
+                            else {
+                                log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
+                            }
                         }
                     }
                 }

@@ -8,6 +8,15 @@ https://cyberduck.io/
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
 - [Feature] Search files fast using prefix (S3)
+- [Feature] Browse local filesystem in browser
+
+5.4.5 [https://trac.cyberduck.io/milestone/5.4.5
+- [Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)
+
+5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
 
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
 - [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)

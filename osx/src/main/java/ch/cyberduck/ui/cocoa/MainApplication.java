@@ -89,7 +89,13 @@ public final class MainApplication {
                     new HubicProtocol(),
                     new LocalProtocol(),
                     new HubicProtocol(),
-                    new OneDriveProtocol()
+                    new OneDriveProtocol(),
+                    new LocalProtocol() {
+                        @Override
+                        public String disk() {
+                            return "NSComputer";
+                        }
+                    }
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
