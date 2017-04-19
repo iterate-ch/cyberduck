@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
 - [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
+- [Feature] Support for Microsoft OneDrive (OneDrive) (#9799)
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
 - [Feature] Search files fast using prefix (S3)
