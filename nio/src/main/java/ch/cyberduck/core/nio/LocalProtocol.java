@@ -19,6 +19,8 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -81,7 +83,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return "localhost";
+        return StringUtils.EMPTY;
     }
 
     @Override
