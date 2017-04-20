@@ -1,7 +1,7 @@
 package ch.cyberduck.core.oauth;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,9 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -34,7 +32,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
@@ -49,8 +46,7 @@ import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.CredentialRefreshListener;
-import com.google.api.client.auth.oauth2.TokenErrorResponse;
+import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
@@ -73,11 +69,9 @@ public class OAuth2AuthorizationService {
             = new GsonFactory();
 
     private final String tokenServerUrl;
-
     private final String authorizationServerUrl;
 
     private final String clientid;
-
     private final String clientsecret;
 
     public final BrowserLauncher browser
@@ -113,26 +107,19 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public Credential authorize(final Host bookmark, final HostPasswordStore keychain,
-                                final LoginCallback prompt, final CancelCallback cancel, final Tokens saved) throws BackgroundException {
-        final Credential tokens;
+    public Tokens authorize(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final Tokens saved = this.find(keychain, bookmark);
         if(saved.validate()) {
-            tokens = new Credential.Builder(method)
-                    .setTransport(transport)
-                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
-                    .setTokenServerEncodedUrl(tokenServerUrl)
-                    .setJsonFactory(json)
-                    .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
-                    .build()
-                    .setAccessToken(saved.accesstoken)
-                    .setRefreshToken(saved.refreshtoken)
-                    .setExpirationTimeMilliseconds(saved.expiry);
-            if(this.isExpired(tokens)) {
-                this.refresh(tokens);
+            // Found existing tokens
+            if(saved.isExpired()) {
+                // Refresh expired access key
+                return this.refresh(saved);
             }
+            return saved;
         }
         else {
-            final Credentials token = new TokenCredentials(bookmark);
+            // Obtain new tokens
+            final Credentials input = new TokenCredentials(bookmark);
             // Start OAuth2 flow within browser
             final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
                     method,
@@ -159,54 +146,68 @@ public class OAuth2AuthorizationService {
                 registry.register(new OAuth2TokenListener() {
                     @Override
                     public void callback(final String param) {
-                        token.setPassword(param);
+                        input.setPassword(param);
                     }
                 }, cancel);
             }
             else {
-                prompt.prompt(bookmark, token,
+                prompt.prompt(bookmark, input,
                         LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
                         LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
                         new LoginOptions().keychain(true).user(false).password(true)
                 );
             }
             try {
-                if(StringUtils.isBlank(token.getPassword())) {
+                if(StringUtils.isBlank(input.getPassword())) {
                     throw new LoginCanceledException();
                 }
                 // Swap the given authorization token for access/refresh tokens
-                final TokenResponse response = flow.newTokenRequest(token.getPassword())
+                final TokenResponse response = flow.newTokenRequest(input.getPassword())
                         .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes).execute();
-                tokens = new Credential.Builder(method)
-                        .setTransport(transport)
-                        .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
-                        .setTokenServerEncodedUrl(tokenServerUrl)
-                        .setJsonFactory(json)
-                        .addRefreshListener(new SavingCredentialRefreshListener(keychain, bookmark))
-                        .build()
-                        .setFromTokenResponse(response);
-                if(token.isSaved()) {
-                    // Save access key and refresh key
-                    save(keychain, bookmark, new Tokens(
-                            tokens.getAccessToken(), tokens.getRefreshToken(), tokens.getExpirationTimeMilliseconds()));
+                // Save access key and refresh key
+                final Tokens tokens = new Tokens(
+                        response.getAccessToken(), response.getRefreshToken(),
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+                if(input.isSaved()) {
+                    this.save(keychain, bookmark, tokens);
                 }
+                return tokens;
             }
-            catch(IOException e) {
+            catch(TokenResponseException e) {
                 throw new OAuthExceptionMappingService().map(e);
             }
+            catch(HttpResponseException e) {
+                throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+                        .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        return tokens;
     }
 
-    public void refresh(final Credential tokens) throws BackgroundException {
+    public Tokens refresh(final Tokens tokens) throws BackgroundException {
+        if(StringUtils.isBlank(tokens.getRefreshToken())) {
+            log.warn("Missing refresh token");
+            return tokens;
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Refresh expired tokens %s", tokens));
         }
         try {
-            tokens.refreshToken();
+            final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
+                    tokens.getRefreshToken()).setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret)).execute();
+            return new Tokens(response.getAccessToken(), response.getRefreshToken(), System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+        }
+        catch(TokenResponseException e) {
+            throw new OAuthExceptionMappingService().map(e);
+        }
+        catch(HttpResponseException e) {
+            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+                    .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
-            throw new OAuthExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
@@ -224,19 +225,19 @@ public class OAuth2AuthorizationService {
 
     private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
         final String prefix = this.getPrefix(bookmark);
-        if(StringUtils.isNotBlank(tokens.accesstoken)) {
+        if(StringUtils.isNotBlank(tokens.getAccessToken())) {
             keychain.addPassword(bookmark.getProtocol().getScheme(),
                     bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
-                    String.format("%s OAuth2 Access Token", prefix), tokens.accesstoken);
+                    String.format("%s OAuth2 Access Token", prefix), tokens.getAccessToken());
         }
-        if(StringUtils.isNotBlank(tokens.refreshtoken)) {
+        if(StringUtils.isNotBlank(tokens.refreshToken)) {
             keychain.addPassword(bookmark.getProtocol().getScheme(),
                     bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
-                    String.format("%s OAuth2 Refresh Token", prefix), tokens.refreshtoken);
+                    String.format("%s OAuth2 Refresh Token", prefix), tokens.getRefreshToken());
         }
         // Save expiry
-        if(tokens.expiry != null) {
-            preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), tokens.expiry);
+        if(tokens.expiryInMilliseconds != null) {
+            preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), tokens.expiryInMilliseconds);
         }
     }
 
@@ -284,75 +285,34 @@ public class OAuth2AuthorizationService {
     public static final class Tokens {
         public static final Tokens EMPTY = new Tokens(null, null, Long.MAX_VALUE);
 
-        public final String accesstoken;
-        public final String refreshtoken;
-        public final Long expiry;
+        private String accessToken;
+        private String refreshToken;
+        private Long expiryInMilliseconds;
 
-        public Tokens(final String accesstoken, final String refreshtoken, final Long expiry) {
-            this.accesstoken = accesstoken;
-            this.refreshtoken = refreshtoken;
-            this.expiry = expiry;
+        public Tokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+            this.expiryInMilliseconds = expiryInMilliseconds;
         }
 
         public boolean validate() {
-            return StringUtils.isNotEmpty(accesstoken);
-        }
-    }
-
-    private static final class OAuthExceptionMappingService extends DefaultIOExceptionMappingService {
-        @Override
-        public BackgroundException map(final IOException failure) {
-            if(failure instanceof TokenResponseException) {
-                final TokenErrorResponse details = ((TokenResponseException) failure).getDetails();
-                final StringBuilder buffer = new StringBuilder();
-                this.append(buffer, details.getErrorDescription());
-                return new LoginFailureException(buffer.toString(), failure);
-            }
-            final StringBuilder buffer = new StringBuilder();
-            if(failure instanceof HttpResponseException) {
-                final HttpResponseException response = (HttpResponseException) failure;
-                this.append(buffer, response.getStatusMessage());
-                if(response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                    // Invalid Credentials. Refresh the access token using the long-lived refresh token
-                    return new LoginFailureException(buffer.toString(), failure);
-                }
-                if(response.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
-                    // Invalid Grant
-                    return new LoginFailureException(buffer.toString(), failure);
-                }
-                if(response.getStatusCode() == HttpStatus.SC_FORBIDDEN) {
-                    return new AccessDeniedException(buffer.toString(), failure);
-                }
-                if(response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                    return new NotfoundException(buffer.toString(), failure);
-                }
-            }
-            return super.map(failure);
-        }
-    }
-
-    private final class SavingCredentialRefreshListener implements CredentialRefreshListener {
-        private final Host host;
-        private final HostPasswordStore keychain;
-
-        public SavingCredentialRefreshListener(final HostPasswordStore keychain, final Host bookmark) {
-            this.keychain = keychain;
-            this.host = bookmark;
+            return StringUtils.isNotEmpty(accessToken);
         }
 
-        @Override
-        public void onTokenResponse(final Credential credential, final TokenResponse tokenResponse) throws IOException {
-            save(keychain, host, new Tokens(credential.getAccessToken(), credential.getRefreshToken(),
-                    credential.getExpirationTimeMilliseconds()));
+        public String getAccessToken() {
+            return accessToken;
         }
 
-        @Override
-        public void onTokenErrorResponse(final Credential credential, final TokenErrorResponse tokenErrorResponse) throws IOException {
-            log.warn(String.format("Failure with OAuth2 token response %s", null == tokenErrorResponse ? "Unknown" : tokenErrorResponse.getError()));
+        public String getRefreshToken() {
+            return refreshToken;
         }
-    }
 
-    public boolean isExpired(final Credential tokens) {
-        return tokens.getExpirationTimeMilliseconds() >= System.currentTimeMillis();
+        public Long getExpiryInMilliseconds() {
+            return expiryInMilliseconds;
+        }
+
+        public boolean isExpired() {
+            return expiryInMilliseconds >= System.currentTimeMillis();
+        }
     }
 }

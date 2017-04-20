@@ -49,8 +49,4 @@ public abstract class HttpSession<C> extends SSLSession<C> {
     public void setBuilder(final HttpConnectionPoolBuilder builder) {
         this.builder = builder;
     }
-
-    public HttpConnectionPoolBuilder getBuilder() {
-        return builder;
-    }
 }

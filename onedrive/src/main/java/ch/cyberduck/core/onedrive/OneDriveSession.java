@@ -28,7 +28,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -40,8 +39,7 @@ import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -49,7 +47,11 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
@@ -59,10 +61,7 @@ import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.Set;
-
-import com.google.api.client.auth.oauth2.Credential;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private static final Logger log = Logger.getLogger(OneDriveSession.class);
@@ -70,10 +69,19 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    private Credential credential;
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
+            host.getProtocol().getOAuthTokenUrl(),
+            host.getProtocol().getOAuthAuthorizationUrl(),
+            host.getProtocol().getClientId(),
+            host.getProtocol().getClientSecret(),
+            host.getProtocol().getScopes()) {
+        @Override
+        public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+            if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
+                super.process(request, context);
+            }
+        }
+    }.withRedirectUri(PreferencesFactory.get().getProperty("onedrive.oauth.redirecturi"));
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -97,15 +105,13 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     @Override
     protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
-        final CloseableHttpClient client = builder.build(this).build();
-        final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(client) {
+        final HttpClientBuilder configuration = builder.build(this);
+        configuration.addInterceptorLast(authorizationService);
+        final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
-                if(null == credential) {
-                    log.warn("Missing authentication access token");
-                    return;
-                }
-                headers.add(new RequestHeader("Authorization", String.format("Bearer %s", credential.getAccessToken())));
+                // Placeholder
+                headers.add(new RequestHeader(HttpHeaders.AUTHORIZATION, "Bearer"));
             }
         };
         return new OneDriveAPI() {
@@ -138,31 +144,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
-        final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(
-                ((OneDriveCommonsHttpRequestExecutor) client.getExecutor()).getClient(),
-                host.getProtocol().getOAuthTokenUrl(),
-                host.getProtocol().getOAuthAuthorizationUrl(),
-                host.getProtocol().getClientId(),
-                host.getProtocol().getClientSecret(),
-                host.getProtocol().getScopes())
-                .withRedirectUri(preferences.getProperty("onedrive.oauth.redirecturi"));
-        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(authorizationService, keychain, prompt, cancel, tokens);
-    }
-
-    protected void login(final OAuth2AuthorizationService authorizationService, final HostPasswordStore keychain, final LoginCallback prompt,
-                         final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        credential = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
-        if(host.getCredentials().isPassed()) {
-            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
-            return;
-        }
-        try {
-            new OneDriveAttributesFinderFeature(this).find(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.volume)));
-        }
-        catch(LoginFailureException e) {
-            this.login(authorizationService, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
-        }
+        authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 
     @Override
