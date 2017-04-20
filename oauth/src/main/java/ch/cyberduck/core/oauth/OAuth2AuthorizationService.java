@@ -220,7 +220,7 @@ public class OAuth2AuthorizationService {
                 keychain.getPassword(bookmark.getProtocol().getScheme(),
                         bookmark.getPort(), URI.create(tokenServerUrl).getHost(),
                         String.format("%s OAuth2 Refresh Token", prefix)),
-                expiry == -1 ? Long.MAX_VALUE : expiry);
+                expiry);
     }
 
     private void save(final HostPasswordStore keychain, final Host bookmark, final Tokens tokens) {
@@ -312,7 +312,7 @@ public class OAuth2AuthorizationService {
         }
 
         public boolean isExpired() {
-            return expiryInMilliseconds >= System.currentTimeMillis();
+            return System.currentTimeMillis() >= expiryInMilliseconds;
         }
     }
 }
