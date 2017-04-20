@@ -33,7 +33,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
@@ -354,7 +353,7 @@ public class S3ObjectListServiceTest {
                     }
                 });
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(),
-                new KeychainX509KeyManager(host, new DisabledCertificateStore()), new DisabledProxyFinder());
+                new KeychainX509KeyManager(host, new DisabledCertificateStore()));
         session.open(new DisabledHostKeyCallback());
         new S3ObjectListService(session).list(
                 new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
