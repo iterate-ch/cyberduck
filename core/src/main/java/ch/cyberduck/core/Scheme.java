@@ -132,7 +132,7 @@ public enum Scheme {
             return 1247;
         }
     },
-    local {
+    file {
         @Override
         public boolean isSecure() {
             return true;
@@ -155,6 +155,9 @@ public enum Scheme {
     public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
             for(Scheme scheme : Scheme.values()) {
+                if(scheme.equals(Scheme.file)) {
+                    continue;
+                }
                 if(str.startsWith(scheme + "://")) {
                     return true;
                 }

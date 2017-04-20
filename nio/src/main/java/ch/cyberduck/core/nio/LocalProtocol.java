@@ -46,7 +46,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public Scheme getScheme() {
-        return Scheme.local;
+        return Scheme.file;
     }
 
     @Override
