@@ -61,10 +61,10 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
-        return this.compute(in, status.getHeader(), status.getNonces());
+        return this.compute(in, status.getOffset(), status.getHeader(), status.getNonces());
     }
 
-    protected Checksum compute(final InputStream in, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final long offset, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
@@ -78,7 +78,9 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
                     @Override
                     public TransferStatus call() throws Exception {
-                        source.write(header.array());
+                        if(offset == 0) {
+                            source.write(header.array());
+                        }
                         final TransferStatus status = new TransferStatus();
                         new StreamCopier(status, status).transfer(in, out);
                         return status;
