@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -63,13 +64,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private final PathContainerService containerService
             = new PathContainerService();
 
-    private final Write<StorageObject> writer;
     private final SwiftSegmentService segmentService;
     private final SwiftObjectListService listService;
     private final SwiftRegionService regionService;
 
     private final Long segmentSize;
     private final Integer concurrency;
+
+    private Write<StorageObject> writer;
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
@@ -228,5 +230,11 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                         }, callback);
             }
         }, overall));
+    }
+
+    @Override
+    public Upload<StorageObject> withWriter(final Write<StorageObject> writer) {
+        this.writer = writer;
+        return super.withWriter(writer);
     }
 }
