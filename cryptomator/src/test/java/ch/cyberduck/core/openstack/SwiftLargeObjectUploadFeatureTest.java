@@ -57,10 +57,10 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class SwiftMultipartUploadServiceTest {
+public class SwiftLargeObjectUploadFeatureTest {
 
     @Test
-    public void testMultipleParts() throws Exception {
+    public void testLargeObjectUpload() throws Exception {
         // 5L * 1024L * 1024L
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
