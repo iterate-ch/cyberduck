@@ -15,12 +15,13 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.SegmentingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.random.NonceGenerator;
 
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.cryptomator.cryptolib.api.CryptoException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -80,12 +81,17 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
-                int chunkLen = Math.min(chunksize, len - chunkOffset);
-                final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
-                        ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
-                        chunkIndex++, header, nonces.next());
-                super.write(encryptedChunk.array());
+            try {
+                for(int chunkOffset = off; chunkOffset < len; chunkOffset += chunksize) {
+                    int chunkLen = Math.min(chunksize, len - chunkOffset);
+                    final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
+                            ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
+                            chunkIndex++, header, nonces.next());
+                    super.write(encryptedChunk.array());
+                }
+            }
+            catch(CryptoException e) {
+                throw new IOException(e.getMessage(), e);
             }
         }
     }
