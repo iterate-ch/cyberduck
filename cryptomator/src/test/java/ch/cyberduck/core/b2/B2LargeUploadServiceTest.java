@@ -57,7 +57,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class B2MultipartUploadServiceTest {
+public class B2LargeUploadServiceTest {
 
     @Test
     public void testMultiplePartsWithSHA256Checksum() throws Exception {
