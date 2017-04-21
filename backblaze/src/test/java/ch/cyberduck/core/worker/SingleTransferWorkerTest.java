@@ -33,9 +33,11 @@ import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
+import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -82,7 +84,9 @@ public class SingleTransferWorkerTest {
                 ));
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session session = new B2Session(host) {
-            final B2LargeUploadService upload = new B2LargeUploadService(this) {
+            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2WriteFeature(this),
+                    PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+                    PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
                 @Override
                 protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                     if(failed.get()) {
