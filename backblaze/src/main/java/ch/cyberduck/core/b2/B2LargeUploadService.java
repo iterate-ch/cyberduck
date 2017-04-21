@@ -206,7 +206,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset);
-                status.setNonces(overall.getNonces());
                 status.setHeader(overall.getHeader());
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
