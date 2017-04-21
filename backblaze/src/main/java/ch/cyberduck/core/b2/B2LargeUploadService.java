@@ -203,13 +203,13 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         return pool.execute(new DefaultRetryCallable<B2UploadPartResponse>(new BackgroundExceptionCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset);
                 status.setHeader(overall.getHeader());
-                if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
-                }
                 status.setChecksum(writer.checksum().compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
                         status));

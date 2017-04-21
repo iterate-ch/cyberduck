@@ -202,12 +202,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         return pool.execute(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset);
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
+                final TransferStatus status = new TransferStatus()
+                        .length(length)
+                        .skip(offset);
+                status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum().compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset), status));
                 status.setSegment(true);
