@@ -237,6 +237,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return pool.execute(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
@@ -245,9 +248,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         .skip(offset)
                         .withParameters(requestParameters);
                 status.setHeader(overall.getHeader());
-                if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
-                }
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         status.setChecksum(writer.checksum()
