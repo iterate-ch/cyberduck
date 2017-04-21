@@ -244,6 +244,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         .length(length)
                         .skip(offset)
                         .withParameters(requestParameters);
+                status.setNonces(overall.getNonces());
+                status.setHeader(overall.getHeader());
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
