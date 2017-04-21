@@ -59,6 +59,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
+        // Make nonces resuable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
         return this.compute(in, status.getHeader(), status.getNonces());
     }
