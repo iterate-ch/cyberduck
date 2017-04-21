@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -58,6 +59,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
+        status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
         return this.compute(in, status.getHeader(), status.getNonces());
     }
 

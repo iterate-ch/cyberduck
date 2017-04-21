@@ -20,7 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -62,7 +62,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 // Write header
                 final Cryptor cryptor = cryptomator.getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
-                status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
+                status.setNonces(new RandomNonceGenerator());
                 status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             }
         }
