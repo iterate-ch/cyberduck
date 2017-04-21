@@ -160,6 +160,39 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private NonceGenerator nonces;
 
+    public TransferStatus() {
+        // Default
+    }
+
+    public TransferStatus(final TransferStatus copy) {
+        this.rename.remote = copy.rename.remote;
+        this.rename.local = copy.rename.local;
+        this.displayname.local = copy.displayname.local;
+        this.displayname.remote = copy.displayname.remote;
+        this.exists = copy.exists;
+        this.append = copy.append;
+        this.segment = copy.segment;
+        this.rejected = copy.rejected;
+        this.offset.set(copy.offset.get());
+        this.length = copy.length;
+        this.canceled.set(copy.canceled.get());
+        this.complete.set(copy.complete.get());
+        this.checksum = copy.checksum;
+        this.mime = copy.mime;
+        this.remote = copy.remote;
+        this.permission = copy.permission;
+        this.acl = copy.acl;
+        this.encryption = copy.encryption;
+        this.storageClass = copy.storageClass;
+        this.timestamp = copy.timestamp;
+        this.parameters = copy.parameters;
+        this.metadata = copy.metadata;
+        this.segment = copy.segment;
+        this.part = copy.part;
+        this.header = copy.header;
+        this.nonces = copy.nonces;
+    }
+
     /**
      * Await completion
      *
