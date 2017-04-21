@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -44,7 +42,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -52,16 +50,16 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleOAuthConstants;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -71,7 +69,7 @@ import com.google.api.services.drive.DriveScopes;
 public class DriveSession extends HttpSession<Drive> {
     private static final Logger log = Logger.getLogger(DriveSession.class);
 
-    private HttpTransport transport;
+    private ApacheHttpTransport transport;
 
     private final JsonFactory json = new GsonFactory();
 
@@ -81,7 +79,12 @@ public class DriveSession extends HttpSession<Drive> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private Credential credential;
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
+            GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
+            host.getProtocol().getClientId(),
+            host.getProtocol().getClientSecret(),
+            Collections.singletonList(DriveScopes.DRIVE))
+            .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
 
     public DriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -89,13 +92,14 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final HostKeyCallback callback) throws BackgroundException {
-        this.transport = new ApacheHttpTransport(builder.build(this).build());
+        final HttpClientBuilder configuration = builder.build(this);
+        configuration.addInterceptorLast(authorizationService);
+        this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) throws IOException {
                 request.setSuppressUserAgentSuffix(true);
-                // Add bearer token to request
-                credential.initialize(request);
+                // OAuth Bearer added in interceptor
             }
         })
                 .setApplicationName(useragent.get())
@@ -103,46 +107,13 @@ public class DriveSession extends HttpSession<Drive> {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
-        final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(transport,
-                GoogleOAuthConstants.TOKEN_SERVER_URL, GoogleOAuthConstants.AUTHORIZATION_SERVER_URL,
-                host.getProtocol().getClientId(),
-                host.getProtocol().getClientSecret(),
-                Collections.singletonList(DriveScopes.DRIVE))
-                .withRedirectUri(preferences.getProperty("googledrive.oauth.redirecturi"));
-        final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
-        this.login(auth, keychain, prompt, cancel, tokens);
-    }
-
-    private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
-                       final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        credential = auth.authorize(host, keychain, prompt, cancel, tokens);
-        if(host.getCredentials().isPassed()) {
-            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
-            return;
-        }
-        try {
-            client.files().list().executeUsingHead();
-        }
-        catch(IOException e) {
-            try {
-                throw new DriveExceptionMappingService().map(e);
-            }
-            catch(LoginFailureException f) {
-                this.login(auth, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
-            }
-        }
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+        authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 
     @Override
     protected void logout() throws BackgroundException {
-        try {
-            transport.shutdown();
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        transport.shutdown();
     }
 
     @Override
@@ -153,8 +124,8 @@ public class DriveSession extends HttpSession<Drive> {
         return new DriveDefaultListService(this).list(directory, listener);
     }
 
-    public Credential getTokens() {
-        return credential;
+    public HttpClient getHttpClient() {
+        return transport.getHttpClient();
     }
 
     @Override
