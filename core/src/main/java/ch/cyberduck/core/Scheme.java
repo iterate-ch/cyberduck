@@ -140,7 +140,7 @@ public enum Scheme {
 
         @Override
         public int getPort() {
-            return Integer.MIN_VALUE;
+            return 0;
         }
     };
 

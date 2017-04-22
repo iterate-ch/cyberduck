@@ -67,6 +67,11 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isPortConfigurable() {
+        return false;
+    }
+
+    @Override
     public boolean isUsernameConfigurable() {
         return false;
     }
