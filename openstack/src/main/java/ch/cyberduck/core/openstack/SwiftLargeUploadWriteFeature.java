@@ -128,12 +128,12 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     private final class LargeUploadOutputStream extends OutputStream {
         final List<StorageObject> completed = new ArrayList<StorageObject>();
         private final Path file;
-        private final TransferStatus status;
+        private final TransferStatus overall;
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
-            this.status = status;
+            this.overall = status;
         }
 
         @Override
@@ -148,6 +148,8 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);
+                        status.setHeader(overall.getHeader());
+                        status.setNonces(overall.getNonces());
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum()
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );
@@ -177,7 +179,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                         stored.setSize(status.getLength());
                         return stored;
                     }
-                }, status).call());
+                }, overall).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
@@ -197,7 +199,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                 session.getClient().createSLOManifestObject(regionService.lookup(
                         containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
-                        status.getMime(),
+                        overall.getMime(),
                         containerService.getKey(file), manifest, Collections.emptyMap());
             }
             catch(BackgroundException e) {
