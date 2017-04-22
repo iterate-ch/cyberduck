@@ -124,14 +124,14 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
 
         private final MultipartUpload multipart;
         private final Path file;
-        private final TransferStatus status;
+        private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
         private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
             this.multipart = multipart;
             this.file = file;
-            this.status = status;
+            this.overall = status;
         }
 
         public List<MultipartPart> getCompleted() {
@@ -153,6 +153,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         parameters.put("uploadId", multipart.getUploadId());
                         parameters.put("partNumber", String.valueOf(++partNumber));
                         final TransferStatus status = new TransferStatus().withParameters(parameters).length(len);
+                        status.setHeader(overall.getHeader());
+                        status.setNonces(overall.getNonces());
                         switch(session.getSignatureVersion()) {
                             case AWS4HMACSHA256:
                                 status.setChecksum(S3MultipartWriteFeature.this.checksum()
@@ -160,6 +162,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                                 );
                                 break;
                         }
+                        status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session, new S3DisabledMultipartService())
                                 .getDetails(containerService.getKey(file), status);
                         try {
@@ -178,7 +181,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                                 null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
                                 part.getContentLength());
                     }
-                }, status).call());
+                }, overall).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
@@ -210,7 +213,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             concat.append(part.getEtag());
                         }
                         final String expected = String.format("%s-%d",
-                                new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
+                                new MD5ChecksumCompute().compute(concat.toString(), overall), completed.size());
                         final String reference;
                         if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                             reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
