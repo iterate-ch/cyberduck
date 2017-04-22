@@ -116,14 +116,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
     private final class LargeUploadOutputStream extends OutputStream {
         final List<B2UploadPartResponse> completed = new ArrayList<B2UploadPartResponse>();
         private final Path file;
-        private final TransferStatus status;
+        private final TransferStatus overall;
 
         private String fileid;
         private int partNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
-            this.status = status;
+            this.overall = status;
         }
 
         @Override
@@ -137,16 +137,16 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                 if(0 == partNumber && len < PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
-                    final Checksum checksum = status.getChecksum();
+                    final Checksum checksum = overall.getChecksum();
                     session.getClient().uploadFile(uploadUrl,
                             file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
                             new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
-                            status.getMime(), status.getMetadata());
+                            overall.getMime(), overall.getMetadata());
                 }
                 else {
                     if(0 == partNumber) {
                         fileid = session.getClient().startLargeFileUpload(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                                containerService.getKey(file), status.getMime(), status.getMetadata()).getFileId();
+                                containerService.getKey(file), overall.getMime(), overall.getMetadata()).getFileId();
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Multipart upload started for %s with ID %s", file, fileid));
                         }
@@ -159,6 +159,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
+                            status.setHeader(overall.getHeader());
+                            status.setNonces(overall.getNonces());
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                             final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
                                     .compute(new ByteArrayInputStream(content, off, len), status);
@@ -172,7 +174,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                         }
-                    }, new DisabledProgressListener(), new TransferBackgroundActionState(status)).call());
+                    }, new DisabledProgressListener(), new TransferBackgroundActionState(overall)).call());
                 }
             }
             catch(BackgroundException e) {
