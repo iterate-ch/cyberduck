@@ -210,6 +210,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                         .length(length)
                         .skip(offset);
                 status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum().compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
                         status));
