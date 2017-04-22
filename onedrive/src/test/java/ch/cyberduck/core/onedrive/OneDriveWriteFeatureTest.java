@@ -53,7 +53,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        final byte[] buffer = new byte[1 * 1024];
+        final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();

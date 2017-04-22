@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,9 +34,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -45,7 +45,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
@@ -116,9 +115,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                         request.addHeader("X-Upload-Content-Type", status.getMime());
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
-                    request.addHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", session.getTokens().getAccessToken()));
-                    final CloseableHttpClient client = session.getBuilder().build(new DisabledTranscriptListener()).build();
-                    final CloseableHttpResponse response = client.execute(request);
+                    final HttpClient client = session.getHttpClient();
+                    final HttpResponse response = client.execute(request);
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
@@ -137,7 +135,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<Void> implements
                             // Upload the file
                             final HttpPut put = new HttpPut(putTarget);
                             put.setEntity(entity);
-                            final CloseableHttpResponse putResponse = client.execute(put);
+                            final HttpResponse putResponse = client.execute(put);
                             try {
                                 switch(putResponse.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:

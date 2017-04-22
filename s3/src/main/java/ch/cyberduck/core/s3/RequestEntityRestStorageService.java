@@ -18,8 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -57,9 +55,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
             = PreferencesFactory.get();
 
     public RequestEntityRestStorageService(final S3Session session,
-                                           final Jets3tProperties configuration,
-                                           final HttpConnectionPoolBuilder pool,
-                                           final TranscriptListener listener) {
+                                           final Jets3tProperties properties,
+                                           final HttpClientBuilder configuration) {
         super(session.getHost().getCredentials().isAnonymousLogin() ? null :
                         new AWSCredentials(null, null) {
                             @Override
@@ -72,13 +69,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                 return session.getHost().getCredentials().getPassword();
                             }
                         },
-                new PreferencesUseragentProvider().get(), null, configuration);
+                new PreferencesUseragentProvider().get(), null, properties);
         this.session = session;
-        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder builder = pool.build(listener);
-        builder.disableContentCompression();
-        builder.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
-        builder.setRedirectStrategy(new DefaultRedirectStrategy() {
+        configuration.disableContentCompression();
+        configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
+        configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
             @Override
             public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
                 if(response.containsHeader("x-amz-bucket-region")) {
@@ -92,7 +87,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                 return super.getRedirect(request, response, context);
             }
         });
-        this.setHttpClient(builder.build());
+        this.setHttpClient(configuration.build());
     }
 
     @Override
