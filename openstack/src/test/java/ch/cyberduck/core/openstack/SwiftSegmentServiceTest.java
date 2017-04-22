@@ -52,6 +52,7 @@ public class SwiftSegmentServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");
         a.setSize(1L);
@@ -70,6 +71,7 @@ public class SwiftSegmentServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final SwiftSegmentService service = new SwiftSegmentService(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         final Path file = new Path(container, "a", EnumSet.of(Path.Type.file));
         final StorageObject a = new StorageObject("a");
         a.setMd5sum("m1");

@@ -74,6 +74,7 @@ public class SwiftUrlProviderTest {
         final SwiftSession session = new SwiftSession(host);
         final UrlProvider provider = new SwiftUrlProvider(session, session.accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("DFW");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
