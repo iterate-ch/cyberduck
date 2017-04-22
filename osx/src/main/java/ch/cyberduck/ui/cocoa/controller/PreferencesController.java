@@ -371,8 +371,8 @@ public class PreferencesController extends ToolbarWindowController {
     private final ProxyController editorPathPanelDelegate = new EditorOpenPanelDelegate();
 
     @Action
-    public void editorComboboxClicked(NSMenuItem sender) {
-        if(null == sender.representedObject()) {
+    public void editorComboboxClicked(NSPopUpButton sender) {
+        if(null == sender.selectedItem().representedObject()) {
             editorPathPanel = NSOpenPanel.openPanel();
             editorPathPanel.setDelegate(editorPathPanelDelegate.id());
             editorPathPanel.setAllowsMultipleSelection(false);
@@ -381,7 +381,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            preferences.setProperty("editor.bundleIdentifier", sender.representedObject());
+            preferences.setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
             for(BrowserController controller : MainController.getBrowsers()) {
                 controller.validateToolbar();
             }
@@ -1168,7 +1168,7 @@ public class PreferencesController extends ToolbarWindowController {
     private NSOpenPanel downloadPathPanel;
 
     @Action
-    public void downloadPathPopupClicked(final NSMenuItem sender) {
+    public void downloadPathPopupClicked(final NSPopUpButton sender) {
         if(sender.title().equals(String.format("%s…", LocaleFactory.localizedString("Choose")))) {
             downloadPathPanel = NSOpenPanel.openPanel();
             downloadPathPanel.setCanChooseFiles(false);
@@ -1179,7 +1179,7 @@ public class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            preferences.setProperty("queue.download.folder", sender.representedObject());
+            preferences.setProperty("queue.download.folder", sender.selectedItem().representedObject());
         }
     }
 
