@@ -343,6 +343,11 @@ public class UploadTransferTest {
                         }
 
                         @Override
+                        public boolean isRecursive() {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -352,10 +357,6 @@ public class UploadTransferTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {

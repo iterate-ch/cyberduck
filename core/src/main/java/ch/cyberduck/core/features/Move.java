@@ -15,7 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -29,9 +28,10 @@ public interface Move {
      */
     void move(Path file, Path renamed, boolean exists, Delete.Callback callback) throws BackgroundException;
 
+    boolean isRecursive();
+
     boolean isSupported(Path source, final Path target);
 
     Move withDelete(Delete delete);
 
-    Move withList(ListService list);
 }

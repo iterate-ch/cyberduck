@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.features.Move;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,33 +51,59 @@ public class MoveWorker extends Worker<List<Path>> {
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
-        final Move feature = session.getFeature(Move.class);
+        final Move move = session.getFeature(Move.class);
         for(Map.Entry<Path, Path> entry : files.entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            if(!feature.isSupported(entry.getKey(), entry.getValue())) {
+            final Path source = entry.getKey();
+            final Path target = entry.getValue();
+            if(!move.isSupported(source, target)) {
                 continue;
             }
             final boolean exists;
-            if(cache.isCached(entry.getValue().getParent())) {
-                exists = cache.get(entry.getValue().getParent()).contains(entry.getValue());
+            if(cache.isCached(target.getParent())) {
+                exists = cache.get(target.getParent()).contains(target);
             }
             else {
                 exists = false;
             }
-            feature.move(entry.getKey(), entry.getValue(), exists, new Delete.Callback() {
-                @Override
-                public void delete(final Path file) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                            file.getName()));
-                }
-            });
+            final Map<Path, Path> recursive = this.compile(session.getFeature(Move.class), session.getFeature(ListService.class), source, target);
+            for(Map.Entry<Path, Path> r : recursive.entrySet()) {
+                move.move(r.getKey(), r.getValue(), exists, new Delete.Callback() {
+                    @Override
+                    public void delete(final Path file) {
+                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                file.getName()));
+                    }
+                });
+            }
         }
         final List<Path> changed = new ArrayList<Path>();
         changed.addAll(files.keySet());
         changed.addAll(files.values());
         return changed;
+    }
+
+    protected Map<Path, Path> compile(final Move move, final ListService list, final Path source, final Path target) throws BackgroundException {
+        // Compile recursive list
+        final Map<Path, Path> recursive = new LinkedHashMap<>();
+        if(source.isFile() || source.isSymbolicLink()) {
+            recursive.put(source, target);
+        }
+        else if(source.isDirectory()) {
+            if(!move.isRecursive()) {
+                for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
+                    if(this.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
+                    recursive.putAll(this.compile(move, list, child, new Path(target, child.getName(), child.getType())));
+                }
+            }
+            // Add parent after children
+            recursive.put(source, target);
+        }
+        return recursive;
     }
 
     @Override

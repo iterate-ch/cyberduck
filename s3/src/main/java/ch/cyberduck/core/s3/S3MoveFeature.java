@@ -19,9 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -49,13 +47,11 @@ public class S3MoveFeature implements Move {
     private final S3AccessControlListFeature accessControlListFeature;
 
     private Delete delete;
-    private ListService list;
 
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
         this.delete = new S3DefaultDeleteFeature(session);
-        this.list = new S3ObjectListService(session);
     }
 
     @Override
@@ -98,15 +94,15 @@ public class S3MoveFeature implements Move {
                 }
                 delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
             }
-            if(source.isDirectory()) {
-                for(Path i : list.list(source, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
-                }
-            }
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot rename {0}", e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive() {
+        return false;
     }
 
     @Override
@@ -120,9 +116,4 @@ public class S3MoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        this.list = list;
-        return this;
-    }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -43,6 +42,11 @@ public class DropboxMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive() {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
@@ -52,8 +56,4 @@ public class DropboxMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        return this;
-    }
 }

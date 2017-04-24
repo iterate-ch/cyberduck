@@ -16,7 +16,6 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -50,6 +49,11 @@ public class LocalMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive() {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
@@ -60,8 +64,4 @@ public class LocalMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        return this;
-    }
 }
