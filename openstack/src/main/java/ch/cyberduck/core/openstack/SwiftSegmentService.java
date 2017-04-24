@@ -124,8 +124,7 @@ public class SwiftSegmentService {
     }
 
     public Path getSegment(final Path file, final Long size, int segmentNumber) {
-        return new Path(containerService.getContainer(file), String.format("%s/%08d",
-                this.getSegmentsDirectory(file, size), segmentNumber), EnumSet.of(Path.Type.file));
+        return new Path(this.getSegmentsDirectory(file, size), String.format("%08d", segmentNumber), EnumSet.of(Path.Type.file));
     }
 
     /**

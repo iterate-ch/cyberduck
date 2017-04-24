@@ -82,7 +82,7 @@ public class SwiftSegmentServiceTest {
     }
 
     @Test
-    public void testBasename() throws Exception {
+    public void testGetSegmentsDirectory() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
@@ -94,5 +94,19 @@ public class SwiftSegmentServiceTest {
         assertEquals("/test.cyberduck.ch/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(container, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
         final Path directory = new Path(container, "dir", EnumSet.of(Path.Type.directory));
         assertEquals("/test.cyberduck.ch/dir/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(directory, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
+    }
+
+    @Test
+    public void testGetSegmentName() throws Exception {
+        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+        ));
+        final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
+        final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new Path(container, "dir", EnumSet.of(Path.Type.directory));
+        final String name = "name";
+        final String key = "sub/" + name;
+        assertEquals("/test.cyberduck.ch/dir/.prefix/name/1/00000001", service.getSegment(new Path(directory, key, EnumSet.of(Path.Type.file)), 1L, 1).getAbsolute());
     }
 }
