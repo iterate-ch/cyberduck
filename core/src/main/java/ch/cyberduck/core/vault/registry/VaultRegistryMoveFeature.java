@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault.registry;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -39,8 +40,13 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public boolean isRecursive(final Path source) {
+        try {
+            return registry.find(session, source).getFeature(session, Move.class, proxy).isRecursive(source);
+        }
+        catch(ConnectionCanceledException e) {
+            return proxy.isRecursive(source);
+        }
     }
 
     @Override

@@ -82,7 +82,7 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive() {
+    public boolean isRecursive(final Path source) {
         return false;
     }
 

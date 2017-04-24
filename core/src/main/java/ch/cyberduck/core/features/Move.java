@@ -28,7 +28,7 @@ public interface Move {
      */
     void move(Path file, Path renamed, boolean exists, Delete.Callback callback) throws BackgroundException;
 
-    boolean isRecursive();
+    boolean isRecursive(final Path source);
 
     boolean isSupported(Path source, final Path target);
 

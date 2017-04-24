@@ -41,8 +41,9 @@ public class CryptoMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive() {
-        return proxy.isRecursive();
+    public boolean isRecursive(final Path source) {
+        // No need to handle recursion with encrypted filenames
+        return true;
     }
 
     @Override
@@ -57,5 +58,4 @@ public class CryptoMoveFeature implements Move {
     public Move withDelete(final Delete delete) {
         return this;
     }
-
 }

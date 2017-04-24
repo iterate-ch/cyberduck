@@ -92,7 +92,7 @@ public class MoveWorker extends Worker<List<Path>> {
             recursive.put(source, target);
         }
         else if(source.isDirectory()) {
-            if(!move.isRecursive()) {
+            if(!move.isRecursive(source)) {
                 for(Path child : list.list(source, new ActionListProgressListener(this, listener))) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();

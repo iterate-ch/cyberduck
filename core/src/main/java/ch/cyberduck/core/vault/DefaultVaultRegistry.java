@@ -83,7 +83,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
      * @param lookup  Find and load any vault
      * @return Open or disabled vault
      */
-    public Vault find(final Session session, final Path file, final boolean lookup) throws ConnectionCanceledException {
+    public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
@@ -105,7 +105,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         return Vault.DISABLED;
     }
 
-    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws ConnectionCanceledException {
+    private Vault find(final Path directory, final LoadingVaultLookupListener listener) throws VaultUnlockCancelException {
         final Vault vault = VaultFactory.get(directory.attributes().getVault(), keychain);
         listener.found(vault);
         return vault;
