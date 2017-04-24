@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledCancelCallback;
@@ -24,14 +25,18 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class B2UrlProviderTest {
@@ -46,11 +51,14 @@ public class B2UrlProviderTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new B2TouchFeature(session).touch(test, new TransferStatus());
         final B2UrlProvider provider = new B2UrlProvider(session);
         assertEquals(0, provider.toUrl(bucket).size());
-        assertEquals(1, provider.toUrl(new Path(bucket, "f", EnumSet.of(Path.Type.file))).size());
-        assertEquals("https://f001.backblazeb2.com/file/test-cyberduck/f",
-                provider.toUrl(new Path(bucket, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.http).getUrl());
+        assertEquals(2, provider.toUrl(test).size());
+        assertNotNull(provider.toUrl(test).find(DescriptiveUrl.Type.http).getUrl());
+        assertNotNull(provider.toUrl(test).find(DescriptiveUrl.Type.signed).getUrl());
+        new B2DeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

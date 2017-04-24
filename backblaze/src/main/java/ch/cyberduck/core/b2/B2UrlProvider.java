@@ -23,12 +23,23 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
+
+import synapticloop.b2.exception.B2ApiException;
 
 public class B2UrlProvider implements UrlProvider {
+    private static final Logger log = Logger.getLogger(B2UrlProvider.class);
 
     private final PathContainerService containerService
             = new PathContainerService();
@@ -51,6 +62,22 @@ public class B2UrlProvider implements UrlProvider {
                     URIEncoder.encode(containerService.getKey(file)));
             list.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http,
                     MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+            try {
+                final int seconds = 604800;
+                // Determine expiry time for URL
+                final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                expiry.add(Calendar.SECOND, seconds);
+                final String token = session.getClient().getDownloadAuthorization(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
+                        StringUtils.EMPTY, seconds);
+                list.add(new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                                UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
+                ));
+            }
+            catch(B2ApiException | IOException | BackgroundException e) {
+                log.warn(String.format("Failure getting download authorization token %s", e.getMessage()));
+            }
         }
         return list;
     }
