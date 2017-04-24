@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -128,12 +127,12 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     private final class LargeUploadOutputStream extends OutputStream {
         final List<StorageObject> completed = new ArrayList<StorageObject>();
         private final Path file;
-        private final TransferStatus status;
+        private final TransferStatus overall;
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
-            this.status = status;
+            this.overall = status;
         }
 
         @Override
@@ -152,8 +151,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
-                        final Path segment = new Path(containerService.getContainer(file),
-                                segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
+                        final Path segment = segmentService.getSegment(file, status.getLength(), ++segmentNumber);
                         final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                         final HashMap<String, String> headers = new HashMap<>();
                         final String checksum;
@@ -177,7 +175,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                         stored.setSize(status.getLength());
                         return stored;
                     }
-                }, status).call());
+                }, overall).call());
             }
             catch(Exception e) {
                 throw new IOException(e.getMessage(), e);
@@ -197,7 +195,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                 session.getClient().createSLOManifestObject(regionService.lookup(
                         containerService.getContainer(file)),
                         containerService.getContainer(file).getName(),
-                        status.getMime(),
+                        overall.getMime(),
                         containerService.getKey(file), manifest, Collections.emptyMap());
             }
             catch(BackgroundException e) {

@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
@@ -58,24 +59,28 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        return this.compute(in, status.getHeader(), status.getNonces());
+        // Make nonces reusable in case we need to compute a checksum
+        status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
+        return this.compute(in, status.getOffset(), status.getHeader(), status.getNonces());
     }
 
-    protected Checksum compute(final InputStream in, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final long offset, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
             final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), vault.getCryptor(),
-                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces);
+                    vault.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, vault.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {
                 final Future execute = pool.execute(new Callable<TransferStatus>() {
                     @Override
                     public TransferStatus call() throws Exception {
-                        source.write(header.array());
+                        if(offset == 0) {
+                            source.write(header.array());
+                        }
                         final TransferStatus status = new TransferStatus();
                         new StreamCopier(status, status).transfer(in, out);
                         return status;

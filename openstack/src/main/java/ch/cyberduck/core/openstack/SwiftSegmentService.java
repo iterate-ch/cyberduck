@@ -119,12 +119,12 @@ public class SwiftSegmentService {
         }
     }
 
-    public String basename(final Path file, final Long size) {
-        return String.format("%s%s/%d", prefix, containerService.getKey(file), size);
+    public Path getSegmentsDirectory(final Path file, final Long size) {
+        return new Path(file.getParent(), String.format("%s%s/%d", prefix, file.getName(), size), EnumSet.of(Path.Type.directory));
     }
 
-    public String name(final Path file, final Long size, int segmentNumber) {
-        return String.format("%s/%08d", this.basename(file, size), segmentNumber);
+    public Path getSegment(final Path file, final Long size, int segmentNumber) {
+        return new Path(this.getSegmentsDirectory(file, size), String.format("%08d", segmentNumber), EnumSet.of(Path.Type.file));
     }
 
     /**
