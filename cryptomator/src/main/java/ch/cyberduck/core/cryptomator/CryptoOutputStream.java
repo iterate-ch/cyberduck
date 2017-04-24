@@ -34,8 +34,10 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
 
     private final StatusOutputStream<Reply> proxy;
 
-    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header, final NonceGenerator nonces) {
-        super(new SegmentingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces), cryptor.fileContentCryptor().cleartextChunkSize()));
+    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final Cryptor cryptor, final FileHeader header,
+                              final NonceGenerator nonces, final long chunkIndexOffset) {
+        super(new SegmentingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
+                cryptor.fileContentCryptor().cleartextChunkSize()));
         this.proxy = proxy;
     }
 
@@ -59,19 +61,16 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
         private final FileHeader header;
         private final int chunksize;
         private final NonceGenerator nonces;
-
-        /**
-         * Position proxy content cryptor
-         */
-        private long chunkIndex = 0;
+        private long chunkIndexOffset;
 
         public EncryptingOutputStream(final OutputStream proxy, final Cryptor cryptor, final FileHeader header,
-                                      final NonceGenerator nonces) {
+                                      final NonceGenerator nonces, final long chunkIndexOffset) {
             super(proxy);
             this.cryptor = cryptor;
             this.header = header;
             this.chunksize = cryptor.fileContentCryptor().cleartextChunkSize();
             this.nonces = nonces;
+            this.chunkIndexOffset = chunkIndexOffset;
         }
 
         @Override
@@ -86,7 +85,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
                     int chunkLen = Math.min(chunksize, len - chunkOffset);
                     final ByteBuffer encryptedChunk = cryptor.fileContentCryptor().encryptChunk(
                             ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
-                            chunkIndex++, header, nonces.next());
+                            chunkIndexOffset++, header, nonces.next());
                     super.write(encryptedChunk.array());
                 }
             }
