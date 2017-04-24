@@ -20,6 +20,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.apache.log4j.Logger;
@@ -56,11 +57,18 @@ public class B2DeleteFeature implements Delete {
             }
             callback.delete(file);
             if(file.isDirectory()) {
+                // Delete /.bzEmpty if any
+                final String fileid;
                 try {
-                    // Delete /.bzEmpty if any
-                    session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER),
-                            new B2FileidProvider(session).getFileid(new Path(containerService.getContainer(file),
-                                    String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), EnumSet.of(Path.Type.file))));
+                    fileid = new B2FileidProvider(session).getFileid(new Path(containerService.getContainer(file),
+                            String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), EnumSet.of(Path.Type.file)));
+                }
+                catch(NotfoundException e) {
+                    log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
+                    return;
+                }
+                try {
+                    session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);
                 }
                 catch(B2ApiException e) {
                     log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
@@ -71,16 +79,10 @@ public class B2DeleteFeature implements Delete {
             }
             else if(file.isFile()) {
                 try {
-                    session.getClient().deleteFileVersion(containerService.getKey(file),
-                            new B2FileidProvider(session).getFileid(file));
+                    session.getClient().deleteFileVersion(containerService.getKey(file), new B2FileidProvider(session).getFileid(file));
                 }
                 catch(B2ApiException e) {
-                    if(containerService.getKey(file).endsWith(B2DirectoryFeature.PLACEHOLDER)) {
-                        log.warn(String.format("Ignore failure %s deleting placeholder file %s", e.getMessage(), file));
-                    }
-                    else {
-                        throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
-                    }
+                    throw new B2ExceptionMappingService(session).map("Cannot delete {0}", e, file);
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
