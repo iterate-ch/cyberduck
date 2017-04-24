@@ -37,7 +37,7 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        proxy.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
+        proxy.move(vault.encrypt(session, file, file.isDirectory()), vault.encrypt(session, renamed, file.isDirectory()), exists, callback);
     }
 
     @Override
