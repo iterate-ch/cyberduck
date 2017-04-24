@@ -16,6 +16,7 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import org.apache.commons.io.IOUtils;
+import org.cryptomator.cryptolib.api.CryptoException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -82,7 +83,12 @@ public class CryptoInputStream extends InputStream {
         }
         ciphertextBuf.position(read);
         ciphertextBuf.flip();
-        buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndex++, header, true);
+        try {
+            buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndex++, header, true);
+        }
+        catch(CryptoException e) {
+            throw new IOException(e.getMessage(), e);
+        }
         return read;
     }
 }

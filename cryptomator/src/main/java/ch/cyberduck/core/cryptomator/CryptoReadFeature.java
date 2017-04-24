@@ -46,10 +46,11 @@ public class CryptoReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(vault.contains(file)) {
             try {
-                final Path encrypted = vault.encrypt(session, file);
+                final Path encrypted = vault.contains(file) ? vault.encrypt(session, file) : file;
                 // Header
                 final Cryptor cryptor = vault.getCryptor();
-                final InputStream proxy = delegate.read(encrypted, status, callback);
+                final InputStream proxy = delegate.read(encrypted,
+                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
                 final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
                 final int read = proxy.read(headerBuffer.array());
                 final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);

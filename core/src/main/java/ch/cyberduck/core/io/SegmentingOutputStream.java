@@ -38,17 +38,25 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
     }
 
     @Override
-    protected void thresholdReached() throws IOException {
-        // This implementation may trigger the event before the threshold is actually reached, since it triggers
-        // when a pending write operation would cause the threshold to be exceeded.
+    protected void checkThreshold(final int count) throws IOException {
         if(this.getByteCount() >= this.getThreshold()) {
             this.copy();
         }
     }
 
+    /**
+     * @see #checkThreshold(int)
+     */
+    @Override
+    protected void thresholdReached() throws IOException {
+        // No-op
+    }
+
     @Override
     public void close() throws IOException {
-        this.copy();
+        if(this.getByteCount() > 0L) {
+            this.copy();
+        }
         proxy.close();
     }
 
@@ -59,5 +67,4 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
         // Wait for trigger of next threshold
         this.resetByteCount();
     }
-
 }

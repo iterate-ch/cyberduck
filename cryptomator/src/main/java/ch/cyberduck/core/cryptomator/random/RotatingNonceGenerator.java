@@ -48,4 +48,13 @@ public final class RotatingNonceGenerator implements NonceGenerator {
         }
         return nonces.get(index++);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RotatingNonceGenerator{");
+        sb.append("capacity=").append(capacity);
+        sb.append(", index=").append(index);
+        sb.append('}');
+        return sb.toString();
+    }
 }
