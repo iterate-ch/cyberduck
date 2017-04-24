@@ -48,7 +48,9 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
 
     @Override
     public void close() throws IOException {
-        this.copy();
+        if(this.getByteCount() > 0L) {
+            this.copy();
+        }
         proxy.close();
     }
 
@@ -59,5 +61,4 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
         // Wait for trigger of next threshold
         this.resetByteCount();
     }
-
 }
