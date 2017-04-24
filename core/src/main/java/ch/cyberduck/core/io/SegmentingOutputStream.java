@@ -37,8 +37,9 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
         return buffer;
     }
 
+    @Override
     protected void checkThreshold(final int count) throws IOException {
-        if(this.getByteCount() > this.getThreshold()) {
+        if(this.getByteCount() >= this.getThreshold()) {
             this.copy();
         }
     }
