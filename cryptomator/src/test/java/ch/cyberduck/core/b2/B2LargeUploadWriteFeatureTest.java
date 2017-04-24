@@ -40,7 +40,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
@@ -87,7 +87,7 @@ public class B2LargeUploadWriteFeatureTest {
         writeStatus.setNonces(new RandomNonceGenerator());
         writeStatus.setLength(-1L);
         final OutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
-        final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
