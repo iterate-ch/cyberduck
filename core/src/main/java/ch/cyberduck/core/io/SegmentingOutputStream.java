@@ -37,11 +37,18 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
         return buffer;
     }
 
+    protected void checkThreshold(final int count) throws IOException {
+        if(this.getByteCount() > this.getThreshold()) {
+            this.copy();
+        }
+    }
+
+    /**
+     * @see #checkThreshold(int)
+     */
     @Override
     protected void thresholdReached() throws IOException {
-        this.copy();
-        // Wait for trigger of next threshold
-        this.resetByteCount();
+        // No-op
     }
 
     @Override
@@ -56,5 +63,7 @@ public class SegmentingOutputStream extends ThresholdingOutputStream {
         buffer.writeTo(proxy);
         // Re-use buffer
         buffer.reset();
+        // Wait for trigger of next threshold
+        this.resetByteCount();
     }
 }
