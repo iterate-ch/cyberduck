@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -105,9 +104,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
-            existingSegments.addAll(listService.list(
-                    new Path(containerService.getContainer(file),
-                            segmentService.basename(file, status.getLength()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).toList());
+            existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getLength()), new DisabledListProgressListener()).toList());
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
@@ -120,8 +117,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
             final Long length = Math.min(segmentSize, remaining);
             // Segment name with left padded segment number
-            final Path segment = new Path(containerService.getContainer(file),
-                    segmentService.name(file, length, segmentNumber), EnumSet.of(Path.Type.file));
+            final Path segment = segmentService.getSegment(file, length, segmentNumber);
             if(existingSegments.contains(segment)) {
                 final Path existingSegment = existingSegments.get(existingSegments.indexOf(segment));
                 if(log.isDebugEnabled()) {

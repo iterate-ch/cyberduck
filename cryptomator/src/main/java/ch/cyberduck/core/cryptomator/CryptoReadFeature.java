@@ -44,21 +44,24 @@ public class CryptoReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final Path encrypted = vault.contains(file) ? vault.encrypt(session, file) : file;
-            // Header
-            final Cryptor cryptor = vault.getCryptor();
-            final InputStream proxy = delegate.read(encrypted,
-                    new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
-            final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final int read = proxy.read(headerBuffer.array());
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
-            // Content
-            return new CryptoInputStream(proxy, cryptor, header);
+        if(vault.contains(file)) {
+            try {
+                final Path encrypted = vault.contains(file) ? vault.encrypt(session, file) : file;
+                // Header
+                final Cryptor cryptor = vault.getCryptor();
+                final InputStream proxy = delegate.read(encrypted,
+                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+                final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
+                final int read = proxy.read(headerBuffer.array());
+                final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+                // Content
+                return new CryptoInputStream(proxy, cryptor, header);
+            }
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        return delegate.read(file, status, callback);
     }
 
     @Override

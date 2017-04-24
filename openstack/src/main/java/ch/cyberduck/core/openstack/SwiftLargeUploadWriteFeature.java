@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -152,8 +151,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
-                        final Path segment = new Path(containerService.getContainer(file),
-                                segmentService.name(file, status.getLength(), ++segmentNumber), EnumSet.of(Path.Type.file));
+                        final Path segment = segmentService.getSegment(file, status.getLength(), ++segmentNumber);
                         final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                         final HashMap<String, String> headers = new HashMap<>();
                         final String checksum;

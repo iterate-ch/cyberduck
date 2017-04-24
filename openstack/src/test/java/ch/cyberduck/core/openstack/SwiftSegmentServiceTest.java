@@ -89,7 +89,10 @@ public class SwiftSegmentServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         final SwiftSegmentService service = new SwiftSegmentService(session, ".prefix/");
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final String name = UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString();
-        assertEquals(".prefix/" + name + "/3", service.basename(new Path(container, name, EnumSet.of(Path.Type.file)), 3L));
+        final String name = UUID.randomUUID().toString();
+        final String key = UUID.randomUUID().toString() + "/" + name;
+        assertEquals("/test.cyberduck.ch/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(container, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
+        final Path directory = new Path(container, "dir", EnumSet.of(Path.Type.directory));
+        assertEquals("/test.cyberduck.ch/dir/.prefix/" + name + "/3", service.getSegmentsDirectory(new Path(directory, key, EnumSet.of(Path.Type.file)), 3L).getAbsolute());
     }
 }

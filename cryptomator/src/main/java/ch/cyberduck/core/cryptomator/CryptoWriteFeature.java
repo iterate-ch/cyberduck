@@ -61,26 +61,29 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final Path encrypted = vault.contains(file) ? vault.encrypt(session, file) : file;
-            final Cryptor cryptor = vault.getCryptor();
-            // Header
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
-            final StatusOutputStream<Reply> proxy;
-            if(status.getOffset() == 0) {
-                proxy = delegate.write(encrypted,
-                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
-                proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
+        if(vault.contains(file)) {
+            try {
+                final Path encrypted = vault.encrypt(session, file);
+                final Cryptor cryptor = vault.getCryptor();
+                // Header
+                final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
+                final StatusOutputStream<Reply> proxy;
+                if(status.getOffset() == 0) {
+                    proxy = delegate.write(encrypted,
+                            new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+                    proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
+                }
+                else {
+                    proxy = delegate.write(encrypted,
+                            new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
+                }
+                return new CryptoOutputStream<Reply>(proxy, cryptor, header, status.getNonces(), vault.numberOfChunks(status.getOffset()));
             }
-            else {
-                proxy = delegate.write(encrypted,
-                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
-            return new CryptoOutputStream<Reply>(proxy, cryptor, header, status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        return delegate.write(file, status, callback);
     }
 
     @Override
