@@ -35,6 +35,7 @@ import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
@@ -89,7 +90,9 @@ public class B2LargeUploadWriteFeatureTest {
         final OutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        assertEquals(content.length, IOUtils.copy(in, out));
+        final TransferStatus progress = new TransferStatus();
+        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+        assertEquals(content.length, progress.getOffset());
         in.close();
         out.close();
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));

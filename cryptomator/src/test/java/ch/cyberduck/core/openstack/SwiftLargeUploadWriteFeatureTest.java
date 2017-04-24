@@ -35,12 +35,13 @@ import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
@@ -89,11 +90,11 @@ public class SwiftLargeUploadWriteFeatureTest {
         writeStatus.setNonces(new RandomNonceGenerator());
         writeStatus.setLength(-1L);
         final OutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
-        final byte[] content = RandomStringUtils.random(6 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
-        final byte[] buffer = new byte[5 * 1024 * 1024];
-        assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+        final TransferStatus progress = new TransferStatus();
+        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+        assertEquals(content.length, progress.getOffset());
         in.close();
         out.close();
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));

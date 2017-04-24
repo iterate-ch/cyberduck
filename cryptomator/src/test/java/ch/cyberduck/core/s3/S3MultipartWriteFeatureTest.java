@@ -36,6 +36,7 @@ import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
@@ -78,8 +79,7 @@ public class S3MultipartWriteFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature feature = new CryptoWriteFeature<List<MultipartPart>>(session,
-                new S3MultipartWriteFeature(session), cryptomator);
+        final CryptoWriteFeature feature = new CryptoWriteFeature<List<MultipartPart>>(session, new S3MultipartWriteFeature(session), cryptomator);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -89,9 +89,9 @@ public class S3MultipartWriteFeatureTest {
         writeStatus.setLength(-1L);
         final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
-        // Adjust buffer to be 5MB. This will write parts with 5MB size which is the minimum allowed
-        final byte[] buffer = new byte[5 * 1024 * 1024];
-        assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+        final TransferStatus progress = new TransferStatus();
+        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+        assertEquals(content.length, progress.getOffset());
         in.close();
         out.close();
         assertNotNull(out.getStatus());
