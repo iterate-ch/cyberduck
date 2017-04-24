@@ -76,7 +76,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 proxy = delegate.write(encrypted,
                         new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
             }
-            return new CryptoOutputStream<Reply>(proxy, cryptor, header, status.getNonces());
+            return new CryptoOutputStream<Reply>(proxy, cryptor, header, status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

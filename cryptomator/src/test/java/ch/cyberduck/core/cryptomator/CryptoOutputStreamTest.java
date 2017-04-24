@@ -94,7 +94,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator());
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -121,7 +121,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator());
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
@@ -145,7 +145,7 @@ public class CryptoOutputStreamTest {
             public Void getStatus() throws BackgroundException {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator());
+        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);
