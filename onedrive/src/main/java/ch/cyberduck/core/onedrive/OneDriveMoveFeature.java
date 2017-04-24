@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,6 +60,11 @@ public class OneDriveMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source) {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         if(source.isRoot() || source.getParent().isRoot()) {
             return false;
@@ -78,11 +82,6 @@ public class OneDriveMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
-    public Move withList(final ListService list) {
         return this;
     }
 }

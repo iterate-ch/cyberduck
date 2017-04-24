@@ -111,6 +111,7 @@ public class CryptoDirectoryProvider {
             // Add encrypted type
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
+            type.remove(Path.Type.decrypted);
             return new Path(intermediate, dirHash.substring(2), type, attributes);
         }
         throw new NotfoundException(directory.getAbsolute());

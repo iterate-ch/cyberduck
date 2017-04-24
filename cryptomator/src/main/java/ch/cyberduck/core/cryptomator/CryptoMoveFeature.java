@@ -31,15 +31,19 @@ public class CryptoMoveFeature implements Move {
 
     public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final ListService list, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = delegate
-                .withDelete(new CryptoDeleteFeature(session, delete, cryptomator))
-                .withList(new CryptoListService(session, list, cryptomator));
+        this.proxy = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
         this.vault = cryptomator;
     }
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        proxy.move(vault.encrypt(session, file), vault.encrypt(session, renamed), exists, callback);
+        proxy.move(vault.encrypt(session, file, file.isDirectory()), vault.encrypt(session, renamed, file.isDirectory()), exists, callback);
+    }
+
+    @Override
+    public boolean isRecursive(final Path source) {
+        // No need to handle recursion with encrypted filenames
+        return true;
     }
 
     @Override
@@ -52,11 +56,6 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
-    public Move withList(final ListService list) {
         return this;
     }
 }

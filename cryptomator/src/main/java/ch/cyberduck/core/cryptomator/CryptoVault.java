@@ -274,7 +274,7 @@ public class CryptoVault implements Vault {
 
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
-            log.debug(String.format("Skip file %s because it is already marked as an ecrypted path", file));
+            log.debug(String.format("Skip file %s because it is already marked as an encrypted path", file));
             return file;
         }
         final Path encrypted;

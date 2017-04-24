@@ -15,10 +15,10 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -40,6 +40,16 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source) {
+        try {
+            return registry.find(session, source).getFeature(session, Move.class, proxy).isRecursive(source);
+        }
+        catch(ConnectionCanceledException e) {
+            return proxy.isRecursive(source);
+        }
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
         try {
@@ -56,9 +66,4 @@ public class VaultRegistryMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        proxy.withList(list);
-        return this;
-    }
 }

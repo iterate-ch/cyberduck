@@ -38,7 +38,7 @@ public class CryptoFindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
-            return delegate.find(vault.encrypt(session, file));
+            return delegate.find(vault.encrypt(session, file, file.isDirectory()));
         }
         catch(NotfoundException e) {
             return false;

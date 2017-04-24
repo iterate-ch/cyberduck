@@ -19,9 +19,7 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,7 +44,6 @@ public class SwiftMoveFeature implements Move {
     private final SwiftRegionService regionService;
 
     private Delete delete;
-    private ListService list;
 
     public SwiftMoveFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -56,7 +53,6 @@ public class SwiftMoveFeature implements Move {
         this.session = session;
         this.regionService = regionService;
         this.delete = new SwiftDeleteFeature(session);
-        this.list = new SwiftObjectListService(session);
     }
 
     @Override
@@ -68,9 +64,6 @@ public class SwiftMoveFeature implements Move {
                         containerService.getContainer(source).getName(), containerService.getKey(source));
             }
             else if(source.isDirectory()) {
-                for(Path i : list.list(source, new DisabledListProgressListener())) {
-                    this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
-                }
                 try {
                     delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
                 }
@@ -89,6 +82,11 @@ public class SwiftMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source) {
+        return false;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return !containerService.isContainer(source);
     }
@@ -99,9 +97,4 @@ public class SwiftMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        this.list = list;
-        return this;
-    }
 }
