@@ -435,7 +435,7 @@ public abstract class Preferences {
         /*
           Warning when number of transfers in queue exceeds limit
          */
-        defaults.put("queue.size.warn", String.valueOf(50));
+        defaults.put("queue.size.warn", String.valueOf(20));
         /*
           Bring transfer window to front
          */
