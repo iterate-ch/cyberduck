@@ -148,8 +148,6 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);
-                        status.setHeader(overall.getHeader());
-                        status.setNonces(overall.getNonces());
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum()
                                 .compute(new ByteArrayInputStream(content, off, len), status)
                         );

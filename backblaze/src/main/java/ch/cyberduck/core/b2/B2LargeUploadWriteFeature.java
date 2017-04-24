@@ -159,8 +159,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);
-                            status.setHeader(overall.getHeader());
-                            status.setNonces(overall.getNonces());
                             final ByteArrayEntity entity = new ByteArrayEntity(content, off, len);
                             final Checksum checksum = B2LargeUploadWriteFeature.this.checksum()
                                     .compute(new ByteArrayInputStream(content, off, len), status);
