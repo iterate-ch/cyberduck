@@ -36,10 +36,13 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.encoders.Base64;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -118,8 +121,13 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             if(Checksum.NONE != checksum) {
                 switch(checksum.algorithm) {
                     case md5:
-                        blob.getProperties().setContentMD5(status.getChecksum().hash);
-                        headers.remove(HttpHeaders.CONTENT_MD5);
+                        try {
+                            blob.getProperties().setContentMD5(Base64.toBase64String(Hex.decodeHex(status.getChecksum().hash.toCharArray())));
+                            headers.remove(HttpHeaders.CONTENT_MD5);
+                        }
+                        catch(DecoderException e) {
+                            // Ignore
+                        }
                         break;
                 }
             }
