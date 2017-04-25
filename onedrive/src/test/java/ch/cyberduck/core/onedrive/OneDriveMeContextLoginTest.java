@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class OneDriveMeContextLoginTest {
@@ -74,6 +75,6 @@ public class OneDriveMeContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        new OneDriveHomeFinderFeature(session).find();
+        assertNotNull(new OneDriveHomeFinderFeature(session).find());
     }
 }
