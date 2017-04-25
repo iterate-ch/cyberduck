@@ -387,7 +387,7 @@
       <Component Id="onedrive">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="onedrive-business">
+      <Component Id="onedrive_business">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive Business.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>

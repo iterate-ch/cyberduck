@@ -175,7 +175,7 @@
       <Component Id="onedrive" Guid="88764897-D0C8-4134-B78A-026EFB74D210">
         <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="onedrive-business" Guid="88764897-D0C8-4134-B78A-026EFB74D210">
+      <Component Id="onedrive_business" Guid="88764897-D0C8-4134-B78A-026EFB74D210">
         <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive Business.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
