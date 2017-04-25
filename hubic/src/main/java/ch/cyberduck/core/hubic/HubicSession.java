@@ -24,7 +24,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
@@ -89,12 +88,7 @@ public class HubicSession extends SwiftSession {
             client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()), new HubicAuthenticationResponseHandler());
         }
         catch(GenericException e) {
-            try {
-                throw new SwiftExceptionMappingService().map(e);
-            }
-            catch(LoginFailureException f) {
-                this.login(keychain, prompt, cancel, cache);
-            }
+            throw new SwiftExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
