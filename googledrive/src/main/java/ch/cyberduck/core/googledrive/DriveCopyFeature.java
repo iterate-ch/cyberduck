@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -33,11 +34,11 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
             session.getClient().files().copy(new DriveFileidProvider(session).getFileid(source), new File()
-                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(copy.getParent())))
-                    .setName(copy.getName())).execute();
+                    .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(target.getParent())))
+                    .setName(target.getName())).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);

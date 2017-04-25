@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
@@ -34,6 +35,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -287,6 +289,9 @@ public abstract class Session<C> implements ListService, TranscriptListener {
         }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
+        }
+        if(type == Copy.class) {
+            return (T) new DefaultCopyFeature(this.getFeature(Read.class), this.getFeature(Write.class));
         }
         if(type == UrlProvider.class) {
             return (T) new DefaultUrlProvider(host);

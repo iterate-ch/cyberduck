@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
 
@@ -60,7 +61,7 @@ public class AzureMoveFeature implements Move {
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            new AzureCopyFeature(session, context).copy(file, renamed);
+            new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus());
             delete.delete(Collections.singletonList(file),
                     new DisabledLoginCallback(), callback);
         }

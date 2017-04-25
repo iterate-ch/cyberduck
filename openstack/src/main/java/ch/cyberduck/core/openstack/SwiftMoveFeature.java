@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -59,7 +60,7 @@ public class SwiftMoveFeature implements Move {
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         try {
             if(source.isFile()) {
-                new SwiftCopyFeature(session, regionService).copy(source, renamed);
+                new SwiftCopyFeature(session, regionService).copy(source, renamed, new TransferStatus());
                 session.getClient().deleteObject(regionService.lookup(source),
                         containerService.getContainer(source).getName(), containerService.getKey(source));
             }

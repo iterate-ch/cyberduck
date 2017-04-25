@@ -39,13 +39,13 @@ public class IRODSCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final ch.cyberduck.core.transfer.TransferStatus status) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                     .getDataTransferOperations(fs.getIRODSAccount());
             transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
-                    fs.getIRODSFileFactory().instanceIRODSFile(copy.getAbsolute()), new TransferStatusCallbackListener() {
+                    fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
                         @Override
                         public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) throws JargonException {
                             return FileStatusCallbackResponse.CONTINUE;

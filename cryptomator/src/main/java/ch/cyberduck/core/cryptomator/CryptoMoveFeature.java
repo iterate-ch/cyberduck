@@ -48,10 +48,7 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(vault.contains(source) && vault.contains(target)) {
-            return proxy.isSupported(source, target);
-        }
-        return false;
+        return true;
     }
 
     @Override

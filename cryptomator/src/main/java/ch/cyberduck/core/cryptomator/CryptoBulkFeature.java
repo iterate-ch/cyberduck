@@ -17,18 +17,12 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +31,6 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
     private final Session<?> session;
     private final Bulk<R> proxy;
     private final CryptoVault cryptomator;
-    private final RandomStringService random
-            = new UUIDRandomStringService();
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
@@ -52,19 +44,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
-            if(!status.isExists()) {
-                if(file.isDirectory()) {
-                    file.attributes().setDirectoryId(random.random());
-                }
-            }
             encrypted.put(cryptomator.encrypt(session, file), status);
-            if(cryptomator.contains(file)) {
-                // Write header
-                final Cryptor cryptor = cryptomator.getCryptor();
-                final FileHeader header = cryptor.fileHeaderCryptor().create();
-                status.setNonces(new RandomNonceGenerator());
-                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-            }
         }
         return proxy.pre(type, encrypted, callback);
     }

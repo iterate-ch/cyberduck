@@ -242,13 +242,8 @@ public class CopyTransfer extends Transfer {
         if(source.isFile()) {
             if(session.getHost().equals(destination.getHost())) {
                 final Copy feature = session.getFeature(Copy.class);
-                if(feature != null) {
-                    feature.copy(source, copy);
-                    addTransferred(status.getLength());
-                }
-                else {
-                    this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-                }
+                feature.copy(source, copy, status);
+                addTransferred(status.getLength());
             }
             else {
                 this.copy(session, source, destination, copy, bandwidth, streamListener, status);
