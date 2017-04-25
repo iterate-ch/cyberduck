@@ -67,6 +67,11 @@ public class CryptoDeleteFeature implements Delete {
     }
 
     @Override
+    public boolean isSupported(final Path file) {
+        return delegate.isSupported(file);
+    }
+
+    @Override
     public boolean isRecursive() {
         return delegate.isRecursive();
     }

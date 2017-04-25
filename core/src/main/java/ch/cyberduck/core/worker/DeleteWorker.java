@@ -29,6 +29,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 
 import java.text.MessageFormat;
@@ -62,14 +63,17 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
+        final Delete feature = session.getFeature(Delete.class);
         final List<Path> recursive = new ArrayList<Path>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
+            if(!feature.isSupported(file)) {
+                throw new UnsupportedException();
+            }
             recursive.addAll(this.compile(session.getFeature(Delete.class), session.getFeature(ListService.class), file));
         }
-        final Delete feature = session.getFeature(Delete.class);
         feature.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {

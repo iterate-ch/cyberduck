@@ -62,6 +62,11 @@ public class VaultRegistryDeleteFeature implements Delete {
     }
 
     @Override
+    public boolean isSupported(final Path file) {
+        return proxy.isSupported(file);
+    }
+
+    @Override
     public boolean isRecursive() {
         return proxy.isRecursive();
     }
