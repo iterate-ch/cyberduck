@@ -40,11 +40,13 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list = session.list(
-                file.getParent(), new DisabledListProgressListener());
+        final AttributedList<Path> list = session.list(file.getParent(), new DisabledListProgressListener());
         for(Path f : list) {
             if(StringUtils.equals(f.getName(), file.getName())) {
-                return f.attributes().getVersionId();
+                final String id = f.attributes().getVersionId();
+                // Cache in file attributes
+                file.attributes().setVersionId(id);
+                return id;
             }
         }
         throw new NotfoundException(file.getAbsolute());
