@@ -14,6 +14,7 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -46,6 +47,7 @@ public class AzureObjectListServiceTest {
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());
         assertTrue(list.contains(file));
+        assertEquals(HashAlgorithm.md5, list.get(0).attributes().getChecksum().algorithm);
         new AzureDeleteFeature(session, null).delete(Arrays.<Path>asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

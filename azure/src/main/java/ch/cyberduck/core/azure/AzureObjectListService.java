@@ -31,8 +31,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
@@ -93,7 +91,7 @@ public class AzureObjectListService implements ListService {
                         attributes.setModificationDate(blob.getProperties().getLastModified().getTime());
                         attributes.setETag(blob.getProperties().getEtag());
                         if(StringUtils.isNotBlank(blob.getProperties().getContentMD5())) {
-                            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(blob.getProperties().getContentMD5()))));
+                            attributes.setChecksum(Checksum.parse(blob.getProperties().getContentMD5()));
                         }
                     }
                     // A directory is designated by a delimiter character.
