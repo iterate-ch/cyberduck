@@ -41,7 +41,8 @@
         <string>https://login.microsoftonline.com/common/oauth2/v2.0/token</string>
         <key>Scopes</key>
         <array>
-            <string>files.readwrite</string>
+            <string>sites.readwrite.all</string>
+            <string>files.readwrite.all</string>
             <string>offline_access</string>
         </array>
     </dict>
