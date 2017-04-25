@@ -24,17 +24,22 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
-    private final Copy delegate;
+    private final Copy proxy;
     private final CryptoVault cryptomator;
 
     public CryptoCopyFeature(final Session<?> session, final Copy delegate, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate;
+        this.proxy = delegate;
         this.cryptomator = cryptomator;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        delegate.copy(cryptomator.encrypt(session, source), cryptomator.encrypt(session, target), status);
+        proxy.copy(cryptomator.encrypt(session, source), cryptomator.encrypt(session, target), status);
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return proxy.isRecursive(source, target);
     }
 }

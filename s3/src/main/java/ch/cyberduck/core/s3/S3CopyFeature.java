@@ -70,6 +70,11 @@ public class S3CopyFeature implements Copy {
         }
     }
 
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
     protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {

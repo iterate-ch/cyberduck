@@ -73,4 +73,9 @@ public class AzureCopyFeature implements Copy {
             throw new NotfoundException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
 }

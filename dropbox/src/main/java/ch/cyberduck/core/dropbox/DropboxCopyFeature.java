@@ -40,4 +40,9 @@ public class DropboxCopyFeature implements Copy {
             throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
 }

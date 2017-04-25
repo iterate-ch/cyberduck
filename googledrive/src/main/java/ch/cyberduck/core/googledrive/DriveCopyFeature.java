@@ -44,4 +44,9 @@ public class DriveCopyFeature implements Copy {
             throw new DriveExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
 }

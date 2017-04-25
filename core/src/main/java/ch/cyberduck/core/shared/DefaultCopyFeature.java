@@ -63,4 +63,9 @@ public class DefaultCopyFeature implements Copy {
             new DefaultStreamCloser().close(out);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
 }

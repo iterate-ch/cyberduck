@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 public class VaultRegistryCopyFeature implements Copy {
 
@@ -50,5 +51,18 @@ public class VaultRegistryCopyFeature implements Copy {
                     registry.find(session, target).getFeature(session, Write.class, session._getFeature(Write.class))
             ).copy(source, target, status);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        try {
+            if(registry.find(session, source).equals(registry.find(session, target))) {
+                return proxy.isRecursive(source, target);
+            }
+        }
+        catch(VaultUnlockCancelException e) {
+            // Ignore
+        }
+        return false;
     }
 }

@@ -66,4 +66,9 @@ public class IRODSCopyFeature implements Copy {
             throw new IRODSExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
 }

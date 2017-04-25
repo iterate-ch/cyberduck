@@ -21,4 +21,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Copy {
     void copy(Path source, Path target, TransferStatus status) throws BackgroundException;
+
+    boolean isRecursive(Path source, Path target);
 }

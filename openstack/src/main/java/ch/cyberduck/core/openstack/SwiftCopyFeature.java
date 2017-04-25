@@ -63,4 +63,9 @@ public class SwiftCopyFeature implements Copy {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
 }

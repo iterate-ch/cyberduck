@@ -52,4 +52,9 @@ public class DAVCopyFeature implements Copy {
             throw new HttpExceptionMappingService().map(e, source);
         }
     }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
 }
