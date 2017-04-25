@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class OneDriveBusinessContextLoginTest {
@@ -75,6 +75,6 @@ public class OneDriveBusinessContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        assertNotNull(new OneDriveHomeFinderFeature(session).find());
+        assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderFeature(session).find().getAbsolute()));
     }
 }
