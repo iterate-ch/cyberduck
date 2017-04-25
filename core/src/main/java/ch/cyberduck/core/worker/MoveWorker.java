@@ -62,9 +62,6 @@ public class MoveWorker extends Worker<List<Path>> {
             if(!move.isSupported(source, target)) {
                 throw new UnsupportedException();
             }
-            if(!move.isSupported(source, target)) {
-                continue;
-            }
             final boolean exists;
             if(cache.isCached(target.getParent())) {
                 exists = cache.get(target.getParent()).contains(target);
