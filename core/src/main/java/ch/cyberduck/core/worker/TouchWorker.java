@@ -22,6 +22,7 @@ import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -38,6 +39,9 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
+        if(!feature.isSupported(file.getParent())) {
+            throw new UnsupportedException();
+        }
         return feature.touch(file, new TransferStatus()
                 .exists(false)
                 .length(0L)
