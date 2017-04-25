@@ -26,8 +26,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
@@ -114,8 +114,14 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
                 blob.getProperties().setCacheControl(headers.get(HttpHeaders.CONTENT_TYPE));
                 headers.remove(HttpHeaders.CONTENT_TYPE);
             }
-            if(status.getChecksum().algorithm.equals(HashAlgorithm.md5)) {
-                headers.put(HttpHeaders.CONTENT_MD5, status.getChecksum().hash);
+            final Checksum checksum = status.getChecksum();
+            if(Checksum.NONE != checksum) {
+                switch(checksum.algorithm) {
+                    case md5:
+                        blob.getProperties().setContentMD5(status.getChecksum().hash);
+                        headers.remove(HttpHeaders.CONTENT_MD5);
+                        break;
+                }
             }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
