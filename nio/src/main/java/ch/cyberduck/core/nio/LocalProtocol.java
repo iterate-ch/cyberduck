@@ -33,22 +33,22 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getName() {
-        return LocaleFactory.localizedString("Disk");
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        }
+        catch(UnknownHostException e) {
+            return LocaleFactory.localizedString("Disk");
+        }
+    }
+
+    @Override
+    public String getDescription() {
+        return this.getName();
     }
 
     @Override
     public String getPrefix() {
         return String.format("%s.%s", LocalProtocol.class.getPackage().getName(), "Local");
-    }
-
-    @Override
-    public String getDescription() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException e) {
-            return LocaleFactory.localizedString("Local Filesystem");
-        }
     }
 
     @Override
