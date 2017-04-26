@@ -74,7 +74,7 @@ public class S3MoveFeatureTest {
         new CryptoDirectoryFeature<StorageObject>(session, new S3DirectoryFeature(session, new S3WriteFeature(session)), new S3WriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
         new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new S3MoveFeature(session, new S3AccessControlListFeature(session)), new S3DefaultDeleteFeature(session), new S3ObjectListService(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new S3MoveFeature(session, new S3AccessControlListFeature(session)), new S3DefaultDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, false, new Delete.DisabledCallback());
