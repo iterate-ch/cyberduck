@@ -96,7 +96,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file));
+                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getName()));
             }
         }
         else {
