@@ -35,14 +35,15 @@ public class CryptoInputStream extends InputStream {
     /**
      * Position proxy content cryptor
      */
-    private long chunkIndex = 0;
+    private long chunkIndexOffset;
     private final int chunkSize;
 
-    public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header) throws IOException {
+    public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header, final long chunkIndexOffset) throws IOException {
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
         this.chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
+        this.chunkIndexOffset = chunkIndexOffset;
     }
 
     public InputStream getProxy() {
@@ -84,10 +85,10 @@ public class CryptoInputStream extends InputStream {
         ciphertextBuf.position(read);
         ciphertextBuf.flip();
         try {
-            buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndex++, header, true);
+            buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndexOffset++, header, true);
         }
         catch(CryptoException e) {
-            throw new IOException(new CryptoAuthenticationException(e.getMessage(), e));
+            throw new IOException(e.getMessage(), new CryptoAuthenticationException(e.getMessage(), e));
         }
         return read;
     }

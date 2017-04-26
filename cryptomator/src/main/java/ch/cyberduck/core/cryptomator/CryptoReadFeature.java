@@ -55,7 +55,7 @@ public class CryptoReadFeature implements Read {
                 final int read = proxy.read(headerBuffer.array());
                 final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
                 // Content
-                return new CryptoInputStream(proxy, cryptor, header);
+                return new CryptoInputStream(proxy, cryptor, header, vault.numberOfChunks(status.getOffset()));
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
