@@ -73,6 +73,9 @@ public class B2ObjectListService implements ListService {
             // Seen placeholders
             final Map<String, Integer> revisions = new HashMap<String, Integer>();
             do {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("List directory %s with marker %s", directory, marker));
+                }
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
@@ -158,6 +161,15 @@ public class B2ObjectListService implements ListService {
 
         public boolean hasNext() {
             return nextFilename != null;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Marker{");
+            sb.append("nextFilename='").append(nextFilename).append('\'');
+            sb.append(", nextFileId='").append(nextFileId).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 }
