@@ -26,6 +26,17 @@ import java.net.UnknownHostException;
 
 public class LocalProtocol extends AbstractProtocol {
 
+    private static String LOCAL_HOSTNAME;
+
+    static {
+        try {
+            LOCAL_HOSTNAME = InetAddress.getLocalHost().getHostName();
+        }
+        catch(UnknownHostException e) {
+            LOCAL_HOSTNAME = LocaleFactory.localizedString("Disk");
+        }
+    }
+
     @Override
     public String getIdentifier() {
         return this.getScheme().name();
@@ -33,12 +44,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getName() {
-        try {
-            return InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException e) {
-            return LocaleFactory.localizedString("Disk");
-        }
+        return LOCAL_HOSTNAME;
     }
 
     @Override
