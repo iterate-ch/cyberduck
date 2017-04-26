@@ -52,7 +52,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -67,7 +66,6 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
 public class DriveSession extends HttpSession<Drive> {
-    private static final Logger log = Logger.getLogger(DriveSession.class);
 
     private ApacheHttpTransport transport;
 
