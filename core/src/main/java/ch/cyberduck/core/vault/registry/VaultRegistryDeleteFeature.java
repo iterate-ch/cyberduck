@@ -21,7 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,11 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 public class VaultRegistryDeleteFeature implements Delete {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Delete proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryDeleteFeature(final Session<?> session, final Delete proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryDeleteFeature(final Session<?> session, final Delete proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

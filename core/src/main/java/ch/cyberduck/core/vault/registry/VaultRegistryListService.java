@@ -23,10 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultFinderListProgressListener;
 import ch.cyberduck.core.vault.VaultFinderListService;
 import ch.cyberduck.core.vault.VaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.log4j.Logger;
@@ -34,13 +34,13 @@ import org.apache.log4j.Logger;
 public class VaultRegistryListService implements ListService {
     private static final Logger log = Logger.getLogger(VaultRegistryListService.class);
 
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
     private final VaultLookupListener lookup;
     private final PasswordStore keychain;
     private final Session<?> session;
     private final ListService proxy;
 
-    public VaultRegistryListService(final Session<?> session, final ListService proxy, final DefaultVaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
+    public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup, final PasswordStore keychain) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

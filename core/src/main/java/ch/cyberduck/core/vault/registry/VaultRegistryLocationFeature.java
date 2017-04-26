@@ -19,16 +19,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Set;
 
 public class VaultRegistryLocationFeature implements Location {
+
     private final Session<?> session;
     private final Location proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryLocationFeature(final Session<?> session, final Location proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryLocationFeature(final Session<?> session, final Location proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

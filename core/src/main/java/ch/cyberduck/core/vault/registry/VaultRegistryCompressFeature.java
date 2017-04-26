@@ -22,16 +22,17 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.List;
 
 public class VaultRegistryCompressFeature implements Compress {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Compress proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryCompressFeature(final Session<?> session, final Compress proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryCompressFeature(final Session<?> session, final Compress proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

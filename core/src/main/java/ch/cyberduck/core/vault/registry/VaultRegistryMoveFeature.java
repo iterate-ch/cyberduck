@@ -29,9 +29,10 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import java.util.Collections;
 
 public class VaultRegistryMoveFeature implements Move {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Move proxy;
+    private final DefaultVaultRegistry registry;
 
     public VaultRegistryMoveFeature(final Session<?> session, final Move proxy, final DefaultVaultRegistry registry) {
         this.session = session;
@@ -56,7 +57,7 @@ public class VaultRegistryMoveFeature implements Move {
     @Override
     public boolean isRecursive(final Path source) {
         try {
-            return registry.find(session, source).getFeature(session, Move.class, proxy).isRecursive(source);
+            return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source);
         }
         catch(ConnectionCanceledException e) {
             return proxy.isRecursive(source);

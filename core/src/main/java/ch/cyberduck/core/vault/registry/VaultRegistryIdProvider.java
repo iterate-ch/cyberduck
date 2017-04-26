@@ -19,14 +19,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryIdProvider implements IdProvider {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final IdProvider proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryIdProvider(final Session<?> session, final IdProvider proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryIdProvider(final Session<?> session, final IdProvider proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

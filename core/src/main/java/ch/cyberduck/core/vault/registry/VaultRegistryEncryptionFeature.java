@@ -20,16 +20,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Set;
 
 public class VaultRegistryEncryptionFeature implements Encryption {
+
     private final Session<?> session;
     private final Encryption proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryEncryptionFeature(final Session<?> session, final Encryption proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryEncryptionFeature(final Session<?> session, final Encryption proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

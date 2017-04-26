@@ -26,14 +26,15 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
+
     private final Session<?> session;
     private final Upload<Output> proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryUploadFeature(final Session<?> session, final Upload<Output> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryUploadFeature(final Session<?> session, final Upload<Output> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

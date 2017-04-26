@@ -23,16 +23,17 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Map;
 
 public class VaultRegistryVersioningFeature implements Versioning {
+
     private final Session<?> session;
     private final Versioning proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryVersioningFeature(final Session<?> session, final Versioning proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryVersioningFeature(final Session<?> session, final Versioning proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

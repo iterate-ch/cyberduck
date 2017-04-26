@@ -56,7 +56,7 @@ public class VaultRegistryCopyFeature implements Copy {
     @Override
     public boolean isRecursive(final Path source, final Path target) {
         try {
-            if(registry.find(session, source).equals(registry.find(session, target))) {
+            if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
                 return proxy.isRecursive(source, target);
             }
         }

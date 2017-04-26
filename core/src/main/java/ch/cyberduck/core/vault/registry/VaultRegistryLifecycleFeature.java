@@ -20,14 +20,15 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryLifecycleFeature implements Lifecycle {
+
     private final Session<?> session;
     private final Lifecycle proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryLifecycleFeature(final Session<?> session, final Lifecycle proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryLifecycleFeature(final Session<?> session, final Lifecycle proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

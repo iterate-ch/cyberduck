@@ -19,14 +19,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Lock;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryLockFeature<T> implements Lock<T> {
     private final Session<?> session;
     private final Lock<T> proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryLockFeature(final Session<?> session, final Lock<T> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryLockFeature(final Session<?> session, final Lock<T> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

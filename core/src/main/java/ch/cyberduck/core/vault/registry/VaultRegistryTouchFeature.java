@@ -24,9 +24,10 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 public class VaultRegistryTouchFeature<R> implements Touch<R> {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Touch<R> proxy;
+    private final DefaultVaultRegistry registry;
 
     public VaultRegistryTouchFeature(final Session<?> session, final Touch<R> proxy, final DefaultVaultRegistry registry) {
         this.session = session;
