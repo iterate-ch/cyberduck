@@ -52,7 +52,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
@@ -64,7 +63,6 @@ import java.io.IOException;
 import java.util.Set;
 
 public class OneDriveSession extends HttpSession<OneDriveAPI> {
-    private static final Logger log = Logger.getLogger(OneDriveSession.class);
 
     private final PathContainerService containerService
             = new PathContainerService();
