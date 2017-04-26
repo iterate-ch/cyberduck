@@ -76,7 +76,7 @@ public class DropboxCopyFeatureTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
-        new DropboxCopyFeature(session).copy(file, target);
+        new DropboxCopyFeature(session).copy(file, target, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

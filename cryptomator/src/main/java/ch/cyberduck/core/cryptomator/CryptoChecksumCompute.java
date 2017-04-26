@@ -33,6 +33,8 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +60,12 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
     public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
+        }
+        if(null == status.getHeader()) {
+            // Write header to be reused in writer
+            final Cryptor cryptor = vault.getCryptor();
+            final FileHeader header = cryptor.fileHeaderCryptor().create();
+            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));

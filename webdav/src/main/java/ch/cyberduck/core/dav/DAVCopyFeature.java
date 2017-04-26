@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ public class DAVCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
         try {
             if(source.isFile()) {
                 final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
@@ -50,5 +51,10 @@ public class DAVCopyFeature implements Copy {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
     }
 }

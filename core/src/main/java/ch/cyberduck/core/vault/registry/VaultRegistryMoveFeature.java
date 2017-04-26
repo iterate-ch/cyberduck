@@ -15,13 +15,18 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+
+import java.util.Collections;
 
 public class VaultRegistryMoveFeature implements Move {
     private final DefaultVaultRegistry registry;
@@ -35,8 +40,17 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Move.class, proxy).move(file, renamed, exists, callback);
+    public void move(final Path source, final Path target, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+        if(registry.find(session, source).equals(registry.find(session, target))) {
+            // Move files inside vault
+            registry.find(session, source).getFeature(session, Move.class, proxy).move(source, target, exists, callback);
+        }
+        else {
+            // Move files from or into vault requires to pass through encryption features
+            new VaultRegistryCopyFeature(session, session.getFeature(Copy.class), registry).copy(source, target, new TransferStatus());
+            // Delete source file after copy is complete
+            new VaultRegistryDeleteFeature(session, session.getFeature(Delete.class), registry).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+        }
     }
 
     @Override
@@ -65,5 +79,4 @@ public class VaultRegistryMoveFeature implements Move {
         proxy.withDelete(delete);
         return this;
     }
-
 }

@@ -22,7 +22,6 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.vault.registry.*;
 
@@ -73,7 +72,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     }
 
     @Override
-    public Vault find(final Session session, final Path file) throws ConnectionCanceledException {
+    public Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
         return this.find(session, file, true);
     }
 

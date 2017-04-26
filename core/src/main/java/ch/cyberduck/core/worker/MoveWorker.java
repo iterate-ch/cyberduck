@@ -69,7 +69,7 @@ public class MoveWorker extends Worker<List<Path>> {
             else {
                 exists = false;
             }
-            final Map<Path, Path> recursive = this.compile(session.getFeature(Move.class), session.getFeature(ListService.class), source, target);
+            final Map<Path, Path> recursive = this.compile(move, session.getFeature(ListService.class), source, target);
             for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                 move.move(r.getKey(), r.getValue(), exists, new Delete.Callback() {
                     @Override
