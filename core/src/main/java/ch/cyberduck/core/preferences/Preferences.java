@@ -270,11 +270,6 @@ public abstract class Preferences {
         defaults.put("local.delimiter", File.separator);
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        /*
-          Prompt to resolve bookmark of file outside of sandbox with choose panel
-         */
-        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
-
         defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);

@@ -393,7 +393,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    public Object lock() throws AccessDeniedException {
+    public Object lock(final boolean interactive) throws AccessDeniedException {
         return null;
     }
 

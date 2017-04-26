@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -45,6 +46,8 @@ import java.nio.file.FileSystems;
 
 public class LocalSession extends Session<FileSystem> {
 
+    private Object lock;
+
     protected LocalSession(final Host h) {
         super(h);
     }
@@ -65,12 +68,14 @@ public class LocalSession extends Session<FileSystem> {
 
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
-        //
+        final Path home = new LocalHomeFinderFeature(this).find();
+        lock = LocalFactory.get(home.getAbsolute()).lock(true);
     }
 
     @Override
     protected void logout() throws BackgroundException {
-        //
+        final Path home = new LocalHomeFinderFeature(this).find();
+        LocalFactory.get(home.getAbsolute()).release(lock);
     }
 
     protected boolean isPosixFilesystem() {

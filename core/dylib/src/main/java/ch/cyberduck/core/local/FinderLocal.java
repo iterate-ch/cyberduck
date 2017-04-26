@@ -151,7 +151,7 @@ public class FinderLocal extends Local {
     public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
         final NSURL resolved;
         try {
-            resolved = this.lock();
+            resolved = this.lock(false);
         }
         catch(LocalAccessDeniedException e) {
             return super.getOutputStream(append);
@@ -174,9 +174,12 @@ public class FinderLocal extends Local {
         }
     }
 
+    /**
+     * @param interactive Prompt to resolve bookmark of file outside of sandbox with choose panel
+     */
     @Override
-    public NSURL lock() throws AccessDeniedException {
-        final NSURL resolved = resolver.resolve(this);
+    public NSURL lock(final boolean interactive) throws AccessDeniedException {
+        final NSURL resolved = resolver.resolve(this, false);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
@@ -200,7 +203,7 @@ public class FinderLocal extends Local {
     public InputStream getInputStream() throws AccessDeniedException {
         final NSURL resolved;
         try {
-            resolved = this.lock();
+            resolved = this.lock(false);
         }
         catch(AccessDeniedException e) {
             return super.getInputStream();
