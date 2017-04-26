@@ -115,7 +115,7 @@
                                             <groupId>org.sparkle-project</groupId>
                                             <artifactId>sparkle</artifactId>
                                             <type>zip</type>
-                                            <version>1.16.0</version>
+                                            <version>1.17.0</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
