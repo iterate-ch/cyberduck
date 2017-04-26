@@ -179,7 +179,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
-        final NSURL resolved = resolver.resolve(this, false);
+        final NSURL resolved = resolver.resolve(this, interactive);
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
