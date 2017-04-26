@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -29,7 +28,7 @@ public class CryptoMoveFeature implements Move {
     private final Move proxy;
     private final Vault vault;
 
-    public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final ListService list, final CryptoVault cryptomator) {
+    public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
         this.proxy = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
         this.vault = cryptomator;

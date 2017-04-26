@@ -438,7 +438,7 @@ public class CryptoVault implements Vault {
                 return (T) new CryptoMultipartWriteFeature(session, (Write) delegate, this);
             }
             if(type == Move.class) {
-                return (T) new CryptoMoveFeature(session, (Move) delegate, session._getFeature(Delete.class), session._getFeature(ListService.class), this);
+                return (T) new CryptoMoveFeature(session, (Move) delegate, session._getFeature(Delete.class), this);
             }
             if(type == AttributesFinder.class) {
                 return (T) new CryptoAttributesFeature(session, (AttributesFinder) delegate, this);
