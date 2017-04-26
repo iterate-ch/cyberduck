@@ -15,10 +15,16 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 public class UnsupportedException extends InteroperabilityException {
 
     public UnsupportedException() {
-        super("Unsupported");
+        super(LocaleFactory.localizedString("Unsupported", "Error"));
+    }
+
+    public UnsupportedException(final Throwable cause) {
+        super(LocaleFactory.localizedString("Unsupported", "Error"), cause);
     }
 
     public UnsupportedException(final String detail) {
