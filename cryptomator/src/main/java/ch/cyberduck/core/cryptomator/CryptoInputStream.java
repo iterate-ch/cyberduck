@@ -87,7 +87,7 @@ public class CryptoInputStream extends InputStream {
             buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndex++, header, true);
         }
         catch(CryptoException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new IOException(new CryptoAuthenticationException(e.getMessage(), e));
         }
         return read;
     }

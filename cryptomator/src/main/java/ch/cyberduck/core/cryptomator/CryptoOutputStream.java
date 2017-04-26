@@ -90,7 +90,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
                 }
             }
             catch(CryptoException e) {
-                throw new IOException(e.getMessage(), e);
+                throw new IOException(new CryptoAuthenticationException(e.getMessage(), e));
             }
         }
     }
