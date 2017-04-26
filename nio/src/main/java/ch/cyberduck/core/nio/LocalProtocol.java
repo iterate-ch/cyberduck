@@ -32,6 +32,11 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String getName() {
+        return LocaleFactory.localizedString("Disk");
+    }
+
+    @Override
     public String getPrefix() {
         return String.format("%s.%s", LocalProtocol.class.getPackage().getName(), "Local");
     }
