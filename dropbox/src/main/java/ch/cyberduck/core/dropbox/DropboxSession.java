@@ -53,7 +53,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -65,7 +64,6 @@ import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
