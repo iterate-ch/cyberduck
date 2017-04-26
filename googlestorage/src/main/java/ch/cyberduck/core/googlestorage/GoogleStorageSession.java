@@ -58,7 +58,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
@@ -74,7 +73,6 @@ import java.io.InputStream;
 import java.util.Collections;
 
 public class GoogleStorageSession extends S3Session {
-    private static final Logger log = Logger.getLogger(GoogleStorageSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
