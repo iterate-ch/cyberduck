@@ -104,7 +104,7 @@ public class CryptoOutputStreamTest {
 
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         assertEquals(expected.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -128,7 +128,7 @@ public class CryptoOutputStreamTest {
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         assertEquals(cleartext.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -152,7 +152,7 @@ public class CryptoOutputStreamTest {
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
         IOUtils.readFully(cryptoInputStream, read);
         cryptoInputStream.close();
 
