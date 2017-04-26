@@ -144,6 +144,7 @@
       <DefaultProfiles Include="profiles\Rackspace US.cyberduckprofile" />
       <DefaultProfiles Include="profiles\B2.cyberduckprofile" />
       <DefaultProfiles Include="profiles\Microsoft OneDrive.cyberduckprofile" />
+      <DefaultProfiles Include="profiles\Microsoft OneDrive Business.cyberduckprofile" />
     </ItemGroup>
     <ItemGroup>
       <JNASupport Include="cli\windows\target\ikvm-8.1.5717.0\bin\ikvm-native-win32-x86.dll" />
