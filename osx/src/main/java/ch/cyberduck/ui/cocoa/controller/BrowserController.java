@@ -76,7 +76,6 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
@@ -2167,9 +2166,6 @@ public class BrowserController extends WindowController
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
-            // Clear open vaults
-            final VaultRegistry vault = pool.getVault();
-            vault.clear();
             // Find folders to reload
             final Set<Path> folders = new HashSet<Path>();
             switch(BrowserSwitchSegement.byPosition(preferences.getInteger("browser.view"))) {
