@@ -69,7 +69,10 @@ public class B2FileidProvider implements IdProvider {
                     if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                         switch(info.getAction()) {
                             default:
-                                return info.getFileId();
+                                final String id = info.getFileId();
+                                // Cache in file attributes
+                                file.attributes().setVersionId(id);
+                                return id;
                         }
                     }
                 }
