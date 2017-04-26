@@ -76,7 +76,7 @@ public class SFTPMoveFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session))), new SFTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -112,7 +112,7 @@ public class SFTPMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -148,7 +148,7 @@ public class SFTPMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -183,7 +183,7 @@ public class SFTPMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         new CryptoTouchFeature<Void>(session, new SFTPTouchFeature(session), new SFTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, false, new Delete.DisabledCallback());
