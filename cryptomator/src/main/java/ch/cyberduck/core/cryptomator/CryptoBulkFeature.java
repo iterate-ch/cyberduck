@@ -24,6 +24,9 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +47,10 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
         for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey();
             final TransferStatus status = entry.getValue();
+            // Write header to be reused in writer
+            final Cryptor cryptor = cryptomator.getCryptor();
+            final FileHeader header = cryptor.fileHeaderCryptor().create();
+            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             encrypted.put(cryptomator.encrypt(session, file), status);
         }
         return proxy.pre(type, encrypted, callback);

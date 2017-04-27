@@ -34,7 +34,6 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 
@@ -67,21 +66,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             try {
                 final Path encrypted = vault.encrypt(session, file);
                 final Cryptor cryptor = vault.getCryptor();
-                // Header
-                final FileHeader header;
-                if(null == status.getHeader()) {
-                    // Write header
-                    header = cryptor.fileHeaderCryptor().create();
-                }
-                else {
-                    // Use header from checksum compute
-                    header = cryptor.fileHeaderCryptor().decryptHeader(status.getHeader());
-                }
                 final StatusOutputStream<Reply> proxy;
                 if(status.getOffset() == 0) {
                     proxy = delegate.write(encrypted,
                             new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
-                    proxy.write(cryptor.fileHeaderCryptor().encryptHeader(header).array());
+                    proxy.write(status.getHeader().array());
                 }
                 else {
                     proxy = delegate.write(encrypted,
@@ -95,7 +84,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     // Use nonces from checksum compute
                     nonces = status.getNonces();
                 }
-                return new CryptoOutputStream<Reply>(proxy, cryptor, header, nonces, vault.numberOfChunks(status.getOffset()));
+                return new CryptoOutputStream<Reply>(proxy, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
+                        nonces, vault.numberOfChunks(status.getOffset()));
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

@@ -61,12 +61,6 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), status)) {
             return Checksum.NONE;
         }
-        if(null == status.getHeader()) {
-            // Write header to be reused in writer
-            final Cryptor cryptor = vault.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
-        }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
         return this.compute(in, status.getOffset(), status.getHeader(), status.getNonces());
