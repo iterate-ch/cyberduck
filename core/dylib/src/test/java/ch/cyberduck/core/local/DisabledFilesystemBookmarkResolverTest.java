@@ -24,7 +24,7 @@ public class DisabledFilesystemBookmarkResolverTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testResolve() throws Exception {
-        new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"));
+        new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"), false);
     }
 
     @Test(expected = LocalAccessDeniedException.class)
