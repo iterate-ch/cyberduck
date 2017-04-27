@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -51,6 +52,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             final Cryptor cryptor = cryptomator.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            status.setNonces(new RandomNonceGenerator());
             encrypted.put(cryptomator.encrypt(session, file), status);
         }
         return proxy.pre(type, encrypted, callback);

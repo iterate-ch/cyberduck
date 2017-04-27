@@ -21,14 +21,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -76,16 +74,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     proxy = delegate.write(encrypted,
                             new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
                 }
-                final NonceGenerator nonces;
-                if(null == status.getNonces()) {
-                    nonces = new RandomNonceGenerator();
-                }
-                else {
-                    // Use nonces from checksum compute
-                    nonces = status.getNonces();
-                }
                 return new CryptoOutputStream<Reply>(proxy, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
-                        nonces, vault.numberOfChunks(status.getOffset()));
+                        status.getNonces(), vault.numberOfChunks(status.getOffset()));
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);

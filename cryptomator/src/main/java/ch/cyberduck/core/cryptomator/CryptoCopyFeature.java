@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Read;
@@ -51,6 +52,7 @@ public class CryptoCopyFeature implements Copy {
                 final Cryptor cryptor = vault.getCryptor();
                 final FileHeader header = cryptor.fileHeaderCryptor().create();
                 status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+                status.setNonces(new RandomNonceGenerator());
             }
             // Copy files from or into vault requires to pass through encryption features
             new DefaultCopyFeature(session.getFeature(Read.class), session.getFeature(Write.class)).copy(
