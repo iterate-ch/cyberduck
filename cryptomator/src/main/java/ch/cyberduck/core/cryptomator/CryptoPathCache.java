@@ -19,21 +19,15 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.features.Vault;
 
 import java.util.Set;
 
 public final class CryptoPathCache implements Cache<Path> {
 
-    private final Session<?> session;
     private final Cache<Path> delegate;
-    private final Vault vault;
 
-    public CryptoPathCache(final Session<?> session, final Cache<Path> delegate, final Vault vault) {
-        this.session = session;
+    public CryptoPathCache(final Cache<Path> delegate) {
         this.delegate = delegate;
-        this.vault = vault;
     }
 
     @Override

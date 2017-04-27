@@ -49,7 +49,7 @@ public class CryptoSearchFeature implements Search {
 
     @Override
     public Search withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(session, cache, vault));
+        delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
 }
