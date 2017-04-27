@@ -93,8 +93,6 @@ public class B2LargeUploadWriteFeatureTest {
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
         assertEquals(content.length, progress.getOffset());
-        in.close();
-        out.close();
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new B2ReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());

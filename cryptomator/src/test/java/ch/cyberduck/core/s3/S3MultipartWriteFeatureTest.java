@@ -92,8 +92,6 @@ public class S3MultipartWriteFeatureTest {
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
         assertEquals(content.length, progress.getOffset());
-        in.close();
-        out.close();
         assertNotNull(out.getStatus());
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
