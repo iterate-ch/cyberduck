@@ -25,6 +25,8 @@ import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.function.Predicate;
+
 public class DropboxFileIdProvider implements IdProvider {
 
     private final DropboxSession session;
@@ -45,10 +47,16 @@ public class DropboxFileIdProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            if(!list.contains(file)) {
+            final Path found = list.find(new Predicate<Path>() {
+                @Override
+                public boolean test(final Path f) {
+                    return f.getAbsolute().equals(file.getAbsolute());
+                }
+            });
+            if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return list.get(file).attributes().getVersionId();
+            return found.attributes().getVersionId();
         }
         return new DropboxAttributesFinderFeature(session).withCache(cache).find(file).getVersionId();
     }
