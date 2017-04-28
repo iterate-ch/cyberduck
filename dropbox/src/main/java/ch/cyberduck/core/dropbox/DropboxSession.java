@@ -146,7 +146,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == IdProvider.class) {
-            return (T) new DropboxIdProvider(this);
+            return (T) new DropboxFileIdProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);

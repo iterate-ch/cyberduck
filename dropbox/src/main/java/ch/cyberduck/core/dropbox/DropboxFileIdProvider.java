@@ -25,13 +25,13 @@ import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DropboxIdProvider implements IdProvider {
+public class DropboxFileIdProvider implements IdProvider {
 
     private final DropboxSession session;
 
     private Cache<Path> cache = PathCache.empty();
 
-    public DropboxIdProvider(final DropboxSession session) {
+    public DropboxFileIdProvider(final DropboxSession session) {
         this.session = session;
     }
 
