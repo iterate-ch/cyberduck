@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
+
+    private Cache<Path> cache;
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -40,15 +43,25 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list = session.list(file.getParent(), new DisabledListProgressListener());
+        final AttributedList<Path> list;
+        if(!cache.isCached(file.getParent())) {
+            list = session.list(file.getParent(), new DisabledListProgressListener());
+            cache.put(file.getParent(), list);
+        }
+        else {
+            list = cache.get(file.getParent());
+        }
         for(Path f : list) {
             if(StringUtils.equals(f.getName(), file.getName())) {
-                final String id = f.attributes().getVersionId();
-                // Cache in file attributes
-                file.attributes().setVersionId(id);
-                return id;
+                return f.attributes().getVersionId();
             }
         }
         throw new NotfoundException(file.getAbsolute());
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
+        return this;
     }
 }
