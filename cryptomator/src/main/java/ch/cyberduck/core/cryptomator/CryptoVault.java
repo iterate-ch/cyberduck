@@ -277,6 +277,10 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Skip file %s because it is already marked as an encrypted path", file));
             return file;
         }
+        if(file.getType().contains(Path.Type.vault)) {
+            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
+            return file;
+        }
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
