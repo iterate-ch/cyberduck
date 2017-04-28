@@ -30,9 +30,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
+
+import java.util.function.Predicate;
 
 public class DefaultAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
@@ -70,23 +71,16 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        if(list.contains(file)) {
-            return list.get(file).attributes();
-        }
-        else {
-            if(null == file.attributes().getVersionId()) {
-                final IdProvider id = session._getFeature(IdProvider.class).withCache(cache);
-                final String version = id.getFileid(file);
-                if(version == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                file.attributes().setVersionId(version);
-                if(list.contains(file)) {
-                    return list.get(file).attributes();
-                }
+        final Path result = list.find(new Predicate<Path>() {
+            @Override
+            public boolean test(final Path f) {
+                return f.getAbsolute().equals(file.getAbsolute());
             }
+        });
+        if(null == result) {
             throw new NotfoundException(file.getAbsolute());
         }
+        return result.attributes();
     }
 
     @Override
