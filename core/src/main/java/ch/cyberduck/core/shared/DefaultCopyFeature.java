@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -34,33 +35,30 @@ import java.io.OutputStream;
 
 public class DefaultCopyFeature implements Copy {
 
-    private final Read read;
-    private final Write write;
-
-    public <T> DefaultCopyFeature(final Read read, final Write write) {
-        this.read = read;
-        this.write = write;
-    }
+    private final Session<?> session;
 
     public DefaultCopyFeature(final Session<?> session) {
-        this.read = session.getFeature(Read.class);
-        this.write = session.getFeature(Write.class);
+        this.session = session;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            in = new ThrottledInputStream(read.read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-            out = new ThrottledOutputStream(write.write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-            final TransferStatus progress = new TransferStatus();
-            new StreamCopier(progress, progress).transfer(in, out);
-
+        if(source.isDirectory()) {
+            session.getFeature(Directory.class).mkdir(target, null, status);
         }
-        finally {
-            new DefaultStreamCloser().close(in);
-            new DefaultStreamCloser().close(out);
+        else {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                in = new ThrottledInputStream(session.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                out = new ThrottledOutputStream(session.getFeature(Write.class).write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                final TransferStatus progress = new TransferStatus();
+                new StreamCopier(progress, progress).transfer(in, out);
+            }
+            finally {
+                new DefaultStreamCloser().close(in);
+                new DefaultStreamCloser().close(out);
+            }
         }
     }
 
