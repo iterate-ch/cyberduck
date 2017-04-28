@@ -231,7 +231,7 @@ public class MoveWorkerTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
         new SFTPTouchFeature(session).touch(clearFile, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(clearFolder));
