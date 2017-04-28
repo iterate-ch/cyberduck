@@ -51,12 +51,10 @@ public class DriveFileidProvider implements IdProvider {
         else {
             list = cache.get(file.getParent());
         }
-        for(Path f : list) {
-            if(StringUtils.equals(f.getName(), file.getName())) {
-                return f.attributes().getVersionId();
-            }
+        if(!list.contains(file)) {
+            throw new NotfoundException(file.getAbsolute());
         }
-        throw new NotfoundException(file.getAbsolute());
+        return list.get(file).attributes().getVersionId();
     }
 
     @Override
