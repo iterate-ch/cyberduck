@@ -65,6 +65,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.browser.Column;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
+import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
 
@@ -374,8 +375,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
-                        || pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
+                if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path file : pasteboard) {
@@ -385,12 +385,20 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
                             new ArrayList<Path>(files.values()), false);
                 }
+                else if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                    // The file should be copied
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    for(Path next : pasteboard) {
+                        Path renamed = new Path(destination, next.getName(), next.getType());
+                        files.put(next, renamed);
+                    }
+                    new CopyController(controller).copy(files);
+                }
                 else {
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        Path renamed = new Path(
-                                destination, next.getName(), next.getType());
+                        Path renamed = new Path(destination, next.getName(), next.getType());
                         files.put(next, renamed);
                     }
                     new MoveController(controller).rename(files);
