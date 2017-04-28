@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -30,10 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Collections;
-
-import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
@@ -58,27 +54,18 @@ public class SwiftMoveFeature implements Move {
 
     @Override
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
-        try {
-            if(source.isFile()) {
-                new SwiftCopyFeature(session, regionService).copy(source, renamed, new TransferStatus());
-                session.getClient().deleteObject(regionService.lookup(source),
-                        containerService.getContainer(source).getName(), containerService.getKey(source));
-            }
-            else if(source.isDirectory()) {
-                try {
-                    delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
-                }
-                catch(NotfoundException e) {
-                    // No real placeholder but just a delimiter returned in the object listing.
-                    log.warn(e.getMessage());
-                }
-            }
+        if(source.isFile()) {
+            new SwiftCopyFeature(session, regionService).copy(source, renamed, new TransferStatus());
+            new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
         }
-        catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Cannot rename {0}", e, source);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, source);
+        else if(source.isDirectory()) {
+            try {
+                delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            }
+            catch(NotfoundException e) {
+                // No real placeholder but just a delimiter returned in the object listing.
+                log.warn(e.getMessage());
+            }
         }
     }
 
