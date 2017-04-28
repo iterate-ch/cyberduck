@@ -74,7 +74,7 @@ public class DefaultFindFeature implements Find {
                         }
                 }
                 if(null == file.attributes().getVersionId()) {
-                    final IdProvider id = session._getFeature(IdProvider.class);
+                    final IdProvider id = session._getFeature(IdProvider.class).withCache(cache);
                     final String version = id.getFileid(file);
                     if(version != null) {
                         return true;
