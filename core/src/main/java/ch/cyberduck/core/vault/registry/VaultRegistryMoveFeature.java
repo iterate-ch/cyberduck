@@ -48,9 +48,9 @@ public class VaultRegistryMoveFeature implements Move {
         }
         else {
             // Move files from or into vault requires to pass through encryption features
-            new VaultRegistryCopyFeature(session, session.getFeature(Copy.class), registry).copy(source, target, new TransferStatus());
+            session.getFeature(Copy.class).copy(source, target, new TransferStatus());
             // Delete source file after copy is complete
-            new VaultRegistryDeleteFeature(session, session.getFeature(Delete.class), registry).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+            session.getFeature(Delete.class).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
         }
     }
 
@@ -60,7 +60,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source).equals(registry.find(session, target))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source, target);
             }
-            return new VaultRegistryCopyFeature(session, session.getFeature(Copy.class), registry).isRecursive(source, target);
+            return session.getFeature(Copy.class).isRecursive(source, target);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isRecursive(source, target);
