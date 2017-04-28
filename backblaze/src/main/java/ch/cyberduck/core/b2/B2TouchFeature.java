@@ -29,7 +29,6 @@ import org.apache.commons.io.input.NullInputStream;
 
 import java.util.Collections;
 
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
@@ -51,7 +50,6 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         );
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        file.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
         return file;
     }
 

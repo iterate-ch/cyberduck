@@ -36,7 +36,6 @@ import java.io.IOException;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
@@ -68,14 +67,12 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     case allPublic:
                         folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
                 }
-                folder.attributes().setVersionId(response.getBucketId());
             }
             else {
                 status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                folder.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
             }
         }
         catch(B2ApiException e) {
