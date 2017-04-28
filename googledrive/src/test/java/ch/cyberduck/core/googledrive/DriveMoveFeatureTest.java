@@ -120,9 +120,7 @@ public class DriveMoveFeatureTest {
         new DriveMoveFeature(session).move(sourceDirectory, targetDirectory, false, new Delete.DisabledCallback());
         final Find find = new DefaultFindFeature(session);
         assertFalse(find.find(sourceDirectory));
-        assertFalse(find.find(sourceFile));
         assertTrue(find.find(targetDirectory));
-        assertTrue(find.find(targetFile));
         new DriveDeleteFeature(session).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
