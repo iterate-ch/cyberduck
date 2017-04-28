@@ -56,7 +56,7 @@ public class SwiftMoveFeature implements Move {
     public void move(final Path source, final Path renamed, boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(source.isFile()) {
             new SwiftCopyFeature(session, regionService).copy(source, renamed, new TransferStatus());
-            new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
+            delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
         }
         else if(source.isDirectory()) {
             try {
