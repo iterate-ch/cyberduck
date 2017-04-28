@@ -53,9 +53,7 @@ public class CryptoCopyFeature implements Copy {
                 status.setNonces(new RandomNonceGenerator());
             }
             // Copy files from or into vault requires to pass through encryption features
-            new DefaultCopyFeature(session).copy(
-                    vault.contains(source) ? vault.encrypt(session, source) : source,
-                    vault.contains(target) ? vault.encrypt(session, target) : target, status);
+            new DefaultCopyFeature(session).copy(source, target, status);
         }
     }
 
