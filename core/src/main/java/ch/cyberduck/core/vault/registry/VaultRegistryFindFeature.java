@@ -17,6 +17,7 @@ package ch.cyberduck.core.vault.registry;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -28,7 +29,7 @@ public class VaultRegistryFindFeature implements Find {
     private final Find proxy;
     private final VaultRegistry registry;
 
-    private Cache<Path> cache;
+    private Cache<Path> cache = PathCache.empty();
 
     public VaultRegistryFindFeature(final Session<?> session, final Find proxy, final VaultRegistry registry) {
         this.session = session;
