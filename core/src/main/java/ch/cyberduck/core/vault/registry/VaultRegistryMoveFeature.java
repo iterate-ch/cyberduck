@@ -19,12 +19,12 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.Collections;
 
@@ -55,12 +55,15 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public boolean isRecursive(final Path source) {
+    public boolean isRecursive(final Path source, final Path target) {
         try {
-            return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source);
+            if(registry.find(session, source).equals(registry.find(session, target))) {
+                return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source, target);
+            }
+            return new VaultRegistryCopyFeature(session, session.getFeature(Copy.class), registry).isRecursive(source, target);
         }
-        catch(ConnectionCanceledException e) {
-            return proxy.isRecursive(source);
+        catch(VaultUnlockCancelException e) {
+            return proxy.isRecursive(source, target);
         }
     }
 
@@ -68,9 +71,12 @@ public class VaultRegistryMoveFeature implements Move {
     public boolean isSupported(final Path source, final Path target) {
         // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
         try {
-            return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
+            if(registry.find(session, source).equals(registry.find(session, target))) {
+                return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
+            }
+            return true;
         }
-        catch(BackgroundException e) {
+        catch(VaultUnlockCancelException e) {
             return false;
         }
     }

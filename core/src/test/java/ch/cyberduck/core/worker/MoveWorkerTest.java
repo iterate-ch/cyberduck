@@ -72,7 +72,7 @@ public class MoveWorkerTest {
                         }
 
                         @Override
-                        public boolean isRecursive(final Path source) {
+                        public boolean isRecursive(final Path source, final Path target) {
                             return false;
                         }
 
