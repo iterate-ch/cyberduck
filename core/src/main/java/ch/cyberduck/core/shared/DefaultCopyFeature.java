@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -44,9 +45,14 @@ public class DefaultCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(source.isDirectory()) {
-            session.getFeature(Directory.class).mkdir(target, null, status);
+            if(!session.getFeature(Find.class).find(target)) {
+                session.getFeature(Directory.class).mkdir(target, null, status);
+            }
         }
         else {
+            if(!session.getFeature(Find.class).find(target.getParent())) {
+                this.copy(source.getParent(), target.getParent(), new TransferStatus());
+            }
             InputStream in = null;
             OutputStream out = null;
             try {
