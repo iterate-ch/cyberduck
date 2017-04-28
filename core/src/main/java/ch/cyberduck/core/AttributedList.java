@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * A sortable list with a map to lookup values by key.
@@ -226,6 +228,11 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
 
     public boolean contains(final E e) {
         return impl.contains(e);
+    }
+
+    public E find(final Predicate<E> predicate) {
+        final Optional<E> optional = impl.stream().filter(predicate).findFirst();
+        return optional.orElse(null);
     }
 
     @SuppressWarnings("unchecked")
