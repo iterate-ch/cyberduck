@@ -22,6 +22,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 public class VaultRegistryTouchFeature<R> implements Touch<R> {
 
@@ -46,7 +47,7 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
         try {
             return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
         }
-        catch(BackgroundException e) {
+        catch(VaultUnlockCancelException e) {
             return false;
         }
     }
