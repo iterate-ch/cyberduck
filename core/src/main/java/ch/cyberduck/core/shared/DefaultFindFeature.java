@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -30,8 +31,6 @@ import ch.cyberduck.core.features.Find;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.util.function.Predicate;
 
 public class DefaultFindFeature implements Find {
     private static final Logger log = Logger.getLogger(DefaultFindFeature.class);
@@ -59,12 +58,7 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final boolean found = list.find(new Predicate<Path>() {
-                @Override
-                public boolean test(final Path f) {
-                    return f.getAbsolute().equals(file.getAbsolute());
-                }
-            }) != null;
+            final boolean found = list.find(new PathPredicate(file)) != null;
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:

@@ -6,6 +6,8 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import java.util.function.Predicate;
+
 public class NullSession extends Session<Void> {
 
     public NullSession(Host h) {
@@ -40,8 +42,13 @@ public class NullSession extends Session<Void> {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new AttributedList<Path>() {
             @Override
-            public boolean contains(final Path path) {
+            public boolean contains(final Path file) {
                 return true;
+            }
+
+            @Override
+            public Path find(final Predicate<Path> predicate) {
+                return ((PathPredicate) predicate).file;
             }
 
             @Override

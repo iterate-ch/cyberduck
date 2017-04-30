@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,8 +33,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.log4j.Logger;
-
-import java.util.function.Predicate;
 
 public class DefaultAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
@@ -71,12 +70,7 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        final Path result = list.find(new Predicate<Path>() {
-            @Override
-            public boolean test(final Path f) {
-                return f.getAbsolute().equals(file.getAbsolute());
-            }
-        });
+        final Path result = list.find(new PathPredicate(file));
         if(null == result) {
             throw new NotfoundException(file.getAbsolute());
         }

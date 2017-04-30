@@ -20,13 +20,12 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.function.Predicate;
 
 public class DriveFileidProvider implements IdProvider {
 
@@ -54,12 +53,7 @@ public class DriveFileidProvider implements IdProvider {
         else {
             list = cache.get(file.getParent());
         }
-        final Path found = list.find(new Predicate<Path>() {
-            @Override
-            public boolean test(final Path f) {
-                return f.getAbsolute().equals(file.getAbsolute());
-            }
-        });
+        final Path found = list.find(new PathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
