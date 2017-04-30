@@ -374,6 +374,7 @@ public abstract class Preferences {
           Warn before renaming files
          */
         defaults.put("browser.move.confirm", String.valueOf(true));
+        defaults.put("browser.copy.confirm", String.valueOf(true));
 
 
         defaults.put("browser.transcript.open", String.valueOf(false));
