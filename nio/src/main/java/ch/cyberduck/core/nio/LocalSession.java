@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -41,10 +42,13 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.log4j.Logger;
+
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 
 public class LocalSession extends Session<FileSystem> {
+    private static final Logger log = Logger.getLogger(LocalSession.class);
 
     private Object lock;
 
@@ -69,7 +73,12 @@ public class LocalSession extends Session<FileSystem> {
     @Override
     public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache cache) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
-        lock = LocalFactory.get(home.getAbsolute()).lock(true);
+        try {
+            lock = LocalFactory.get(home.getAbsolute()).lock(true);
+        }
+        catch(LocalAccessDeniedException e) {
+            log.debug(String.format("Ignore failure obtaining lock for %s", home));
+        }
     }
 
     @Override
