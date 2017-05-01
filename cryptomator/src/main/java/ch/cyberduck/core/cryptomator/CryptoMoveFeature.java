@@ -40,8 +40,7 @@ public class CryptoMoveFeature implements Move {
         proxy.move(
                 vault.contains(file) ? vault.encrypt(session, file, file.isDirectory()) : file,
                 vault.contains(renamed) ? vault.encrypt(session, renamed, file.isDirectory()) : renamed,
-                exists, callback)
-        ;
+                exists, callback);
     }
 
     @Override
