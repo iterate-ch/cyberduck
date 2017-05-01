@@ -423,6 +423,7 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 return session.getHost().getProtocol().getType() == Protocol.Type.s3
+                        || session.getHost().getProtocol().getType() == Protocol.Type.b2
                         || session.getHost().getProtocol().getType() == Protocol.Type.azure
                         || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
