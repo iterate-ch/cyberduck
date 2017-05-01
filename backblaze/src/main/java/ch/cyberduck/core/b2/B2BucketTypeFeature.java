@@ -60,17 +60,9 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         if(containerService.isContainer(file)) {
             try {
-                for(Acl.UserAndRole userAndRole : acl.asList()) {
-                    if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                        if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                            session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                                    BucketType.allPublic);
-                            return;
-                        }
-                    }
-                }
+                BucketType bucketType = this.convert(acl);
                 session.getClient().updateBucket(new B2FileidProvider(session).getFileid(containerService.getContainer(file)),
-                        BucketType.allPrivate);
+                        bucketType);
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService(session).map("Cannot change permissions of {0}", e, file);
@@ -79,6 +71,19 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
                 throw new DefaultIOExceptionMappingService().map(e);
             }
         }
+    }
+
+    protected BucketType convert(final Acl acl) {
+        BucketType bucketType = BucketType.allPrivate;
+        for(Acl.UserAndRole userAndRole : acl.asList()) {
+            if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
+                    bucketType = BucketType.allPublic;
+                    break;
+                }
+            }
+        }
+        return bucketType;
     }
 
     @Override
