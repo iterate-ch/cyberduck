@@ -52,15 +52,15 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         if(!status.isExists()) {
             folder.attributes().setDirectoryId(random.random());
         }
-        final Path target = vault.encrypt(session, folder);
+        final Path encrypt = vault.encrypt(session, folder);
         if(vault.contains(folder)) {
             // Create metadata file for directory
             final Path directoryMetadataFile = vault.encrypt(session, folder, true);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
             }
-            new ContentWriter(session).write(directoryMetadataFile, target.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
-            final Path intermediate = target.getParent();
+            new ContentWriter(session).write(directoryMetadataFile, encrypt.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
+            final Path intermediate = encrypt.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
                 session._getFeature(Directory.class).mkdir(intermediate, region, status);
             }
@@ -70,9 +70,9 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
             status.setNonces(new RandomNonceGenerator());
         }
-        proxy.mkdir(target, region, status);
+        proxy.mkdir(encrypt, region, status);
         folder.getType().add(Path.Type.decrypted);
-        folder.attributes().setEncrypted(target);
+        folder.attributes().setEncrypted(encrypt);
         return folder;
     }
 
