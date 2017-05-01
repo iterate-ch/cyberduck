@@ -46,6 +46,7 @@ public class CryptoDeleteFeature implements Delete {
                 final Path encrypt = vault.encrypt(session, f);
                 encrypted.add(encrypt);
                 if(f.isDirectory()) {
+                    // Delete metadata file for directory
                     final Path metadataFile = vault.encrypt(session, f, true);
                     if(metadataFile.getType().contains(Path.Type.encrypted)) {
                         encrypted.add(metadataFile);

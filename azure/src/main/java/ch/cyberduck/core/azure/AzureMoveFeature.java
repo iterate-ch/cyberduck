@@ -62,13 +62,12 @@ public class AzureMoveFeature implements Move {
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus());
-            delete.delete(Collections.singletonList(file),
-                    new DisabledLoginCallback(), callback);
+            delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), callback);
         }
     }
 
     @Override
-    public boolean isRecursive(final Path source) {
+    public boolean isRecursive(final Path source, final Path target) {
         return false;
     }
 }

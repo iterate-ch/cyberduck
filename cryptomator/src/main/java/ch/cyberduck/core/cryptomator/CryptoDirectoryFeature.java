@@ -19,7 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -52,8 +52,9 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         }
         final Path target = vault.encrypt(session, folder);
         if(vault.contains(folder)) {
-            final Path directoryMetafile = vault.encrypt(session, folder, true);
-            new ContentWriter(session).write(directoryMetafile, folder.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
+            // Create metadata file for directory
+            final Path directoryMetadataFile = vault.encrypt(session, folder, true);
+            new ContentWriter(session).write(directoryMetadataFile, target.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
             final Path intermediate = target.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
                 session._getFeature(Directory.class).mkdir(intermediate, region, status);
@@ -61,8 +62,8 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
             // Write header
             final Cryptor cryptor = vault.getCryptor();
             final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(0L)));
             status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            status.setNonces(new RandomNonceGenerator());
         }
         proxy.mkdir(target, region, status);
         folder.getType().add(Path.Type.decrypted);

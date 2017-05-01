@@ -17,29 +17,55 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileHeader;
 
 public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
     private final Copy proxy;
-    private final CryptoVault cryptomator;
+    private final CryptoVault vault;
 
-    public CryptoCopyFeature(final Session<?> session, final Copy delegate, final CryptoVault cryptomator) {
+    public CryptoCopyFeature(final Session<?> session, final Copy delegate, final CryptoVault vault) {
         this.session = session;
         this.proxy = delegate;
-        this.cryptomator = cryptomator;
+        this.vault = vault;
     }
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        proxy.copy(cryptomator.encrypt(session, source), cryptomator.encrypt(session, target), status);
+        if(vault.contains(source) && vault.contains(target)) {
+            // Copy inside vault may use server side copy
+            proxy.copy(vault.encrypt(session, source), vault.encrypt(session, target), status);
+        }
+        else {
+            if(vault.contains(target)) {
+                // Write header to be reused in writer
+                final Cryptor cryptor = vault.getCryptor();
+                final FileHeader header = cryptor.fileHeaderCryptor().create();
+                status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+                status.setNonces(new RandomNonceGenerator());
+            }
+            // Copy files from or into vault requires to pass through encryption features
+            new DefaultCopyFeature(session).copy(
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(target) ? vault.encrypt(session, target) : target,
+                    status
+            );
+        }
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return proxy.isRecursive(source, target);
+        if(vault.contains(source) && vault.contains(target)) {
+            return proxy.isRecursive(source, target);
+        }
+        return new DefaultCopyFeature(session).isRecursive(source, target);
     }
 }

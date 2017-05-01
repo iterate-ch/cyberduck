@@ -36,11 +36,16 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        proxy.move(vault.encrypt(session, file, file.isDirectory()), vault.encrypt(session, renamed, file.isDirectory()), exists, callback);
+        // Move inside vault moves actual files and only metadata files for directories but not the actual directories
+        proxy.move(
+                vault.contains(file) ? vault.encrypt(session, file, file.isDirectory()) : file,
+                vault.contains(renamed) ? vault.encrypt(session, renamed, file.isDirectory()) : renamed,
+                exists, callback)
+        ;
     }
 
     @Override
-    public boolean isRecursive(final Path source) {
+    public boolean isRecursive(final Path source, final Path target) {
         // No need to handle recursion with encrypted filenames
         return true;
     }

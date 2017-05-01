@@ -19,9 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.shared.DefaultCopyFeature;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -40,16 +38,15 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
-        if(registry.find(session, source).equals(registry.find(session, target))) {
-            // Move files inside vault. May use server side copy.
+        if(registry.find(session, source).equals(Vault.DISABLED)) {
+            registry.find(session, target).getFeature(session, Copy.class, proxy).copy(source, target, status);
+        }
+        else if(registry.find(session, target).equals(Vault.DISABLED)) {
             registry.find(session, source).getFeature(session, Copy.class, proxy).copy(source, target, status);
         }
         else {
-            // Use default copy feature. Will need to transfer using read and write features with encryption
-            new DefaultCopyFeature(
-                    registry.find(session, source).getFeature(session, Read.class, session._getFeature(Read.class)),
-                    registry.find(session, target).getFeature(session, Write.class, session._getFeature(Write.class))
-            ).copy(source, target, status);
+            // Move files inside vault. May use server side copy.
+            session.getFeature(Copy.class, proxy).copy(source, target, status);
         }
     }
 

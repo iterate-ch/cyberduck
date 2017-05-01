@@ -46,7 +46,7 @@ public class CryptoReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(vault.contains(file)) {
             try {
-                final Path encrypted = vault.contains(file) ? vault.encrypt(session, file) : file;
+                final Path encrypted = vault.encrypt(session, file);
                 // Header
                 final Cryptor cryptor = vault.getCryptor();
                 final InputStream proxy = delegate.read(encrypted,

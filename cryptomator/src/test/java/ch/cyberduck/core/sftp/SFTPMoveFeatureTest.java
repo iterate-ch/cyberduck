@@ -181,7 +181,7 @@ public class SFTPMoveFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
-        new CryptoTouchFeature<Void>(session, new SFTPTouchFeature(session), new SFTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session))), new SFTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator);
         // rename file
@@ -198,5 +198,4 @@ public class SFTPMoveFeatureTest {
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
-
 }

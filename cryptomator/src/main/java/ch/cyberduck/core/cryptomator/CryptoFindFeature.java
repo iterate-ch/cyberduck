@@ -38,6 +38,7 @@ public class CryptoFindFeature implements Find {
     @Override
     public boolean find(final Path file) throws BackgroundException {
         try {
+            // Look for metadata file to exist when searching for folder
             return delegate.find(vault.encrypt(session, file, file.isDirectory()));
         }
         catch(NotfoundException e) {
@@ -47,7 +48,7 @@ public class CryptoFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        delegate.withCache(new CryptoPathCache(session, cache, vault));
+        delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
 }

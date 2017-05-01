@@ -76,44 +76,42 @@ public class CryptoDirectoryProvider {
      * @param session   Connection
      * @param directory Clear text
      */
-    public Path toEncrypted(final Session<?> session, final Path directory) throws BackgroundException {
+    public Path toEncrypted(final Session<?> session, final String directoryId, final Path directory) throws BackgroundException {
         if(directory.getType().contains(Path.Type.directory)) {
-            String directoryId;
-            if(dataRoot.getParent().equals(directory)) {
-                directoryId = ROOT_DIR_ID;
-            }
-            else {
-                if(StringUtils.isBlank(directory.attributes().getDirectoryId())) {
-                    final Path parent = this.toEncrypted(session, directory.getParent());
-                    final String cleartextName = directory.getName();
-                    final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
-                    // Read directory id from file
-                    try {
-                        directoryId = new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
-                    }
-                    catch(NotfoundException e) {
-                        log.warn(String.format("Missing directory ID for folder %s", directory));
-                        directoryId = random.random();
-                    }
-                }
-                else {
-                    directoryId = directory.attributes().getDirectoryId();
-                }
-            }
-            final String dirHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(directoryId);
-            // Intermediate directory
-            final Path intermediate = new Path(dataRoot, dirHash.substring(0, 2), dataRoot.getType());
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(directory.attributes().serialize(SerializerFactory.get()));
             attributes.setVersionId(null);
-            // Save directory id for use in vault
-            attributes.setDirectoryId(directoryId);
+            // Remember random directory id for use in vault
+            attributes.setDirectoryId(this.toDirectoryId(session, directory, directoryId));
             attributes.setDecrypted(directory);
+            final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(attributes.getDirectoryId());
+            // Intermediate directory
+            final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type
             final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
             type.remove(Path.Type.decrypted);
-            return new Path(intermediate, dirHash.substring(2), type, attributes);
+            return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
         }
         throw new NotfoundException(directory.getAbsolute());
+    }
+
+    private String toDirectoryId(final Session<?> session, final Path directory, final String directoryId) throws BackgroundException {
+        if(dataRoot.getParent().equals(directory)) {
+            return ROOT_DIR_ID;
+        }
+        if(StringUtils.isBlank(directoryId)) {
+            final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
+            final String cleartextName = directory.getName();
+            final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
+            // Read directory id from file
+            try {
+                return new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+            }
+            catch(NotfoundException e) {
+                log.warn(String.format("Missing directory ID for folder %s", directory));
+                return random.random();
+            }
+        }
+        return directoryId;
     }
 }
