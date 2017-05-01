@@ -92,6 +92,7 @@ public class CryptoVaultTest {
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
         assertNotEquals(vault.encrypt(session, home), vault.encrypt(session, home, true));
         assertEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, home, true).attributes().getDirectoryId());
         assertNotEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home, true).attributes().getDirectoryId());
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
