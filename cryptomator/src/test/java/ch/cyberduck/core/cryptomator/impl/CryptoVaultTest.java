@@ -77,17 +77,22 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledPasswordStore());
-        final Path f = new Path("/", EnumSet.of((Path.Type.directory)));
+        final Path home = new Path("/", EnumSet.of((Path.Type.directory)));
+        final CryptoVault vault = new CryptoVault(home, new DisabledPasswordStore());
         vault.load(session, new DisabledPasswordCallback() {
             @Override
             public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 credentials.setPassword("vault");
             }
         });
-        assertNotSame(f, vault.encrypt(session, f));
         assertEquals(Vault.State.open, vault.getState());
+        assertNotSame(home, vault.encrypt(session, home));
+        assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
+        final Path directory = new Path(home, "/dir", EnumSet.of((Path.Type.directory)));
+        assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
+        assertNotEquals(vault.encrypt(session, home), vault.encrypt(session, home, true));
+        assertEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home).attributes().getDirectoryId());
+        assertNotEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home, true).attributes().getDirectoryId());
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
     }
