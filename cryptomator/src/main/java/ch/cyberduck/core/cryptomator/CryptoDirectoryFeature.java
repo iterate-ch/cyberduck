@@ -26,12 +26,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.Charset;
 
 public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
+    private static final Logger log = Logger.getLogger(CryptoDirectoryFeature.class);
 
     private final Session<?> session;
     private final Directory<Reply> proxy;
@@ -54,6 +56,9 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         if(vault.contains(folder)) {
             // Create metadata file for directory
             final Path directoryMetadataFile = vault.encrypt(session, folder, true);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
+            }
             new ContentWriter(session).write(directoryMetadataFile, target.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
             final Path intermediate = target.getParent();
             if(!session._getFeature(Find.class).find(intermediate)) {
