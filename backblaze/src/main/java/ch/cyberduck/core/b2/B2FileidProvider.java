@@ -20,7 +20,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathPredicate;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -50,7 +50,7 @@ public class B2FileidProvider implements IdProvider {
         else {
             list = cache.get(file.getParent());
         }
-        final Path found = list.find(new PathPredicate(file));
+        final Path found = list.find(new SimplePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
