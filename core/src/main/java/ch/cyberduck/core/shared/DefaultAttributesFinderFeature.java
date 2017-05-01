@@ -24,13 +24,13 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.log4j.Logger;
 
@@ -70,23 +70,11 @@ public class DefaultAttributesFinderFeature implements AttributesFinder {
         else {
             list = cache.get(file.getParent());
         }
-        if(list.contains(file)) {
-            return list.get(file).attributes();
-        }
-        else {
-            if(null == file.attributes().getVersionId()) {
-                final IdProvider id = session._getFeature(IdProvider.class);
-                final String version = id.getFileid(file);
-                if(version == null) {
-                    throw new NotfoundException(file.getAbsolute());
-                }
-                file.attributes().setVersionId(version);
-                if(list.contains(file)) {
-                    return list.get(file).attributes();
-                }
-            }
+        final Path result = list.find(new PathPredicate(file));
+        if(null == result) {
             throw new NotfoundException(file.getAbsolute());
         }
+        return result.attributes();
     }
 
     @Override

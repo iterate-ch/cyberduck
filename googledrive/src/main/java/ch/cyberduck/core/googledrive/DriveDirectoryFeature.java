@@ -43,7 +43,8 @@ public class DriveDirectoryFeature implements Directory<Void> {
                     .setName(folder.getName())
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
-            insert.execute();
+            final File execute = insert.execute();
+            folder.attributes().setVersionId(execute.getId());
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);

@@ -1,7 +1,7 @@
-package ch.cyberduck.core.shared;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,17 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
+import java.util.function.Predicate;
 
-public class NullFileidProvider implements IdProvider {
-    @Override
-    public String getFileid(final Path file) throws BackgroundException {
-        return null;
+public class PathPredicate implements Predicate<Path> {
+    protected final Path file;
+
+    public PathPredicate(final Path file) {
+        this.file = file;
     }
 
     @Override
-    public IdProvider withCache(final Cache<Path> cache) {
-        return this;
+    public boolean test(final Path f) {
+        return f.getAbsolute().equals(file.getAbsolute());
     }
 }

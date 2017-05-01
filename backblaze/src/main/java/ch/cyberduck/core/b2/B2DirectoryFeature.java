@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -70,7 +71,8 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             else {
                 status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
-                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+                final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
+                new DefaultStreamCloser().close(out);
             }
         }
         catch(B2ApiException e) {

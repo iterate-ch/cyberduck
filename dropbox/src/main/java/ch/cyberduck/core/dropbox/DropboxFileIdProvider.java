@@ -15,17 +15,24 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DropboxIdProvider implements IdProvider {
+public class DropboxFileIdProvider implements IdProvider {
 
     private final DropboxSession session;
 
-    public DropboxIdProvider(final DropboxSession session) {
+    private Cache<Path> cache = PathCache.empty();
+
+    public DropboxFileIdProvider(final DropboxSession session) {
         this.session = session;
     }
 
@@ -37,9 +44,20 @@ public class DropboxIdProvider implements IdProvider {
         if(file.isRoot()) {
             return null;
         }
-        final String id = new DropboxAttributesFinderFeature(session).find(file).getVersionId();
-        // Cache in file attributes
-        file.attributes().setVersionId(id);
-        return id;
+        if(cache.isCached(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new PathPredicate(file));
+            if(null == found) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            return found.attributes().getVersionId();
+        }
+        return new DropboxAttributesFinderFeature(session).withCache(cache).find(file).getVersionId();
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
+        return this;
     }
 }

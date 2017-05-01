@@ -16,8 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -27,6 +30,8 @@ import org.apache.commons.lang3.StringUtils;
 public class DriveFileidProvider implements IdProvider {
 
     private final DriveSession session;
+
+    private Cache<Path> cache = PathCache.empty();
 
     public DriveFileidProvider(final DriveSession session) {
         this.session = session;
@@ -40,15 +45,24 @@ public class DriveFileidProvider implements IdProvider {
         if(file.isRoot()) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final AttributedList<Path> list = session.list(file.getParent(), new DisabledListProgressListener());
-        for(Path f : list) {
-            if(StringUtils.equals(f.getName(), file.getName())) {
-                final String id = f.attributes().getVersionId();
-                // Cache in file attributes
-                file.attributes().setVersionId(id);
-                return id;
-            }
+        final AttributedList<Path> list;
+        if(!cache.isCached(file.getParent())) {
+            list = session.list(file.getParent(), new DisabledListProgressListener());
+            cache.put(file.getParent(), list);
         }
-        throw new NotfoundException(file.getAbsolute());
+        else {
+            list = cache.get(file.getParent());
+        }
+        final Path found = list.find(new PathPredicate(file));
+        if(null == found) {
+            throw new NotfoundException(file.getAbsolute());
+        }
+        return found.attributes().getVersionId();
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        this.cache = cache;
+        return this;
     }
 }

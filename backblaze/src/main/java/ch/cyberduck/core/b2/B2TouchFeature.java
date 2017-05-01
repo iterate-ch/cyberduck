@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -47,7 +48,8 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
         );
-        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
+        new DefaultStreamCloser().close(out);
         return file;
     }
 

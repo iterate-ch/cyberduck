@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,5 +36,11 @@ public class CryptoIdProvider implements IdProvider {
     @Override
     public String getFileid(final Path file) throws BackgroundException {
         return delegate.getFileid(vault.encrypt(session, file));
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        delegate.withCache(cache);
+        return this;
     }
 }

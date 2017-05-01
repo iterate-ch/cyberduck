@@ -79,8 +79,7 @@ public class B2FileidProviderTest {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        assertNull(new B2FileidProvider(session).getFileid(folder));
-        assertNotNull(new B2FileidProvider(session).getFileid(new Path(bucket, String.format("%s%s", folder.getName(), B2DirectoryFeature.PLACEHOLDER), EnumSet.of(Path.Type.file))));
+        assertNotNull(new B2FileidProvider(session).getFileid(folder));
         new B2DeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }

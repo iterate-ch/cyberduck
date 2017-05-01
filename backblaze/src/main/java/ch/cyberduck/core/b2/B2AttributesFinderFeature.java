@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -39,6 +40,8 @@ public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public B2AttributesFinderFeature(final B2Session session) {
         this.session = session;
     }
@@ -49,7 +52,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).getFileid(file));
+            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).withCache(cache).getFileid(file));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
@@ -83,6 +86,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
