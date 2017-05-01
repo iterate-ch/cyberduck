@@ -278,6 +278,10 @@ public class CryptoVault implements Vault {
 
     private Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
+            if(file.attributes().getDecrypted() == null) {
+                log.warn(String.format("Skip file %s because it is already marked as an encrypted path", file));
+                return file;
+            }
             return this.encrypt(session, file.attributes().getDecrypted(), directoryId, metadata);
         }
         final Path encrypted;
@@ -310,6 +314,10 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
+            if(file.attributes().getEncrypted() == null) {
+                log.warn(String.format("Skip file %s because it is already marked as an decrypted path", file));
+                return file;
+            }
             return this.decrypt(session, file.attributes().getEncrypted());
         }
         if(file.getType().contains(Path.Type.vault)) {
