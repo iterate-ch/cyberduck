@@ -133,7 +133,7 @@ public class CryptoVault implements Vault {
         feature.mkdir(home, region, new TransferStatus());
         new ContentWriter(session).write(masterKeyFile, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
-        final Path secondLevel = directoryProvider.toEncrypted(session, home);
+        final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
         final Path dataDir = firstLevel.getParent();
         if(log.isDebugEnabled()) {
@@ -269,25 +269,24 @@ public class CryptoVault implements Vault {
 
     @Override
     public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
-        return this.encrypt(session, file, false);
+        return this.encrypt(session, file, file.attributes().getDirectoryId(), false);
     }
 
     public Path encrypt(final Session<?> session, final Path file, boolean metadata) throws BackgroundException {
+        return this.encrypt(session, file, file.attributes().getDirectoryId(), metadata);
+    }
+
+    private Path encrypt(final Session<?> session, final Path file, final String directoryId, boolean metadata) throws BackgroundException {
         if(file.getType().contains(Path.Type.encrypted)) {
-            log.debug(String.format("Skip file %s because it is already marked as an encrypted path", file));
-            return file;
-        }
-        if(file.getType().contains(Path.Type.vault)) {
-            log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
-            return file;
+            return this.encrypt(session, file.attributes().getDecrypted(), directoryId, metadata);
         }
         final Path encrypted;
         if(file.isFile() || metadata) {
             if(file.getType().contains(Path.Type.vault)) {
-                log.warn(String.format("Skip file %s because it is already marked as an internal vault path", file));
+                log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
                 return file;
             }
-            final Path parent = directoryProvider.toEncrypted(session, file.getParent());
+            final Path parent = directoryProvider.toEncrypted(session, file.getParent().attributes().getDirectoryId(), file.getParent());
             final String filename = directoryProvider.toEncrypted(session, parent.attributes().getDirectoryId(), file.getName(), file.getType());
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()));
             // Translate file size
@@ -297,9 +296,9 @@ public class CryptoVault implements Vault {
         }
         else {
             if(file.getType().contains(Path.Type.vault)) {
-                return directoryProvider.toEncrypted(session, home);
+                return directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
             }
-            encrypted = directoryProvider.toEncrypted(session, file);
+            encrypted = directoryProvider.toEncrypted(session, directoryId, file);
         }
         // Add reference to decrypted file
         encrypted.attributes().setDecrypted(file);
@@ -311,8 +310,7 @@ public class CryptoVault implements Vault {
     @Override
     public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
         if(file.getType().contains(Path.Type.decrypted)) {
-            log.debug(String.format("Skip file %s because it is already marked as an decrypted path", file));
-            return file;
+            return this.decrypt(session, file.attributes().getEncrypted());
         }
         if(file.getType().contains(Path.Type.vault)) {
             log.warn(String.format("Skip file %s because it is marked as an internal vault path", file));
