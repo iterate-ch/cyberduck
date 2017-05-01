@@ -15,17 +15,17 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import java.util.function.Predicate;
+public class SimplePathPredicate extends DefaultPathPredicate {
 
-public class PathPredicate implements Predicate<Path> {
     protected final Path file;
 
-    public PathPredicate(final Path file) {
+    public SimplePathPredicate(final Path file) {
+        super(file);
         this.file = file;
     }
 
     @Override
-    public boolean test(final Path f) {
-        return f.getAbsolute().equals(file.getAbsolute());
+    public String toString() {
+        return this.type() + "-" + file.getAbsolute();
     }
 }

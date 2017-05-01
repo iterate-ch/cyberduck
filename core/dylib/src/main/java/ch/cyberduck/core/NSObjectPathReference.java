@@ -39,7 +39,7 @@ public class NSObjectPathReference implements CacheReference<Path> {
 
     public static NSObject get(final Path file) {
         if(!cache.containsKey(file)) {
-            cache.put(file, NSString.stringWithString(new DefaultPathReference(file).toString()));
+            cache.put(file, NSString.stringWithString(new DefaultPathPredicate(file).toString()));
         }
         return cache.get(file);
     }
@@ -72,5 +72,10 @@ public class NSObjectPathReference implements CacheReference<Path> {
         sb.append("hashCode=").append(hashCode);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public boolean test(final Path file) {
+        return hashCode == file.hashCode();
     }
 }

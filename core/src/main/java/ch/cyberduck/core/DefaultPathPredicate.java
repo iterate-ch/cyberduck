@@ -22,14 +22,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
-public class DefaultPathReference implements CacheReference<Path> {
+/**
+ * Path predicate that takes the region and version id of the path into account for comparisons.
+ */
+public class DefaultPathPredicate implements CacheReference<Path> {
 
     private final Path file;
 
     private final PathContainerService containerService
             = new PathContainerService();
 
-    public DefaultPathReference(final Path file) {
+    public DefaultPathPredicate(final Path file) {
         this.file = file;
     }
 
@@ -46,7 +49,7 @@ public class DefaultPathReference implements CacheReference<Path> {
         return qualifier;
     }
 
-    private String type() {
+    protected String type() {
         final EnumSet<Path.Type> types = EnumSet.copyOf(file.getType());
         types.remove(Path.Type.placeholder);
         types.remove(Path.Type.volume);
@@ -85,5 +88,10 @@ public class DefaultPathReference implements CacheReference<Path> {
             return this.hashCode() == other.hashCode();
         }
         return false;
+    }
+
+    @Override
+    public boolean test(final Path file) {
+        return this.hashCode() == file.hashCode();
     }
 }
