@@ -48,7 +48,7 @@ public class NullSession extends Session<Void> {
 
             @Override
             public Path find(final Predicate<Path> predicate) {
-                return ((PathPredicate) predicate).file;
+                return ((SimplePathPredicate) predicate).file;
             }
 
             @Override

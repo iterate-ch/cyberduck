@@ -23,8 +23,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.PathPredicate;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -58,7 +58,7 @@ public class DefaultFindFeature implements Find {
             else {
                 list = cache.get(file.getParent());
             }
-            final boolean found = list.find(new PathPredicate(file)) != null;
+            final boolean found = list.find(new SimplePathPredicate(file)) != null;
             if(!found) {
                 switch(session.getCase()) {
                     case insensitive:
