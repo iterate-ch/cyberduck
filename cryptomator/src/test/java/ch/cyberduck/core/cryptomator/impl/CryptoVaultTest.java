@@ -89,11 +89,12 @@ public class CryptoVaultTest {
         assertNotSame(home, vault.encrypt(session, home));
         assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
         final Path directory = new Path(home, "/dir", EnumSet.of((Path.Type.directory)));
-        assertEquals(vault.encrypt(session, home), vault.encrypt(session, home));
-        assertNotEquals(vault.encrypt(session, home), vault.encrypt(session, home, true));
-        assertEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home).attributes().getDirectoryId());
-        assertNull(vault.encrypt(session, home, true).attributes().getDirectoryId());
-        assertNotEquals(vault.encrypt(session, home).attributes().getDirectoryId(), vault.encrypt(session, home, true).attributes().getDirectoryId());
+        assertEquals(vault.encrypt(session, directory), vault.encrypt(session, directory));
+        assertNotEquals(vault.encrypt(session, directory), vault.encrypt(session, directory, true));
+        assertEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
+        assertNull(vault.encrypt(session, directory, true).attributes().getDirectoryId());
+        assertNotEquals(vault.encrypt(session, directory).attributes().getDirectoryId(), vault.encrypt(session, directory, true).attributes().getDirectoryId());
         vault.close();
         assertEquals(Vault.State.closed, vault.getState());
     }
