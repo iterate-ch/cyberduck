@@ -81,9 +81,13 @@ public class CryptoDirectoryProvider {
             final PathAttributes attributes = new PathAttributesDictionary().deserialize(directory.attributes().serialize(SerializerFactory.get()));
             attributes.setVersionId(null);
             // Remember random directory id for use in vault
-            attributes.setDirectoryId(this.toDirectoryId(session, directory, directoryId));
+            final String id = this.toDirectoryId(session, directory, directoryId);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set directory ID %s for folder %s", id, directory));
+            }
+            attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
-            final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(attributes.getDirectoryId());
+            final String directoryIdHash = cryptomator.getCryptor().fileNameCryptor().hashDirectoryId(id);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type
@@ -105,7 +109,11 @@ public class CryptoDirectoryProvider {
             final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
             // Read directory id from file
             try {
-                return new ContentReader(session).read(new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted)));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Read directory ID for folder %s from %s", directory, ciphertextName));
+                }
+                final Path metadataFile = new Path(parent, ciphertextName, EnumSet.of(Path.Type.file, Path.Type.encrypted));
+                return new ContentReader(session).read(metadataFile);
             }
             catch(NotfoundException e) {
                 log.warn(String.format("Missing directory ID for folder %s", directory));
