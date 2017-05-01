@@ -168,35 +168,59 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        List<NSView> views = new ArrayList<NSView>();
-        views.add(panelGeneral);
-        views.add(panelBrowser);
-        views.add(panelTransfer);
-        views.add(panelEditor);
-        views.add(panelFTP);
-        views.add(panelSFTP);
-        views.add(panelS3);
-        views.add(panelBandwidth);
-        views.add(panelAdvanced);
-        if(null != Updater.getFeed()) {
-            views.add(panelUpdate);
+        final List<String> identifiers = this.getPanelIdentifiers();
+        final List<NSView> views = new ArrayList<NSView>();
+        if(identifiers.contains(PreferencesToolbarItem.general.name())) {
+            views.add(panelGeneral);
         }
-        views.add(panelLanguage);
+        if(identifiers.contains(PreferencesToolbarItem.browser.name())) {
+            views.add(panelBrowser);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.queue.name())) {
+            views.add(panelTransfer);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.pencil.name())) {
+            views.add(panelEditor);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.ftp.name())) {
+            views.add(panelFTP);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.sftp.name())) {
+            views.add(panelSFTP);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.s3.name())) {
+            views.add(panelS3);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.bandwidth.name())) {
+            views.add(panelBandwidth);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.connection.name())) {
+            views.add(panelAdvanced);
+        }
+        if(identifiers.contains(PreferencesToolbarItem.update.name())) {
+            if(null != Updater.getFeed()) {
+                views.add(panelUpdate);
+            }
+        }
+        if(identifiers.contains(PreferencesToolbarItem.language.name())) {
+            views.add(panelLanguage);
+        }
         return views;
     }
 
     @Override
     protected List<String> getPanelIdentifiers() {
-        List<String> views = new ArrayList<String>();
-        views.add(PreferencesToolbarItem.general.name());
-        views.add(PreferencesToolbarItem.browser.name());
-        views.add(PreferencesToolbarItem.queue.name());
-        views.add(PreferencesToolbarItem.pencil.name());
-        views.add(PreferencesToolbarItem.ftp.name());
-        views.add(PreferencesToolbarItem.sftp.name());
-        views.add(PreferencesToolbarItem.s3.name());
-        views.add(PreferencesToolbarItem.bandwidth.name());
-        views.add(PreferencesToolbarItem.connection.name());
+        final List<String> views = new ArrayList<>(Arrays.asList(
+                PreferencesToolbarItem.general.name(),
+                PreferencesToolbarItem.browser.name(),
+                PreferencesToolbarItem.queue.name(),
+                PreferencesToolbarItem.pencil.name(),
+                PreferencesToolbarItem.ftp.name(),
+                PreferencesToolbarItem.sftp.name(),
+                PreferencesToolbarItem.s3.name(),
+                PreferencesToolbarItem.bandwidth.name(),
+                PreferencesToolbarItem.connection.name())
+        );
         if(null != Updater.getFeed()) {
             views.add(PreferencesToolbarItem.update.name());
         }
@@ -204,7 +228,7 @@ public class PreferencesController extends ToolbarWindowController {
         return views;
     }
 
-    private enum PreferencesToolbarItem {
+    protected enum PreferencesToolbarItem {
         general,
         browser,
         queue,
