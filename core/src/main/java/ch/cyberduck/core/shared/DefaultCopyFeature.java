@@ -22,8 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StreamCopier;
@@ -57,7 +57,7 @@ public class DefaultCopyFeature implements Copy {
             OutputStream out = null;
             try {
                 in = new ThrottledInputStream(session.getFeature(Read.class).read(source, new TransferStatus(), new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-                out = new ThrottledOutputStream(session.getFeature(Write.class).write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
+                out = new ThrottledOutputStream(session.getFeature(MultipartWrite.class).write(target, status, new DisabledConnectionCallback()), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
                 final TransferStatus progress = new TransferStatus();
                 new StreamCopier(progress, progress).transfer(in, out);
             }
