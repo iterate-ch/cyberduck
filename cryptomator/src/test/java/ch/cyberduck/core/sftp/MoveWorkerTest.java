@@ -40,9 +40,11 @@ import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.worker.MoveWorker;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +54,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class MoveWorkerTest {
 
     @Test
