@@ -15,22 +15,21 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-public class SimplePathPredicate extends DefaultPathPredicate {
+import org.junit.Test;
 
-    protected final Path file;
+import java.util.EnumSet;
 
-    public SimplePathPredicate(final Path file) {
-        super(file);
-        this.file = file;
-    }
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-    @Override
-    public String toString() {
-        return this.type() + "-" + file.getAbsolute();
-    }
+public class SimplePathPredicateTest {
 
-    @Override
-    public boolean test(final Path file) {
-        return this.hashCode() == new SimplePathPredicate(file).hashCode();
+    @Test
+    public void testPredicateTest() throws Exception {
+        final Path t = new Path("/f", EnumSet.of(Path.Type.file));
+        assertTrue(new SimplePathPredicate(t).test(t));
+        assertFalse(new SimplePathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
+        assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
+
     }
 }
