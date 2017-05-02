@@ -254,6 +254,10 @@ public class PreferencesController extends ToolbarWindowController {
         switch(item) {
             case general:
                 break;
+            case queue:
+                this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
+                this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
+                break;
             case browser:
                 break;
             case pencil:
@@ -286,73 +290,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     public void awakeFromNib() {
         this.window.center();
-
-        this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
-        this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
-
-        boolean chmodDownloadDefaultEnabled = preferences.getBoolean("queue.download.permissions.change")
-                && preferences.getBoolean("queue.download.permissions.default");
-        this.downerr.setEnabled(chmodDownloadDefaultEnabled);
-        this.downerr.setTarget(this.id());
-        this.downerr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.downerw.setEnabled(chmodDownloadDefaultEnabled);
-        this.downerw.setTarget(this.id());
-        this.downerw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.downerx.setEnabled(chmodDownloadDefaultEnabled);
-        this.downerx.setTarget(this.id());
-        this.downerx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-
-        this.dgroupr.setEnabled(chmodDownloadDefaultEnabled);
-        this.dgroupr.setTarget(this.id());
-        this.dgroupr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.dgroupw.setEnabled(chmodDownloadDefaultEnabled);
-        this.dgroupw.setTarget(this.id());
-        this.dgroupw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.dgroupx.setEnabled(chmodDownloadDefaultEnabled);
-        this.dgroupx.setTarget(this.id());
-        this.dgroupx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-
-        this.dotherr.setEnabled(chmodDownloadDefaultEnabled);
-        this.dotherr.setTarget(this.id());
-        this.dotherr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.dotherw.setEnabled(chmodDownloadDefaultEnabled);
-        this.dotherw.setTarget(this.id());
-        this.dotherw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-        this.dotherx.setEnabled(chmodDownloadDefaultEnabled);
-        this.dotherx.setTarget(this.id());
-        this.dotherx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
-
-        boolean chmodUploadDefaultEnabled = preferences.getBoolean("queue.upload.permissions.change")
-                && preferences.getBoolean("queue.upload.permissions.default");
-        this.uownerr.setEnabled(chmodUploadDefaultEnabled);
-        this.uownerr.setTarget(this.id());
-        this.uownerr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.uownerw.setEnabled(chmodUploadDefaultEnabled);
-        this.uownerw.setTarget(this.id());
-        this.uownerw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.uownerx.setEnabled(chmodUploadDefaultEnabled);
-        this.uownerx.setTarget(this.id());
-        this.uownerx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-
-        this.ugroupr.setEnabled(chmodUploadDefaultEnabled);
-        this.ugroupr.setTarget(this.id());
-        this.ugroupr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.ugroupw.setEnabled(chmodUploadDefaultEnabled);
-        this.ugroupw.setTarget(this.id());
-        this.ugroupw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.ugroupx.setEnabled(chmodUploadDefaultEnabled);
-        this.ugroupx.setTarget(this.id());
-        this.ugroupx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-
-        this.uotherr.setEnabled(chmodUploadDefaultEnabled);
-        this.uotherr.setTarget(this.id());
-        this.uotherr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.uotherw.setEnabled(chmodUploadDefaultEnabled);
-        this.uotherw.setTarget(this.id());
-        this.uotherw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
-        this.uotherx.setEnabled(chmodUploadDefaultEnabled);
-        this.uotherx.setTarget(this.id());
-        this.uotherx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
 
         super.awakeFromNib();
     }
@@ -884,38 +821,74 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setDownerr(NSButton downerr) {
         this.downerr = downerr;
+        this.downerr.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.downerr.setTarget(this.id());
+        this.downerr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDownerw(NSButton downerw) {
         this.downerw = downerw;
+        this.downerw.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.downerw.setTarget(this.id());
+        this.downerw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDownerx(NSButton downerx) {
         this.downerx = downerx;
+        this.downerx.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.downerx.setTarget(this.id());
+        this.downerx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDgroupr(NSButton dgroupr) {
         this.dgroupr = dgroupr;
+        this.dgroupr.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dgroupr.setTarget(this.id());
+        this.dgroupr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDgroupw(NSButton dgroupw) {
         this.dgroupw = dgroupw;
+        this.dgroupw.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dgroupw.setTarget(this.id());
+        this.dgroupw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDgroupx(NSButton dgroupx) {
         this.dgroupx = dgroupx;
+        this.dgroupx.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dgroupx.setTarget(this.id());
+        this.dgroupx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDotherr(NSButton dotherr) {
         this.dotherr = dotherr;
+        this.dotherr.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dotherr.setTarget(this.id());
+        this.dotherr.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDotherw(NSButton dotherw) {
         this.dotherw = dotherw;
+        this.dotherw.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dotherw.setTarget(this.id());
+        this.dotherw.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void setDotherx(NSButton dotherx) {
         this.dotherx = dotherx;
+        this.dotherx.setEnabled(preferences.getBoolean("queue.download.permissions.change")
+                && preferences.getBoolean("queue.download.permissions.default"));
+        this.dotherx.setTarget(this.id());
+        this.dotherx.setAction(Foundation.selector("defaultPermissionsDownloadChanged:"));
     }
 
     public void defaultPermissionsDownloadChanged(final ID sender) {
@@ -979,38 +952,76 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setUownerr(NSButton uownerr) {
         this.uownerr = uownerr;
+        this.uownerr.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uownerr.setTarget(this.id());
+        this.uownerr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUownerw(NSButton uownerw) {
         this.uownerw = uownerw;
+        this.uownerw.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uownerw.setTarget(this.id());
+        this.uownerw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUownerx(NSButton uownerx) {
         this.uownerx = uownerx;
+        this.uownerx.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uownerx.setTarget(this.id());
+        this.uownerx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
+
     }
 
     public void setUgroupr(NSButton ugroupr) {
         this.ugroupr = ugroupr;
+        this.ugroupr.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.ugroupr.setTarget(this.id());
+        this.ugroupr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUgroupw(NSButton ugroupw) {
         this.ugroupw = ugroupw;
+        this.ugroupw.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.ugroupw.setTarget(this.id());
+        this.ugroupw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUgroupx(NSButton ugroupx) {
         this.ugroupx = ugroupx;
+        this.ugroupx.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.ugroupx.setTarget(this.id());
+        this.ugroupx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUotherr(NSButton uotherr) {
         this.uotherr = uotherr;
+        this.uotherr.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uotherr.setTarget(this.id());
+        this.uotherr.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUotherw(NSButton uotherw) {
         this.uotherw = uotherw;
+        this.uotherw.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uotherw.setTarget(this.id());
+        this.uotherw.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
     }
 
     public void setUotherx(NSButton uotherx) {
         this.uotherx = uotherx;
+        this.uotherx.setEnabled(preferences.getBoolean("queue.upload.permissions.change")
+                && preferences.getBoolean("queue.upload.permissions.default"));
+        this.uotherx.setTarget(this.id());
+        this.uotherx.setAction(Foundation.selector("defaultPermissionsUploadChanged:"));
+
     }
 
     @Action
