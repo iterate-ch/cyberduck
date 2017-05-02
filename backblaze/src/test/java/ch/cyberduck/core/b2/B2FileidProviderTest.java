@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -33,9 +34,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 public class B2FileidProviderTest {
 
     @Test
-    public void getFileidFile() throws Exception {
+    public void getFileIdFile() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
                         new Credentials(
@@ -52,22 +52,23 @@ public class B2FileidProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new B2TouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new B2FileidProvider(session).getFileid(file));
         try {
-            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+            assertNull(new B2FileidProvider(session).getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        new B2DeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
-    public void getFileidFolder() throws Exception {
+    public void getFileIdDirectory() throws Exception {
         final B2Session session = new B2Session(
                 new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
                         new Credentials(
@@ -76,11 +77,12 @@ public class B2FileidProviderTest {
         final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         service.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2DirectoryFeature(session).mkdir(bucket, null, new TransferStatus());
+        final Path folder = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        assertNotNull(new B2FileidProvider(session).getFileid(folder));
-        new B2DeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertNull(new B2FileidProvider(session).getFileid(folder));
+        new B2DeleteFeature(session).delete(Arrays.asList(bucket, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }
 }
