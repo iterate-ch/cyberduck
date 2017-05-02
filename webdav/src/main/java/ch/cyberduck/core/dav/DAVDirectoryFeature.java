@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import com.github.sardine.impl.SardineException;
 
-public class DAVDirectoryFeature implements Directory<Void> {
+public class DAVDirectoryFeature implements Directory<String> {
 
     private final DAVSession session;
 
@@ -56,7 +56,7 @@ public class DAVDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public DAVDirectoryFeature withWriter(final Write<Void> writer) {
+    public DAVDirectoryFeature withWriter(final Write<String> writer) {
         return this;
     }
 }
