@@ -53,10 +53,9 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         );
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        final Path copy = new Path(file.getParent(), file.getName(), file.getType(),
-                new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get())));
-        copy.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
-        return copy;
+        return new Path(file.getParent(), file.getName(), file.getType(),
+                new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()))
+                        .withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
     }
 
     @Override

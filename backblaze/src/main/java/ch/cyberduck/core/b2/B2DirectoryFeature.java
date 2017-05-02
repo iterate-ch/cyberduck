@@ -77,10 +77,9 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(),
-                        new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get())));
-                copy.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
-                return copy;
+                return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                        new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
+                                .withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
             }
         }
         catch(B2ApiException e) {

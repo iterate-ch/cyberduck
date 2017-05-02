@@ -50,10 +50,9 @@ public class DriveTouchFeature implements Touch {
                     .setMimeType(status.getMime())
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
             final File execute = insert.execute();
-            final Path copy = new Path(file.getParent(), file.getName(), file.getType(),
-                    new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get())));
-            copy.attributes().setVersionId(execute.getId());
-            return copy;
+            return new Path(file.getParent(), file.getName(), file.getType(),
+                    new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()))
+                            .withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);

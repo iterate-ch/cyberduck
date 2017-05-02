@@ -46,10 +46,9 @@ public class DriveDirectoryFeature implements Directory<Void> {
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
             final File execute = insert.execute();
-            final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get())));
-            copy.attributes().setVersionId(execute.getId());
-            return copy;
+            return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
+                            .withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
