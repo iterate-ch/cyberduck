@@ -31,7 +31,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -105,7 +104,7 @@ public class DropboxListServiceTest {
 
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(file, new TransferStatus());
         new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         file.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(file));
         folder.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(folder));

@@ -31,7 +31,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -91,7 +90,7 @@ public class DropboxWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         test.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(test));
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(new DropboxFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
@@ -152,7 +151,7 @@ public class DropboxWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         test.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(test));
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(new DropboxFindFeature(session).find(test));
         assertEquals(content.length, session.list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {

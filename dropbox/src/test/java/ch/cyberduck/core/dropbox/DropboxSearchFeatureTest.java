@@ -32,7 +32,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -78,7 +77,7 @@ public class DropboxSearchFeatureTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        new DropboxTouchFeature(session).touch(file, new TransferStatus());
         file.attributes().setVersionId(new DropboxFileIdProvider(session).getFileid(file));
         final DropboxSearchFeature feature = new DropboxSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));

@@ -45,7 +45,6 @@ import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -158,7 +157,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxQuotaFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
+            return (T) new DropboxTouchFeature(this);
         }
         if(type == Search.class) {
             return (T) new DropboxSearchFeature(this);
