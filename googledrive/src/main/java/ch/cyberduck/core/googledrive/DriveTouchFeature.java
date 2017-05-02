@@ -25,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.EnumSet;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -51,10 +50,10 @@ public class DriveTouchFeature implements Touch {
                     .setMimeType(status.getMime())
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
             final File execute = insert.execute();
-            final Path p = new Path(file.getParent(), file.getName(), EnumSet.of(Path.Type.file),
+            final Path copy = new Path(file.getParent(), file.getName(), file.getType(),
                     new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get())));
-            p.attributes().setVersionId(execute.getId());
-            return p;
+            copy.attributes().setVersionId(execute.getId());
+            return copy;
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);

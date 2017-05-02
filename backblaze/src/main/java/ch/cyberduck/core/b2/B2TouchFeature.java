@@ -30,7 +30,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 
 import java.util.Collections;
-import java.util.EnumSet;
 
 import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
@@ -54,10 +53,10 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         );
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        final Path p = new Path(file.getParent(), file.getName(), EnumSet.of(Path.Type.file),
+        final Path copy = new Path(file.getParent(), file.getName(), file.getType(),
                 new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get())));
-        p.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
-        return p;
+        copy.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
+        return copy;
     }
 
     @Override

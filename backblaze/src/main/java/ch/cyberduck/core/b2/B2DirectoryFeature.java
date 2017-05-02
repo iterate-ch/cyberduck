@@ -34,7 +34,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.NullInputStream;
 
 import java.io.IOException;
-import java.util.EnumSet;
 
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
@@ -78,10 +77,10 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                final Path p = new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.file),
+                final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(),
                         new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get())));
-                p.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
-                return p;
+                copy.attributes().setVersionId(((B2FileResponse) out.getStatus()).getFileId());
+                return copy;
             }
         }
         catch(B2ApiException e) {

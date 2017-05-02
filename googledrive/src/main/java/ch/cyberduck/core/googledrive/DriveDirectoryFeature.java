@@ -25,7 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.EnumSet;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -47,10 +46,10 @@ public class DriveDirectoryFeature implements Directory<Void> {
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
             final File execute = insert.execute();
-            final Path p = new Path(folder.getParent(), folder.getName(), EnumSet.of(Path.Type.directory),
+            final Path copy = new Path(folder.getParent(), folder.getName(), folder.getType(),
                     new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get())));
-            p.attributes().setVersionId(execute.getId());
-            return p;
+            copy.attributes().setVersionId(execute.getId());
+            return copy;
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
