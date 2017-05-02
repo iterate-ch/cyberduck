@@ -33,7 +33,7 @@ public class DriveDirectoryFeature implements Directory<Void> {
 
     private final DriveSession session;
 
-    public DriveDirectoryFeature(DriveSession session) {
+    public DriveDirectoryFeature(final DriveSession session) {
         this.session = session;
     }
 

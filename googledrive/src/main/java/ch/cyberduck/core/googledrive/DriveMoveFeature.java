@@ -30,7 +30,7 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
-    public DriveMoveFeature(DriveSession session) {
+    public DriveMoveFeature(final DriveSession session) {
         this.session = session;
     }
 
