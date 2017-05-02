@@ -49,9 +49,6 @@ public class B2DeleteFeature implements Delete {
             if(containerService.isContainer(file)) {
                 continue;
             }
-            if(file.isPlaceholder()) {
-                continue;
-            }
             if(file.getType().contains(Path.Type.upload)) {
                 new B2LargeUploadPartService(session).delete(file.attributes().getVersionId());
             }

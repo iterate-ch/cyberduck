@@ -82,7 +82,7 @@ public class B2FileidProviderTest {
         final Path folder = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
         new B2DirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         assertNull(new B2FileidProvider(session).getFileid(folder));
-        new B2DeleteFeature(session).delete(Arrays.asList(bucket, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }
 }
