@@ -1,4 +1,4 @@
-package ch.cyberduck.core.webdav;
+package ch.cyberduck.core.dropbox;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -22,29 +22,26 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
-import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVMoveFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
@@ -55,21 +52,34 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVMoveFeatureTest {
+public class DropboxMoveFeatureTest {
 
     @Test
     public void testMove() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                fail(reason);
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore() {
+                    @Override
+                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
+                    }
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -81,21 +91,21 @@ public class DAVMoveFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<String>(session, new DAVDirectoryFeature(session), new DAVWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
-        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))), new DAVWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        new CryptoDirectoryFeature<String>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
+        new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session))), new DropboxWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new DAVMoveFeature(session), new DAVDeleteFeature(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new DropboxMoveFeature(session), new DropboxDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, false, new Delete.DisabledCallback());
-        assertFalse(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(fileRenamed));
+        assertFalse(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(fileRenamed));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
-        assertFalse(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(folderRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folderRenamed));
+        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(folderRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
