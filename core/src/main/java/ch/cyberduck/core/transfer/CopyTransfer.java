@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -274,8 +275,12 @@ public class CopyTransfer extends Transfer {
         try {
             if(file.isFile()) {
                 in = new ThrottledInputStream(source.getFeature(Read.class).read(file, status, new DisabledConnectionCallback()), throttle);
-                // Make sure to use S3MultipartWriteFeature, see #9362
-                out = new ThrottledOutputStream(target.getFeature(Write.class).write(copy, status, new DisabledConnectionCallback()), throttle);
+                Write write = target.getFeature(MultipartWrite.class);
+                if(null == write) {
+                    // Fallback if multipart write is not available
+                    write = target.getFeature(Write.class);
+                }
+                out = new ThrottledOutputStream(write.write(copy, status, new DisabledConnectionCallback()), throttle);
                 new StreamCopier(status, status)
                         .withLimit(status.getLength())
                         .withListener(new DelegateStreamListener(streamListener) {
