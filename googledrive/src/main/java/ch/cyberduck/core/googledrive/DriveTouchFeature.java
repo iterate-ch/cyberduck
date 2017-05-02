@@ -16,9 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -48,12 +50,13 @@ public class DriveTouchFeature implements Touch {
                     .setMimeType(status.getMime())
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(file.getParent()))));
             final File execute = insert.execute();
-            file.attributes().setVersionId(execute.getId());
+            return new Path(file.getParent(), file.getName(), file.getType(),
+                    new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()))
+                            .withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create file {0}", e, file);
         }
-        return file;
     }
 
     @Override

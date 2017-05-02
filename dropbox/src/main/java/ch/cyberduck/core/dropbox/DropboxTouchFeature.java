@@ -1,8 +1,7 @@
 package ch.cyberduck.core.dropbox;
 
-
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,12 +15,10 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
-import java.security.MessageDigest;
-
-public class DropboxUploadFeature extends HttpUploadFeature<String, MessageDigest> {
-    public DropboxUploadFeature(final DropboxWriteFeature writer) {
-        super(writer);
+public class DropboxTouchFeature extends DefaultTouchFeature<String> {
+    public DropboxTouchFeature(final DropboxSession session) {
+        super(new DropboxUploadFeature(new DropboxWriteFeature(session)));
     }
 }

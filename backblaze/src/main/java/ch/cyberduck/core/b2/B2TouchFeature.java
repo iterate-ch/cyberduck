@@ -18,17 +18,20 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
 import java.util.Collections;
 
+import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
@@ -50,7 +53,9 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
         );
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
-        return file;
+        return new Path(file.getParent(), file.getName(), file.getType(),
+                new PathAttributesDictionary().deserialize(file.attributes().serialize(SerializerFactory.get()))
+                        .withVersionId(((B2FileResponse) out.getStatus()).getFileId()));
     }
 
     @Override

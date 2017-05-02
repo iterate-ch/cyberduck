@@ -16,9 +16,11 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.serializer.PathAttributesDictionary;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -44,12 +46,13 @@ public class DriveDirectoryFeature implements Directory<Void> {
                     .setMimeType("application/vnd.google-apps.folder")
                     .setParents(Collections.singletonList(new DriveFileidProvider(session).getFileid(folder.getParent()))));
             final File execute = insert.execute();
-            folder.attributes().setVersionId(execute.getId());
+            return new Path(folder.getParent(), folder.getName(), folder.getType(),
+                    new PathAttributesDictionary().deserialize(folder.attributes().serialize(SerializerFactory.get()))
+                            .withVersionId(execute.getId()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return folder;
     }
 
     @Override
