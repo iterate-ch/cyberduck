@@ -1,4 +1,4 @@
-package ch.cyberduck.core.webdav;
+package ch.cyberduck.core.dropbox;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -15,19 +15,7 @@ package ch.cyberduck.core.webdav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoListService;
@@ -35,19 +23,14 @@ import ch.cyberduck.core.cryptomator.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVReadFeature;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
@@ -68,17 +51,31 @@ import java.util.Random;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVWriteFeatureTest {
+public class DropboxWriteFeatureTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(new DisabledHostKeyCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final DropboxSession session = new DropboxSession(new Host(new DropboxProtocol(), new DropboxProtocol().getDefaultHostname()),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void prompt(final Host bookmark, final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                fail(reason);
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore() {
+                    @Override
+                    public String getPassword(Scheme scheme, int port, String hostname, String user) {
+                        if(user.equals("Dropbox OAuth2 Access Token")) {
+                            return System.getProperties().getProperty("dropbox.accesstoken");
+                        }
+                        if(user.equals("Dropbox OAuth2 Refresh Token")) {
+                            return System.getProperties().getProperty("dropbox.refreshtoken");
+                        }
+                        return null;
+                    }
+                }, new DisabledProgressListener())
+                .connect(session, PathCache.empty(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final byte[] content = new byte[1048576];
         new Random().nextBytes(content);
@@ -93,7 +90,7 @@ public class DAVWriteFeatureTest {
             }
         });
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<String> writer = new CryptoWriteFeature<String>(session, new DAVWriteFeature(session), cryptomator);
+        final CryptoWriteFeature<String> writer = new CryptoWriteFeature<String>(session, new DropboxWriteFeature(session), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
@@ -103,15 +100,15 @@ public class DAVWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, session, cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DAVWriteFeature(session, new DAVFindFeature(session), new DAVAttributesFinderFeature(session), true), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DropboxFindFeature(session), new DropboxAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new DropboxReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

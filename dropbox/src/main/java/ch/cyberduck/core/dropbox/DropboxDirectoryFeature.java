@@ -27,7 +27,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FolderMetadata;
 
-public class DropboxDirectoryFeature implements Directory<Void> {
+public class DropboxDirectoryFeature implements Directory<String> {
 
     private final DropboxSession session;
 
@@ -54,7 +54,7 @@ public class DropboxDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public DropboxDirectoryFeature withWriter(final Write<Void> writer) {
+    public DropboxDirectoryFeature withWriter(final Write<String> writer) {
         return this;
     }
 }
