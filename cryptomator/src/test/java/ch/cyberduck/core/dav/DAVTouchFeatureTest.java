@@ -54,7 +54,7 @@ public class DAVTouchFeatureTest {
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("dav.user"), System.getProperties().getProperty("dav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
@@ -79,7 +79,7 @@ public class DAVTouchFeatureTest {
     @Test
     public void testTouchLongFilenameEncryptedDefaultFeature() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("dav.user"), System.getProperties().getProperty("dav.password")
+                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
