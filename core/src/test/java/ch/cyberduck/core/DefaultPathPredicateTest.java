@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class DefaultPathPredicateTest {
 
@@ -78,5 +78,13 @@ public class DefaultPathPredicateTest {
                 new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory))));
         assertEquals(new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory))),
                 new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testPredicateTest() throws Exception {
+        final Path t = new Path("/f", EnumSet.of(Path.Type.file));
+        assertTrue(new DefaultPathPredicate(t).test(t));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
+        assertFalse(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
     }
 }
