@@ -193,6 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             if (session.getHost().getProtocol().getType() == Protocol.Type.s3
+                    || session.getHost().getProtocol().getType() == Protocol.Type.b2
                     || session.getHost().getProtocol().getType() == Protocol.Type.azure
                     || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
             {
