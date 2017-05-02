@@ -194,7 +194,14 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                     return;
                 }
                 if(completed.isEmpty()) {
+                    log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
+                    try {
+                        new S3TouchFeature(session).touch(file, overall);
+                    }
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -241,6 +248,15 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             finally {
                 close.set(true);
             }
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
+            sb.append("multipart=").append(multipart);
+            sb.append(", file=").append(file);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
