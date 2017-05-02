@@ -1,4 +1,4 @@
-package ch.cyberduck.core.webdav;
+package ch.cyberduck.core.dav;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -35,13 +35,6 @@ import ch.cyberduck.core.cryptomator.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVReadFeature;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
@@ -73,7 +66,7 @@ public class DAVWriteFeatureTest {
     @Test
     public void testWrite() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+                System.getProperties().getProperty("dav.user"), System.getProperties().getProperty("dav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);

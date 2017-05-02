@@ -1,4 +1,4 @@
-package ch.cyberduck.core.webdav;
+package ch.cyberduck.core.dav;
 
 /*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
@@ -32,14 +32,6 @@ import ch.cyberduck.core.cryptomator.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVDirectoryFeature;
-import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVMoveFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -64,7 +56,7 @@ public class DAVMoveFeatureTest {
     @Test
     public void testMove() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+                System.getProperties().getProperty("dav.user"), System.getProperties().getProperty("dav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
