@@ -105,7 +105,7 @@ public class DropboxMoveFeatureTest {
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(folderRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
