@@ -52,7 +52,9 @@ public class B2LifecycleFeature implements Lifecycle {
                     final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
                     for(LifecycleRule rule : lifecycleRules) {
                         return new LifecycleConfiguration(
-                                rule.getDaysFromUploadingToHiding().intValue(), null, rule.getDaysFromHidingToDeleting().intValue());
+                                null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
+                                null,
+                                null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
                     }
                     return LifecycleConfiguration.empty();
                 }
@@ -73,7 +75,10 @@ public class B2LifecycleFeature implements Lifecycle {
             session.getClient().updateBucket(
                     new B2FileidProvider(session).getFileid(containerService.getContainer(container)),
                     new B2BucketTypeFeature(session).convert(container.attributes().getAcl()),
-                    new LifecycleRule(configuration.getExpiration().longValue(), configuration.getTransition().longValue(), StringUtils.EMPTY));
+                    new LifecycleRule(
+                            null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
+                            null == configuration.getTransition() ? null : configuration.getTransition().longValue(),
+                            StringUtils.EMPTY));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(session).map("Failure to write attributes of {0}", e, container);
