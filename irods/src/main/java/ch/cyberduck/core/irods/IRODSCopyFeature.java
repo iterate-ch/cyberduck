@@ -71,4 +71,9 @@ public class IRODSCopyFeature implements Copy {
     public boolean isRecursive(final Path source, final Path target) {
         return true;
     }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
+    }
 }
