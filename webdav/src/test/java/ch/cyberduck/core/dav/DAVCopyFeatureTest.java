@@ -76,14 +76,16 @@ public class DAVCopyFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
         new DAVDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session))).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(file));
         assertTrue(session.getFeature(Find.class).find(copy));
-        new DAVDeleteFeature(session).delete(Arrays.asList(file, copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(session.getFeature(Find.class).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
+        new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }
