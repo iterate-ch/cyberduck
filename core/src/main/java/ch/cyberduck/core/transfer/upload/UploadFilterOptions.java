@@ -61,6 +61,7 @@ public final class UploadFilterOptions {
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
         encryption = preferences.getBoolean("queue.upload.file.encryption.change");
         redundancy = preferences.getBoolean("queue.upload.file.redundancy.change");
+        checksum = preferences.getBoolean("queue.upload.checksum.calculate");
     }
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
