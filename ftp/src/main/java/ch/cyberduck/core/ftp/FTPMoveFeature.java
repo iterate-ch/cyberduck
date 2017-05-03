@@ -19,19 +19,15 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.Collections;
 
 public class FTPMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(FTPMoveFeature.class);
 
     private final FTPSession session;
 
@@ -58,6 +54,11 @@ public class FTPMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
@@ -68,8 +69,4 @@ public class FTPMoveFeature implements Move {
         return this;
     }
 
-    @Override
-    public Move withList(final ListService list) {
-        return this;
-    }
 }

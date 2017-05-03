@@ -61,7 +61,7 @@ public class S3LoggingFeature implements Logging {
             try {
                 configuration.setContainers(new S3BucketListService(session).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                        new DisabledListProgressListener()));
+                        new DisabledListProgressListener()).toList());
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Failure listing buckets. %s", e.getMessage()));

@@ -5,14 +5,33 @@ https://cyberduck.io/
 - [Feature] Create encrypted vault interopable with Cryptomator (#7937) (Cyptomator)
 - [Feature] Encrypt uploads into vault (Cyptomator)
 - [Feature] Decrypt downloads from vault (Cyptomator)
+- [Feature] Support for Microsoft OneDrive (OneDrive) (#9799)
 - [Feature] Search files fast without recursively listing directories (Dropbox)
 - [Feature] Search files fast without recursively listing directories (Google Drive)
 - [Feature] Search files fast using prefix (S3)
+- [Feature] Browse local filesystem in browser
+- [Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Configure lifecycle options for buckets (Backblaze B2)
+- [Feature] Copy pre-authenticated URLs (Backblaze B2)
+
+5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+
+5.4.3 [https://trac.cyberduck.io/milestone/5.4.3
+- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
+- [Bugfix] Failed to generate HMAC (Spectra S3)
+- [Bugfix] Quick Look only works one time (#9889)
+- [Bugfix] Set MD5 checksum in ETag request header (OpenStack Swift)
+
+5.4.2 [https://trac.cyberduck.io/milestone/5.4.2
+- [Bugfix] Updated localizations
 
 5.4.1 [https://trac.cyberduck.io/milestone/5.4.1
 - [Feature] Faster recursive delete with single operation for directories (WebDAV)
 - [Bugfix] Reload OpenSSH configuration (SFTP)
-- [Bugfix| Revert lenient server reply parsing (FTP)
+- [Bugfix] Revert lenient server reply parsing (FTP)
 
 5.4 [https://trac.cyberduck.io/milestone/5.4
 - [Feature] Add "Open single connection" option for file transfers
@@ -1108,7 +1127,7 @@ https://cyberduck.io/
 - [Bugfix] Warning before overwrite when moving or renaming files
 - [Bugfix] Dragging files to the Finder.app places them at the dropped position
 - [Bugfix] Always selecting parent directory as drop target when dragging to outline view
-- [Bugfix| Updated application and document icon
+- [Bugfix] Updated application and document icon
 - [Bugfix] Number of files in browser window not displayed correctly
 - [Bugfix] Don't recurse into directories when deleting symbolic links
 - [Bugfix] Overwriting group writable files

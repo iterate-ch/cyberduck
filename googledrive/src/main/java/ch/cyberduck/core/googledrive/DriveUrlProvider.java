@@ -22,7 +22,7 @@ import ch.cyberduck.core.UrlProvider;
 public class DriveUrlProvider implements UrlProvider {
 
     @Override
-    public DescriptiveUrlBag toUrl(Path file) {
+    public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             if(file.attributes().getLink() != null) {

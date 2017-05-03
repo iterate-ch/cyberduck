@@ -15,6 +15,7 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -25,12 +26,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -44,6 +45,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -75,7 +77,7 @@ public class SFTPMoveFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session))), new SFTPWriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -111,7 +113,7 @@ public class SFTPMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -119,7 +121,7 @@ public class SFTPMoveFeatureTest {
         });
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -147,7 +149,7 @@ public class SFTPMoveFeatureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
-        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), new SFTPListService(session), cryptomator).move(source, target, false, new Delete.Callback() {
+        new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator).move(source, target, false, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
                 //
@@ -155,7 +157,45 @@ public class SFTPMoveFeatureTest {
         });
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testMoveFolder() throws Exception {
+        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
+                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+        ));
+        final SFTPSession session = new SFTPSession(host);
+        session.open(new DisabledHostKeyCallback());
+        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
+        final Path home = new SFTPHomeDirectoryService(session).find();
+        final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
+            @Override
+            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                credentials.setPassword("vault");
+            }
+        });
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        new CryptoDirectoryFeature<Void>(session, new SFTPDirectoryFeature(session), new SFTPWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
+        new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session))), new SFTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new SFTPMoveFeature(session), new SFTPDeleteFeature(session), cryptomator);
+        // rename file
+        final Path fileRenamed = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        move.move(file, fileRenamed, false, new Delete.DisabledCallback());
+        assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(fileRenamed));
+        // rename folder
+        final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
+        assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

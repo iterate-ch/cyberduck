@@ -33,7 +33,7 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -44,7 +44,6 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -145,9 +144,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
         if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
             if(preferences.getBoolean("openstack.upload.largeobject")) {
                 Long size = 0L;
-                final List<Path> segments = listService.list(
-                        new Path(containerService.getContainer(file), segmentService.basename(file, length), EnumSet.of(Path.Type.directory)),
-                        new DisabledListProgressListener());
+                final List<Path> segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
                 if(segments.isEmpty()) {
                     return Write.notfound;
                 }
@@ -176,6 +173,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     @Override
     public ChecksumCompute checksum() {
-        return new DisabledChecksumCompute();
+        return new MD5ChecksumCompute();
     }
 }

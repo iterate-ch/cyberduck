@@ -17,7 +17,6 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultRegistry extends VaultLookupListener {
@@ -29,7 +28,7 @@ public interface VaultRegistry extends VaultLookupListener {
      * @return Vault for file or disabled vault if file is not inside a vault
      * @see Vault#DISABLED
      */
-    Vault find(final Session session, Path file) throws BackgroundException;
+    Vault find(final Session session, Path file) throws VaultUnlockCancelException;
 
     /**
      * Close and remove all vaults in registry

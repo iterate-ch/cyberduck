@@ -15,18 +15,20 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryIdProvider implements IdProvider {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final IdProvider proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryIdProvider(final Session<?> session, final IdProvider proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryIdProvider(final Session<?> session, final IdProvider proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -35,5 +37,19 @@ public class VaultRegistryIdProvider implements IdProvider {
     @Override
     public String getFileid(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, IdProvider.class, proxy).getFileid(file);
+    }
+
+    @Override
+    public IdProvider withCache(final Cache<Path> cache) {
+        proxy.withCache(cache);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryIdProvider{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

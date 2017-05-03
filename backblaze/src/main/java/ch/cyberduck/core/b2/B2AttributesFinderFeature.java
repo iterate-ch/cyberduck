@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -27,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -38,6 +40,8 @@ public class B2AttributesFinderFeature implements AttributesFinder {
 
     private final B2Session session;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public B2AttributesFinderFeature(final B2Session session) {
         this.session = session;
     }
@@ -48,7 +52,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).getFileid(file));
+            final B2FileResponse info = session.getClient().getFileInfo(new B2FileidProvider(session).withCache(cache).getFileid(file));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
@@ -62,24 +66,27 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final B2FileResponse info) {
+    protected PathAttributes toAttributes(final B2FileResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(info.getContentLength());
-        attributes.setChecksum(Checksum.parse(StringUtils.removeStart(info.getContentSha1(), "unverified:")));
+        attributes.setSize(response.getContentLength());
+        attributes.setChecksum(
+                Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
+        );
         final Map<String, String> metadata = new HashMap<>();
-        for(Map.Entry<String, String> entry : info.getFileInfo().entrySet()) {
+        for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
             metadata.put(entry.getKey(), entry.getValue());
         }
         attributes.setMetadata(metadata);
-        attributes.setVersionId(info.getFileId());
-        if(info.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.valueOf(info.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        attributes.setVersionId(response.getFileId());
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
         }
         return attributes;
     }
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }

@@ -32,17 +32,17 @@ public final class BookmarkNameProvider {
 
     public static String toString(final Host bookmark, final boolean username) {
         if(StringUtils.isEmpty(bookmark.getNickname())) {
-            if(StringUtils.isNotBlank(bookmark.getHostname())) {
-                if(username) {
-                    if(!bookmark.getCredentials().isAnonymousLogin()
-                            && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
-                        return String.format("%s@%s \u2013 %s", bookmark.getCredentials().getUsername(),
-                                StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
-                    }
-                }
-                return String.format("%s \u2013 %s", StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
+            if(StringUtils.isBlank(bookmark.getHostname())) {
+                return bookmark.getProtocol().getName();
             }
-            return StringUtils.EMPTY;
+            if(username) {
+                if(!bookmark.getCredentials().isAnonymousLogin()
+                        && StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+                    return String.format("%s@%s \u2013 %s", bookmark.getCredentials().getUsername(),
+                            StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
+                }
+            }
+            return String.format("%s \u2013 %s", StringUtils.strip(bookmark.getHostname()), bookmark.getProtocol().getName());
         }
         return bookmark.getNickname();
     }

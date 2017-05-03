@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -62,6 +63,9 @@ import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
+
+    private final Preferences preferences
+            = PreferencesFactory.get();
 
     private final S3Session session;
 
@@ -165,7 +169,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     }
                     catch(ExecutionException e) {
                         log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                        status.setCanceled();
                         if(e.getCause() instanceof BackgroundException) {
                             throw (BackgroundException) e.getCause();
                         }
@@ -180,23 +183,33 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
                             complete.getObjectKey(), completed.size(), complete.getEtag()));
                 }
-                final StringBuilder concat = new StringBuilder();
-                for(MultipartPart part : completed) {
-                    concat.append(part.getEtag());
-                }
-                final String expected = String.format("%s-%d",
-                        new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
-                final String reference;
-                if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                    reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                if(file.getType().contains(Path.Type.encrypted)) {
+                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                 }
                 else {
-                    reference = complete.getEtag();
-                }
-                if(!expected.equals(reference)) {
-                    throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                    expected, reference));
+                    final StringBuilder concat = new StringBuilder();
+                    for(MultipartPart part : completed) {
+                        concat.append(part.getEtag());
+                    }
+                    final String expected = String.format("%s-%d",
+                            new MD5ChecksumCompute().compute(concat.toString(), status), completed.size());
+                    final String reference;
+                    if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                        reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                    }
+                    else {
+                        reference = complete.getEtag();
+                    }
+                    if(!expected.equals(reference)) {
+                        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, reference));
+                        }
+                        else {
+                            log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
+                        }
+                    }
                 }
                 // Mark parent status as complete
                 status.setComplete();
@@ -224,16 +237,18 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return pool.execute(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
+                if(overall.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
                         .length(length)
                         .skip(offset)
-                        .parameters(requestParameters);
-                if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
-                }
+                        .withParameters(requestParameters);
+                status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
                         status.setChecksum(writer.checksum()

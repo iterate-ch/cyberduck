@@ -19,14 +19,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistrySymlinkFeature implements Symlink {
-    private final DefaultVaultRegistry registry;
+
+    private final VaultRegistry registry;
     private final Session<?> session;
     private final Symlink proxy;
 
-    public VaultRegistrySymlinkFeature(final Session<?> session, final Symlink proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistrySymlinkFeature(final Session<?> session, final Symlink proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -35,5 +36,13 @@ public class VaultRegistrySymlinkFeature implements Symlink {
     @Override
     public void symlink(final Path file, final String target) throws BackgroundException {
         registry.find(session, file).getFeature(session, Symlink.class, proxy).symlink(file, target);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistrySymlinkFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

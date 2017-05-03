@@ -21,14 +21,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Directory<Reply> proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryDirectoryFeature(final Session<?> session, final Directory<Reply> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryDirectoryFeature(final Session<?> session, final Directory<Reply> proxy, final VaultRegistry registry) {
 
         this.session = session;
         this.proxy = proxy;
@@ -42,11 +43,19 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return true;
+        return proxy.isSupported(workdir);
     }
 
     @Override
     public Directory<Reply> withWriter(final Write<Reply> writer) {
         return proxy.withWriter(writer);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryDirectoryFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

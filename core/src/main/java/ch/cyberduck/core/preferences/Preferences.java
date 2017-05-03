@@ -270,11 +270,6 @@ public abstract class Preferences {
         defaults.put("local.delimiter", File.separator);
         defaults.put("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
-        /*
-          Prompt to resolve bookmark of file outside of sandbox with choose panel
-         */
-        defaults.put("local.bookmark.resolve.prompt", String.valueOf(false));
-
         defaults.put("application.name", "Cyberduck");
         final String support = SupportDirectoryFinderFactory.get().find().getAbsolute();
         defaults.put("application.support.path", support);
@@ -435,7 +430,7 @@ public abstract class Preferences {
         /*
           Warning when number of transfers in queue exceeds limit
          */
-        defaults.put("queue.size.warn", String.valueOf(50));
+        defaults.put("queue.size.warn", String.valueOf(20));
         /*
           Bring transfer window to front
          */
@@ -468,6 +463,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.metadata.change", String.valueOf(true));
         defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
         defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
+
+        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
 
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
@@ -683,6 +680,7 @@ public abstract class Preferences {
         defaults.put("s3.upload.multipart.threshold", String.valueOf(100L * 1024L * 1024L));
         defaults.put("s3.upload.multipart.required.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
         // Maximum number of parts is 10'000. With 10MB segements this gives a maximum object size of 100GB
+        // Must be a multiple of org.cryptomator.cryptolib.v1.Constants.PAYLOAD_SIZE when using Cryptomator Vaults
         defaults.put("s3.upload.multipart.size", String.valueOf(10L * 1024L * 1024L)); // 10MB
 
         defaults.put("s3.upload.expect-continue", String.valueOf(true));
@@ -711,6 +709,12 @@ public abstract class Preferences {
         defaults.put("hubic.oauth.secret", "IIm0EkjdyPquS9SpIZXAdNlGbcf3mL9s3UiOFLnWLeTxLosjvAHGIbomvAcBZQb2");
         defaults.put("hubic.oauth.redirecturi", "https://cyberduck.io/oauth");
 //        defaults.put("hubic.oauth.redirecturi", "x-cyberduck-action:oauth");
+
+        defaults.put("onedrive.oauth.clientid", "372770ba-bb24-436b-bbd4-19bc86310c0e");
+        defaults.put("onedrive.oauth.secret", "mJjWVkmfD9FVHNFTpbrdowv");
+        defaults.put("onedrive.oauth.redirecturi", "https://cyberduck.io/oauth/");
+
+        defaults.put("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(month));
@@ -1034,6 +1038,7 @@ public abstract class Preferences {
 //        defaults.put("dropbox.oauth.redirecturi", "x-cyberduck-action:oauth");
 
         defaults.put("cryptomator.enable", String.valueOf(true));
+        defaults.put("cryptomator.vault.autodetect", String.valueOf(true));
     }
 
     protected void setLogging() {

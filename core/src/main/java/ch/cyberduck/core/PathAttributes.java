@@ -87,7 +87,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Should be hidden in the browser by default
      */
-    private boolean duplicate;
+    private Boolean duplicate;
 
     /**
      * Revision number
@@ -146,7 +146,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
         }
-        dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        if(duplicate != null) {
+            dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        }
         if(StringUtils.isNotBlank(region)) {
             dict.setStringForKey(region, "Region");
         }
@@ -300,6 +302,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versionId = versionId;
     }
 
+    public PathAttributes withVersionId(final String versionId) {
+        this.setVersionId(versionId);
+        return this;
+    }
+
     public String getDirectoryId() {
         return directoryId;
     }
@@ -356,7 +363,7 @@ public class PathAttributes extends Attributes implements Serializable {
      * @return True if hidden by default.
      */
     public boolean isDuplicate() {
-        return duplicate;
+        return duplicate != null && duplicate;
     }
 
     /**

@@ -38,7 +38,7 @@ public class AzureCopyFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new AzureCopyFeature(session, null).copy(test, copy);
+        new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

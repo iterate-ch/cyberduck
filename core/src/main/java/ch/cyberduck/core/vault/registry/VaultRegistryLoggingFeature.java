@@ -20,14 +20,15 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryLoggingFeature implements Logging {
+
     private final Session<?> session;
     private final Logging proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryLoggingFeature(final Session<?> session, final Logging proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryLoggingFeature(final Session<?> session, final Logging proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -41,5 +42,13 @@ public class VaultRegistryLoggingFeature implements Logging {
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         registry.find(session, container).getFeature(session, Logging.class, proxy).setConfiguration(container, configuration);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryLoggingFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -36,7 +36,7 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
 
     @Override
     protected CacheReference key(final TransferItem object) {
-        return new DefaultPathReference(object.remote);
+        return new DefaultPathPredicate(object.remote);
     }
 
     @Override

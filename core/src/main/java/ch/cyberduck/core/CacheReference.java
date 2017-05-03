@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-public interface CacheReference<T> {
+import java.util.function.Predicate;
+
+public interface CacheReference<T> extends Predicate<T> {
     // Marker only
 }

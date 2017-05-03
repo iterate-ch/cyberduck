@@ -19,7 +19,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -59,17 +58,17 @@ public class DAVMoveFeature implements Move {
     }
 
     @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
     }
 
     @Override
     public Move withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
-    public Move withList(final ListService list) {
         return this;
     }
 }

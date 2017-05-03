@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -51,7 +52,7 @@ public class AzureCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
         try {
             final CloudBlob target = session.getClient().getContainerReference(containerService.getContainer(copy).getName())
                     .getAppendBlobReference(containerService.getKey(copy));
@@ -71,5 +72,15 @@ public class AzureCopyFeature implements Copy {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }

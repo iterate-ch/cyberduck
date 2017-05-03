@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -1576,7 +1576,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {connectBookmarkContextToolStripMenuItem,},
                 new[] {connectBookmarkContextMenuItem},
                 (sender, args) =>
-                        ConnectBookmark(this, new ConnectBookmarkArgs(bookmarkListView.SelectedObject as Host)),
+                    ConnectBookmark(this, new ConnectBookmarkArgs(bookmarkListView.SelectedObject as Host)),
                 () => ValidateConnectBookmark());
             Commands.Add(
                 new ToolStripItem[]
@@ -1694,11 +1694,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                         .open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                 (sender, args) =>
-                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")),
+                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.help")),
                 () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
                 (sender, args) =>
-                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
+                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
                 () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                 (sender, args) =>
@@ -1709,7 +1709,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) =>
-                        BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")),
+                    BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")),
                 () => true);
             bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
@@ -1775,11 +1775,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureEditCommands()
         {
             Commands.Add(new ToolStripItem[] {cutToolStripMenuItem}, new[] {cutMainMenuItem}, (sender, args) => Cut(),
-                () => ValidateCut());
+                () => ValidateCut() && !browser.IsCellEditing);
             Commands.Add(new ToolStripItem[] {copyToolStripMenuItem}, new[] {copyMainMenuItem}, (sender, args) => Copy(),
-                () => ValidateCopy());
+                () => ValidateCopy() && !browser.IsCellEditing);
             Commands.Add(new ToolStripItem[] {pasteToolStripMenuItem}, new[] {pasteMainMenuItem},
-                (sender, args) => Paste(), () => ValidatePaste());
+                (sender, args) => Paste(), () => ValidatePaste() && !browser.IsCellEditing);
             Commands.Add(new ToolStripItem[] {selectAllToolStripMenuItem}, new[] {selectAllMainMenuItem},
                 (o, eventArgs) => { }, () => true); // Tree component handles the selectAll command
             Commands.Add(new ToolStripItem[] {preferencesToolStripMenuItem}, new[] {preferencesMainMenuItem},
@@ -2569,7 +2569,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 float penWidth = 4.0f;
                 Rectangle r = bounds;
-                r.Inflate((int) -penWidth/2, (int) -penWidth/2);
+                r.Inflate((int) -penWidth / 2, (int) -penWidth / 2);
                 using (Pen p = new Pen(Color.FromArgb(128, FeedbackColor), penWidth))
                 {
                     using (GraphicsPath path = GetRoundedRect(r, 30.0f))
@@ -2672,7 +2672,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             Path row = (Path) _currentDropTarget;
                             if (row.isDirectory())
                             {
-                                _timer.Interval = useDelay ? delay*1000 : 0;
+                                _timer.Interval = useDelay ? delay * 1000 : 0;
                                 _timer.Start();
                             }
                         }
@@ -2760,7 +2760,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 float penWidth = 4.0f;
                 Rectangle r = bounds;
-                r.Inflate((int) -penWidth/2, (int) -penWidth/2);
+                r.Inflate((int) -penWidth / 2, (int) -penWidth / 2);
                 using (Pen p = new Pen(Color.FromArgb(128, FeedbackColor), penWidth))
                 {
                     using (GraphicsPath path = GetRoundedRect(r, 30.0f))

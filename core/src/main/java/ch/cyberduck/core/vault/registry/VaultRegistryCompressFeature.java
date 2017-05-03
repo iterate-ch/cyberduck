@@ -22,16 +22,17 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Compress;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.List;
 
 public class VaultRegistryCompressFeature implements Compress {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Compress proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryCompressFeature(final Session<?> session, final Compress proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryCompressFeature(final Session<?> session, final Compress proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -45,5 +46,13 @@ public class VaultRegistryCompressFeature implements Compress {
     @Override
     public void unarchive(final Archive archive, final Path file, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
         registry.find(session, file).getFeature(session, Compress.class, proxy).unarchive(archive, file, listener, transcript);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryCompressFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

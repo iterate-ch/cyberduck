@@ -18,35 +18,41 @@ package ch.cyberduck.core.hubic;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
 import ch.cyberduck.core.openstack.SwiftSession;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 
+import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
-import com.google.api.client.auth.oauth2.Credential;
 
 public class HubicSession extends SwiftSession {
     private static final Logger log = Logger.getLogger(HubicSession.class);
 
-    public final Preferences preferences = PreferencesFactory.get();
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
+            "https://api.hubic.com/oauth/token",
+            "https://api.hubic.com/oauth/auth",
+            host.getProtocol().getClientId(),
+            host.getProtocol().getClientSecret(),
+            Collections.singletonList("credentials.r")
+    ).withRedirectUri(PreferencesFactory.get().getProperty("hubic.oauth.redirecturi"));
 
     public HubicSession(final Host host) {
         super(host);
@@ -65,36 +71,24 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
-                      final Cache<Path> cache) throws BackgroundException {
-        final OAuth2AuthorizationService auth = new OAuth2AuthorizationService(client.getClient(),
-                "https://api.hubic.com/oauth/token",
-                "https://api.hubic.com/oauth/auth",
-                host.getProtocol().getClientId(),
-                host.getProtocol().getClientSecret(),
-                Collections.singletonList("credentials.r")
-        ).withRedirectUri(preferences.getProperty("hubic.oauth.redirecturi"));
-        final OAuth2AuthorizationService.Tokens tokens = auth.find(keychain, host);
-        this.login(auth, keychain, prompt, cancel, cache, tokens);
+    public Client connect(final HostKeyCallback key) throws BackgroundException {
+        final HttpClientBuilder configuration = builder.build(this);
+        configuration.addInterceptorLast(authorizationService);
+        return new Client(configuration.build());
     }
 
-    private void login(final OAuth2AuthorizationService auth, final HostPasswordStore keychain, final LoginCallback prompt,
-                       final CancelCallback cancel, final Cache<Path> cache, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        final Credential credentials = auth.authorize(host, keychain, prompt, cancel, tokens);
+    @Override
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel,
+                      final Cache<Path> cache) throws BackgroundException {
+        final OAuth2RequestInterceptor.Tokens tokens = authorizationService.authorize(host, keychain, prompt, cancel);
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Attempt authentication with %s", credentials));
+                log.info(String.format("Attempt authentication with %s", tokens));
             }
-            client.authenticate(new HubicAuthenticationRequest(credentials.getAccessToken()),
-                    new HubicAuthenticationResponseHandler());
+            client.authenticate(new HubicAuthenticationRequest(tokens.getAccessToken()), new HubicAuthenticationResponseHandler());
         }
         catch(GenericException e) {
-            try {
-                throw new SwiftExceptionMappingService().map(e);
-            }
-            catch(LoginFailureException f) {
-                this.login(auth, keychain, prompt, cancel, cache, OAuth2AuthorizationService.Tokens.EMPTY);
-            }
+            throw new SwiftExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -47,12 +48,12 @@ public class SwiftCopyFeature implements Copy {
     }
 
     @Override
-    public void copy(final Path source, final Path copy) throws BackgroundException {
+    public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
             if(source.isFile()) {
                 session.getClient().copyObject(regionService.lookup(source),
                         containerService.getContainer(source).getName(), containerService.getKey(source),
-                        containerService.getContainer(copy).getName(), containerService.getKey(copy));
+                        containerService.getContainer(target).getName(), containerService.getKey(target));
             }
         }
         catch(GenericException e) {
@@ -61,5 +62,15 @@ public class SwiftCopyFeature implements Copy {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }

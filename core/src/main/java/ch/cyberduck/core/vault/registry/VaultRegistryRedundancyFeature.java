@@ -19,16 +19,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.List;
 
 public class VaultRegistryRedundancyFeature implements Redundancy {
+
     private final Session<?> session;
     private final Redundancy proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryRedundancyFeature(final Session<?> session, final Redundancy proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryRedundancyFeature(final Session<?> session, final Redundancy proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -52,5 +53,13 @@ public class VaultRegistryRedundancyFeature implements Redundancy {
     @Override
     public String getClass(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Redundancy.class, proxy).getClass(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryRedundancyFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

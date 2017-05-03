@@ -21,7 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.List;
 
@@ -29,9 +29,9 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
 
     private final Session<?> session;
     private final AclPermission proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryAclPermissionFeature(final Session<?> session, final AclPermission proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryAclPermissionFeature(final Session<?> session, final AclPermission proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -60,5 +60,13 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     @Override
     public Acl getDefault(final Local file) {
         return proxy.getDefault(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryAclPermissionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

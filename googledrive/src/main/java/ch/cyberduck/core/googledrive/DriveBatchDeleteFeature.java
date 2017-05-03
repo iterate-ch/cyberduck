@@ -38,7 +38,7 @@ public class DriveBatchDeleteFeature implements Delete {
 
     private final DriveSession session;
 
-    public DriveBatchDeleteFeature(DriveSession session) {
+    public DriveBatchDeleteFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -76,6 +76,11 @@ public class DriveBatchDeleteFeature implements Delete {
         for(BackgroundException e : failures) {
             throw e;
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return true;
     }
 
     @Override

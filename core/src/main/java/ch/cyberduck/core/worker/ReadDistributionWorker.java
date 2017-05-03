@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ReadDistributionWorker extends Worker<Distribution> {
@@ -57,7 +56,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
             final Distribution distribution = cdn.read(file, method, prompt);
             if(cdn.getFeature(Index.class, distribution.getMethod()) != null) {
                 // Make sure container items are cached for default root object.
-                distribution.setRootDocuments(new ArrayList<>(session.getFeature(ListService.class).list(containerService.getContainer(file), new DisabledListProgressListener())));
+                distribution.setRootDocuments(session.getFeature(ListService.class).list(containerService.getContainer(file), new DisabledListProgressListener()).toList());
             }
             return distribution;
         }

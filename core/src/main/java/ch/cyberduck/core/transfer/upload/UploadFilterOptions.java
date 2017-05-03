@@ -46,6 +46,11 @@ public final class UploadFilterOptions {
      */
     public boolean redundancy;
 
+    /**
+     * Calculate checksum for file
+     */
+    public boolean checksum;
+
     public UploadFilterOptions() {
         // Defaults
         final Preferences preferences = PreferencesFactory.get();
@@ -56,6 +61,7 @@ public final class UploadFilterOptions {
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
         encryption = preferences.getBoolean("queue.upload.file.encryption.change");
         redundancy = preferences.getBoolean("queue.upload.file.redundancy.change");
+        checksum = preferences.getBoolean("queue.upload.checksum.calculate");
     }
 
     public UploadFilterOptions(final boolean permissions, final boolean timestamp, final boolean temporary) {
@@ -96,6 +102,11 @@ public final class UploadFilterOptions {
         return this;
     }
 
+    public UploadFilterOptions withChecksum(boolean enabled) {
+        checksum = enabled;
+        return this;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("UploadFilterOptions{");
@@ -106,6 +117,7 @@ public final class UploadFilterOptions {
         sb.append(", temporary=").append(temporary);
         sb.append(", encryption=").append(encryption);
         sb.append(", redundancy=").append(redundancy);
+        sb.append(", checksum=").append(checksum);
         sb.append('}');
         return sb.toString();
     }

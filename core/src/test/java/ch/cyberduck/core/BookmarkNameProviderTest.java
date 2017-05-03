@@ -38,5 +38,18 @@ public class BookmarkNameProviderTest {
         assertEquals("u@h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials("u", null)), true));
         assertEquals("h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials(null, null)), true));
         assertEquals("h – WebDAV (HTTP)", BookmarkNameProvider.toString(new Host(dav, "h", new Credentials("", null)), true));
+        final TestProtocol nohostname = new TestProtocol(Scheme.file) {
+            @Override
+            public String getName() {
+                return "Disk";
+            }
+
+            @Override
+            public String getDefaultHostname() {
+                return "";
+            }
+        };
+        assertEquals("Disk", BookmarkNameProvider.toString(new Host(nohostname), true));
+        assertEquals("Disk", BookmarkNameProvider.toString(new Host(nohostname), false));
     }
 }

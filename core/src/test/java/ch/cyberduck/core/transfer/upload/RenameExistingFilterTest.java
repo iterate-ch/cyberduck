@@ -6,7 +6,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -65,6 +64,11 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -74,10 +78,6 @@ public class RenameExistingFilterTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 return super._getFeature(type);
@@ -157,6 +157,11 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -166,10 +171,6 @@ public class RenameExistingFilterTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(Write.class)) {
@@ -268,6 +269,11 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
+                        public boolean isRecursive(final Path source, final Path target) {
+                            return true;
+                        }
+
+                        @Override
                         public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
@@ -277,10 +283,6 @@ public class RenameExistingFilterTest {
                             return this;
                         }
 
-                        @Override
-                        public Move withList(final ListService list) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(Write.class)) {

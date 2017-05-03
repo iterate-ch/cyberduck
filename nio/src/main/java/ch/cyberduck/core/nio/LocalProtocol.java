@@ -19,11 +19,37 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class LocalProtocol extends AbstractProtocol {
+
+    private static String LOCAL_HOSTNAME;
+
+    static {
+        try {
+            LOCAL_HOSTNAME = InetAddress.getLocalHost().getHostName();
+        }
+        catch(UnknownHostException e) {
+            LOCAL_HOSTNAME = LocaleFactory.localizedString("Disk");
+        }
+    }
 
     @Override
     public String getIdentifier() {
         return this.getScheme().name();
+    }
+
+    @Override
+    public String getName() {
+        return LOCAL_HOSTNAME;
+    }
+
+    @Override
+    public String getDescription() {
+        return this.getName();
     }
 
     @Override
@@ -32,18 +58,8 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getDescription() {
-        return LocaleFactory.localizedString("Local Filesystem");
-    }
-
-    @Override
     public Scheme getScheme() {
-        return Scheme.local;
-    }
-
-    @Override
-    public boolean isUTCTimezone() {
-        return false;
+        return Scheme.file;
     }
 
     @Override
@@ -57,12 +73,12 @@ public class LocalProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String disk() {
-        return String.format("%s.tiff", "ftp");
+    public boolean isHostnameConfigurable() {
+        return false;
     }
 
     @Override
-    public boolean isHostnameConfigurable() {
+    public boolean isPortConfigurable() {
         return false;
     }
 
@@ -83,11 +99,11 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return "localhost";
+        return StringUtils.EMPTY;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

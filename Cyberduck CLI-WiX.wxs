@@ -172,6 +172,12 @@
       <Component Id="b2" Guid="88764897-D0C8-4134-B78A-026EFB74D219">
         <File Source="$(var.CLI.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="onedrive" Guid="88764897-D0C8-4134-B78A-026EFB74D210">
+        <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="onedrive_business" Guid="88764897-D0C8-4134-B78A-026EFB74D211">
+        <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive Business.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">

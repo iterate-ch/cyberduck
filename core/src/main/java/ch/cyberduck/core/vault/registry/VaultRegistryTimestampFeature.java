@@ -20,14 +20,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryTimestampFeature implements Timestamp {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Timestamp proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryTimestampFeature(final Session<?> session, final Timestamp proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryTimestampFeature(final Session<?> session, final Timestamp proxy, final VaultRegistry registry) {
         this.registry = registry;
         this.session = session;
         this.proxy = proxy;
@@ -41,5 +42,13 @@ public class VaultRegistryTimestampFeature implements Timestamp {
     @Override
     public Long getDefault(final Local file) {
         return proxy.getDefault(file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryTimestampFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

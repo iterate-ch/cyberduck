@@ -25,14 +25,15 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryDownloadFeature implements Download {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Download proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryDownloadFeature(final Session<?> session, final Download proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryDownloadFeature(final Session<?> session, final Download proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -52,5 +53,13 @@ public class VaultRegistryDownloadFeature implements Download {
     public Download withReader(final Read reader) {
         proxy.withReader(reader);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryDownloadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -31,7 +30,7 @@ public class DriveMoveFeature implements Move {
 
     private final DriveSession session;
 
-    public DriveMoveFeature(DriveSession session) {
+    public DriveMoveFeature(final DriveSession session) {
         this.session = session;
     }
 
@@ -42,11 +41,6 @@ public class DriveMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
-    public Move withList(final ListService list) {
         return this;
     }
 
@@ -79,5 +73,10 @@ public class DriveMoveFeature implements Move {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
     }
 }

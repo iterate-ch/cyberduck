@@ -29,7 +29,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.DefaultThreadPool;
@@ -72,15 +71,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     private final Integer concurrency;
 
     private Write<BaseB2Response> writer;
-
-    public B2LargeUploadService(final B2Session session) {
-        this(session, new B2WriteFeature(session), PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
-                PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
-    }
-
-    public B2LargeUploadService(final B2Session session, final Long partSize, final Integer concurrency) {
-        this(session, new B2WriteFeature(session), partSize, concurrency);
-    }
 
     public B2LargeUploadService(final B2Session session, final Write<BaseB2Response> writer, final Long partSize, final Integer concurrency) {
         super(writer);
@@ -168,7 +158,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             catch(ExecutionException e) {
                 log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                status.setCanceled();
                 if(e.getCause() instanceof BackgroundException) {
                     throw (BackgroundException) e.getCause();
                 }
@@ -214,12 +203,14 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         return pool.execute(new DefaultRetryCallable<B2UploadPartResponse>(new BackgroundExceptionCallable<B2UploadPartResponse>() {
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
-                final TransferStatus status = new TransferStatus()
-                        .length(length)
-                        .skip(offset);
                 if(overall.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
+                final TransferStatus status = new TransferStatus()
+                        .length(length)
+                        .skip(offset);
+                status.setHeader(overall.getHeader());
+                status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum().compute(
                         StreamCopier.skip(new BoundedInputStream(local.getInputStream(), offset + length), offset),
                         status));

@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -46,29 +45,24 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     private final Host origin;
 
-    private final TranscriptListener transcript;
-
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
-                                                           final TranscriptListener transcript) {
+    public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         this(origin,
                 new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
                         new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
                 ),
                 new KeychainX509KeyManager(
                         new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
-                ),
-                transcript);
+                )
+        );
     }
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
                                                            final X509TrustManager trust,
-                                                           final X509KeyManager key,
-                                                           final TranscriptListener transcript) {
+                                                           final X509KeyManager key) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(new S3Protocol(),
                 new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key));
         this.origin = origin;
-        this.transcript = transcript;
     }
 
     private interface Connected<T> extends Callable<T> {

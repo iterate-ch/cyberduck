@@ -273,7 +273,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         public boolean isExecutable() {
             final NSURL resolved;
             try {
-                resolved = local.lock();
+                resolved = local.lock(false);
             }
             catch(AccessDeniedException e) {
                 return super.isExecutable();
@@ -290,7 +290,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         public boolean isReadable() {
             final NSURL resolved;
             try {
-                resolved = local.lock();
+                resolved = local.lock(false);
             }
             catch(AccessDeniedException e) {
                 return super.isReadable();
@@ -307,7 +307,7 @@ public class FinderLocalAttributes extends LocalAttributes {
         public boolean isWritable() {
             final NSURL resolved;
             try {
-                resolved = local.lock();
+                resolved = local.lock(false);
             }
             catch(AccessDeniedException e) {
                 return super.isWritable();

@@ -177,11 +177,17 @@
       <PackagePath>$(PackageLayout)\License.txt</PackagePath>
     </LayoutFile>
 
-    <LayoutFile Include="$(OutputPath)profiles/Rackspace US.cyberduckprofile">
+    <LayoutFile Include="$(OutputPath)profiles\Rackspace US.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles/B2.cyberduckprofile">
+    <LayoutFile Include="$(OutputPath)profiles\B2.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\B2.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Microsoft OneDrive.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Microsoft OneDrive.cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Microsoft OneDrive Business.cyberduckprofile">
+       <PackagePath>$(PackageLayout)\profiles\Microsoft OneDrive Business.cyberduckprofile</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)msvcr100.dll">

@@ -31,8 +31,6 @@ import ch.cyberduck.core.ProfileReaderFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -56,7 +54,7 @@ public class IRODSDeleteFeatureTest {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDeleteDirectory() throws Exception {
         final Profile profile = ProfileReaderFactory.get().read(
                 new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
@@ -67,12 +65,15 @@ public class IRODSDeleteFeatureTest {
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
 
-        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        session.getFeature(Directory.class).mkdir(test, null, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
-
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
+        final Path folder = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        new IRODSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path file = new Path(folder, "f", EnumSet.of(Path.Type.file));
+        new IRODSTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new IRODSFindFeature(session).find(folder));
+        assertTrue(new IRODSFindFeature(session).find(file));
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new IRODSFindFeature(session).find(folder));
+        assertFalse(new IRODSFindFeature(session).find(file));
         session.close();
     }
 
@@ -83,15 +84,11 @@ public class IRODSDeleteFeatureTest {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
-
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-
-        assertFalse(session.getFeature(Find.class).find(test));
-
-        new IRODSDeleteFeature(session).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new IRODSFindFeature(session).find(test));
+        new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

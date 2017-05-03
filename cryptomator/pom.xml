@@ -98,9 +98,33 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.cryptomator</groupId>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>googledrive</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>ftp</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>webdav</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>dropbox</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.iterate.cryptomator</groupId>
             <artifactId>cryptolib</artifactId>
-            <version>1.0.10</version>
+            <version>1.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.cryptomator</groupId>

@@ -23,6 +23,8 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
@@ -83,14 +85,15 @@ public class CryptoChecksumComputeTest {
         final Path file = new Path(home, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, vault);
-        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)).hash);
-        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)),
-                compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header)));
-        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)).hash);
+        final RandomNonceGenerator nonces = new RandomNonceGenerator();
+        assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
+        assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)),
+                compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)));
+        assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
         final NullInputStream input = new NullInputStream(0L);
-        assertEquals(compute.compute(input, new TransferStatus().withHeader(header)),
-                compute.compute(input, new TransferStatus().withHeader(header)));
-        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header)),
+        assertEquals(compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)),
+                compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)));
+        assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)),
                 sha.compute(new NullInputStream(0L), new TransferStatus()));
     }
 }

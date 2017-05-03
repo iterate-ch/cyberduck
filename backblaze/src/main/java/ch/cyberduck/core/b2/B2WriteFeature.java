@@ -84,21 +84,27 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
                                 = session.getClient().getUploadPartUrl(new B2FileidProvider(session).getFileid(file));
-                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.toString());
+                        return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
                         final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
                             uploadUrl = session.getClient().getUploadUrl(new B2FileidProvider(session).getFileid(containerService.getContainer(file)));
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
+                            }
                             urls.set(uploadUrl);
                         }
                         else {
                             uploadUrl = urls.get();
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Use upload URL %s for file %s", uploadUrl, file));
+                            }
                         }
                         try {
                             return session.getClient().uploadFile(uploadUrl,
                                     file.isDirectory() ? String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER) : containerService.getKey(file),
-                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.toString(),
+                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
                                     status.getMime(),
                                     status.getMetadata());
                         }

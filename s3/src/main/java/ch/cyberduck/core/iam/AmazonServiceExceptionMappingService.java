@@ -20,13 +20,12 @@ package ch.cyberduck.core.iam;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -49,9 +48,6 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                         case "UnrecognizedClientException":
                             return new LoginFailureException(buffer.toString(), e);
                     }
-                    return new InteroperabilityException(buffer.toString(), e);
-                case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                    return new InteroperabilityException(buffer.toString(), e);
                 case HttpStatus.SC_FORBIDDEN:
                     switch(failure.getErrorCode()) {
                         case "SignatureDoesNotMatch":
@@ -67,17 +63,8 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                         case "MissingAuthenticationToken":
                             return new LoginFailureException(buffer.toString(), e);
                     }
-                    return new AccessDeniedException(buffer.toString(), e);
-                case HttpStatus.SC_UNAUTHORIZED:
-                    return new LoginFailureException(buffer.toString(), e);
-                case HttpStatus.SC_NOT_FOUND:
-                    return new NotfoundException(buffer.toString(), e);
-                case HttpStatus.SC_SERVICE_UNAVAILABLE:
-                    // ServiceUnavailable
-                    return new RetriableAccessDeniedException(buffer.toString(), e);
-                case HttpStatus.SC_REQUEST_TIMEOUT:
-                    return new ConnectionTimeoutException(buffer.toString(), failure);
             }
+            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), buffer.toString()));
         }
         this.append(buffer, e.getMessage());
         return this.wrap(e, buffer);

@@ -38,6 +38,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -118,8 +119,10 @@ public class Terminal {
                 new SpectraProtocol(),
                 new B2Protocol(),
                 new DriveProtocol(),
+                new HubicProtocol(),
                 new DropboxProtocol(),
-                new HubicProtocol()
+                new DropboxProtocol(),
+                new OneDriveProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

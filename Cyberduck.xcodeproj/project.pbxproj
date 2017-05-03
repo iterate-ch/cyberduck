@@ -166,6 +166,7 @@
 		4767310416108E1300B28D35 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B416108E1300B28D35 /* unlocked.tiff */; };
 		4767310516108E1300B28D35 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B516108E1300B28D35 /* update.tiff */; };
 		4767310616108E1300B28D35 /* upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476730B616108E1300B28D35 /* upload.tiff */; };
+		4778BE391E72B183001D2E7C /* onedrive.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4778BE381E72B183001D2E7C /* onedrive.tiff */; };
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786AA14162F4AED006156A0 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47983764072AD73700FA3CDB /* Security.framework */; };
@@ -194,7 +195,9 @@
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
+		47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */; };
 		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		47CAE7A31EB12E3D0069EE58 /* Microsoft OneDrive Business.cyberduckprofile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -280,6 +283,8 @@
 			dstPath = Profiles;
 			dstSubfolderSpec = 7;
 			files = (
+				47CAE7A31EB12E3D0069EE58 /* Microsoft OneDrive Business.cyberduckprofile in CopyFiles */,
+				47C299A91EA4F528005D9507 /* Microsoft OneDrive.cyberduckprofile in CopyFiles */,
 				47DD99831CAA766100960EAF /* B2.cyberduckprofile in CopyFiles */,
 				47472EF5177F788E0090A595 /* Rackspace US.cyberduckprofile in CopyFiles */,
 			);
@@ -1030,6 +1035,7 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = i18n/src/main/resources/sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = i18n/src/main/resources/sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		4778BE381E72B183001D2E7C /* onedrive.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = onedrive.tiff; sourceTree = "<group>"; };
 		477BE2330FD9B38C00F5CB50 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Main.xib; sourceTree = "<group>"; };
 		477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		4781AF400828423100B3E0FA /* download0.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download0.icns; sourceTree = "<group>"; };
@@ -1293,6 +1299,7 @@
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Microsoft OneDrive.cyberduckprofile"; sourceTree = "<group>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = cs; path = i18n/src/main/resources/cs.lproj/Command.xib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = nl; path = i18n/src/main/resources/nl.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1348,6 +1355,7 @@
 		47C92DB61189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/S3.strings; sourceTree = "<group>"; };
 		47C92DB91189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Status.strings; sourceTree = "<group>"; };
 		47C92DBA1189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Transfer.strings; sourceTree = "<group>"; };
+		47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Microsoft OneDrive Business.cyberduckprofile"; sourceTree = "<group>"; };
 		47CD041712DB5F2000694306 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ro; path = i18n/src/main/resources/ro.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041812DB5F2000694306 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pl; path = i18n/src/main/resources/pl.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041A12DB5F2000694306 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/File.strings; sourceTree = "<group>"; };
@@ -1715,6 +1723,8 @@
 				4718F4A9175F432400B424AD /* Rackspace UK.cyberduckprofile */,
 				4718F4AA175F432400B424AD /* Rackspace US.cyberduckprofile */,
 				479421BB1C8DF2A800444CD7 /* B2.cyberduckprofile */,
+				47C299A81EA4F520005D9507 /* Microsoft OneDrive.cyberduckprofile */,
+				47CAE7A21EB12E310069EE58 /* Microsoft OneDrive Business.cyberduckprofile */,
 			);
 			path = profiles;
 			sourceTree = "<group>";
@@ -1824,6 +1834,7 @@
 				47A40B311DEF1C09004E6084 /* cryptomator.tiff */,
 				4749604A1CD75C7200B020C9 /* toolbar */,
 				479626AE1C98057C00CEBEC0 /* googledrive.tiff */,
+				4778BE381E72B183001D2E7C /* onedrive.tiff */,
 				473BF0851892968E0068B4C1 /* azure.tiff */,
 				475C6D59170C9214006535BB /* googlestorage.tiff */,
 				47B3318B16680FF100C9FFA0 /* ftp.tiff */,
@@ -2210,6 +2221,7 @@
 				476730C216108E1300B28D35 /* nav-backward.tiff in Resources */,
 				476730C316108E1300B28D35 /* nav-forward.tiff in Resources */,
 				476730C416108E1300B28D35 /* transfer-upload.tiff in Resources */,
+				4778BE391E72B183001D2E7C /* onedrive.tiff in Resources */,
 				474960671CD75C9700B020C9 /* delete.pdf in Resources */,
 				4749606D1CD75C9700B020C9 /* newfolder.pdf in Resources */,
 				474960751CD75C9700B020C9 /* cleanup.pdf in Resources */,

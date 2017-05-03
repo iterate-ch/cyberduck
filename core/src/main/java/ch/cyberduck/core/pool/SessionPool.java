@@ -40,6 +40,9 @@ public interface SessionPool {
 
     /**
      * Release session to pool for reuse
+     *
+     * @param session Connection
+     * @param failure Failure or null
      */
     void release(Session<?> session, BackgroundException failure);
 

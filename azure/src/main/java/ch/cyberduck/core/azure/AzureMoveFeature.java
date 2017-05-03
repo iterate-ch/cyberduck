@@ -18,14 +18,13 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
 
@@ -41,12 +40,10 @@ public class AzureMoveFeature implements Move {
             = new AzurePathContainerService();
 
     private Delete delete;
-    private ListService list;
 
     public AzureMoveFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
         this.delete = new AzureDeleteFeature(session, context);
-        this.list = new AzureObjectListService(session, context);
         this.context = context;
     }
 
@@ -62,22 +59,13 @@ public class AzureMoveFeature implements Move {
     }
 
     @Override
-    public Move withList(final ListService list) {
-        this.list = list;
-        return this;
+    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
+        new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus());
+        delete.delete(Collections.singletonList(file), new DisabledLoginCallback(), callback);
     }
 
     @Override
-    public void move(final Path file, final Path renamed, final boolean exists, final Delete.Callback callback) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            new AzureCopyFeature(session, context).copy(file, renamed);
-            delete.delete(Collections.singletonList(file),
-                    new DisabledLoginCallback(), callback);
-        }
-        else if(file.isDirectory()) {
-            for(Path i : list.list(file, new DisabledListProgressListener())) {
-                this.move(i, new Path(renamed, i.getName(), i.getType()), false, callback);
-            }
-        }
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
     }
 }

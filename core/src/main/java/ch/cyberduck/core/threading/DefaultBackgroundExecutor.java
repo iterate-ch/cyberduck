@@ -15,7 +15,6 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.Controller;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
@@ -26,7 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 public class DefaultBackgroundExecutor implements BackgroundExecutor {
-    private static final Logger log = Logger.getLogger(AbstractController.class);
+    private static final Logger log = Logger.getLogger(DefaultBackgroundExecutor.class);
 
     private static final DefaultBackgroundExecutor DEFAULT = new DefaultBackgroundExecutor();
 
@@ -48,10 +47,6 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     public <T> Future<T> execute(final Controller controller, final BackgroundActionRegistry registry, final BackgroundAction<T> action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run action %s in background", action));
-        }
-        if(registry.contains(action)) {
-            log.warn(String.format("Skip duplicate background action %s found in registry", action));
-            return ConcurrentUtils.constantFuture(null);
         }
         registry.add(action);
         action.init();

@@ -70,10 +70,9 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                         final StreamListener listener, final TransferStatus status,
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
-            InputStream in;
             final Digest digest = this.digest();
             // Wrap with digest stream if available
-            in = this.decorate(local.getInputStream(), digest);
+            final InputStream in = this.decorate(local.getInputStream(), digest);
             final StatusOutputStream<Reply> out = writer.write(file, status, callback);
             new StreamCopier(cancel, progress)
                     .withOffset(status.getOffset())

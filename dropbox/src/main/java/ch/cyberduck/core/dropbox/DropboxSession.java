@@ -28,7 +28,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -43,33 +42,27 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.log4j.Logger;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxRequestUtil;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
-import com.dropbox.core.v2.users.DbxUserUsersRequests;
-import com.google.api.client.auth.oauth2.Credential;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -77,7 +70,13 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     private final UseragentProvider useragent
             = new PreferencesUseragentProvider();
 
-    private Credential credentials;
+    private final OAuth2RequestInterceptor authorizationService = new OAuth2RequestInterceptor(builder.build(this).build(),
+            "https://api.dropboxapi.com/1/oauth2/token",
+            "https://www.dropbox.com/1/oauth2/authorize",
+            host.getProtocol().getClientId(),
+            host.getProtocol().getClientSecret(),
+            Collections.emptyList())
+            .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -85,53 +84,22 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     @Override
     protected DbxRawClientV2 connect(final HostKeyCallback callback) throws BackgroundException {
-        final CloseableHttpClient client = builder.build(this).build();
+        final HttpClientBuilder configuration = builder.build(this);
+        configuration.addInterceptorLast(authorizationService);
+        final CloseableHttpClient client = configuration.build();
         return new DbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()
                 .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(), DbxHost.DEFAULT) {
             @Override
             protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
-                if(null == credentials) {
-                    log.warn("Missing authentication access token");
-                    return;
-                }
-                DbxRequestUtil.addAuthHeader(headers, credentials.getAccessToken());
+                // OAuth Bearer added in interceptor
             }
         };
     }
 
     @Override
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache)
-            throws BackgroundException {
-        final OAuth2AuthorizationService authorizationService = new OAuth2AuthorizationService(((DropboxCommonsHttpRequestExecutor) client.getRequestConfig().getHttpRequestor()).getClient(),
-                "https://api.dropboxapi.com/1/oauth2/token",
-                "https://www.dropbox.com/1/oauth2/authorize",
-                host.getProtocol().getClientId(),
-                host.getProtocol().getClientSecret(),
-                Collections.emptyList())
-                .withRedirectUri(preferences.getProperty("dropbox.oauth.redirecturi"));
-        final OAuth2AuthorizationService.Tokens tokens = authorizationService.find(keychain, host);
-        this.login(authorizationService, keychain, prompt, cancel, tokens);
-    }
-
-    private void login(final OAuth2AuthorizationService authorizationService, final HostPasswordStore keychain, final LoginCallback prompt,
-                       final CancelCallback cancel, final OAuth2AuthorizationService.Tokens tokens) throws BackgroundException {
-        credentials = authorizationService.authorize(host, keychain, prompt, cancel, tokens);
-        if(host.getCredentials().isPassed()) {
-            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
-            return;
-        }
-        try {
-            new DbxUserUsersRequests(client).getCurrentAccount();
-        }
-        catch(DbxException e) {
-            try {
-                throw new DropboxExceptionMappingService().map(e);
-            }
-            catch(LoginFailureException f) {
-                this.login(authorizationService, keychain, prompt, cancel, OAuth2AuthorizationService.Tokens.EMPTY);
-            }
-        }
+    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel, final Cache<Path> cache) throws BackgroundException {
+        authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
     }
 
     @Override
@@ -177,7 +145,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == IdProvider.class) {
-            return (T) new DropboxIdProvider(this);
+            return (T) new DropboxFileIdProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);
@@ -189,7 +157,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             return (T) new DropboxQuotaFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new DefaultTouchFeature(new DropboxUploadFeature(new DropboxWriteFeature(this)));
+            return (T) new DropboxTouchFeature(this);
         }
         if(type == Search.class) {
             return (T) new DropboxSearchFeature(this);

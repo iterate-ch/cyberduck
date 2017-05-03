@@ -67,7 +67,7 @@ public class SpectraMultipleDeleteFeatureTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1024);
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -93,7 +93,7 @@ public class SpectraMultipleDeleteFeatureTest {
                 new DefaultX509KeyManager());
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(test, null, new TransferStatus());
         test.setType(EnumSet.of(Path.Type.directory, Path.Type.placeholder));

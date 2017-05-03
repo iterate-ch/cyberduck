@@ -15,9 +15,12 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public interface IdProvider {
     String getFileid(Path file) throws BackgroundException;
+
+    IdProvider withCache(Cache<Path> cache);
 }

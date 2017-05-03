@@ -1,5 +1,6 @@
 package ch.cyberduck.core.openstack;
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -15,7 +16,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +31,7 @@ public class SwiftContainerListServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final List<Path> list = new SwiftContainerListService(session, new SwiftRegionService(session), new SwiftLocationFeature.SwiftRegion(null),
+        final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftRegionService(session), new SwiftLocationFeature.SwiftRegion(null),
                 false, false).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");
@@ -51,7 +51,7 @@ public class SwiftContainerListServiceTest {
         final SwiftSession session = new SwiftSession(host).withAccountPreload(false).withCdnPreload(false).withContainerPreload(false);
         session.open(new DisabledHostKeyCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback(), PathCache.empty());
-        final List<Path> list = new SwiftContainerListService(session, new SwiftRegionService(session), new SwiftLocationFeature.SwiftRegion("ORD"),
+        final AttributedList<Path> list = new SwiftContainerListService(session, new SwiftRegionService(session), new SwiftLocationFeature.SwiftRegion("ORD"),
                 false, false).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("DFW");

@@ -50,7 +50,7 @@ public class AliasFilesystemBookmarkResolverTest {
             final String bookmark = resolver.create(l);
             assertNotNull(bookmark);
             l.setBookmark(bookmark);
-            final NSURL resolved = resolver.resolve(l);
+            final NSURL resolved = resolver.resolve(l, false);
             assertNotNull(resolved);
         }
         finally {

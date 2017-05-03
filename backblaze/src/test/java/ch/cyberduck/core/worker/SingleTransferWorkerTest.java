@@ -33,9 +33,11 @@ import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2LargeUploadService;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.b2.B2Session;
+import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -82,29 +84,33 @@ public class SingleTransferWorkerTest {
                 ));
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session session = new B2Session(host) {
+            final B2LargeUploadService upload = new B2LargeUploadService(this, new B2WriteFeature(this),
+                    PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+                    PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
+                @Override
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return in;
+                    }
+                    return new CountingInputStream(in) {
+                        @Override
+                        protected void beforeRead(final int n) throws IOException {
+                            super.beforeRead(n);
+                            if(this.getByteCount() >= 100L * 1024L * 1024L) {
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                        }
+                    };
+                }
+            };
+
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new B2LargeUploadService(this) {
-                        @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
-                            if(failed.get()) {
-                                // Second attempt successful
-                                return in;
-                            }
-                            return new CountingInputStream(in) {
-                                @Override
-                                protected void beforeRead(final int n) throws IOException {
-                                    super.beforeRead(n);
-                                    if(this.getByteCount() >= 100L * 1024L * 1024L) {
-                                        failed.set(true);
-                                        throw new SocketTimeoutException();
-                                    }
-                                }
-                            };
-                        }
-                    };
+                    return (T) upload;
                 }
                 return super._getFeature(type);
             }

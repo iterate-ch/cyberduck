@@ -41,7 +41,7 @@ public class TransferItemCacheTest {
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
         c.put(new TransferItem(new Path("/r", EnumSet.of(Path.Type.directory)), new Local("/l")), list);
-        assertNotNull(c.lookup(new DefaultPathReference(new Path("/r2", EnumSet.of(Path.Type.file)))));
+        assertNotNull(c.lookup(new DefaultPathPredicate(new Path("/r2", EnumSet.of(Path.Type.file)))));
     }
 
     @Test
@@ -50,6 +50,6 @@ public class TransferItemCacheTest {
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
         c.put(null, list);
-        assertNotNull(c.lookup(new DefaultPathReference(new Path("/r2", EnumSet.of(Path.Type.file)))));
+        assertNotNull(c.lookup(new DefaultPathPredicate(new Path("/r2", EnumSet.of(Path.Type.file)))));
     }
 }

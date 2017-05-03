@@ -20,16 +20,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Map;
 
 public class VaultRegistryHeadersFeature implements Headers {
-    private final DefaultVaultRegistry registry;
+
     private final Session<?> session;
     private final Headers proxy;
+    private final VaultRegistry registry;
 
-    public VaultRegistryHeadersFeature(final Session<?> session, final Headers proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryHeadersFeature(final Session<?> session, final Headers proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
@@ -48,5 +49,13 @@ public class VaultRegistryHeadersFeature implements Headers {
     @Override
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, metadata);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryHeadersFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

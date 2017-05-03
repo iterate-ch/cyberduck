@@ -401,7 +401,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPCompressFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, this);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
         }
         if(type == Home.class) {
             return (T) new SFTPHomeDirectoryService(this);

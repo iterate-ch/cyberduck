@@ -17,7 +17,17 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Copy {
-    void copy(Path source, Path copy) throws BackgroundException;
+    /**
+     * @param source Source file or folder
+     * @param target Target file or folder
+     * @param status Write status
+     */
+    void copy(Path source, Path target, TransferStatus status) throws BackgroundException;
+
+    boolean isRecursive(Path source, Path target);
+
+    boolean isSupported(Path source, Path target);
 }

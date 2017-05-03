@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
@@ -36,9 +35,6 @@ import java.util.Set;
 public class S3EncryptionFeature implements Encryption {
 
     private final Preferences preferences = PreferencesFactory.get();
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
 
     private final S3Session session;
 

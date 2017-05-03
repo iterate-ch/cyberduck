@@ -28,12 +28,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoListService;
-import ch.cyberduck.core.cryptomator.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.CryptoWriteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoListService;
+import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
@@ -74,6 +75,7 @@ public class SwiftWriteFeatureTest {
         new Random().nextBytes(content);
         status.setLength(content.length);
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        home.attributes().setRegion("DFW");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault, new DisabledPasswordStore()).create(session, null, new DisabledPasswordCallback() {
@@ -87,6 +89,7 @@ public class SwiftWriteFeatureTest {
         final Cryptor cryptor = cryptomator.getCryptor();
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
         status.setChecksum(writer.checksum().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
