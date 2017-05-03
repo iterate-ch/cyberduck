@@ -73,6 +73,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         proxy.mkdir(encrypt, region, status);
         folder.getType().add(Path.Type.decrypted);
         folder.attributes().setEncrypted(encrypt);
+        folder.attributes().setVault(vault.getHome());
         return folder;
     }
 

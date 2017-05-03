@@ -404,6 +404,10 @@ public class CryptoVault implements Vault {
         }
     }
 
+    public Path getHome() {
+        return home;
+    }
+
     public Cryptor getCryptor() {
         return cryptor;
     }
