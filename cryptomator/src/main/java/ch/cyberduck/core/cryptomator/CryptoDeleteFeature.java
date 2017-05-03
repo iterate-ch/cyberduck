@@ -27,13 +27,13 @@ import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
     private final Session<?> session;
-    private final Delete delegate;
+    private final Delete proxy;
     private final CryptoVault vault;
     private final CryptoFilenameProvider filenameProvider;
 
-    public CryptoDeleteFeature(final Session<?> session, final Delete delegate, final CryptoVault vault) {
+    public CryptoDeleteFeature(final Session<?> session, final Delete proxy, final CryptoVault vault) {
         this.session = session;
-        this.delegate = delegate;
+        this.proxy = proxy;
         this.vault = vault;
         this.filenameProvider = vault.getFilenameProvider();
     }
@@ -42,38 +42,27 @@ public class CryptoDeleteFeature implements Delete {
     public void delete(final List<Path> files, final LoginCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> encrypted = new ArrayList<>();
         for(Path f : files) {
-            if(vault.contains(f)) {
-                final Path encrypt = vault.encrypt(session, f);
-                encrypted.add(encrypt);
-                if(f.isDirectory()) {
-                    // Delete metadata file for directory
-                    final Path metadataFile = vault.encrypt(session, f, true);
-                    if(metadataFile.getType().contains(Path.Type.encrypted)) {
-                        encrypted.add(metadataFile);
-                    }
-                    if(encrypt.getType().contains(Path.Type.encrypted)) {
-                        encrypted.add(encrypt.getParent());
-                    }
-                }
-                if(filenameProvider.isDeflated(encrypt.getName())) {
-                    final Path metadataFile = filenameProvider.resolve(encrypt.getName());
-                    encrypted.add(metadataFile);
-                }
+            final Path encrypt = vault.encrypt(session, f);
+            encrypted.add(encrypt);
+            if(f.isDirectory()) {
+                // Delete metadata file for directory
+                encrypted.add(vault.encrypt(session, f, true));
             }
-            else {
-                encrypted.add(f);
+            if(filenameProvider.isDeflated(encrypt.getName())) {
+                final Path metadataFile = filenameProvider.resolve(encrypt.getName());
+                encrypted.add(metadataFile);
             }
         }
-        delegate.delete(encrypted, prompt, callback);
+        proxy.delete(encrypted, prompt, callback);
     }
 
     @Override
     public boolean isSupported(final Path file) {
-        return delegate.isSupported(file);
+        return proxy.isSupported(file);
     }
 
     @Override
     public boolean isRecursive() {
-        return delegate.isRecursive();
+        return proxy.isRecursive();
     }
 }
