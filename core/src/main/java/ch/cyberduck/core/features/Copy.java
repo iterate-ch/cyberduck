@@ -28,4 +28,6 @@ public interface Copy {
     void copy(Path source, Path target, TransferStatus status) throws BackgroundException;
 
     boolean isRecursive(Path source, Path target);
+
+    boolean isSupported(Path source, Path target);
 }

@@ -52,7 +52,7 @@ public class CryptoMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return true;
+        return proxy.isSupported(source, target);
     }
 
     @Override

@@ -240,22 +240,13 @@ public class CopyTransfer extends Transfer {
         final Path copy = mapping.get(source);
         progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
                 source.getName(), copy.getName()));
-        if(source.isFile()) {
-            if(session.getHost().equals(destination.getHost())) {
-                final Copy feature = session.getFeature(Copy.class);
-                feature.copy(source, copy, status);
-                addTransferred(status.getLength());
-            }
-            else {
-                this.copy(session, source, destination, copy, bandwidth, streamListener, status);
-            }
+        if(session.getHost().equals(destination.getHost())) {
+            final Copy feature = session.getFeature(Copy.class);
+            feature.copy(source, copy, status);
+            addTransferred(status.getLength());
         }
         else {
-            if(!status.isExists()) {
-                progressListener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        copy.getName()));
-                destination.getFeature(Directory.class).mkdir(copy, null, status);
-            }
+            this.copy(session, source, destination, copy, bandwidth, streamListener, status);
         }
     }
 
@@ -290,6 +281,9 @@ public class CopyTransfer extends Transfer {
                                 super.sent(bytes);
                             }
                         }).transfer(in, out);
+            }
+            else if(file.isDirectory()) {
+                target.getFeature(Directory.class).mkdir(copy, null, status);
             }
         }
         finally {

@@ -34,6 +34,7 @@ public class DropboxCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         try {
+            // If the source path is a folder all its contents will be copied.
             new DbxUserFilesRequests(session.getClient()).copy(source.getAbsolute(), target.getAbsolute());
         }
         catch(DbxException e) {
@@ -43,6 +44,11 @@ public class DropboxCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return true;
     }
 }

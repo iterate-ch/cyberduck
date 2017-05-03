@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,15 +56,6 @@ public class SwiftMoveFeature implements Move {
         if(source.isFile()) {
             new SwiftCopyFeature(session, regionService).copy(source, renamed, new TransferStatus());
             delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
-        }
-        else if(source.isDirectory()) {
-            try {
-                delete.delete(Collections.singletonList(source), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
-            catch(NotfoundException e) {
-                // No real placeholder but just a delimiter returned in the object listing.
-                log.warn(e.getMessage());
-            }
         }
     }
 

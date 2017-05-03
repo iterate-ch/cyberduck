@@ -86,7 +86,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source).equals(registry.find(session, target))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
             }
-            return true;
+            return session.getFeature(Copy.class).isSupported(source, target);
         }
         catch(VaultUnlockCancelException e) {
             return false;

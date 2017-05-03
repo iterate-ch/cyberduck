@@ -46,21 +46,40 @@ public class VaultRegistryCopyFeature implements Copy {
         }
         else {
             // Move files inside vault. May use server side copy.
-            session.getFeature(Copy.class, proxy).copy(source, target, status);
+            proxy.copy(source, target, status);
         }
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
         try {
-            if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
-                return proxy.isRecursive(source, target);
+            if(registry.find(session, source, false).equals(Vault.DISABLED)) {
+                return registry.find(session, target, false).getFeature(session, Copy.class, proxy).isRecursive(source, target);
+            }
+            else if(registry.find(session, target, false).equals(Vault.DISABLED)) {
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).isRecursive(source, target);
             }
         }
         catch(VaultUnlockCancelException e) {
             // Ignore
         }
-        return false;
+        return proxy.isRecursive(source, target);
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        try {
+            if(registry.find(session, source, false).equals(Vault.DISABLED)) {
+                return registry.find(session, target, false).getFeature(session, Copy.class, proxy).isSupported(source, target);
+            }
+            else if(registry.find(session, target, false).equals(Vault.DISABLED)) {
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).isSupported(source, target);
+            }
+        }
+        catch(VaultUnlockCancelException e) {
+            // Ignore
+        }
+        return proxy.isSupported(source, target);
     }
 
     @Override

@@ -71,6 +71,14 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
+    public boolean isSupported(final Path source, final Path target) {
+        if(vault.contains(source) && vault.contains(target)) {
+            return delegate.isSupported(source, target);
+        }
+        return new DefaultCopyFeature(session).isSupported(source, target);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoCopyFeature{");
         sb.append("delegate=").append(delegate);
