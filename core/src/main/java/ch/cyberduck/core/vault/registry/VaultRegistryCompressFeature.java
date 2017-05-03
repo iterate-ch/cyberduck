@@ -47,4 +47,12 @@ public class VaultRegistryCompressFeature implements Compress {
     public void unarchive(final Archive archive, final Path file, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
         registry.find(session, file).getFeature(session, Compress.class, proxy).unarchive(archive, file, listener, transcript);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryCompressFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

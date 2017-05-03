@@ -54,4 +54,12 @@ public class VaultRegistryDownloadFeature implements Download {
         proxy.withReader(reader);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryDownloadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -55,4 +55,12 @@ public class VaultRegistryEncryptionFeature implements Encryption {
     public Algorithm getDefault(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Encryption.class, proxy).getDefault(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryEncryptionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

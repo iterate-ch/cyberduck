@@ -46,4 +46,12 @@ public class VaultRegistryReadFeature implements Read {
     public boolean offset(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Read.class, proxy).offset(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryReadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

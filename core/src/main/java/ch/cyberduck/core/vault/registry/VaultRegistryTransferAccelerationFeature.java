@@ -55,4 +55,12 @@ public class VaultRegistryTransferAccelerationFeature<C extends HttpSession<?>> 
     public void configure(final boolean enable, final Path file) throws BackgroundException {
         registry.find(session, file).getFeature(session, TransferAcceleration.class, proxy).configure(enable, file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryTransferAccelerationFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

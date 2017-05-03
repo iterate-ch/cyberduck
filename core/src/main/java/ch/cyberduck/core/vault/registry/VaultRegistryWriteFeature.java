@@ -62,4 +62,12 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     public ChecksumCompute checksum() {
         return proxy.checksum();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryWriteFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

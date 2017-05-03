@@ -56,4 +56,12 @@ public class VaultRegistrySearchFeature implements Search {
         this.cache = cache;
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistrySearchFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

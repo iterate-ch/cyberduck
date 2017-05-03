@@ -37,4 +37,12 @@ public class VaultRegistrySymlinkFeature implements Symlink {
     public void symlink(final Path file, final String target) throws BackgroundException {
         registry.find(session, file).getFeature(session, Symlink.class, proxy).symlink(file, target);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistrySymlinkFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

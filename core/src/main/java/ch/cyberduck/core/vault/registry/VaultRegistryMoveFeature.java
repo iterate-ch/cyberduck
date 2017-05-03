@@ -98,4 +98,12 @@ public class VaultRegistryMoveFeature implements Move {
         proxy.withDelete(delete);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryMoveFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

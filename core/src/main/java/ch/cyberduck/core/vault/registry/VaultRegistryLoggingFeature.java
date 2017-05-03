@@ -43,4 +43,12 @@ public class VaultRegistryLoggingFeature implements Logging {
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         registry.find(session, container).getFeature(session, Logging.class, proxy).setConfiguration(container, configuration);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryLoggingFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

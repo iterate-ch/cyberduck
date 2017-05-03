@@ -50,4 +50,12 @@ public class VaultRegistryHeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, metadata);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryHeadersFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -60,4 +60,12 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
             registry.find(session, file).getFeature(session, Bulk.class, proxy).post(type, files, callback);
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryBulkFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

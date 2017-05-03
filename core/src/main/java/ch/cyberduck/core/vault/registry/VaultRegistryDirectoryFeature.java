@@ -50,4 +50,12 @@ public class VaultRegistryDirectoryFeature<Reply> implements Directory<Reply> {
     public Directory<Reply> withWriter(final Write<Reply> writer) {
         return proxy.withWriter(writer);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryDirectoryFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

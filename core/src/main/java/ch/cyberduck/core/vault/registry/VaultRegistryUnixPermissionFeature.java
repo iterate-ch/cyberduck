@@ -59,4 +59,12 @@ public class VaultRegistryUnixPermissionFeature implements UnixPermission {
     public Permission getDefault(final Local file) {
         return proxy.getDefault(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryUnixPermissionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }
