@@ -295,7 +295,7 @@ public class MoveWorkerTest {
         worker.run(session);
         assertFalse(new DefaultFindFeature(session).find(clearFile));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }
@@ -348,7 +348,7 @@ public class MoveWorkerTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertFalse(new DefaultFindFeature(session).find(clearFolder));
         assertFalse(new DefaultFindFeature(session).find(clearFile));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new DriveDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }

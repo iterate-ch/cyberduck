@@ -218,7 +218,7 @@ public class MoveWorkerTest {
         worker.run(session);
         assertFalse(new SFTPFindFeature(session).find(clearFile));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }
@@ -256,7 +256,7 @@ public class MoveWorkerTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertFalse(new SFTPFindFeature(session).find(clearFolder));
         assertFalse(new SFTPFindFeature(session).find(clearFile));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }
