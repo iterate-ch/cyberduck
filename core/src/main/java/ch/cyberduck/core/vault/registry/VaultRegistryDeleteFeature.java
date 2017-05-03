@@ -71,4 +71,12 @@ public class VaultRegistryDeleteFeature implements Delete {
     public boolean isRecursive() {
         return proxy.isRecursive();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryDeleteFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

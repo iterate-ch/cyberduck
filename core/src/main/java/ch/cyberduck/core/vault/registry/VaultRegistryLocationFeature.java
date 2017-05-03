@@ -44,4 +44,12 @@ public class VaultRegistryLocationFeature implements Location {
     public Name getLocation(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Location.class, proxy).getLocation(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryLocationFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

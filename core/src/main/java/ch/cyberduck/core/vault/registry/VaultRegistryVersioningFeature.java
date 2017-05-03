@@ -64,4 +64,12 @@ public class VaultRegistryVersioningFeature implements Versioning {
     public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         return proxy.getToken(controller);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryVersioningFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

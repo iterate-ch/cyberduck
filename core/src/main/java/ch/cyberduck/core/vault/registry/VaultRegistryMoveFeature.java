@@ -22,13 +22,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import org.apache.log4j.Logger;
+
 import java.util.Collections;
 
 public class VaultRegistryMoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(VaultRegistryMoveFeature.class);
 
     private final Session<?> session;
     private final Move proxy;
@@ -43,12 +47,20 @@ public class VaultRegistryMoveFeature implements Move {
     @Override
     public void move(final Path source, final Path target, final boolean exists, final Delete.Callback callback) throws BackgroundException {
         if(registry.find(session, source).equals(registry.find(session, target))) {
+            final Vault vault = registry.find(session, source);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Move %s to %s inside vault %s", source, target, vault));
+            }
             // Move files inside vault
-            registry.find(session, source).getFeature(session, Move.class, proxy).move(source, target, exists, callback);
+            vault.getFeature(session, Move.class, proxy).move(source, target, exists, callback);
         }
         else {
             // Move files from or into vault requires to pass through encryption features
-            session.getFeature(Copy.class).copy(source, target, new TransferStatus());
+            final Copy copy = session.getFeature(Copy.class);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Move %s to %s using copy feature %s", source, target, copy));
+            }
+            copy.copy(source, target, new TransferStatus());
             // Delete source file after copy is complete
             session.getFeature(Delete.class).delete(Collections.singletonList(source), new DisabledLoginCallback(), callback);
         }
@@ -85,5 +97,13 @@ public class VaultRegistryMoveFeature implements Move {
     public Move withDelete(final Delete delete) {
         proxy.withDelete(delete);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryMoveFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

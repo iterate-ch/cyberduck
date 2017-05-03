@@ -54,4 +54,12 @@ public class VaultRegistryRedundancyFeature implements Redundancy {
     public String getClass(final Path file) throws BackgroundException {
         return registry.find(session, file).getFeature(session, Redundancy.class, proxy).getClass(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryRedundancyFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

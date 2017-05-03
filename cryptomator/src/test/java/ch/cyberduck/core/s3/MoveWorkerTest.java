@@ -27,11 +27,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -216,7 +216,7 @@ public class MoveWorkerTest {
         worker.run(session);
         assertFalse(new S3FindFeature(session).find(clearFile));
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(encryptedFile));
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }
@@ -254,7 +254,7 @@ public class MoveWorkerTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertFalse(new S3FindFeature(session).find(clearFolder));
         assertFalse(new S3FindFeature(session).find(clearFile));
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, encryptedFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }
@@ -330,7 +330,7 @@ public class MoveWorkerTest {
         assertTrue(new S3FindFeature(session).find(directoryRenamed));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new S3FindFeature(session).find(fileRenamed));
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(directoryRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(directoryRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
         registry.clear();
     }

@@ -26,12 +26,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -85,7 +85,7 @@ public class S3MoveFeatureTest {
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(folderRenamed, fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

@@ -43,4 +43,12 @@ public class VaultRegistryTimestampFeature implements Timestamp {
     public Long getDefault(final Local file) {
         return proxy.getDefault(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryTimestampFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

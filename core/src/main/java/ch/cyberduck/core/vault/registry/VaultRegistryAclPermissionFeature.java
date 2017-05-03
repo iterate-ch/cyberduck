@@ -61,4 +61,12 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     public Acl getDefault(final Local file) {
         return proxy.getDefault(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryAclPermissionFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

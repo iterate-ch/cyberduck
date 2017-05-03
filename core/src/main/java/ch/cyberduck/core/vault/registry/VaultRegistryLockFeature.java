@@ -43,4 +43,12 @@ public class VaultRegistryLockFeature<T> implements Lock<T> {
     public void unlock(final Path file, final T token) throws BackgroundException {
         registry.find(session, file).getFeature(session, Lock.class, proxy).unlock(file, token);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryLockFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -61,4 +61,12 @@ public class CryptoAclPermission implements AclPermission {
     public Acl getDefault(final Local file) {
         return delegate.getDefault(file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoAclPermission{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

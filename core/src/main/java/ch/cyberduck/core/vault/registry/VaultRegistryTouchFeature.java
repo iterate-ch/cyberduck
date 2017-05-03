@@ -57,4 +57,12 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
         proxy.withWriter(writer);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryTouchFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

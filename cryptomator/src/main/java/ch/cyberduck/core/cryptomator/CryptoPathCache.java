@@ -107,4 +107,12 @@ public final class CryptoPathCache implements Cache<Path> {
     public Path lookup(final CacheReference<Path> reference) {
         return delegate.lookup(reference);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoPathCache{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

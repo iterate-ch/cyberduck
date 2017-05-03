@@ -26,12 +26,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.CryptoDirectoryFeature;
-import ch.cyberduck.core.cryptomator.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.CryptoMoveFeature;
-import ch.cyberduck.core.cryptomator.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -45,6 +45,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -120,7 +121,7 @@ public class SFTPMoveFeatureTest {
         });
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -156,7 +157,7 @@ public class SFTPMoveFeatureTest {
         });
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -194,8 +195,7 @@ public class SFTPMoveFeatureTest {
         move.move(folder, folderRenamed, false, new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(fileRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamed, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

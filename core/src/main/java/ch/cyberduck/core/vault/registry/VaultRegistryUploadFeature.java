@@ -56,4 +56,12 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
         proxy.withWriter(writer);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryUploadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

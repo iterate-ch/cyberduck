@@ -50,4 +50,12 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
         return this;
     }
 
+    @Override
+    public String
+    toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryAttributesFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

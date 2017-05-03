@@ -44,4 +44,12 @@ public class VaultRegistryIdProvider implements IdProvider {
         proxy.withCache(cache);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryIdProvider{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

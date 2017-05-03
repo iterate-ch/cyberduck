@@ -50,4 +50,11 @@ public class VaultRegistryFindFeature implements Find {
         return this;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryFindFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

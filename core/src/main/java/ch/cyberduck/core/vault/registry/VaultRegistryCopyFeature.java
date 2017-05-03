@@ -62,4 +62,12 @@ public class VaultRegistryCopyFeature implements Copy {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryCopyFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

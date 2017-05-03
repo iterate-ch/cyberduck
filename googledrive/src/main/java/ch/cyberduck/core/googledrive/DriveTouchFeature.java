@@ -29,7 +29,7 @@ import java.util.Collections;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 
-public class DriveTouchFeature implements Touch {
+public class DriveTouchFeature implements Touch<Void> {
 
     private final DriveSession session;
 
@@ -60,7 +60,7 @@ public class DriveTouchFeature implements Touch {
     }
 
     @Override
-    public DriveTouchFeature withWriter(final Write writer) {
+    public DriveTouchFeature withWriter(final Write<Void> writer) {
         return this;
     }
 }

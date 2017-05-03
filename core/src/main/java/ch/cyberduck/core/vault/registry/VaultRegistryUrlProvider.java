@@ -43,4 +43,12 @@ public class VaultRegistryUrlProvider implements UrlProvider {
             return DescriptiveUrlBag.empty();
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryUrlProvider{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

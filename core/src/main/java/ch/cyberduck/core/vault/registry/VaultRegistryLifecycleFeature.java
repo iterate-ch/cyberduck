@@ -43,4 +43,12 @@ public class VaultRegistryLifecycleFeature implements Lifecycle {
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         registry.find(session, container).getFeature(session, Lifecycle.class, proxy).setConfiguration(container, configuration);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("VaultRegistryLifecycleFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }
