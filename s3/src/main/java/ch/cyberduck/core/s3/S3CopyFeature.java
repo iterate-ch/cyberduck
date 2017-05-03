@@ -75,6 +75,11 @@ public class S3CopyFeature implements Copy {
         return false;
     }
 
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
+    }
+
     protected void copy(final Path source, final Path copy, final String storageClass, final Encryption.Algorithm encryption,
                         final Acl acl) throws BackgroundException {
         if(source.isFile() || source.isPlaceholder()) {
