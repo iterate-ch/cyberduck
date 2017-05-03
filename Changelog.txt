@@ -12,6 +12,8 @@ https://cyberduck.io/
 - [Feature] Browse local filesystem in browser
 - [Feature] Support ssh-rsa-cert-v01@openssh.com format for private key files (SFTP)
 - [Feature] Support ssh-dsa-cert-v01@openssh.com format for private key files (SFTP)
+- [Feature] Configure lifecycle options for buckets (Backblaze B2)
+- [Feature] Copy pre-authenticated URLs (Backblaze B2)
 
 5.4.4 [https://trac.cyberduck.io/milestone/5.4.4
 - [Bugfix] Multipart uploads do not resume (S3)
