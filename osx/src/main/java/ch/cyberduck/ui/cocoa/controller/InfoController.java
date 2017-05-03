@@ -1709,6 +1709,7 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
+                || session.getHost().getProtocol().getType() == Protocol.Type.b2
                 || session.getHost().getProtocol().getType() == Protocol.Type.azure
                 || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {
