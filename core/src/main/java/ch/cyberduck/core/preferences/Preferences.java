@@ -464,6 +464,8 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.encryption.change", String.valueOf(true));
         defaults.put("queue.upload.file.redundancy.change", String.valueOf(true));
 
+        defaults.put("queue.upload.checksum.calculate", String.valueOf(true));
+
         defaults.put("queue.upload.skip.enable", String.valueOf(true));
         defaults.put("queue.upload.skip.regex.default",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS");
