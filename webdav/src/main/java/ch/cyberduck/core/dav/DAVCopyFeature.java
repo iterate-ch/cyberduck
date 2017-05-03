@@ -40,10 +40,8 @@ public class DAVCopyFeature implements Copy {
     @Override
     public void copy(final Path source, final Path copy, final TransferStatus status) throws BackgroundException {
         try {
-            if(source.isFile()) {
-                final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
-                session.getClient().copy(new DAVPathEncoder().encode(source), target);
-            }
+            final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
+            session.getClient().copy(new DAVPathEncoder().encode(source), target);
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -55,6 +53,11 @@ public class DAVCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
         return true;
     }
 }
