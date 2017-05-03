@@ -105,6 +105,12 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>ftp</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>webdav</artifactId>
             <scope>test</scope>
             <version>${project.version}</version>
