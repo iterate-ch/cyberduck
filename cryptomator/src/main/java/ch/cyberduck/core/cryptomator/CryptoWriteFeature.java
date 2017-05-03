@@ -38,21 +38,21 @@ import java.io.IOException;
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     private final Session<?> session;
-    private final Write<Reply> delegate;
+    private final Write<Reply> proxy;
     private final Find finder;
     private final AttributesFinder attributes;
     private final CryptoVault vault;
 
-    public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final CryptoVault vault) {
-        this(session, delegate,
+    public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final CryptoVault vault) {
+        this(session, proxy,
                 new CryptoFindFeature(session, new DefaultFindFeature(session), vault),
                 new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), vault),
                 vault);
     }
 
-    public CryptoWriteFeature(final Session<?> session, final Write<Reply> delegate, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
+    public CryptoWriteFeature(final Session<?> session, final Write<Reply> proxy, final Find finder, final AttributesFinder attributes, final CryptoVault vault) {
         this.session = session;
-        this.delegate = delegate;
+        this.proxy = proxy;
         this.finder = finder;
         this.attributes = attributes;
         this.vault = vault;
@@ -60,28 +60,25 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(vault.contains(file)) {
-            try {
-                final Path encrypted = vault.encrypt(session, file);
-                final Cryptor cryptor = vault.getCryptor();
-                final StatusOutputStream<Reply> proxy;
-                if(status.getOffset() == 0) {
-                    proxy = delegate.write(encrypted,
-                            new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
-                    proxy.write(status.getHeader().array());
-                }
-                else {
-                    proxy = delegate.write(encrypted,
-                            new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
-                }
-                return new CryptoOutputStream<Reply>(proxy, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
-                        status.getNonces(), vault.numberOfChunks(status.getOffset()));
+        try {
+            final Path encrypted = vault.encrypt(session, file);
+            final Cryptor cryptor = vault.getCryptor();
+            final StatusOutputStream<Reply> proxy;
+            if(status.getOffset() == 0) {
+                proxy = this.proxy.write(encrypted,
+                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength())), callback);
+                proxy.write(status.getHeader().array());
             }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
+            else {
+                proxy = this.proxy.write(encrypted,
+                        new TransferStatus(status).length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()), callback);
             }
+            return new CryptoOutputStream<Reply>(proxy, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
+                    status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
-        return delegate.write(file, status, callback);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
@@ -95,16 +92,16 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public boolean temporary() {
-        return delegate.temporary();
+        return proxy.temporary();
     }
 
     @Override
     public boolean random() {
-        return delegate.random();
+        return proxy.random();
     }
 
     @Override
     public ChecksumCompute checksum() {
-        return new CryptoChecksumCompute(delegate.checksum(), vault);
+        return new CryptoChecksumCompute(proxy.checksum(), vault);
     }
 }
