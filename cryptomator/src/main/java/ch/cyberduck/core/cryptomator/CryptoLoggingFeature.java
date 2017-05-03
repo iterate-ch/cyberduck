@@ -42,4 +42,12 @@ public class CryptoLoggingFeature implements Logging {
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         delegate.setConfiguration(vault.encrypt(session, container), configuration);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoLoggingFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

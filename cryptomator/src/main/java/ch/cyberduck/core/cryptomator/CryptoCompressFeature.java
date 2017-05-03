@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CryptoCompressFeature implements Compress {
+
     private final Session<?> session;
     private final Compress delegate;
     private final Vault vault;
@@ -50,5 +51,13 @@ public class CryptoCompressFeature implements Compress {
     @Override
     public void unarchive(final Archive archive, final Path file, final ProgressListener listener, final TranscriptListener transcript) throws BackgroundException {
         delegate.unarchive(archive, vault.encrypt(session, file), listener, transcript);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoCompressFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

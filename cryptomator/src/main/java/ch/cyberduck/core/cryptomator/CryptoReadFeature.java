@@ -65,4 +65,12 @@ public class CryptoReadFeature implements Read {
     public boolean offset(final Path file) throws BackgroundException {
         return false;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoReadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

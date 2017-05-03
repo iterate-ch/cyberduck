@@ -47,4 +47,12 @@ public class CryptoHomeFeature implements Home {
             return delegate.find(workdir, path);
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoHomeFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

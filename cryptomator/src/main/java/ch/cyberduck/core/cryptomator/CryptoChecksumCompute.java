@@ -33,8 +33,6 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
-import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,5 +114,13 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute implements Ch
         catch(IOException | BackgroundException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoChecksumCompute{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

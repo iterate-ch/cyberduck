@@ -47,4 +47,12 @@ public class CryptoAttributesFeature implements AttributesFinder {
         delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoAttributesFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

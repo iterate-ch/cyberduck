@@ -36,4 +36,12 @@ public class CryptoSymlinkFeature implements Symlink {
     public void symlink(final Path file, final String target) throws BackgroundException {
         delegate.symlink(vault.encrypt(session, file), target);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoSymlinkFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

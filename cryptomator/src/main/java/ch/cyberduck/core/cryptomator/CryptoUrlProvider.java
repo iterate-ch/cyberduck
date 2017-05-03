@@ -63,4 +63,12 @@ public class CryptoUrlProvider implements UrlProvider {
             return DescriptiveUrlBag.empty();
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoUrlProvider{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

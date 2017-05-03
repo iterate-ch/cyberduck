@@ -51,4 +51,12 @@ public class CryptoFindFeature implements Find {
         delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoFindFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

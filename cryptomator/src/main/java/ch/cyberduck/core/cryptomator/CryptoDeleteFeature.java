@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CryptoDeleteFeature implements Delete {
+
     private final Session<?> session;
     private final Delete proxy;
     private final CryptoVault vault;
@@ -64,5 +65,13 @@ public class CryptoDeleteFeature implements Delete {
     @Override
     public boolean isRecursive() {
         return proxy.isRecursive();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoDeleteFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

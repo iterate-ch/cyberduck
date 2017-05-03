@@ -43,4 +43,12 @@ public class CryptoIdProvider implements IdProvider {
         delegate.withCache(cache);
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoIdProvider{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

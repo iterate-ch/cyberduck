@@ -43,4 +43,12 @@ public class CryptoLifecycleFeature implements Lifecycle {
     public void setConfiguration(final Path container, final LifecycleConfiguration configuration) throws BackgroundException {
         delegate.setConfiguration(vault.encrypt(session, container), configuration);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoLifecycleFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

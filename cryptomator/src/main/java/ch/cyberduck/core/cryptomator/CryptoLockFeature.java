@@ -42,4 +42,12 @@ public class CryptoLockFeature<T> implements Lock<T> {
     public void unlock(final Path file, final T token) throws BackgroundException {
         delegate.unlock(vault.encrypt(session, file), token);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoLockFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

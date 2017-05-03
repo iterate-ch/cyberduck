@@ -44,4 +44,12 @@ public class CryptoLocationFeature implements Location {
     public Name getLocation(final Path file) throws BackgroundException {
         return delegate.getLocation(vault.encrypt(session, file));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoLocationFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

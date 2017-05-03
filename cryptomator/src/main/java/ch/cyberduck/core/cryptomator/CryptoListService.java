@@ -41,4 +41,12 @@ public class CryptoListService implements ListService {
         return delegate.list(vault.encrypt(session, directory),
                 new DecryptingListProgressListener(session, vault, listener));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoListService{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

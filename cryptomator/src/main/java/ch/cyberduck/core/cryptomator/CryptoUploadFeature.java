@@ -59,4 +59,12 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     public Upload<Reply> withWriter(final Write<Reply> writer) {
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoUploadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

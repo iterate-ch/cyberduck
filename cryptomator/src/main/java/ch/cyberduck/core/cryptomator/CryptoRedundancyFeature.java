@@ -54,4 +54,12 @@ public class CryptoRedundancyFeature implements Redundancy {
     public String getClass(final Path file) throws BackgroundException {
         return delegate.getClass(vault.encrypt(session, file));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoRedundancyFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

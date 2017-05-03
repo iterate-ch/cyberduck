@@ -59,4 +59,12 @@ public class CryptoDownloadFeature implements Download {
     public Download withReader(final Read reader) {
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoDownloadFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

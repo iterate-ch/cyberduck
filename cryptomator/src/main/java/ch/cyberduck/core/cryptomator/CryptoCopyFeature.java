@@ -29,12 +29,12 @@ import org.cryptomator.cryptolib.api.FileHeader;
 public class CryptoCopyFeature implements Copy {
 
     private final Session<?> session;
-    private final Copy proxy;
+    private final Copy delegate;
     private final CryptoVault vault;
 
     public CryptoCopyFeature(final Session<?> session, final Copy delegate, final CryptoVault vault) {
         this.session = session;
-        this.proxy = delegate;
+        this.delegate = delegate;
         this.vault = vault;
     }
 
@@ -42,7 +42,7 @@ public class CryptoCopyFeature implements Copy {
     public void copy(final Path source, final Path target, final TransferStatus status) throws BackgroundException {
         if(vault.contains(source) && vault.contains(target)) {
             // Copy inside vault may use server side copy
-            proxy.copy(vault.encrypt(session, source), vault.encrypt(session, target), status);
+            delegate.copy(vault.encrypt(session, source), vault.encrypt(session, target), status);
         }
         else {
             if(vault.contains(target)) {
@@ -64,8 +64,16 @@ public class CryptoCopyFeature implements Copy {
     @Override
     public boolean isRecursive(final Path source, final Path target) {
         if(vault.contains(source) && vault.contains(target)) {
-            return proxy.isRecursive(source, target);
+            return delegate.isRecursive(source, target);
         }
         return new DefaultCopyFeature(session).isRecursive(source, target);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoCopyFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

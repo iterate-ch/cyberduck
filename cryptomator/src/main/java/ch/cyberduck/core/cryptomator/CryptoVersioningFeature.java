@@ -64,4 +64,12 @@ public class CryptoVersioningFeature implements Versioning {
     public Credentials getToken(final LoginCallback controller) throws ConnectionCanceledException {
         return delegate.getToken(controller);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoVersioningFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

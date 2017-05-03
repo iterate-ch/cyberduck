@@ -104,4 +104,12 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     public ChecksumCompute checksum() {
         return new CryptoChecksumCompute(proxy.checksum(), vault);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoWriteFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -32,13 +32,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CryptoBulkFeature<R> implements Bulk<R> {
+
     private final Session<?> session;
-    private final Bulk<R> proxy;
+    private final Bulk<R> delegate;
     private final CryptoVault cryptomator;
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        this.delegate = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
         this.cryptomator = cryptomator;
     }
 
@@ -55,7 +56,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             status.setNonces(new RandomNonceGenerator());
             encrypted.put(cryptomator.encrypt(session, file), status);
         }
-        return proxy.pre(type, encrypted, callback);
+        return delegate.pre(type, encrypted, callback);
     }
 
     @Override
@@ -71,6 +72,14 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
             final TransferStatus status = entry.getValue();
             encrypted.put(cryptomator.encrypt(session, file), status);
         }
-        proxy.post(type, encrypted, callback);
+        delegate.post(type, encrypted, callback);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoBulkFeature{");
+        sb.append("proxy=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

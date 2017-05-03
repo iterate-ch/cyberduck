@@ -59,4 +59,12 @@ public class CryptoUnixPermission implements UnixPermission {
     public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
         delegate.setUnixPermission(cryptomator.encrypt(session, file), permission);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoUnixPermission{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

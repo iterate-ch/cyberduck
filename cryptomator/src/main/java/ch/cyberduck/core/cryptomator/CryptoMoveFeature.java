@@ -58,4 +58,12 @@ public class CryptoMoveFeature implements Move {
     public Move withDelete(final Delete delete) {
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoMoveFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

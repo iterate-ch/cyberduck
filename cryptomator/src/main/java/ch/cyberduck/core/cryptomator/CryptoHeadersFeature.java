@@ -51,4 +51,12 @@ public class CryptoHeadersFeature implements Headers {
     public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
         delegate.setMetadata(vault.encrypt(session, file), metadata);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoHeadersFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

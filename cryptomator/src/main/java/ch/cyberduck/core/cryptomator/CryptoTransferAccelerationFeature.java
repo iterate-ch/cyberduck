@@ -55,4 +55,12 @@ public class CryptoTransferAccelerationFeature<C extends HttpSession<?>> impleme
     public void configure(final boolean enable, final Path file) throws BackgroundException {
         delegate.configure(enable, vault.encrypt(session, file));
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoTransferAccelerationFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }

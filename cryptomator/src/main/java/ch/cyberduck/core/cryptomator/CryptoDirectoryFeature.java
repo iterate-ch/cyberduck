@@ -83,4 +83,12 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     public CryptoDirectoryFeature<Reply> withWriter(final Write<Reply> writer) {
         return this;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoDirectoryFeature{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }

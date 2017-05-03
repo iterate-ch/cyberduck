@@ -56,4 +56,11 @@ public class CryptoEncryptionFeature implements Encryption {
         return delegate.getKeys(vault.encrypt(session, file), prompt);
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CryptoEncryptionFeature{");
+        sb.append("delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }
