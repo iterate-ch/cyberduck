@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
@@ -45,15 +46,18 @@ public class B2LifecycleFeature implements Lifecycle {
     @Override
     public LifecycleConfiguration getConfiguration(final Path container) throws BackgroundException {
         try {
-            final B2BucketResponse response = session.getClient().updateBucket(
-                    new B2FileidProvider(session).getFileid(containerService.getContainer(container)),
-                    new B2BucketTypeFeature(session).convert(container.attributes().getAcl()));
-            final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
-            for(LifecycleRule rule : lifecycleRules) {
-                return new LifecycleConfiguration(
-                        rule.getDaysFromUploadingToHiding().intValue(), null, rule.getDaysFromHidingToDeleting().intValue());
+            final List<B2BucketResponse> buckets = session.getClient().listBuckets();
+            for(B2BucketResponse response : buckets) {
+                if(response.getBucketName().equals(containerService.getContainer(container).getName())) {
+                    final List<LifecycleRule> lifecycleRules = response.getLifecycleRules();
+                    for(LifecycleRule rule : lifecycleRules) {
+                        return new LifecycleConfiguration(
+                                rule.getDaysFromUploadingToHiding().intValue(), null, rule.getDaysFromHidingToDeleting().intValue());
+                    }
+                    return LifecycleConfiguration.empty();
+                }
             }
-            return LifecycleConfiguration.empty();
+            throw new NotfoundException(container.getAbsolute());
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(session).map("Failure to write attributes of {0}", e, container);
