@@ -78,4 +78,9 @@ public class AzureCopyFeature implements Copy {
     public boolean isRecursive(final Path source, final Path target) {
         return false;
     }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
+    }
 }
