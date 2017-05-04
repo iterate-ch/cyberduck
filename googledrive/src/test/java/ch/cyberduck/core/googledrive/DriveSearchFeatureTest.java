@@ -82,6 +82,7 @@ public class DriveSearchFeatureTest {
         final Path workdir = new DefaultHomeFinderService(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
         new DriveTouchFeature(session).touch(file, new TransferStatus());
+        file.attributes().setVersionId(new DriveFileidProvider(session).getFileid(file));
         final DriveSearchFeature feature = new DriveSearchFeature(session);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         // Supports prefix matching only
