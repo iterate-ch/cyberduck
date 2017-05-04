@@ -19,6 +19,12 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
 
 public class B2Protocol extends AbstractProtocol {
+
+    @Override
+    public String getName() {
+        return "B2";
+    }
+
     @Override
     public String getIdentifier() {
         return "b2";
