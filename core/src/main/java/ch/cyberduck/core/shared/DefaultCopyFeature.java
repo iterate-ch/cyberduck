@@ -83,6 +83,7 @@ public class DefaultCopyFeature implements Copy {
     public boolean isSupported(final Path source, final Path target) {
         switch(session.getHost().getProtocol().getType()) {
             case ftp:
+            case irods:
                 return false;
         }
         return true;
