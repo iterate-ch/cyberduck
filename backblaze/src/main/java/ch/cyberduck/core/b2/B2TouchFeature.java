@@ -22,6 +22,7 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.serializer.PathAttributesDictionary;
@@ -46,7 +47,9 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+        if(Checksum.NONE == status.getChecksum()) {
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status));
+        }
         status.setMime(new MappingMimeTypeService().getMime(file.getName()));
         status.setMetadata(Collections.singletonMap(
                 X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(System.currentTimeMillis()))
