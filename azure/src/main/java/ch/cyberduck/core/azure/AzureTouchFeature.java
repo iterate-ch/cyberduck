@@ -23,8 +23,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.commons.io.input.NullInputStream;
 
 import com.microsoft.azure.storage.OperationContext;
 
@@ -47,6 +50,9 @@ public class AzureTouchFeature implements Touch<Void> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        if(Checksum.NONE == status.getChecksum()) {
+            status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+        }
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
         return file;
     }

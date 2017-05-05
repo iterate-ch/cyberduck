@@ -26,8 +26,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
@@ -35,10 +36,13 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Logger;
+import org.bouncycastle.util.encoders.Base64;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -89,7 +93,7 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
 
     @Override
     public ChecksumCompute checksum() {
-        return new DisabledChecksumCompute();
+        return new MD5ChecksumCompute();
     }
 
     @Override
@@ -112,6 +116,20 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             if(headers.containsKey(HttpHeaders.CONTENT_TYPE)) {
                 blob.getProperties().setCacheControl(headers.get(HttpHeaders.CONTENT_TYPE));
                 headers.remove(HttpHeaders.CONTENT_TYPE);
+            }
+            final Checksum checksum = status.getChecksum();
+            if(Checksum.NONE != checksum) {
+                switch(checksum.algorithm) {
+                    case md5:
+                        try {
+                            blob.getProperties().setContentMD5(Base64.toBase64String(Hex.decodeHex(status.getChecksum().hash.toCharArray())));
+                            headers.remove(HttpHeaders.CONTENT_MD5);
+                        }
+                        catch(DecoderException e) {
+                            // Ignore
+                        }
+                        break;
+                }
             }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
