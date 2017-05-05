@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
-import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -86,8 +85,8 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file))) {
-            final PathAttributes attributes = this.attributes.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file));
+        if(finder.withCache(cache).find(vault.encrypt(session, file))) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;
