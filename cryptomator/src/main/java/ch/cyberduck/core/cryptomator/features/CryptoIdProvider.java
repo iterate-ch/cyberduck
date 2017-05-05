@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Vault;
@@ -40,7 +41,7 @@ public class CryptoIdProvider implements IdProvider {
 
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
-        delegate.withCache(cache);
+        delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
 
