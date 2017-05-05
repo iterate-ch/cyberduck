@@ -192,21 +192,8 @@ namespace Ch.Cyberduck.Ui.Controller
             SessionPool session = _controller.Session;
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session.getHost().getProtocol().getType() == Protocol.Type.s3
-                    || session.getHost().getProtocol().getType() == Protocol.Type.b2
-                    || session.getHost().getProtocol().getType() == Protocol.Type.azure
-                    || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage)
-            {
-                // Set icon of cloud service provider
-                View.ToolbarS3Label = session.getHost().getProtocol().getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
-            }
-            else
-            {
-                // Currently these settings are only available for Amazon S3
-                View.ToolbarS3Label = new S3Protocol().getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().disk()];
-            }
+            View.ToolbarS3Label = session.getHost().getProtocol().getName();
+            View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().disk()];
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof(AclPermission)) != null;
             if (anonymous)

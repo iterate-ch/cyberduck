@@ -375,16 +375,9 @@ public class InfoController extends ToolbarWindowController {
                 }
                 break;
             case s3:
-                if(session.getHost().getProtocol().getType() == Protocol.Type.s3) {
-                    // Set icon of cloud service provider
-                    item.setLabel(session.getHost().getProtocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
-                }
-                else {
-                    // Currently these settings are only available for Amazon S3
-                    item.setLabel(new S3Protocol().getName());
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
-                }
+                // Set icon of cloud service provider
+                item.setLabel(session.getHost().getProtocol().getName());
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
                 break;
             case metadata:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
