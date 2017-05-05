@@ -15,56 +15,89 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import org.apache.commons.io.output.ThresholdingOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class SegmentingOutputStream extends ThresholdingOutputStream {
+public abstract class SegmentingOutputStream extends ProxyOutputStream {
+    private static final Logger log = Logger.getLogger(SegmentingOutputStream.class);
 
-    private final ByteArrayOutputStream buffer;
+    private final Long threshold;
+    private Long written;
+
+    private final OutputStream buffer;
     private final OutputStream proxy;
 
-    public SegmentingOutputStream(final OutputStream proxy, final int threshold) {
-        super(threshold);
-        this.buffer = new ByteArrayOutputStream(threshold);
+    public SegmentingOutputStream(final OutputStream proxy, final Long threshold, final OutputStream buffer) {
+        super(proxy);
+        this.buffer = buffer;
         this.proxy = proxy;
+        this.threshold = -1L == threshold ? Long.MAX_VALUE : threshold;
     }
 
     @Override
-    protected OutputStream getStream() throws IOException {
-        return buffer;
-    }
-
-    @Override
-    protected void checkThreshold(final int count) throws IOException {
-        if(this.getByteCount() >= this.getThreshold()) {
-            this.copy();
-        }
+    public void write(final int b) throws IOException {
+        checkThreshold(1);
+        buffer.write(b);
+        written++;
     }
 
     /**
-     * @see #checkThreshold(int)
+     * Writes <code>b.length</code> bytes from the specified byte array to this
+     * output stream.
+     *
+     * @param b The array of bytes to be written.
+     * @throws IOException if an error occurs.
      */
     @Override
-    protected void thresholdReached() throws IOException {
-        // No-op
+    public void write(final byte b[]) throws IOException {
+        buffer.write(b);
+        written += b.length;
+        this.checkThreshold(b.length);
+    }
+
+
+    /**
+     * Writes <code>len</code> bytes from the specified byte array starting at
+     * offset <code>off</code> to this output stream.
+     *
+     * @param b   The byte array from which the data will be written.
+     * @param off The start offset in the byte array.
+     * @param len The number of bytes to write.
+     * @throws IOException if an error occurs.
+     */
+    @Override
+    public void write(final byte b[], final int off, final int len) throws IOException {
+        buffer.write(b, off, len);
+        written += len;
+        this.checkThreshold(len);
+    }
+
+    protected void checkThreshold(final int count) throws IOException {
+        if(written >= threshold) {
+            this.copy();
+            this.reset();
+        }
     }
 
     @Override
     public void close() throws IOException {
-        if(this.getByteCount() > 0L) {
+        if(written > 0L) {
             this.copy();
+            this.reset();
         }
         proxy.close();
     }
 
-    private void copy() throws IOException {
-        buffer.writeTo(proxy);
-        // Re-use buffer
-        buffer.reset();
+    /**
+     * Copy from temporary buffer to output
+     */
+    protected abstract void copy() throws IOException;
+
+    protected void reset() {
         // Wait for trigger of next threshold
-        this.resetByteCount();
+        this.written = 0L;
     }
 }

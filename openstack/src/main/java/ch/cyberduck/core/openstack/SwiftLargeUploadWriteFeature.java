@@ -29,7 +29,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -92,7 +92,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     @Override
     public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<StorageObject>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<StorageObject>>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() throws BackgroundException {

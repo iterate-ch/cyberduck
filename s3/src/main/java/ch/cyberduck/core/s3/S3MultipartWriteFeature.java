@@ -17,7 +17,7 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -87,7 +87,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
-        return new HttpResponseOutputStream<List<MultipartPart>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<MultipartPart>>(new MemorySegementingOutputStream(proxy,
                 preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
             public List<MultipartPart> getStatus() throws BackgroundException {

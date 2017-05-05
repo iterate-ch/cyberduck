@@ -32,7 +32,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -81,7 +81,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<List<B2UploadPa
     @Override
     public StatusOutputStream<List<B2UploadPartResponse>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new SegmentingOutputStream(proxy,
+        return new HttpResponseOutputStream<List<B2UploadPartResponse>>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
             @Override
             public List<B2UploadPartResponse> getStatus() throws BackgroundException {

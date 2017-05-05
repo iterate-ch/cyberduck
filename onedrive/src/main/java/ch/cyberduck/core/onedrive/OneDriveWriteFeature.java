@@ -23,13 +23,12 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
-import ch.cyberduck.core.io.SegmentingOutputStream;
+import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -43,7 +42,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-public class OneDriveWriteFeature implements MultipartWrite<Void> {
+public class OneDriveWriteFeature implements Write<Void> {
 
     private final Preferences preferences
             = PreferencesFactory.get();
@@ -67,7 +66,7 @@ public class OneDriveWriteFeature implements MultipartWrite<Void> {
         try {
             final OneDriveUploadSession upload = session.toFile(file).createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, status.getOffset() + status.getLength());
-            return new HttpResponseOutputStream<Void>(new SegmentingOutputStream(proxy,
+            return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
                     preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
                 @Override
                 public Void getStatus() throws BackgroundException {
