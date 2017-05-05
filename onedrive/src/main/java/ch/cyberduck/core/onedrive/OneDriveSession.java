@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -171,6 +172,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Write.class) {
             return (T) new OneDriveWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new OneDriveBufferWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new OneDriveDeleteFeature(this);
