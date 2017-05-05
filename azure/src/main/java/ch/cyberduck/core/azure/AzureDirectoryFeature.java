@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -63,7 +64,9 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 container.create(options, context);
             }
             else {
-                status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                if(Checksum.NONE == status.getChecksum()) {
+                    status.setChecksum(writer.checksum().compute(new NullInputStream(0L), status.length(0L)));
+                }
                 // Add placeholder object
                 folder.getType().add(Path.Type.placeholder);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
