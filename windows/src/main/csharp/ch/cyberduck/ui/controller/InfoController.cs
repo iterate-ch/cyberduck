@@ -1116,7 +1116,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SessionPool session = _controller.Session;
             Credentials credentials = session.getHost().getCredentials();
             bool enable = session.getHost().getProtocol().getType() == Protocol.Type.s3 ||
-                          session.getHost().getProtocol().getType() == Protocol.Type.b2
+                          session.getHost().getProtocol().getType() == Protocol.Type.b2 ||
                           session.getHost().getProtocol().getType() == Protocol.Type.azure ||
                           session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             if (enable)
