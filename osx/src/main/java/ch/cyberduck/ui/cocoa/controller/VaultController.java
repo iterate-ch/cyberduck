@@ -32,6 +32,7 @@ import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
@@ -138,12 +139,13 @@ public class VaultController extends FolderController {
 
     @Override
     public void callback(final int returncode, final Path file) {
-        final String passphrase = passwordField.stringValue();
         file.setType(EnumSet.of(Path.Type.directory));
-        callback.callback(file, this.getLocation(), passphrase);
+        final VaultCredentials credentials = new VaultCredentials(passwordField.stringValue());
+        credentials.setSaved(this.isSuppressed());
+        callback.callback(file, this.getLocation(), credentials);
     }
 
     public interface Callback {
-        void callback(final Path folder, final String region, final String passphrase);
+        void callback(final Path folder, final String region, final VaultCredentials passphrase);
     }
 }

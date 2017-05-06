@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.vault.DisabledVault;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 public interface Vault {
 
@@ -33,7 +34,7 @@ public interface Vault {
      * @throws BackgroundException    Failure reading master key from server
      * @throws NotfoundException      No master key file in home
      */
-    Vault create(Session<?> session, String region, final PasswordCallback prompt) throws BackgroundException;
+    Vault create(Session<?> session, String region, final VaultCredentials credentials) throws BackgroundException;
 
     /**
      * Open existing vault
@@ -85,6 +86,8 @@ public interface Vault {
     Vault DISABLED = new DisabledVault();
 
     State getState();
+
+    Path getHome();
 
     enum State {
         open,
