@@ -65,7 +65,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         new ContentWriter(session).write(directoryMetadataFile, encrypt.attributes().getDirectoryId().getBytes(Charset.forName("UTF-8")));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
-            session._getFeature(Directory.class).mkdir(intermediate, region, status);
+            session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
         }
         // Write header
         final Cryptor cryptor = vault.getCryptor();
