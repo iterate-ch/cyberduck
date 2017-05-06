@@ -62,7 +62,7 @@ public class B2DeleteFeature implements Delete {
                 }
                 catch(NotfoundException e) {
                     log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
-                    return;
+                    continue;
                 }
                 try {
                     session.getClient().deleteFileVersion(String.format("%s%s", containerService.getKey(file), B2DirectoryFeature.PLACEHOLDER), fileid);
