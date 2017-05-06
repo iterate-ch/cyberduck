@@ -25,7 +25,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(SegmentingOutputStream.class);
 
     private final Long threshold;
-    private Long written;
+    private Long written = 0L;
 
     private final OutputStream buffer;
     private final OutputStream proxy;
