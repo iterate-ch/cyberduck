@@ -24,6 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.core.vault;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
