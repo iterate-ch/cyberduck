@@ -24,6 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.core.vault;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Resources;
@@ -94,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(folder, region, PasswordStoreFactory.get(), passphrase)
+                    : base(region, new VaultCredentials(passphrase), VaultFactory.get(folder, PasswordStoreFactory.get()))
                 {
                     _controller = controller;
                     _folder = folder;

@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public final class DisabledVault implements Vault {
     @Override
-    public Vault create(final Session<?> session, final String region, final PasswordCallback prompt) throws BackgroundException {
+    public Vault create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
         return this;
     }
 
@@ -78,6 +78,11 @@ public final class DisabledVault implements Vault {
     @Override
     public State getState() {
         return State.closed;
+    }
+
+    @Override
+    public Path getHome() {
+        return null;
     }
 
     @Override

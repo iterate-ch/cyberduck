@@ -33,6 +33,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -284,12 +285,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
     }
 
     @Test
@@ -324,12 +320,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home, new DisabledPasswordStore());
-        vault.create(session, null, new DisabledPasswordCallback() {
-            @Override
-            public void prompt(final Credentials credentials, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                credentials.setPassword("pwd");
-            }
-        });
+        vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0);
