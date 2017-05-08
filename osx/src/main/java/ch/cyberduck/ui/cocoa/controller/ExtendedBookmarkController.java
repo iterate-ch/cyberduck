@@ -76,16 +76,20 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         super(bookmark);
     }
 
-    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
-        this.toggleOptionsButton = toggleOptionsButton;
-        this.setState(this.toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
-        this.toggleOptionsButton.setTarget(this.id());
-        this.toggleOptionsButton.setAction(Foundation.selector("toggleOptionsButtonClicked:"));
+    @Override
+    public void awakeFromNib() {
+        super.awakeFromNib();
+        this.setState(toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
     }
 
-    @Action
-    public void toggleOptionsButtonClicked(final NSButton sender) {
-        preferences.setProperty("bookmark.toggle.options", sender.state());
+    @Override
+    public void windowWillClose(final NSNotification notification) {
+        preferences.setProperty("bookmark.toggle.options", toggleOptionsButton.state());
+        super.windowWillClose(notification);
+    }
+
+    public void setToggleOptionsButton(final NSButton toggleOptionsButton) {
+        this.toggleOptionsButton = toggleOptionsButton;
     }
 
     public void setCommentField(final NSTextView field) {
