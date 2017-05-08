@@ -39,6 +39,7 @@ import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -81,6 +82,9 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
         }
     }.withRedirectUri(PreferencesFactory.get().getProperty("onedrive.oauth.redirecturi"));
 
+    private final OAuth2ErrorResponseInterceptor retryHandler = new OAuth2ErrorResponseInterceptor(
+            authorizationService);
+
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -105,6 +109,7 @@ public class OneDriveSession extends HttpSession<OneDriveAPI> {
     protected OneDriveAPI connect(final HostKeyCallback key) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(this);
         configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(retryHandler);
         final RequestExecutor executor = new OneDriveCommonsHttpRequestExecutor(configuration.build()) {
             @Override
             public void addAuthorizationHeader(final Set<RequestHeader> headers) {
