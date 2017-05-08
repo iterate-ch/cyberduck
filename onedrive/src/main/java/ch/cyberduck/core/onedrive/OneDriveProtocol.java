@@ -28,6 +28,11 @@ public class OneDriveProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
+        return "Microsoft OneDrive";
+    }
+
+    @Override
+    public String getName() {
         return "OneDrive";
     }
 
