@@ -45,7 +45,7 @@ public class OneDriveMoveFeature implements Move {
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
         }
-        if(file.getParent() != renamed.getParent()) {
+        if(!file.getParent().equals(renamed.getParent())) {
             patchOperation.move(session.toFolder(renamed.getParent()));
         }
         try {
