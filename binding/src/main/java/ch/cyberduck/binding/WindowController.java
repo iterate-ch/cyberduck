@@ -200,7 +200,9 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param select Selected
      */
     protected void setState(final NSButton toggle, final boolean select) {
-        if(select) {
+        if(select && NSCell.NSOffState == toggle.state()
+                || !select && NSCell.NSOnState == toggle.state()) {
+            // Synchronize state
             toggle.performClick(null);
         }
         toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
